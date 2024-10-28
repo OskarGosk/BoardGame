@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">BoardGame</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_bottom_menu">BottomMenu</string>
+    <string name="title_activity_players">PlayersActivity</string>
+    <string name="title_activity_games">GamesActivity</string>
+    <string name="title_activity_game_play">GamePlayActivity</string>
+    <string name="title_activity_choose_the_game">ChooseTheGame</string>
+
+    <string name="player_list">Player List</string>
+    <string name="add_player">Add new Player</string>
+    <string name="edit_player">Save change</string>
+    <string name="new_player">Create new player</string>
+    <string name="player_name">Player Name</string>
+    <string name="player_description">About Player</string>
+    <string name="title_activity_add_edit_player">AddEditPlayer</string>
+
+    <string name="board_list">Board Game List</string>
+    <string name="add_board">Add new board game</string>
+    <string name="edit_game">Save change</string>
+    <string name="expansion">Is Expansion?</string>
+    <string name="new_game">Add new game</string>
+    <string name="game_name">Board Game Name</string>
+    <string name="base_game">Base Game</string>
+    <string name="min_player">Min players</string>
+    <string name="max_player">Max players</string>
+    <string name="title_activity_add_edit_game">AddEditGame</string>
+
+    <string name="add_gameplay">Add new gameplay</string>
+</resources>
