@@ -68,7 +68,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
     implementation(libs.bundles.voyager.all)
     implementation(libs.bundles.firebase.all)
+    implementation(libs.bundles.retrofit.gson)
 }

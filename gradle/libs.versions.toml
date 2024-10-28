@@ -13,6 +13,8 @@ firebase = "4.4.2"
 firebase-bom = "33.5.1"
 firebase-crashlytics-ktx = "19.2.1"
 firebase-analytics-ktx = "22.1.2"
+retrofit = "2.11.0"
+gson = "2.11.0"
 
 
 [libraries]
@@ -30,6 +32,11 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+retrofit2 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit"}
+retrofit2-converter = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit"}
+gson = { module = "com.google.code.gson:gson", version.ref = "gson"}
+
 
 voyager-core = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
@@ -51,3 +58,4 @@ firebase = { id = "com.google.gms.google-services", version.ref = "firebase"}
 [bundles]
 voyager-all = ["voyager-core", "voyager-screenModel", "voyager-bottomSheetNavigator", "voyager-tabNavigator", "voyager-transitions", "voyager-koin"]
 firebase-all = ["firebase-bom", "firebase-messaging", "firebase-crashlytics-ktx", "firebase-analytics-ktx"]
+retrofit-gson = ["retrofit2", "retrofit2-converter", "gson"]
