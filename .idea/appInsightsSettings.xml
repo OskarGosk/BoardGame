@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.goskar.boardgame" />
+                  <option name="mobileSdkAppId" value="1:55423252088:android:4a3244ad5481e91cd7df8d" />
+                  <option name="projectId" value="board-game-goskar" />
+                  <option name="projectNumber" value="55423252088" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

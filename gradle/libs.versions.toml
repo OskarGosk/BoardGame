@@ -9,6 +9,10 @@ lifecycleRuntimeKtx = "2.8.6"
 activityCompose = "1.8.0"
 composeBom = "2024.04.01"
 voyager = "1.1.0-beta02"
+firebase = "4.4.2"
+firebase-bom = "33.5.1"
+firebase-crashlytics-ktx = "19.2.1"
+firebase-analytics-ktx = "22.1.2"
 
 
 [libraries]
@@ -34,10 +38,16 @@ voyager-tabNavigator = { module = "cafe.adriel.voyager:voyager-tab-navigator", v
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-crashlytics-ktx" }
+firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+firebase = { id = "com.google.gms.google-services", version.ref = "firebase"}
 
 [bundles]
 voyager-all = ["voyager-core", "voyager-screenModel", "voyager-bottomSheetNavigator", "voyager-tabNavigator", "voyager-transitions", "voyager-koin"]
+firebase-all = ["firebase-bom", "firebase-messaging", "firebase-crashlytics-ktx", "firebase-analytics-ktx"]
