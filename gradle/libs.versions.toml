@@ -46,7 +46,7 @@ voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", vers
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
-firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+#firebase-messaging = { module = "com.google.firebase:firebase-messaging"}
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-crashlytics-ktx" }
 firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
 
@@ -57,5 +57,5 @@ firebase = { id = "com.google.gms.google-services", version.ref = "firebase"}
 
 [bundles]
 voyager-all = ["voyager-core", "voyager-screenModel", "voyager-bottomSheetNavigator", "voyager-tabNavigator", "voyager-transitions", "voyager-koin"]
-firebase-all = ["firebase-bom", "firebase-messaging", "firebase-crashlytics-ktx", "firebase-analytics-ktx"]
+firebase-all = ["firebase-bom", "firebase-crashlytics-ktx", "firebase-analytics-ktx"]
 retrofit-gson = ["retrofit2", "retrofit2-converter", "gson"]
