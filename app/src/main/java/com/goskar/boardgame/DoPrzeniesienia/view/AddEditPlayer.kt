@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import OGosk.boardgamebase.R
 import OGosk.boardgamebase.model.Player
 import OGosk.boardgamebase.viewModel.PlayerViewModel
 import android.content.Intent
@@ -38,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.goskar.boardgame.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AddEditPlayer : ComponentActivity() {

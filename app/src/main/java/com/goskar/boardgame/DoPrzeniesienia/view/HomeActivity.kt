@@ -1,6 +1,5 @@
 package OGosk.boardgamebase.view
 
-import OGosk.boardgamebase.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.R
 
 
 class HomeActivity : ComponentActivity() {

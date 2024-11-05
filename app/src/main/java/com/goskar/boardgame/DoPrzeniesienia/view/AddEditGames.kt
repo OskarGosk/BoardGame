@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import OGosk.boardgamebase.R
 import OGosk.boardgamebase.model.Game
 import OGosk.boardgamebase.model.OperationStatus
 import OGosk.boardgamebase.model.Player
@@ -49,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.goskar.boardgame.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AddEditGames : ComponentActivity() {
@@ -94,7 +94,7 @@ class AddEditGames : ComponentActivity() {
         var gameMaxPlayer by remember { mutableStateOf(editGames?.maxPlayer?:"") }
         var gameBase by remember { mutableStateOf(editGames?.baseGame?:"") }
         var isChecked by remember { mutableStateOf(false)}
-        
+
         Column (
             modifier = Modifier.padding(10.dp)
         ) {

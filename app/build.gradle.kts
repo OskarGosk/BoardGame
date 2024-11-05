@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.firebase)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -67,8 +68,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.timber)
 
     implementation(libs.bundles.voyager.all)
-    implementation(libs.bundles.firebase.all)
+//    implementation(libs.bundles.firebase.all)
+    implementation(libs.bundles.koin.all)
     implementation(libs.bundles.retrofit.gson)
+    implementation(libs.bundles.room.all)
+    implementation(libs.bundles.coil.all)
+
+    ksp(libs.room.ksp)
 }

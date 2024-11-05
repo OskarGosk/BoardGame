@@ -15,6 +15,12 @@ firebase-crashlytics-ktx = "19.2.1"
 firebase-analytics-ktx = "22.1.2"
 retrofit = "2.11.0"
 gson = "2.11.0"
+koin = "3.5.3"
+koin-annotation = "1.3.0"
+room = "2.6.1"
+ksp = "1.9.10-1.0.13"
+timber = "5.0.1"
+coil-compose = "2.5.0"
 
 
 [libraries]
@@ -32,11 +38,22 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+
 
 retrofit2 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit"}
 retrofit2-converter = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit"}
 gson = { module = "com.google.code.gson:gson", version.ref = "gson"}
 
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin"}
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-android-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-annotation = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotation" }
+koin-annotation-ksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotation" }
+
+room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 voyager-core = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
@@ -50,12 +67,22 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-crashlytics-ktx" }
 firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
 
+coil-base = { module = "io.coil-kt:coil-base", version.ref = "coil-compose" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
+coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil-compose" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil-compose" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 firebase = { id = "com.google.gms.google-services", version.ref = "firebase"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
 
 [bundles]
 voyager-all = ["voyager-core", "voyager-screenModel", "voyager-bottomSheetNavigator", "voyager-tabNavigator", "voyager-transitions", "voyager-koin"]
 firebase-all = ["firebase-bom", "firebase-crashlytics-ktx", "firebase-analytics-ktx"]
 retrofit-gson = ["retrofit2", "retrofit2-converter", "gson"]
+koin-all = ["koin-core", "koin-android", "koin-android-compose", "koin-annotation"]
+room-all = ["room-ktx", "room-runtime"]
+coil-all = ["coil-compose", "coil-base", "coil-gif", "coil-svg"]

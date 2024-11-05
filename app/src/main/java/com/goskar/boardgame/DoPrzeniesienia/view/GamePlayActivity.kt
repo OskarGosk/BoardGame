@@ -1,6 +1,5 @@
 package OGosk.boardgamebase.view
 
-import OGosk.boardgamebase.R
 import OGosk.boardgamebase.model.Game
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -57,10 +56,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.maxkeppeker.sheets.core.models.base.rememberSheetState
-import com.maxkeppeler.sheets.calendar.CalendarDialog
-import com.maxkeppeler.sheets.calendar.models.CalendarConfig
-import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.goskar.boardgame.R
+//import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+//import com.maxkeppeler.sheets.calendar.CalendarDialog
+//import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+//import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.LocalDate
 
@@ -97,22 +97,22 @@ class GamePlayActivity : ComponentActivity() {
     @Composable
     fun GameplayView (playGame: Game) {
 
-        val calendarState = rememberSheetState()
+//        val calendarState = rememberSheetState()
         var playGameDate by remember { mutableStateOf(LocalDate.now())}
 //        val keyboardController = LocalSoftwareKeyboardController.current
         val scrollState = rememberScrollState()
         val context = LocalContext.current
 
-        CalendarDialog(
-            state = calendarState,
-            config = CalendarConfig(
-                monthSelection = true,
-                yearSelection = true,
-            ),
-            selection = CalendarSelection.Date { date ->
-                Log.d ("Oskar","$date")
-                playGameDate = date
-            })
+//        CalendarDialog(
+//            state = calendarState,
+//            config = CalendarConfig(
+//                monthSelection = true,
+//                yearSelection = true,
+//            ),
+//            selection = CalendarSelection.Date { date ->
+//                Log.d ("Oskar","$date")
+//                playGameDate = date
+//            })
         /*
         Na górze wybrana gra z możliwością edycji?
         Dodawanie playerów którzy grali
@@ -135,7 +135,7 @@ class GamePlayActivity : ComponentActivity() {
 //                modifier = Modifier.weight(0.5f)
             ){
                 Image(
-                    painter = painterResource(id = R.drawable.mavel_united),
+                    painter = painterResource(id = R.drawable.ic_launcher_background),
                     contentDescription = "Marvel",
                     modifier = Modifier.weight(1f)
                 )
@@ -209,7 +209,7 @@ class GamePlayActivity : ComponentActivity() {
 //                Text(text = "$playGameDate")
 //                Spacer(modifier = Modifier.width(10.dp))
                 Button(onClick = {
-                    calendarState.show()
+//                    calendarState.show()
                 },
                     modifier = Modifier
                         .fillMaxWidth()) {

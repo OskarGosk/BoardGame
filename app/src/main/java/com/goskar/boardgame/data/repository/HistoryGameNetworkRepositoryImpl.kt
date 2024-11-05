@@ -8,8 +8,6 @@ import com.goskar.boardgame.data.rest.ApiBoardGame
 
 class HistoryGameNetworkRepositoryImpl(
     private val apiBoardGame : ApiBoardGame,
-    private val gson: Gson,
-    private val context: Context
 ): HistoryGameNetworkRepository {
 
     override suspend fun addHistoryGame(historyGame: HistoryGame): HistoryIdResponse {
