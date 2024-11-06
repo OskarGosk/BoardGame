@@ -12,7 +12,7 @@ class PlayerNetworkRepositoryImpl(
         return apiBoardGame.addPlayer(player)
     }
 
-    override suspend fun getAllPlayer(): List<Player>{
+    override suspend fun getAllPlayer(): List<Player> {
         return apiBoardGame.getAllPlayer().map { element ->
             element.value.copy(id = element.key)
         }

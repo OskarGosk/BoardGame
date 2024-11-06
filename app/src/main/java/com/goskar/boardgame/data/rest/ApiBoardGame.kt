@@ -59,5 +59,4 @@ interface ApiBoardGame {
         @Path("id") historyId: String,
         @Body historyGame: HistoryGame
     )
-
 }

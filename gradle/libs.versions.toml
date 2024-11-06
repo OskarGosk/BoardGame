@@ -66,6 +66,7 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 #firebase-messaging = { module = "com.google.firebase:firebase-messaging"}
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx", version.ref = "firebase-crashlytics-ktx" }
 firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx", version.ref = "firebase-analytics-ktx" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database"}
 
 coil-base = { module = "io.coil-kt:coil-base", version.ref = "coil-compose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
@@ -81,7 +82,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 [bundles]
 voyager-all = ["voyager-core", "voyager-screenModel", "voyager-bottomSheetNavigator", "voyager-tabNavigator", "voyager-transitions", "voyager-koin"]
-firebase-all = ["firebase-bom", "firebase-crashlytics-ktx", "firebase-analytics-ktx"]
+firebase-all = ["firebase-bom", "firebase-crashlytics-ktx", "firebase-analytics-ktx", "firebase-database"]
 retrofit-gson = ["retrofit2", "retrofit2-converter", "gson"]
 koin-all = ["koin-core", "koin-android", "koin-android-compose", "koin-annotation"]
 room-all = ["room-ktx", "room-runtime"]

@@ -13,5 +13,4 @@ fun KoinApplication.repositoryModule() = module {
     single<PlayerNetworkRepository> { PlayerNetworkRepositoryImpl(get())}
     single<GameNetworkRepository> { GameNetworkRepositoryImpl(get())}
     single<HistoryGameNetworkRepository> { HistoryGameNetworkRepositoryImpl(get())}
-
 }

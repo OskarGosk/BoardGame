@@ -15,12 +15,12 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.player.PlayerListScreen
 
 class HomeScreen :Screen {
     @Composable
     override fun Content() {
-        HomeScreenContent(
-        )
+        HomeScreenContent()
     }
 }
 
@@ -36,6 +36,7 @@ fun HomeScreenContent(
             .padding(15.dp)
     ) {
         FloatingActionButton(onClick = {
+            navigator?.push(PlayerListScreen())
         },
             modifier = Modifier
                 .fillMaxWidth()) {
