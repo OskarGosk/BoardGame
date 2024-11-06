@@ -1,5 +1,6 @@
 package OGosk.boardgamebase.view
 
+/*
 import OGosk.boardgamebase.model.Game
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -368,3 +369,5 @@ class GamePlayActivity : ComponentActivity() {
         }
     }
 }
+
+ */

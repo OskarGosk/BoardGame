@@ -1,7 +1,8 @@
 package com.goskar.boardgame.data.repository
 
-import OGosk.boardgamebase.model.HistoryGame
-import OGosk.boardgamebase.model.HistoryIdResponse
+import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.rest.models.HistoryIdResponse
+
 
 interface HistoryGameNetworkRepository {
 

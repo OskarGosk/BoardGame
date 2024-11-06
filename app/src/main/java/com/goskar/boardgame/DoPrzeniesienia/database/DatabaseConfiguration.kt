@@ -1,7 +1,7 @@
 package OGosk.boardgamebase.database
 
-import android.content.Context
-import androidx.room.Room
+//import android.content.Context
+//import androidx.room.Room
 
 //object DatabaseConfiguration {
 //    fun getDatabase(context: Context) = Room.databaseBuilder(
@@ -19,10 +19,10 @@ import androidx.room.Room
 //        .build()
 //}
 
-object DatabaseConfiguration {
-    fun getDatabase(context: Context) = Room.databaseBuilder(
-        context, AppDatabase::class.java, "boardGame-database"
-    )
-        .fallbackToDestructiveMigration()
-        .build()
-}
+//object DatabaseConfiguration {
+//    fun getDatabase(context: Context) = Room.databaseBuilder(
+//        context, AppDatabase::class.java, "boardGame-database"
+//    )
+//        .fallbackToDestructiveMigration()
+//        .build()
+//}

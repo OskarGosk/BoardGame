@@ -1,14 +1,11 @@
 package com.goskar.boardgame.ui.player
 
-import OGosk.boardgamebase.model.OperationStatus
-import OGosk.boardgamebase.model.Player
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.PlayerNetworkRepository
+import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPLayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -16,26 +13,30 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 data class PlayerListState(
-    val playerList: List<Player> = emptyList()
+    val playerList: List<Player> = emptyList(),
+    val successDeletePlayer: Boolean = false,
+    val errorVisible: Boolean = false,
+    val visibleDialog: Boolean = false
 )
 
 @KoinViewModel
 class PlayerListViewModel(
-    private val playerNetworkRepository: PlayerNetworkRepository
-) : ViewModel() {
+    private val playerNetworkRepository: PlayerNetworkRepository,
+
+    ) : ViewModel() {
 
     companion object {
         const val TAG = "Player List"
     }
 
-    init {
-        getAllPlayer()
-    }
-
     private val _state = MutableStateFlow(PlayerListState())
     val state = _state.asStateFlow()
 
-    private fun getAllPlayer () {
+    fun update(state: PlayerListState) {
+        _state.update { state }
+    }
+
+    fun getAllPlayer () {
         viewModelScope.launch {
             val response = playerNetworkRepository.getAllPlayer().toMutableList()
             _state.update {
@@ -45,5 +46,41 @@ class PlayerListViewModel(
             }
         }
     }
+
+    fun validateDeletePlayer(playerID: String) {
+        viewModelScope.launch {
+            val response = playerNetworkRepository.deletePlayer(playerID)
+            when (response){
+                is RequestResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            successDeletePlayer = true
+                        )
+                    }
+                }
+                else -> {
+                    _state.update {
+                        it.copy(
+                            errorVisible = true
+                        )
+                    }
+                }
+            }
+
+        }
+    }
+
+
+    //    fun deletePlayer(player: Player) {
+//        viewModelScope.launch {
+//            try {
+//                playerNetworkRepository.deletePlayer(player.id)
+//                playerDatabaseRepository.deletePlayer(player)
+//                removePlayerFromList(player)
+//            } catch (e: Exception) {
+//                Log.d ("Game", "Nie usuneło gracza --- $e")
+//            }
+//        }
+//    }
 
 }

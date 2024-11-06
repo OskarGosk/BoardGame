@@ -1,10 +1,8 @@
 package com.goskar.boardgame.data.repository
 
-import OGosk.boardgamebase.model.Game
-import OGosk.boardgamebase.model.GameIdRespons
-import android.content.Context
-import com.google.gson.Gson
 import com.goskar.boardgame.data.rest.ApiBoardGame
+import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.rest.models.GameIdRespons
 
 class GameNetworkRepositoryImpl(
     private val apiBoardGame: ApiBoardGame,

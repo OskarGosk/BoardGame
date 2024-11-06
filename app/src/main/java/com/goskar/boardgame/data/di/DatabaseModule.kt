@@ -1,16 +1,17 @@
 package com.goskar.boardgame.data.di
 
-import OGosk.boardgamebase.database.Converters
-import OGosk.boardgamebase.database.GameDao
-import OGosk.boardgamebase.database.HistoryGameDao
-import OGosk.boardgamebase.database.PlayerDao
-import OGosk.boardgamebase.model.Game
-import OGosk.boardgamebase.model.HistoryGame
-import OGosk.boardgamebase.model.Player
+
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.goskar.boardgame.data.db.Converters
+import com.goskar.boardgame.data.db.GameDao
+import com.goskar.boardgame.data.db.HistoryGameDao
+import com.goskar.boardgame.data.db.PlayerDao
+import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.rest.models.Player
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 

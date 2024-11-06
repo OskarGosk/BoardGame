@@ -1,15 +1,30 @@
 package com.goskar.boardgame.data.repository
 
-import OGosk.boardgamebase.model.Player
-import OGosk.boardgamebase.model.PlayerIdRespons
 import com.goskar.boardgame.data.rest.ApiBoardGame
+import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.rest.models.Player
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class PlayerNetworkRepositoryImpl(
     private val apiBoardGame: ApiBoardGame,
 ) :PlayerNetworkRepository{
 
-    override suspend fun addPlayer(player: Player): PlayerIdRespons {
-        return apiBoardGame.addPlayer(player)
+    override suspend fun addPlayer(player: Player): RequestResult<Boolean> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiBoardGame.addPlayer(player)
+                when {
+                    response.isSuccessful ->{
+                        RequestResult.Success(true)
+                    }
+                    else -> throw IllegalStateException()
+                }
+            }.onFailure {
+                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = {it}, onFailure = {RequestResult.Error(it)})
     }
 
     override suspend fun getAllPlayer(): List<Player> {
@@ -18,11 +33,35 @@ class PlayerNetworkRepositoryImpl(
         }
     }
 
-    override suspend fun deletePlayer (playerId: String){
-        apiBoardGame.deletePlayer(playerId)
+    override suspend fun deletePlayer (playerId: String): RequestResult<Boolean>{
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiBoardGame.deletePlayer(playerId)
+                when {
+                    response.isSuccessful ->{
+                        RequestResult.Success(true)
+                    }
+                    else -> throw IllegalStateException()
+                }
+            }.onFailure {
+                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = {it}, onFailure = {RequestResult.Error(it)})
     }
 
-    override suspend fun editPlayer (player: Player){
-        apiBoardGame.editPlayer(player.id, player)
+    override suspend fun editPlayer (player: Player): RequestResult<Boolean>{
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiBoardGame.editPlayer(player.id, player)
+                when {
+                    response.isSuccessful ->{
+                        RequestResult.Success(true)
+                    }
+                    else -> throw IllegalStateException()
+                }
+            }.onFailure {
+                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = {it}, onFailure = {RequestResult.Error(it)})
     }
 }

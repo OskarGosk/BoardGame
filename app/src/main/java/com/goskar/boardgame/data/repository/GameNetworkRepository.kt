@@ -1,7 +1,8 @@
 package com.goskar.boardgame.data.repository
 
-import OGosk.boardgamebase.model.Game
-import OGosk.boardgamebase.model.GameIdRespons
+import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.rest.models.GameIdRespons
+
 
 interface GameNetworkRepository {
 

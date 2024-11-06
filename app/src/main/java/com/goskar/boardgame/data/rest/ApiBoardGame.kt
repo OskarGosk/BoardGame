@@ -1,11 +1,12 @@
 package com.goskar.boardgame.data.rest
 
-import OGosk.boardgamebase.model.Game
-import OGosk.boardgamebase.model.GameIdRespons
-import OGosk.boardgamebase.model.HistoryGame
-import OGosk.boardgamebase.model.HistoryIdResponse
-import OGosk.boardgamebase.model.Player
-import OGosk.boardgamebase.model.PlayerIdRespons
+import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.rest.models.GameIdRespons
+import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.rest.models.HistoryIdResponse
+import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.data.rest.models.PlayerIdRespons
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -31,19 +32,19 @@ interface ApiBoardGame {
     )
 
     @POST("player.json")
-    suspend fun addPlayer(@Body player: Player): PlayerIdRespons
+    suspend fun addPlayer(@Body player: Player): Response<Void>
 
     @GET("player.json")
     suspend fun getAllPlayer(): Map<String, Player>
 
     @DELETE("player/{id}.json")
-    suspend fun deletePlayer(@Path("id") playerId: String)
+    suspend fun deletePlayer(@Path("id") playerId: String): Response<Void>
 
     @PUT("player/{id}.json")
     suspend fun editPlayer(
         @Path("id") playerId: String,
         @Body player: Player
-    )
+    ): Response<Void>
 
     @POST("historyGame.json")
     suspend fun addHistory(@Body historyGame: HistoryGame): HistoryIdResponse

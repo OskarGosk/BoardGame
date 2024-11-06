@@ -1,7 +1,5 @@
 package com.goskar.boardgame.ui.player
 
-import OGosk.boardgamebase.view.AddEditPlayer
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,13 +13,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,7 +39,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPLayerState
+import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import org.koin.androidx.compose.koinViewModel
 
 class PlayerListScreen : Screen {
@@ -45,17 +50,26 @@ class PlayerListScreen : Screen {
     override fun Content() {
         val viewModel: PlayerListViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+        LaunchedEffect(Unit) {
+            viewModel.getAllPlayer()
+        }
         PlayerListContent(
-            state = state
+            state = state,
+            update = viewModel::update,
+            deletePlayer = viewModel::validateDeletePlayer,
+            refreshPlayer = viewModel::getAllPlayer
         )
     }
 }
 
 @Composable
 fun PlayerListContent(
-    state: PlayerListState
+    state: PlayerListState,
+    update: (PlayerListState) -> Unit = {},
+    deletePlayer: (String) -> Unit = {},
+    refreshPlayer: () -> Unit = {}
 ) {
-    val context = LocalContext.current
+    val navigator = LocalNavigator.current
     Box(
         modifier = Modifier
             .padding(10.dp)
@@ -80,7 +94,7 @@ fun PlayerListContent(
                         .align(Alignment.CenterHorizontally)
                 )
             } else {
-                PlayerViewList(state = state)
+                PlayerViewList(state = state, update = update, deletePlayer = deletePlayer, refreshPlayer = refreshPlayer)
             }
         }
         Box(
@@ -89,6 +103,7 @@ fun PlayerListContent(
         ) {
             FloatingActionButton(
                 onClick = {
+                    navigator?.push(AddEditPlayerScreen(null))
             }
             ) {
                 Icon(
@@ -102,10 +117,12 @@ fun PlayerListContent(
 
 @Composable
 fun PlayerViewList(
-    state: PlayerListState
+    state: PlayerListState,
+    update: (PlayerListState) -> Unit = {},
+    deletePlayer: (String) -> Unit = {},
+    refreshPlayer: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-    var isDialogVisible by remember { mutableStateOf(false) }
+    val navigator = LocalNavigator.current
     LazyColumn(
         modifier = Modifier,
         contentPadding = PaddingValues(10.dp),
@@ -115,7 +132,9 @@ fun PlayerViewList(
         items(items = state.playerList) { player ->
             Card (
                 modifier = Modifier.clickable {
-                    isDialogVisible = true
+                    update (state.copy(
+                        visibleDialog = true
+                    ))
                 }
             ){
                 Row {
@@ -137,41 +156,46 @@ fun PlayerViewList(
                     }
                 }
             }
-//            if (isDialogVisible) {
-//                AlertDialog(
-//                    onDismissRequest = { isDialogVisible = false },
-//                    title = {
-//                        Text("Select")
-//                    },
-//                    text = {
-//                        Text("What want you do with this player? :")
-//                    },
-//                    confirmButton = {
-//                        // Przycisk Edytuj
-//                        IconButton(onClick = {
-//                            val intent = Intent(context, AddEditPlayer::class.java)
-//                            intent.putExtra("edit_player",player)
-//                            startActivity(intent)
-//                            isDialogVisible = false
-//                        }) {
-//                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
-//                        }
-//                    },
-//                    dismissButton = {
-//                        // Przycisk Usuń
-//                        IconButton(onClick = {
-//                            playerViewModel.deletePlayer(player)
-//                            isDialogVisible = false
-//
-//                        }) {
-//                            Icon(
-//                                imageVector = Icons.Default.Delete,
-//                                contentDescription = "Delete"
-//                            )
-//                        }
-//                    }
-//                )
-//            }
+            if (state.visibleDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        update (state.copy(
+                            visibleDialog = false
+                        ))
+                    },
+                    title = {
+                        Text("Select")
+                    },
+                    text = {
+                        Text("What want you do with this player? :")
+                    },
+                    confirmButton = {
+                        // Przycisk Edytuj
+                        IconButton(onClick = {
+                            navigator?.push(AddEditPlayerScreen(player))
+                            update (state.copy(
+                                visibleDialog = false
+                            ))
+                        }) {
+                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
+                        }
+                    },
+                    dismissButton = {
+                        IconButton(onClick = {
+                            deletePlayer(player.id)
+                            refreshPlayer()
+                            update (state.copy(
+                                visibleDialog = false
+                            ))
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete"
+                            )
+                        }
+                    }
+                )
+            }
         }
 
     }

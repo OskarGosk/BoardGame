@@ -1,10 +1,12 @@
 package OGosk.boardgamebase.database
 
-import OGosk.boardgamebase.model.Game
-import OGosk.boardgamebase.model.HistoryGame
-import OGosk.boardgamebase.model.Player
+import com.goskar.boardgame.data.di.Db
+import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.rest.models.Player
 
-class PlayerDatabaseRepository (private val db: AppDatabase){
+
+class PlayerDatabaseRepository (private val db: Db){
 
     suspend fun insertPlayer(player: Player) {
         db.playerDao().insert(player)
@@ -27,9 +29,9 @@ class PlayerDatabaseRepository (private val db: AppDatabase){
     }
 }
 
-class GameDatabaseRepository (private val db: AppDatabase) {
+class GameDatabaseRepository (private val db: Db) {
 
-    suspend fun insertGame(game:Game) {
+    suspend fun insertGame(game: Game) {
         db.gameDao().insert(game)
     }
 
@@ -50,7 +52,7 @@ class GameDatabaseRepository (private val db: AppDatabase) {
     }
 }
 
-class HistoryGameDatabaseRepository (private val db: AppDatabase) {
+class HistoryGameDatabaseRepository (private val db: Db) {
 
     suspend fun insertHistoryGame(historyGame: HistoryGame) {
         db.historyGameDao().insert(historyGame)
