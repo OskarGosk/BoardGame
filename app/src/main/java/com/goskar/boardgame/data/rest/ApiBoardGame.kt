@@ -23,13 +23,13 @@ interface ApiBoardGame {
     suspend fun getAllGame(): Map<String, Game>
 
     @DELETE("game/{id}.json")
-    suspend fun deleteGame(@Path("id") gameId: String)
+    suspend fun deleteGame(@Path("id") gameId: String): Response<Void>
 
     @PUT("game/{id}.json")
     suspend fun editGame(
         @Path("id") gameId: String,
         @Body game: Game
-    )
+    ): Response<Void>
 
     @POST("player.json")
     suspend fun addPlayer(@Body player: Player): Response<Void>

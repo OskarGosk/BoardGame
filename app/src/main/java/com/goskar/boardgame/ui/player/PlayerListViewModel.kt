@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.PlayerNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.rest.models.Player
-import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPLayerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,7 +21,6 @@ data class PlayerListState(
 @KoinViewModel
 class PlayerListViewModel(
     private val playerNetworkRepository: PlayerNetworkRepository,
-
     ) : ViewModel() {
 
     companion object {
@@ -66,21 +64,6 @@ class PlayerListViewModel(
                     }
                 }
             }
-
         }
     }
-
-
-    //    fun deletePlayer(player: Player) {
-//        viewModelScope.launch {
-//            try {
-//                playerNetworkRepository.deletePlayer(player.id)
-//                playerDatabaseRepository.deletePlayer(player)
-//                removePlayerFromList(player)
-//            } catch (e: Exception) {
-//                Log.d ("Game", "Nie usuneło gracza --- $e")
-//            }
-//        }
-//    }
-
 }
