@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,28 +38,42 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class GameListScreen: Screen {
+class GameListScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel: GameListViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
 
+        LaunchedEffect(Unit) {
+            viewModel.getAllGame()
+        }
+
         BoardGameTheme {
-            GameListContent(state)
+            GameListContent(
+                state = state,
+                deleteGame = viewModel::validateDeleteGame,
+                refresh = viewModel::getAllGame
+            )
         }
     }
 }
 
 @Composable
 fun GameListContent(
-    state: GameListState
+    state: GameListState,
+    deleteGame: (String) -> Unit = {},
+    refresh: () -> Unit = {}
 ) {
-    Column (
+    val navigator = LocalNavigator.current
+
+    Column(
         modifier = Modifier.fillMaxSize()
     ) {
         Text(
@@ -68,7 +83,7 @@ fun GameListContent(
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold
         )
-        if (state.gameList.isEmpty()){
+        if (state.gameList.isEmpty()) {
             Text(
                 text = "Empty game list",
                 fontSize = 20.sp,
@@ -77,15 +92,17 @@ fun GameListContent(
                     .align(Alignment.CenterHorizontally)
             )
         } else {
-            GameViewList(state)
+            GameViewList(state, deleteGame, refresh)
         }
     }
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(end = 16.dp, bottom = 16.dp),
         contentAlignment = Alignment.BottomEnd
     ) {
         FloatingActionButton(onClick = {
+            navigator?.push(AddEditGameScreen(null))
         }) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -97,8 +114,11 @@ fun GameListContent(
 
 @Composable
 fun GameViewList(
-    state: GameListState
+    state: GameListState,
+    deleteGame: (String) -> Unit = {},
+    refresh: () -> Unit
 ) {
+    val navigator = LocalNavigator.current
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -107,14 +127,14 @@ fun GameViewList(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier.padding(bottom = 60.dp)
     ) {
-        items(items = state.gameList) { game->
-            Card (
+        items(items = state.gameList) { game ->
+            Card(
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 10.dp),
                 modifier = Modifier
                     .height(200.dp)
                     .padding(5.dp)
             ) {
-                Column (
+                Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
@@ -127,43 +147,55 @@ fun GameViewList(
                         maxLines = 2,
                     )
                     if (game.expansion) Text(text = "expansion") else Text(text = "base")
-                    Row (
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
-                    ){
+                    ) {
                         Text(text = "Min player")
                         Text(text = game.minPlayer)
                     }
-                    Row (
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
-                    ){
+                    ) {
                         Text(text = "Max player")
                         Text(text = game.maxPlayer)
                     }
-                    Row (
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
-                    ){
+                    ) {
                         Text(text = "How many played")
                         Text(text = "${game.games}")
                     }
                     Spacer(modifier = Modifier.height(4.dp))
-                    Row (
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     )
                     {
                         IconButton(onClick = {
+                            navigator?.push(AddEditGameScreen(null))
                         }) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add to play")
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add to play"
+                            )
                         }
                         IconButton(onClick = {
+                            navigator?.push(AddEditGameScreen(game))
+
                         }) {
                             Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Game")
                         }
-                        IconButton(onClick = {  }) {
-                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete Game")
+                        IconButton(onClick = {
+                            deleteGame(game.id)
+                            refresh()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Game"
+                            )
                         }
                     }
 
@@ -177,7 +209,7 @@ fun GameViewList(
 @Preview
 @Composable
 fun GameListContentPreview() {
-    val game  = Game(
+    val game = Game(
         name = "Marvel",
         expansion = false,
         baseGame = "",
@@ -187,10 +219,10 @@ fun GameListContentPreview() {
         id = "dasfgfsh"
     )
     val gameList = listOf(game, game, game)
-    Surface (
+    Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        GameListContent( state =  GameListState(gameList = gameList))
+        GameListContent(state = GameListState(gameList = gameList))
     }
 }

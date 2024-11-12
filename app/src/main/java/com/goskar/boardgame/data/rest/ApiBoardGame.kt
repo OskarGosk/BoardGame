@@ -17,7 +17,7 @@ import retrofit2.http.Path
 interface ApiBoardGame {
 
     @POST("game.json")
-    suspend fun addGame(@Body game: Game): GameIdRespons
+    suspend fun addGame(@Body game: Game): Response<Void>
 
     @GET("game.json")
     suspend fun getAllGame(): Map<String, Game>

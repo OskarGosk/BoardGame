@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.GameNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.rest.models.Game
-import com.goskar.boardgame.ui.player.PlayerListState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,10 +12,9 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 data class GameListState(
-    val gameList: List<Game> = emptyList(),
+    val gameList: List<Game> = emptyList<Game>(),
     val successDeleteGame: Boolean = false,
     val errorVisible: Boolean = false,
-
     )
 
 @KoinViewModel
@@ -35,7 +33,7 @@ class GameListViewModel(
         getAllGame()
     }
 
-    private fun getAllGame() {
+    fun getAllGame() {
         viewModelScope.launch {
             val response = gameNetworkRepository.getAllGame().toMutableList()
             _state.update {
@@ -46,7 +44,7 @@ class GameListViewModel(
         }
     }
 
-    private fun validateDeleteGame(gameID: String){
+    fun validateDeleteGame(gameID: String){
         viewModelScope.launch {
             val response = gameNetworkRepository.deleteGame(gameId = gameID)
             when (response){
