@@ -55,6 +55,7 @@ class PlayerListViewModel(
                             successDeletePlayer = true
                         )
                     }
+                    getAllPlayer()
                 }
                 else -> {
                     _state.update {

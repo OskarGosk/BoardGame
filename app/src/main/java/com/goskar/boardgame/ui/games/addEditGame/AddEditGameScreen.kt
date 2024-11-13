@@ -194,6 +194,7 @@ fun AddEditGameContent(
                     if (state.successAddEditGame) navigator?.pop()
                 } else {
                     editGame()
+                    if (state.successAddEditGame) navigator?.pop()
                 }
             },
             modifier = Modifier.fillMaxWidth()

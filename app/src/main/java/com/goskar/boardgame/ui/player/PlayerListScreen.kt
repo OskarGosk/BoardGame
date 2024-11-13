@@ -183,7 +183,6 @@ fun PlayerViewList(
                     dismissButton = {
                         IconButton(onClick = {
                             deletePlayer(player.id)
-                            refreshPlayer()
                             update (state.copy(
                                 visibleDialog = false
                             ))

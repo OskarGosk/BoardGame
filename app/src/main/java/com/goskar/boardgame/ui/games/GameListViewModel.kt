@@ -54,6 +54,7 @@ class GameListViewModel(
                             successDeleteGame = true
                         )
                     }
+                    getAllGame()
                 }
                 else -> {
                     _state.update {
