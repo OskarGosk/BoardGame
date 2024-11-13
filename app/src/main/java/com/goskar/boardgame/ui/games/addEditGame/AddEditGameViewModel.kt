@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.goskar.boardgame.data.repository.GameNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.rest.models.Game
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,7 +23,8 @@ data class AddEditGameState(
     val id: String? = null ,
 
     val successAddEditGame: Boolean = false,
-    val errorVisible: Boolean = false
+    val errorVisible: Boolean = false,
+    val inProgress: Boolean  = false
 )
 
 class AddEditGameViewModel(
@@ -37,7 +39,13 @@ class AddEditGameViewModel(
     }
 
     fun validateAddGame() {
+        _state.update {
+            it.copy(
+                inProgress = true
+            )
+        }
         viewModelScope.launch {
+            delay(1000)
             val game = Game(
                 name = state.value.name?:"",
                 expansion = state.value.expansion,
@@ -53,7 +61,8 @@ class AddEditGameViewModel(
                 is RequestResult.Success -> {
                     _state.update {
                         it.copy(
-                            successAddEditGame = true
+                            successAddEditGame = true,
+                            inProgress = false
                         )
                     }
                 }
@@ -61,7 +70,8 @@ class AddEditGameViewModel(
                     _state.update {
                         it.copy(
                             successAddEditGame = false,
-                            errorVisible = true
+                            errorVisible = true,
+                            inProgress = false
                         )
                     }
                 }

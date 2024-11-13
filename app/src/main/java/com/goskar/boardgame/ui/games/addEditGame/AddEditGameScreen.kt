@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
@@ -46,6 +47,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
 
         val viewModel: AddEditGameViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+        val navigator = LocalNavigator.current
 
         LaunchedEffect(editGame) {
             if (editGame != null) {
@@ -60,6 +62,11 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                         id = editGame.id
                     )
                 )
+            }
+        }
+        LaunchedEffect(state.successAddEditGame) {
+            if (state.successAddEditGame) {
+                navigator?.pop()
             }
         }
 
@@ -80,9 +87,6 @@ fun AddEditGameContent(
     addGame: () -> Unit = {},
     editGame: () -> Unit = {}
 ) {
-
-    val navigator = LocalNavigator.current
-
     Column(
         modifier = Modifier.padding(10.dp)
     ) {
@@ -116,13 +120,15 @@ fun AddEditGameContent(
         )
 
         OutlinedTextField(
-            value = state.minPlayer ?: "0",
+            value = state.minPlayer,
             onValueChange = {
-                update(
-                    state.copy(
-                        minPlayer = it
+                if (it.isDigitsOnly()) {
+                    update(
+                        state.copy(
+                            minPlayer = it
+                        )
                     )
-                )
+                }
             },
             modifier = Modifier
                 .fillMaxWidth(),
@@ -134,13 +140,15 @@ fun AddEditGameContent(
         )
 
         OutlinedTextField(
-            value = state.maxPlayer ?: "0",
+            value = state.maxPlayer,
             onValueChange = {
-                update(
-                    state.copy(
-                        maxPlayer = it
+                if (it.isDigitsOnly()) {
+                    update(
+                        state.copy(
+                            maxPlayer = it
+                        )
                     )
-                )
+                }
             },
             modifier = Modifier
                 .fillMaxWidth(),
@@ -189,15 +197,10 @@ fun AddEditGameContent(
         Spacer(modifier = Modifier.height(40.dp))
         Button(
             onClick = {
-                if (state.id == null) {
-                    addGame()
-                    if (state.successAddEditGame) navigator?.pop()
-                } else {
-                    editGame()
-                    if (state.successAddEditGame) navigator?.pop()
-                }
+                if (state.id == null) addGame() else editGame()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !state.inProgress
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -233,11 +236,21 @@ fun AddEditGameContent(
 
 @Preview
 @Composable
-fun addEditContentPreview() {
+fun AddEditContentPreview() {
+    val state = AddEditGameState(
+        name = "Marvel",
+        expansion = true,
+        baseGame = "Test",
+        minPlayer = "1",
+        maxPlayer = "4",
+        games = 3,
+
+        )
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-//        AddEditGameContent()
+        AddEditGameContent(state)
     }
 }
