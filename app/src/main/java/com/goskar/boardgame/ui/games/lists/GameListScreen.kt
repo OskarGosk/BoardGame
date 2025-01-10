@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games
+package com.goskar.boardgame.ui.games.lists
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +42,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
 import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
+import com.goskar.boardgame.ui.games.play.GamePlayActivityScreen
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -175,7 +176,7 @@ fun GameViewList(
                     )
                     {
                         IconButton(onClick = {
-                            navigator?.push(AddEditGameScreen(null))
+                            navigator?.push(GamePlayActivityScreen())
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Add,

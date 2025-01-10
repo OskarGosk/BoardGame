@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.games.GameListScreen
+import com.goskar.boardgame.ui.games.lists.GameListScreen
 import com.goskar.boardgame.ui.player.PlayerListScreen
 
 class HomeScreen :Screen {

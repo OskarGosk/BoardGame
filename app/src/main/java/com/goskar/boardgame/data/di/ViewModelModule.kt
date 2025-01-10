@@ -1,6 +1,6 @@
 package com.goskar.boardgame.data.di
 
-import com.goskar.boardgame.ui.games.GameListViewModel
+import com.goskar.boardgame.ui.games.lists.GameListViewModel
 import com.goskar.boardgame.ui.games.addEditGame.AddEditGameViewModel
 import com.goskar.boardgame.ui.player.PlayerListViewModel
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerViewModel
