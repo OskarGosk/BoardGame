@@ -39,7 +39,7 @@ fun HomeScreenContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 15.dp)
+                .padding( 10.dp)
                 .padding(paddingValues)
         ) {
             FloatingActionButton(
