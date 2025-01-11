@@ -17,6 +17,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.games.lists.GameListScreen
 import com.goskar.boardgame.ui.player.PlayerListScreen
+import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
 
 class HomeScreen :Screen {
     @Composable
@@ -31,29 +32,38 @@ fun HomeScreenContent(
 ) {
 
     val navigator = LocalNavigator.current
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp)
-    ) {
-        FloatingActionButton(onClick = {
-            navigator?.push(PlayerListScreen())
-        },
-            modifier = Modifier
-                .fillMaxWidth()) {
-            Text(stringResource(id = R.string.player_list))
-        }
-        Spacer(modifier = Modifier.height(15.dp))
-        FloatingActionButton(onClick = {
-            navigator?.push(GameListScreen())
-        },
-            modifier = Modifier
-                .fillMaxWidth()) {
-            Text(stringResource(id = R.string.board_list))
-        }
 
+    BoardGameScaffold(
+        titlePage = stringResource( id = R.string.app_name)
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp)
+                .padding(paddingValues)
+        ) {
+            FloatingActionButton(
+                onClick = {
+                    navigator?.push(PlayerListScreen())
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.player_list))
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            FloatingActionButton(
+                onClick = {
+                    navigator?.push(GameListScreen())
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.board_list))
+            }
+
+        }
     }
-
 }
 
 @Preview(showBackground = true)

@@ -45,6 +45,7 @@ import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.games.play.GamePlayActivityScreen
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
+import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
 
 class GameListScreen : Screen {
     @Composable
@@ -74,41 +75,40 @@ fun GameListContent(
 ) {
     val navigator = LocalNavigator.current
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(
-            stringResource(id = R.string.board_list),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold
-        )
-        if (state.gameList.isEmpty()) {
-            Text(
-                text = "Empty game list",
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-            )
-        } else {
-            GameViewList(state, deleteGame, refresh)
+    BoardGameScaffold(
+        titlePage = stringResource(R.string.board_list)
+    ) { paddingValues ->
+
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            if (state.gameList.isEmpty()) {
+                Text(
+                    text = "Empty game list",
+                    fontSize = 20.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                )
+            } else {
+                GameViewList(state, deleteGame, refresh)
+            }
         }
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(end = 16.dp, bottom = 16.dp),
-        contentAlignment = Alignment.BottomEnd
-    ) {
-        FloatingActionButton(onClick = {
-            navigator?.push(AddEditGameScreen(null))
-        }) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = stringResource(id = R.string.add_board)
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 16.dp, bottom = 16.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            FloatingActionButton(onClick = {
+                navigator?.push(AddEditGameScreen(null))
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.add_board)
+                )
+            }
         }
     }
 }
@@ -203,7 +203,6 @@ fun GameViewList(
                 }
             }
         }
-//                        */
     }
 }
 

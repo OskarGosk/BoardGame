@@ -27,23 +27,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPLayerState
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import org.koin.androidx.compose.koinViewModel
+import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
 
 class PlayerListScreen : Screen {
     @Composable
@@ -70,46 +65,55 @@ fun PlayerListContent(
     refreshPlayer: () -> Unit = {}
 ) {
     val navigator = LocalNavigator.current
-    Box(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxSize()
-    ) {
+
+    BoardGameScaffold(
+        titlePage = stringResource(id = R.string.player_list)
+        ) { paddingValues ->
+
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Text(
-                stringResource(id = R.string.player_list),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold
-            )
-            if (state.playerList.isEmpty()){
-                Text(
-                    text = "Empty player list",
-                    fontSize = 20.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                )
-            } else {
-                PlayerViewList(state = state, update = update, deletePlayer = deletePlayer, refreshPlayer = refreshPlayer)
-            }
-        }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-        ) {
-            FloatingActionButton(
-                onClick = {
-                    navigator?.push(AddEditPlayerScreen(null))
-            }
+            Box(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxSize()
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_player)
-                )
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    if (state.playerList.isEmpty()) {
+                        Text(
+                            text = "Empty player list",
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    } else {
+                        PlayerViewList(
+                            state = state,
+                            update = update,
+                            deletePlayer = deletePlayer,
+                            refreshPlayer = refreshPlayer
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            navigator?.push(AddEditPlayerScreen(null))
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = R.string.add_player)
+                        )
+                    }
+                }
             }
         }
     }

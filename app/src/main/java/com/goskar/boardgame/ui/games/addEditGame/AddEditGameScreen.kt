@@ -27,9 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +37,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
 import org.koin.androidx.compose.koinViewModel
+import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
 
 class AddEditGameScreen(val editGame: Game?) : Screen {
 
@@ -87,149 +86,144 @@ fun AddEditGameContent(
     addGame: () -> Unit = {},
     editGame: () -> Unit = {}
 ) {
-    Column(
-        modifier = Modifier.padding(10.dp)
-    ) {
-        Text(
-            stringResource(id = R.string.new_game),
-            modifier = Modifier
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold
-        )
 
-        Spacer(modifier = Modifier.height(25.dp))
-
-
-        OutlinedTextField(
-            value = state.name ?: "",
-            onValueChange = {
-                update(
-                    state.copy(
-                        name = it
-                    )
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(stringResource(id = R.string.game_name))
-            },
-            singleLine = true
-        )
-
-        OutlinedTextField(
-            value = state.minPlayer,
-            onValueChange = {
-                if (it.isDigitsOnly()) {
-                    update(
-                        state.copy(
-                            minPlayer = it
-                        )
-                    )
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(stringResource(id = R.string.min_player))
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        OutlinedTextField(
-            value = state.maxPlayer,
-            onValueChange = {
-                if (it.isDigitsOnly()) {
-                    update(
-                        state.copy(
-                            maxPlayer = it
-                        )
-                    )
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(stringResource(id = R.string.max_player))
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+    BoardGameScaffold(
+        titlePage = stringResource(id = if(state.name == null)R.string.new_game else R.string.edit_game)
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp)
+                .padding(paddingValues)
         ) {
-            Checkbox(
-                checked = state.expansion,
-                onCheckedChange = {
-                    update(
-                        state.copy(
-                            expansion = !state.expansion
-                        )
-                    )
-                },
-            )
-            Text(stringResource(id = R.string.expansion))
-        }
-        if (state.expansion) {
             OutlinedTextField(
-                value = state.baseGame ?: "",
+                value = state.name ?: "",
                 onValueChange = {
                     update(
                         state.copy(
-                            baseGame = it
+                            name = it
                         )
                     )
                 },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
                 label = {
-                    Text(stringResource(id = R.string.base_game))
+                    Text(stringResource(id = R.string.game_name))
                 },
                 singleLine = true
             )
-        }
 
-        Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            onClick = {
-                if (state.id == null) addGame() else editGame()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !state.inProgress
-        ) {
+            OutlinedTextField(
+                value = state.minPlayer,
+                onValueChange = {
+                    if (it.isDigitsOnly()) {
+                        update(
+                            state.copy(
+                                minPlayer = it
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = {
+                    Text(stringResource(id = R.string.min_player))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            OutlinedTextField(
+                value = state.maxPlayer,
+                onValueChange = {
+                    if (it.isDigitsOnly()) {
+                        update(
+                            state.copy(
+                                maxPlayer = it
+                            )
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = {
+                    Text(stringResource(id = R.string.max_player))
+                },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
             Row(
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (state.id == null) {
-                    Text(
-                        stringResource(id = R.string.add_board),
-                        fontSize = 20.sp
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.add_board),
-                        modifier = Modifier.size(25.dp)
-                    )
-                } else {
-                    Text(
-                        stringResource(id = R.string.edit_game),
-                        fontSize = 20.sp
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(id = R.string.edit_game),
-                        modifier = Modifier.size(25.dp)
-                    )
+                Checkbox(
+                    checked = state.expansion,
+                    onCheckedChange = {
+                        update(
+                            state.copy(
+                                expansion = !state.expansion
+                            )
+                        )
+                    },
+                )
+                Text(stringResource(id = R.string.expansion))
+            }
+            if (state.expansion) {
+                OutlinedTextField(
+                    value = state.baseGame ?: "",
+                    onValueChange = {
+                        update(
+                            state.copy(
+                                baseGame = it
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = {
+                        Text(stringResource(id = R.string.base_game))
+                    },
+                    singleLine = true
+                )
+            }
 
+            Spacer(modifier = Modifier.height(40.dp))
+            Button(
+                onClick = {
+                    if (state.id == null) addGame() else editGame()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.inProgress
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (state.id == null) {
+                        Text(
+                            stringResource(id = R.string.add_board),
+                            fontSize = 20.sp
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = R.string.add_board),
+                            modifier = Modifier.size(25.dp)
+                        )
+                    } else {
+                        Text(
+                            stringResource(id = R.string.edit_game_save),
+                            fontSize = 20.sp
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = stringResource(id = R.string.edit_game),
+                            modifier = Modifier.size(25.dp)
+                        )
+
+                    }
                 }
             }
-        }
 
+        }
     }
 
 }
