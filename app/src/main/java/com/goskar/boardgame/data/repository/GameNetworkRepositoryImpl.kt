@@ -54,7 +54,7 @@ class GameNetworkRepositoryImpl(
                     else -> throw IllegalStateException()
                 }
             }.onFailure {
-                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+                Timber.tag("Game").e("Can't delete player\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = {it}, onFailure = {RequestResult.Error(it)})
     }

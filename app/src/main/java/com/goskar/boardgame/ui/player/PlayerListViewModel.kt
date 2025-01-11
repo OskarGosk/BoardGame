@@ -47,7 +47,7 @@ class PlayerListViewModel(
 
     fun validateDeletePlayer(playerID: String) {
         viewModelScope.launch {
-            val response = playerNetworkRepository.deletePlayer(playerID)
+            val response = playerNetworkRepository.deletePlayer(playerId = playerID)
             when (response){
                 is RequestResult.Success -> {
                     _state.update {

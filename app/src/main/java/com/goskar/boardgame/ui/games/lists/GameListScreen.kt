@@ -152,14 +152,14 @@ fun GameViewList(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text(text = "Min player")
+                        Text(stringResource(R.string.min_player))
                         Text(text = game.minPlayer)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Text(text = "Max player")
+                        Text(stringResource(R.string.max_player))
                         Text(text = game.maxPlayer)
                     }
                     Row(
