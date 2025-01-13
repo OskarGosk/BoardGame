@@ -85,7 +85,7 @@ fun PlayerListContent(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (state.playerList.isEmpty()) {
+                    if (state.playerList.isNullOrEmpty()) {
                         Text(
                             text = "Empty player list",
                             fontSize = 20.sp,
@@ -95,8 +95,7 @@ fun PlayerListContent(
                         )
                     } else {
                         PlayerViewList(
-                            state = state,
-                            update = update,
+                            playerList = state.playerList,
                             deletePlayer = deletePlayer,
                             refreshPlayer = refreshPlayer
                         )
@@ -124,8 +123,7 @@ fun PlayerListContent(
 
 @Composable
 fun PlayerViewList(
-    state: PlayerListState,
-    update: (PlayerListState) -> Unit = {},
+    playerList: List<Player>,
     deletePlayer: (String) -> Unit = {},
     refreshPlayer: () -> Unit = {}
 ) {
@@ -136,7 +134,7 @@ fun PlayerViewList(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     )
     {
-        items(items = state.playerList) { player ->
+        items(items = playerList) { player ->
             var isExpanded by remember { mutableStateOf(false) }
             Card (
                 modifier = Modifier.clickable {

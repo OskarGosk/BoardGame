@@ -35,7 +35,7 @@ interface ApiBoardGame {
     suspend fun addPlayer(@Body player: Player): Response<Void>
 
     @GET("player.json")
-    suspend fun getAllPlayer(): Map<String, Player>
+    suspend fun getAllPlayer(): Map<String, Player>?
 
     @DELETE("player/{id}.json")
     suspend fun deletePlayer(@Path("id") playerId: String): Response<Void>

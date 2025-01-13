@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 data class PlayerListState(
-    val playerList: List<Player> = emptyList(),
+    val playerList: List<Player>? = emptyList(),
     val successDeletePlayer: Boolean = false,
     val errorVisible: Boolean = false,
     val visibleDialog: Boolean = false
@@ -32,7 +32,7 @@ class PlayerListViewModel(
 
     fun getAllPlayer() {
         viewModelScope.launch {
-            val response = playerNetworkRepository.getAllPlayer().toMutableList()
+            val response = playerNetworkRepository.getAllPlayer()?.toMutableList()
             _state.update {
                 it.copy(
                     playerList = response

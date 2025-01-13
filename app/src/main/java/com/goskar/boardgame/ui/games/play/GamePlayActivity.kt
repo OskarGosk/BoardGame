@@ -102,7 +102,7 @@ class GamePlayActivityScreen(
 @Composable
 fun GamePlayContent(
     state: GamePLayState,
-    playerList: List<Player>,
+    playerList: List<Player>?,
     selectedPlayer: (Player) -> Unit = {},
 ) {
 
@@ -218,22 +218,24 @@ fun GamePlayContent(
                     .fillMaxWidth()
                     .height(150.dp)
             ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(10.dp)
-                ) {
-                    items(items = playerList) { player ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            var isChecked by remember { mutableStateOf(player.selected) }
-                            Checkbox(checked = isChecked, onCheckedChange = {
-                                isChecked = it
-                                selectedPlayer(player)
-                            })
-                            Text(text = player.name)
+                if (!playerList.isNullOrEmpty()) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(10.dp)
+                    ) {
+                        items(items = playerList) { player ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                var isChecked by remember { mutableStateOf(player.selected) }
+                                Checkbox(checked = isChecked, onCheckedChange = {
+                                    isChecked = it
+                                    selectedPlayer(player)
+                                })
+                                Text(text = player.name)
+                            }
                         }
                     }
                 }
@@ -270,7 +272,7 @@ fun GamePlayContent(
                     }
                 }
             }
-            val selectedPlayers = playerList.filter { it.selected == true }
+            val selectedPlayers = playerList?.filter { it.selected == true }
             var expanded by remember { mutableStateOf(false) }
             var winner by remember { mutableStateOf("winner") }
             Row(
@@ -306,7 +308,7 @@ fun GamePlayContent(
                     ExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }) {
-                        selectedPlayers.forEach { player ->
+                        selectedPlayers?.forEach { player ->
                             DropdownMenuItem(
                                 text = { Text(text = player.name) },
                                 onClick = {
