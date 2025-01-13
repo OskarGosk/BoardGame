@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.player
 
+import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,6 +40,9 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
+import com.goskar.boardgame.ui.games.play.GamePlayActivityScreen
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import org.koin.androidx.compose.koinViewModel
 import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
@@ -134,11 +141,10 @@ fun PlayerViewList(
     )
     {
         items(items = state.playerList) { player ->
+            var isExpanded by remember { mutableStateOf(false) }
             Card (
                 modifier = Modifier.clickable {
-                    update (state.copy(
-                        visibleDialog = true
-                    ))
+                    isExpanded = !isExpanded
                 }
             ){
                 Row {
@@ -158,52 +164,39 @@ fun PlayerViewList(
                         val result = player.winRatio.toFloat() / player.games
                         if (player.winRatio == 0) Text(text = "0") else Text(text = "%.2f".format(result))
                     }
+
                 }
-            }
-            if (state.visibleDialog) {
-                AlertDialog(
-                    onDismissRequest = {
-                        update (state.copy(
-                            visibleDialog = false
-                        ))
-                    },
-                    title = {
-                        Text("Select")
-                    },
-                    text = {
-                        Text("What want you do with this player? :")
-                    },
-                    confirmButton = {
-                        // Przycisk Edytuj
+                if(isExpanded) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    )
+                    {
                         IconButton(onClick = {
                             navigator?.push(AddEditPlayerScreen(player))
-                            update (state.copy(
-                                visibleDialog = false
-                            ))
+                            isExpanded = false
                         }) {
-                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit")
+                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Game")
                         }
-                    },
-                    dismissButton = {
                         IconButton(onClick = {
                             deletePlayer(player.id)
-                            update (state.copy(
-                                visibleDialog = false
-                            ))
+                            refreshPlayer()
+                            isExpanded = false
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete"
+                                contentDescription = "Delete Game"
                             )
                         }
                     }
-                )
+                }
             }
+
         }
 
     }
 }
-
 @Preview
 @Composable
 fun PlayerListContentPreview() {
@@ -211,8 +204,12 @@ fun PlayerListContentPreview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
+        val player =
+            Player(name = "Oskar", winRatio = 2, games = 6, description = "ds", selected = true)
+        val player2 =
+            Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
         PlayerListContent(
-            state = PlayerListState()
+            state = PlayerListState(playerList = listOf(player, player2))
         )
     }
 }
