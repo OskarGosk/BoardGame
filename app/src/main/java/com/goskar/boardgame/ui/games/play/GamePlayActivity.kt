@@ -1,7 +1,6 @@
 package com.goskar.boardgame.ui.games.play
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,12 +29,13 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,20 +53,46 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.ui.player.PlayerListViewModel
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import java.time.LocalDate
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import org.koin.androidx.compose.koinViewModel
 import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
 
-class GamePlayActivityScreen : Screen {
+class GamePlayActivityScreen(
+    val game: Game
+) : Screen {
+
     @Composable
     override fun Content() {
+        val viewModel: GamePlayViewModel = koinViewModel()
+        val state by viewModel.state.collectAsState()
+        val playerViewModel: PlayerListViewModel = koinViewModel()
+        val playerState by playerViewModel.state.collectAsState()
+
+        LaunchedEffect(Unit) {
+            viewModel.update(
+                state.copy(
+                    game = game
+                )
+            )
+            playerViewModel.getAllPlayer()
+        }
+
         BoardGameTheme {
-            GamePlayContent()
+            GamePlayContent(
+                state = state,
+                playerList = playerState.playerList,
+                selectedPlayer = playerViewModel::selectedPlayer
+            )
         }
     }
 }
@@ -74,7 +100,11 @@ class GamePlayActivityScreen : Screen {
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GamePlayContent() {
+fun GamePlayContent(
+    state: GamePLayState,
+    playerList: List<Player>,
+    selectedPlayer: (Player) -> Unit = {},
+) {
 
 //    val gameViewModel : GameListViewModel = koinViewModel()
 //    val playerViewModel : PlayerListViewModel = koinViewModel()
@@ -88,21 +118,22 @@ fun GamePlayContent() {
 
 //    val playGame : Game = intentent.getSerializableExtra("play_game") as Game
 
-            val calendarState = rememberSheetState()
+    val calendarState = rememberSheetState()
     var playGameDate by remember { mutableStateOf(LocalDate.now()) }
-        val keyboardController = LocalSoftwareKeyboardController.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val navigator = LocalNavigator.current
 
-        CalendarDialog(
-            state = calendarState,
-            config = CalendarConfig(
-                monthSelection = true,
-                yearSelection = true,
-            ),
-            selection = CalendarSelection.Date { date ->
-                playGameDate = date
-            })
+    CalendarDialog(
+        state = calendarState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true,
+        ),
+        selection = CalendarSelection.Date { date ->
+            playGameDate = date
+        })
     /*
     Na górze wybrana gra z możliwością edycji?
     Dodawanie playerów którzy grali
@@ -126,51 +157,58 @@ fun GamePlayContent() {
                 .verticalScroll(scrollState),
 
             ) {
-            Row(
-//                modifier = Modifier.weight(0.5f)
-            ) {
-                val playGame = true
+            Row() {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_background),
                     contentDescription = "Marvel",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                         .padding(10.dp)
                 )
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
-                            text = "playGame.name",
+                            text = state.game?.name ?: "",
                             fontWeight = FontWeight.Bold,
                             fontSize = 25.sp,
                             textAlign = TextAlign.Center,
                             maxLines = 2,
                         )
-                        if (playGame) Text(text = "expansion") else Text(text = "base")
+                        if (state.game?.expansion
+                                ?: true
+                        ) Text(text = "expansion") else Text(text = "base")
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                            horizontalArrangement = Arrangement.Start
                         ) {
-                            Text(text = "Min player")
-                            Text(text = "playGame.minPlayer")
+                            Text(text = "Min player:")
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(text = state.game?.minPlayer ?: "")
+                            Spacer(modifier = Modifier.width(30.dp))
                         }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                            horizontalArrangement = Arrangement.Start
                         ) {
-                            Text(text = "Max player")
-                            Text(text = "playGame.maxPlayer")
+                            Text(text = "Max player:")
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(text = state.game?.maxPlayer ?: "")
+                            Spacer(modifier = Modifier.width(30.dp))
                         }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
+                            horizontalArrangement = Arrangement.Start
                         ) {
-                            Text(text = "How many played")
-                            Text(text = "playGame.games")
+                            Text(text = "How many played:")
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(text = state.game?.games.toString())
+                            Spacer(modifier = Modifier.width(30.dp))
                         }
                     }
                 }
@@ -184,19 +222,18 @@ fun GamePlayContent() {
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(10.dp)
                 ) {
-                    val selectedPlayers = listOf("Oskar", "Kamila", "Test")
-                    items(items = selectedPlayers) { player ->
+                    items(items = playerList) { player ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            var isChecked = true
-//                        var isChecked by remember { mutableStateOf(player.selected) }
+                            var isChecked by remember { mutableStateOf(player.selected) }
                             Checkbox(checked = isChecked, onCheckedChange = {
                                 isChecked = it
-//                            playerViewModel.selectedPlayer(player)
+                                selectedPlayer(player)
                             })
-                            Text(text = "player.name")
+                            Text(text = player.name)
                         }
                     }
                 }
@@ -207,8 +244,6 @@ fun GamePlayContent() {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                Text(text = "$playGameDate")
-//                Spacer(modifier = Modifier.width(10.dp))
                 Button(
                     onClick = {
                         calendarState.show()
@@ -235,11 +270,7 @@ fun GamePlayContent() {
                     }
                 }
             }
-
-            Log.d("Oskar", "${playGameDate.toString()}")
-
-
-            val selectedPlayers = listOf("Oskar", "Kamila", "Test")
+            val selectedPlayers = playerList.filter { it.selected == true }
             var expanded by remember { mutableStateOf(false) }
             var winner by remember { mutableStateOf("winner") }
             Row(
@@ -261,7 +292,6 @@ fun GamePlayContent() {
                     TextField(
                         modifier = Modifier
                             .menuAnchor(),
-//                            .fillMaxWidth(), // menuAnchor modifier mus be passed to the text field for correctnesst.
                         readOnly = true,
                         value = winner,
                         onValueChange = {},
@@ -278,9 +308,9 @@ fun GamePlayContent() {
                         onDismissRequest = { expanded = false }) {
                         selectedPlayers.forEach { player ->
                             DropdownMenuItem(
-                                text = { Text(text = "$player") },
+                                text = { Text(text = player.name) },
                                 onClick = {
-                                    winner = player
+                                    winner = player.name
                                     expanded = false
                                 })
                         }
@@ -288,8 +318,6 @@ fun GamePlayContent() {
                 }
             }
             Spacer(modifier = Modifier.height(15.dp))
-
-//        Log.d("Oskar", "${playerViewModel.playerList.filter { it.selected }}")
 
             Text(
                 text = "Game Description:",
@@ -328,9 +356,7 @@ fun GamePlayContent() {
 //                )
 //                gameViewModel.editGame(game)
 
-                    //val intent= Intent(context, GridCellsamesActivity::class.java)
-                    //context.startActivity(intent)
-                    //finish()
+                    navigator?.pop()
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -360,6 +386,20 @@ fun GamePlayActivityPreview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        GamePlayContent()
+        val player =
+            Player(name = "Oskar", winRatio = 2, games = 6, description = "ds", selected = true)
+        val player2 =
+            Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
+
+        val game = Game(
+            name = "Nazwa Testowa",
+            expansion = true,
+            baseGame = "Gra bazowa",
+            minPlayer = "1",
+            maxPlayer = "4",
+            games = 6,
+            id = "5456"
+        )
+        GamePlayContent(GamePLayState(game), listOf(player, player, player2))
     }
 }

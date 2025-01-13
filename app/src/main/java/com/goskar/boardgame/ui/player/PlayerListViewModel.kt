@@ -21,11 +21,7 @@ data class PlayerListState(
 @KoinViewModel
 class PlayerListViewModel(
     private val playerNetworkRepository: PlayerNetworkRepository,
-    ) : ViewModel() {
-
-    companion object {
-        const val TAG = "Player List"
-    }
+) : ViewModel() {
 
     private val _state = MutableStateFlow(PlayerListState())
     val state = _state.asStateFlow()
@@ -34,7 +30,7 @@ class PlayerListViewModel(
         _state.update { state }
     }
 
-    fun getAllPlayer () {
+    fun getAllPlayer() {
         viewModelScope.launch {
             val response = playerNetworkRepository.getAllPlayer().toMutableList()
             _state.update {
@@ -48,7 +44,7 @@ class PlayerListViewModel(
     fun validateDeletePlayer(playerID: String) {
         viewModelScope.launch {
             val response = playerNetworkRepository.deletePlayer(playerId = playerID)
-            when (response){
+            when (response) {
                 is RequestResult.Success -> {
                     _state.update {
                         it.copy(
@@ -57,6 +53,7 @@ class PlayerListViewModel(
                     }
                     getAllPlayer()
                 }
+
                 else -> {
                     _state.update {
                         it.copy(
@@ -66,5 +63,9 @@ class PlayerListViewModel(
                 }
             }
         }
+    }
+
+    fun selectedPlayer(player: Player) {
+        player.selected = !player.selected
     }
 }

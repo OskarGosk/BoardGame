@@ -176,7 +176,7 @@ fun GameViewList(
                     )
                     {
                         IconButton(onClick = {
-                            navigator?.push(GamePlayActivityScreen())
+                            navigator?.push(GamePlayActivityScreen(game))
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Add,
