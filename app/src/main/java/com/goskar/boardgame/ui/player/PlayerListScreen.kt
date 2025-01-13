@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.player
 
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -41,8 +39,6 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Player
-import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
-import com.goskar.boardgame.ui.games.play.GamePlayActivityScreen
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import org.koin.androidx.compose.koinViewModel
 import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
