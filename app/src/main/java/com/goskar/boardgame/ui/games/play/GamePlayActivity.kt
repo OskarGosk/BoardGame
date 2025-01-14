@@ -43,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,7 +56,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
 import com.goskar.boardgame.data.rest.models.Player
-import com.goskar.boardgame.ui.player.PlayerListViewModel
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import java.time.LocalDate
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
@@ -75,8 +73,7 @@ class GamePlayActivityScreen(
     override fun Content() {
         val viewModel: GamePlayViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
-        val playerViewModel: PlayerListViewModel = koinViewModel()
-        val playerState by playerViewModel.state.collectAsState()
+        val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {
             viewModel.update(
@@ -84,14 +81,21 @@ class GamePlayActivityScreen(
                     game = game
                 )
             )
-            playerViewModel.getAllPlayer()
+            viewModel.getAllPlayer()
+        }
+
+        LaunchedEffect(state.successEditAllPlayer) {
+            if(state.successEditAllPlayer) {
+                navigator?.pop()
+            }
         }
 
         BoardGameTheme {
             GamePlayContent(
                 state = state,
-                playerList = playerState.playerList,
-                selectedPlayer = playerViewModel::selectedPlayer
+                update = viewModel::update,
+                selectedPlayer = viewModel::selectedPlayer,
+                addGamePlay = viewModel::validateEditGame,
             )
         }
     }
@@ -102,28 +106,14 @@ class GamePlayActivityScreen(
 @Composable
 fun GamePlayContent(
     state: GamePLayState,
-    playerList: List<Player>?,
+    update: (GamePLayState) -> Unit = {},
     selectedPlayer: (Player) -> Unit = {},
+    addGamePlay: () -> Unit = {},
 ) {
-
-//    val gameViewModel : GameListViewModel = koinViewModel()
-//    val playerViewModel : PlayerListViewModel = koinViewModel()
-
-//    try {
-//        playerViewModel.getAllPlayer()
-//    } catch (e: Exception) {
-//        Log.d ("Game","Bład wczytania listy graczy --- $e")
-//    }
-
-
-//    val playGame : Game = intentent.getSerializableExtra("play_game") as Game
-
     val calendarState = rememberSheetState()
     var playGameDate by remember { mutableStateOf(LocalDate.now()) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
-    val navigator = LocalNavigator.current
 
     CalendarDialog(
         state = calendarState,
@@ -180,9 +170,7 @@ fun GamePlayContent(
                             textAlign = TextAlign.Center,
                             maxLines = 2,
                         )
-                        if (state.game?.expansion
-                                ?: true
-                        ) Text(text = "expansion") else Text(text = "base")
+                        if (state.game?.expansion != false) Text(text = "expansion") else Text(text = "base")
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Start
@@ -218,12 +206,12 @@ fun GamePlayContent(
                     .fillMaxWidth()
                     .height(150.dp)
             ) {
-                if (!playerList.isNullOrEmpty()) {
+                if (!state.playerList.isNullOrEmpty()) {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(10.dp)
                     ) {
-                        items(items = playerList) { player ->
+                        items(items = state.playerList) { player ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Start,
@@ -272,9 +260,8 @@ fun GamePlayContent(
                     }
                 }
             }
-            val selectedPlayers = playerList?.filter { it.selected == true }
+            val selectedPlayers = state.playerList?.filter { it.selected == true }
             var expanded by remember { mutableStateOf(false) }
-            var winner by remember { mutableStateOf("winner") }
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -295,7 +282,7 @@ fun GamePlayContent(
                         modifier = Modifier
                             .menuAnchor(),
                         readOnly = true,
-                        value = winner,
+                        value = state.winner,
                         onValueChange = {},
                         colors = ExposedDropdownMenuDefaults.textFieldColors(
                             unfocusedContainerColor = MaterialTheme.colorScheme.background,
@@ -312,7 +299,9 @@ fun GamePlayContent(
                             DropdownMenuItem(
                                 text = { Text(text = player.name) },
                                 onClick = {
-                                    winner = player.name
+                                    update(state.copy(
+                                        winner = player.name
+                                    ))
                                     expanded = false
                                 })
                         }
@@ -338,27 +327,7 @@ fun GamePlayContent(
 
             Button(
                 onClick = {
-//                playerViewModel.playerList.filter { it.selected }.forEach { player ->
-//                    val playerGames = player.copy(
-//                        name = player.name,
-//                        games = player.games + 1,
-//                        winRatio = if (player.name == winner) player.winRatio + 1 else player.winRatio,
-//                        description = player.description,
-//                        selected = false
-//                    )
-//                    playerViewModel.editPlayer(playerGames)
-//                }
-//                val game = playGame.copy(
-//                    name = playGame.name,
-//                    expansion = playGame.expansion,
-//                    baseGame = playGame.baseGame,
-//                    minPlayer = playGame.minPlayer,
-//                    maxPlayer = playGame.maxPlayer,
-//                    games = playGame.games + 1
-//                )
-//                gameViewModel.editGame(game)
-
-                    navigator?.pop()
+                    addGamePlay()
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -402,6 +371,6 @@ fun GamePlayActivityPreview() {
             games = 6,
             id = "5456"
         )
-        GamePlayContent(GamePLayState(game), listOf(player, player, player2))
+        GamePlayContent(GamePLayState(game, playerList = listOf(player, player, player2)))
     }
 }

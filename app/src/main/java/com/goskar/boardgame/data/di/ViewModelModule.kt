@@ -14,5 +14,5 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { AddEditPlayerViewModel(get()) }
     viewModel { GameListViewModel(get()) }
     viewModel { AddEditGameViewModel(get()) }
-    viewModel { GamePlayViewModel() }
+    viewModel { GamePlayViewModel(get(), get()) }
 }
