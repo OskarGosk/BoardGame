@@ -166,7 +166,7 @@ fun AddEditGameContent(
                         )
                     },
                 )
-                Text(stringResource(id = R.string.expansion))
+                Text(stringResource(id = R.string.is_expansion))
             }
             if (state.expansion) {
                 OutlinedTextField(

@@ -17,17 +17,22 @@
     <string name="player_description">About Player</string>
     <string name="title_activity_add_edit_player">AddEditPlayer</string>
 
+    <string name="expansion">Expansion</string>
+
     <string name="board_list">Board Game List</string>
     <string name="add_board">Add new board game</string>
     <string name="edit_game_save">Save change</string>
     <string name="edit_game"> Edit Game</string>
-    <string name="expansion">Is Expansion?</string>
+    <string name="is_expansion">Is Expansion?</string>
     <string name="new_game">Add new game</string>
     <string name="game_name">Board Game Name</string>
     <string name="base_game">Base Game</string>
     <string name="min_player">Min players</string>
     <string name="max_player">Max players</string>
+    <string name="empty_game_list">Empty game list.</string>
+    <string name="add_more_game">Please add some game\nTo do this, please click button below.</string>
     <string name="title_activity_add_edit_game">AddEditGame</string>
+    <string name="how_many_played">How many played</string>
 
     <string name="add_gameplay">Add new gameplay</string>
 </resources>

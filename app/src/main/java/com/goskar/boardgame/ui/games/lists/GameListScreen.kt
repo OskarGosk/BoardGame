@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.games.lists
 
+import android.graphics.Paint.Align
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -17,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -42,6 +45,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
 import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
+import com.goskar.boardgame.ui.games.lists.components.GameViewList
 import com.goskar.boardgame.ui.games.play.GamePlayActivityScreen
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
@@ -80,17 +84,37 @@ fun GameListContent(
     ) { paddingValues ->
 
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(paddingValues)
         ) {
             if (state.gameList.isNullOrEmpty()) {
                 Text(
-                    text = "Empty game list",
+                    stringResource(R.string.empty_game_list),
                     fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 50.dp)
                 )
+                Text(
+                    stringResource(R.string.add_more_game),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                )
+                Button(
+                    onClick = {navigator?.push(AddEditGameScreen(null))},
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(
+                        stringResource(R.string.add_board)
+                    )
+                }
             } else {
                 GameViewList(state.gameList, deleteGame, refresh)
             }
@@ -113,98 +137,6 @@ fun GameListContent(
     }
 }
 
-@Composable
-fun GameViewList(
-    gameList: List<Game>,
-    deleteGame: (String) -> Unit = {},
-    refresh: () -> Unit
-) {
-    val navigator = LocalNavigator.current
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.padding(bottom = 60.dp)
-    ) {
-        items(items = gameList) { game ->
-            Card(
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 10.dp),
-                modifier = Modifier
-                    .height(200.dp)
-                    .padding(5.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = game.name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 25.sp,
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                    )
-                    if (game.expansion) Text(text = "expansion") else Text(text = "base")
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Text(stringResource(R.string.min_player))
-                        Text(text = game.minPlayer)
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Text(stringResource(R.string.max_player))
-                        Text(text = game.maxPlayer)
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Text(text = "How many played")
-                        Text(text = "${game.games}")
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        IconButton(onClick = {
-                            navigator?.push(GamePlayActivityScreen(game))
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Add to play"
-                            )
-                        }
-                        IconButton(onClick = {
-                            navigator?.push(AddEditGameScreen(game))
-
-                        }) {
-                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Game")
-                        }
-                        IconButton(onClick = {
-                            deleteGame(game.id)
-                            refresh()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete Game"
-                            )
-                        }
-                    }
-
-                }
-            }
-        }
-    }
-}
 
 @Preview
 @Composable
@@ -224,5 +156,16 @@ fun GameListContentPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         GameListContent(state = GameListState(gameList = gameList))
+    }
+}
+
+@Preview
+@Composable
+fun GameListEmptyPreview() {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        GameListContent(state = GameListState(gameList = emptyList()))
     }
 }
