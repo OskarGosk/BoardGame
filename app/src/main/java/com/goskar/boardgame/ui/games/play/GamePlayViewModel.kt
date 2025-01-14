@@ -1,31 +1,38 @@
 package com.goskar.boardgame.ui.games.play
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.GameNetworkRepository
+import com.goskar.boardgame.data.repository.HistoryGameNetworkRepository
 import com.goskar.boardgame.data.repository.PlayerNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.rest.models.HistoryGame
 import com.goskar.boardgame.data.rest.models.Player
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
+import java.time.LocalDate
 
 data class GamePLayState(
     val game: Game? = null,
     val playerList: List<Player>? = emptyList(),
     val successAddPlayGame: Boolean = false,
     val successEditAllPlayer: Boolean = false,
+    val successAddHistoryGame: Boolean = false,
     val errorVisible: Boolean = false,
-    val winner: String = "Who Win?"
+    val winner: String = "Who Win?",
+    val playDate: LocalDate = LocalDate.now()
 )
 
 @KoinViewModel
 class GamePlayViewModel(
     private val gameNetworkRepository: GameNetworkRepository,
-    private val playerNetworkRepository: PlayerNetworkRepository
+    private val playerNetworkRepository: PlayerNetworkRepository,
+    private val historyGameNetworkRepository: HistoryGameNetworkRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GamePLayState())
@@ -35,8 +42,55 @@ class GamePlayViewModel(
         _state.update { state }
     }
 
-    fun validateEditGame() {
+    fun validateAllData() {
         viewModelScope.launch {
+            validateAddHistoryGameData()
+            validateEditGame()
+            validateEditAllPlayer()
+        }
+    }
+
+    private suspend fun validateAddHistoryGameData() {
+            var listOfPlayer : List<String> = emptyList()
+            state.value.playerList?.filter { it.selected }?.forEach { player ->
+                listOfPlayer = listOfPlayer + player.name
+            }
+
+            Log.d("Oskar22","$listOfPlayer")
+
+
+            val historyGame = HistoryGame(
+                gameData = state.value.playDate.toString(),
+                winner = state.value.winner,
+                gameName = state.value.game?.name?:"",
+                listOfPlayer = listOfPlayer,
+                description = ""
+            )
+
+            val response = historyGameNetworkRepository.addHistoryGame(historyGame = historyGame)
+
+            when (response) {
+                is RequestResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            successAddHistoryGame = true,
+                        )
+                    }
+                }
+
+                else -> {
+                    _state.update {
+                        it.copy(
+                            successAddHistoryGame = false,
+                            errorVisible = true,
+                        )
+                    }
+                }
+            }
+
+    }
+
+    private suspend fun validateEditGame() {
             val game = state.value.game?.copy(
                 games = (state.value.game?.games ?: 0) + 1,
             )
@@ -49,8 +103,9 @@ class GamePlayViewModel(
                                 successAddPlayGame = true
                             )
                         }
-                        validateEditAllPlayer()
+//                        validateEditAllPlayer()
                     }
+
                     else -> {
                         _state.update {
                             it.copy(
@@ -68,7 +123,6 @@ class GamePlayViewModel(
                     )
                 }
             }
-        }
     }
 
     fun getAllPlayer() {
@@ -86,8 +140,7 @@ class GamePlayViewModel(
         player.selected = !player.selected
     }
 
-    fun validateEditAllPlayer() {
-        viewModelScope.launch {
+    private suspend fun validateEditAllPlayer() {
             var item = 0
             state.value.playerList?.filter { it.selected }?.forEach { player ->
 
@@ -111,6 +164,7 @@ class GamePlayViewModel(
                             }
                         }
                     }
+
                     else -> {
                         _state.update {
                             it.copy(
@@ -122,5 +176,5 @@ class GamePlayViewModel(
                 }
             }
         }
-    }
+
 }

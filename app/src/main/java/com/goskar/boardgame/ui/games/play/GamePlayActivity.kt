@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.games.play
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -85,7 +86,11 @@ class GamePlayActivityScreen(
         }
 
         LaunchedEffect(state.successEditAllPlayer) {
-            if(state.successEditAllPlayer) {
+            Log.d("Oskar22","${state.successAddPlayGame}")
+            Log.d("Oskar22","${state.successEditAllPlayer}")
+            Log.d("Oskar22","${state.successAddHistoryGame}")
+
+            if(state.successEditAllPlayer && state.successAddPlayGame && state.successAddHistoryGame) {
                 navigator?.pop()
             }
         }
@@ -95,7 +100,7 @@ class GamePlayActivityScreen(
                 state = state,
                 update = viewModel::update,
                 selectedPlayer = viewModel::selectedPlayer,
-                addGamePlay = viewModel::validateEditGame,
+                addGamePlay = viewModel::validateAllData,
             )
         }
     }
@@ -122,7 +127,11 @@ fun GamePlayContent(
             yearSelection = true,
         ),
         selection = CalendarSelection.Date { date ->
-            playGameDate = date
+            update(
+                state.copy(
+                    playDate = date
+                )
+            )
         })
     /*
     Na górze wybrana gra z możliwością edycji?
@@ -253,7 +262,7 @@ fun GamePlayContent(
                             textAlign = TextAlign.Center
                         )
                         Text(
-                            text = "$playGameDate",
+                            text = "${state.playDate}",
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center
                         )

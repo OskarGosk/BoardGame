@@ -47,7 +47,7 @@ interface ApiBoardGame {
     ): Response<Void>
 
     @POST("historyGame.json")
-    suspend fun addHistory(@Body historyGame: HistoryGame): HistoryIdResponse
+    suspend fun addHistory(@Body historyGame: HistoryGame): Response<Void>
 
     @GET("historyGame.json")
     suspend fun getAllHistoryGame(): Map<String, HistoryGame>
