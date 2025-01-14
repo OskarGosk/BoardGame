@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -89,6 +90,7 @@ fun GameListContent(
                         .padding(top = 10.dp)
                 )
                 Button(
+                    shape = CutCornerShape(percent = 10),
                     onClick = {navigator?.push(AddEditGameScreen(null))},
                     modifier = Modifier
                         .padding(top = 10.dp)

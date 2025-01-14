@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -189,6 +190,7 @@ fun AddEditGameContent(
 
             Spacer(modifier = Modifier.height(40.dp))
             Button(
+                shape = CutCornerShape(percent = 10),
                 onClick = {
                     if (state.id == null) addGame() else editGame()
                 },
