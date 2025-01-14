@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.player
+package com.goskar.boardgame.ui.player.playerList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -63,9 +63,5 @@ class PlayerListViewModel(
                 }
             }
         }
-    }
-
-    fun selectedPlayer(player: Player) {
-        player.selected = !player.selected
     }
 }
