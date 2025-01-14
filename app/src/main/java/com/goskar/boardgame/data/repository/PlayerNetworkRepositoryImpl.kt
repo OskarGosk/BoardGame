@@ -35,7 +35,7 @@ class PlayerNetworkRepositoryImpl(
                     element.value.copy(id = element.key)
                 }
             }.onFailure {
-                Timber.tag("Player").e("Can't getAll player\n  ${it.stackTraceToString()}")
+                Timber.tag("Player").e("Can't get All player\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { it }, onFailure = { emptyList() })
     }

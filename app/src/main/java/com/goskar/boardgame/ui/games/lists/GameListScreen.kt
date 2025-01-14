@@ -83,7 +83,7 @@ fun GameListContent(
             modifier = Modifier.fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (state.gameList.isEmpty()) {
+            if (state.gameList.isNullOrEmpty()) {
                 Text(
                     text = "Empty game list",
                     fontSize = 20.sp,
@@ -92,7 +92,7 @@ fun GameListContent(
                         .align(Alignment.CenterHorizontally)
                 )
             } else {
-                GameViewList(state, deleteGame, refresh)
+                GameViewList(state.gameList, deleteGame, refresh)
             }
         }
         Box(
@@ -115,7 +115,7 @@ fun GameListContent(
 
 @Composable
 fun GameViewList(
-    state: GameListState,
+    gameList: List<Game>,
     deleteGame: (String) -> Unit = {},
     refresh: () -> Unit
 ) {
@@ -128,7 +128,7 @@ fun GameViewList(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier.padding(bottom = 60.dp)
     ) {
-        items(items = state.gameList) { game ->
+        items(items = gameList) { game ->
             Card(
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 10.dp),
                 modifier = Modifier

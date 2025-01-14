@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 data class GameListState(
-    val gameList: List<Game> = emptyList<Game>(),
+    val gameList: List<Game>? = emptyList<Game>(),
     val successDeleteGame: Boolean = false,
     val errorVisible: Boolean = false,
     )

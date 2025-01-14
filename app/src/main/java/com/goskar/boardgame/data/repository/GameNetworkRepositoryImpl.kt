@@ -12,6 +12,10 @@ class GameNetworkRepositoryImpl(
     private val apiBoardGame: ApiBoardGame,
 ) : GameNetworkRepository {
 
+    companion object {
+        val TAG = "GAME"
+    }
+
 
     override suspend fun addGame(game: Game): RequestResult<Boolean>{
         return withContext(Dispatchers.IO) {
@@ -30,17 +34,15 @@ class GameNetworkRepositoryImpl(
     }
 
     override suspend fun getAllGame(): List<Game> {
-//        return withContext(Dispatchers.IO) {
-//
-//                val response = apiBoardGame.getAllGame()
-//
-//            if (!response.isEmpty()) {
-//                ree
-//            }
-//        }
-        return apiBoardGame.getAllGame().map { element ->
-            element.value.copy(id = element.key)
-        }
+        return withContext(Dispatchers.IO) {
+                runCatching {
+                    apiBoardGame.getAllGame().map { element ->
+                        element.value.copy(id = element.key)
+                    }
+                }.onFailure {
+                    Timber.tag(TAG).e("Can't get All game\n  ${it.stackTraceToString()}")
+                }
+        }.fold(onSuccess = {it}, onFailure = { emptyList() })
     }
 
     override suspend fun deleteGame(gameId: String): RequestResult<Boolean> {
