@@ -36,13 +36,6 @@ fun GameDataRow(
 @Preview
 @Composable
 fun GameDataRowPreview(){
-//    Box {
-//        GameDataRow(
-//            header = R.string.min_player,
-//            value = "4"
-//        )
-//    }
-
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
