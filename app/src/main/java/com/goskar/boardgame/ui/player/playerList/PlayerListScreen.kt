@@ -30,10 +30,11 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.ui.components.SearchRow
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import com.goskar.boardgame.ui.player.playerList.components.SinglePlayerCard
 import org.koin.androidx.compose.koinViewModel
-import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 
 class PlayerListScreen : Screen {
     @Composable
@@ -46,7 +47,8 @@ class PlayerListScreen : Screen {
         PlayerListContent(
             state = state,
             deletePlayer = viewModel::validateDeletePlayer,
-            refreshPlayer = viewModel::getAllPlayer
+            refreshPlayer = viewModel::getAllPlayer,
+            onSearch = viewModel::search
         )
     }
 }
@@ -55,7 +57,8 @@ class PlayerListScreen : Screen {
 fun PlayerListContent(
     state: PlayerListState,
     deletePlayer: (String) -> Unit = {},
-    refreshPlayer: () -> Unit = {}
+    refreshPlayer: () -> Unit = {},
+    onSearch: (String) -> Unit = {}
 ) {
     val navigator = LocalNavigator.current
 
@@ -75,6 +78,11 @@ fun PlayerListContent(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    SearchRow(
+                        label = R.string.player_name,
+                        value = "",
+                        onSearch = onSearch
+                    )
                     if (state.playerList.isNullOrEmpty()) {
                         Text(
                             text = "Empty player list",

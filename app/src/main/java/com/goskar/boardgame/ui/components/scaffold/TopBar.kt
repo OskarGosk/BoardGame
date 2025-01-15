@@ -1,4 +1,4 @@
-package pl.ecp.app.ui.components.scaffold
+package com.goskar.boardgame.ui.components.scaffold
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

@@ -1,8 +1,4 @@
-package pl.ecp.app.ui.components.scaffold
-
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
-import cafe.adriel.voyager.core.screen.Screen
+package com.goskar.boardgame.ui.components.scaffold
 
 //enum class BottomBarElements (
 //    @StringRes var title: Int,

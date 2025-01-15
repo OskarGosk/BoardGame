@@ -30,7 +30,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Player
 import org.koin.androidx.compose.koinViewModel
-import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import java.util.UUID
 
 class AddEditPlayerScreen(val editPlayer: Player?) : Screen {

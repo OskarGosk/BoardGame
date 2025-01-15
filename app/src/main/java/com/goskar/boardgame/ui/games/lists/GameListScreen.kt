@@ -33,7 +33,7 @@ import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.games.lists.components.GameViewList
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
-import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 
 class GameListScreen : Screen {
     @Composable

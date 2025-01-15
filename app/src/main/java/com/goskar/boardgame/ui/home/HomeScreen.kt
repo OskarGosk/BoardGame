@@ -17,9 +17,10 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.games.history.HistoryGameListScreen
 import com.goskar.boardgame.ui.games.lists.GameListScreen
 import com.goskar.boardgame.ui.player.playerList.PlayerListScreen
-import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 
 class HomeScreen : Screen {
     @Composable
@@ -70,6 +71,21 @@ fun HomeScreenContent(
             ) {
                 Text(
                     stringResource(id = R.string.board_list),
+                    fontSize = 20.sp
+                )
+            }
+            Button(
+                shape = CutCornerShape(percent = 10),
+                onClick = {
+                    navigator?.push(HistoryGameListScreen())
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+                    .height(48.dp),
+            ) {
+                Text(
+                    stringResource(id = R.string.history_game_screen),
                     fontSize = 20.sp
                 )
             }

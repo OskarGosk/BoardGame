@@ -25,7 +25,8 @@ data class GamePLayState(
     val successAddHistoryGame: Boolean = false,
     val errorVisible: Boolean = false,
     val winner: String = "Who Win?",
-    val playDate: LocalDate = LocalDate.now()
+    val playDate: LocalDate = LocalDate.now(),
+    val countSelectedPlayer: Int = 0
 )
 
 @KoinViewModel
@@ -51,78 +52,76 @@ class GamePlayViewModel(
     }
 
     private suspend fun validateAddHistoryGameData() {
-            var listOfPlayer : List<String> = emptyList()
-            state.value.playerList?.filter { it.selected }?.forEach { player ->
-                listOfPlayer = listOfPlayer + player.name
+        var listOfPlayer: List<String> = emptyList()
+        state.value.playerList?.filter { it.selected }?.forEach { player ->
+            listOfPlayer = listOfPlayer + player.name
+        }
+
+
+        val historyGame = HistoryGame(
+            gameData = state.value.playDate.toString(),
+            winner = state.value.winner,
+            gameName = state.value.game?.name ?: "",
+            listOfPlayer = listOfPlayer,
+            description = ""
+        )
+
+        val response = historyGameNetworkRepository.addHistoryGame(historyGame = historyGame)
+
+        when (response) {
+            is RequestResult.Success -> {
+                _state.update {
+                    it.copy(
+                        successAddHistoryGame = true,
+                    )
+                }
             }
 
-            Log.d("Oskar22","$listOfPlayer")
+            else -> {
+                _state.update {
+                    it.copy(
+                        successAddHistoryGame = false,
+                        errorVisible = true,
+                    )
+                }
+            }
+        }
 
+    }
 
-            val historyGame = HistoryGame(
-                gameData = state.value.playDate.toString(),
-                winner = state.value.winner,
-                gameName = state.value.game?.name?:"",
-                listOfPlayer = listOfPlayer,
-                description = ""
-            )
-
-            val response = historyGameNetworkRepository.addHistoryGame(historyGame = historyGame)
-
+    private suspend fun validateEditGame() {
+        val game = state.value.game?.copy(
+            games = (state.value.game?.games ?: 0) + 1,
+        )
+        if (game != null) {
+            val response = gameNetworkRepository.editGame(game)
             when (response) {
                 is RequestResult.Success -> {
                     _state.update {
                         it.copy(
-                            successAddHistoryGame = true,
+                            successAddPlayGame = true
                         )
                     }
+//                        validateEditAllPlayer()
                 }
 
                 else -> {
                     _state.update {
                         it.copy(
-                            successAddHistoryGame = false,
-                            errorVisible = true,
+                            successAddPlayGame = false,
+                            errorVisible = true
                         )
                     }
                 }
             }
-
-    }
-
-    private suspend fun validateEditGame() {
-            val game = state.value.game?.copy(
-                games = (state.value.game?.games ?: 0) + 1,
-            )
-            if (game != null) {
-                val response = gameNetworkRepository.editGame(game)
-                when (response) {
-                    is RequestResult.Success -> {
-                        _state.update {
-                            it.copy(
-                                successAddPlayGame = true
-                            )
-                        }
-//                        validateEditAllPlayer()
-                    }
-
-                    else -> {
-                        _state.update {
-                            it.copy(
-                                successAddPlayGame = false,
-                                errorVisible = true
-                            )
-                        }
-                    }
-                }
-            } else {
-                _state.update {
-                    it.copy(
-                        successAddPlayGame = false,
-                        errorVisible = true
-                    )
-                }
+        } else {
+            _state.update {
+                it.copy(
+                    successAddPlayGame = false,
+                    errorVisible = true
+                )
             }
+        }
     }
 
     fun getAllPlayer() {
@@ -138,43 +137,48 @@ class GamePlayViewModel(
 
     fun selectedPlayer(player: Player) {
         player.selected = !player.selected
+        _state.update {
+            it.copy(
+                countSelectedPlayer = state.value.playerList?.filter { it.selected }?.size?:0
+            )
+        }
     }
 
     private suspend fun validateEditAllPlayer() {
-            var item = 0
-            state.value.playerList?.filter { it.selected }?.forEach { player ->
+        var item = 0
+        state.value.playerList?.filter { it.selected }?.forEach { player ->
 
-                val playerGames = player.copy(
-                    name = player.name,
-                    games = player.games + 1,
-                    winRatio = if (player.name == state.value.winner) player.winRatio + 1 else player.winRatio,
-                    description = player.description,
-                    selected = false
-                )
-                val response = playerNetworkRepository.editPlayer(playerGames)
-                when (response) {
-                    is RequestResult.Success -> {
-                        item++
-                        if (item == state.value.playerList?.filter { it.selected }?.size) {
-                            _state.update {
-                                it.copy(
-                                    successEditAllPlayer = true,
-                                    errorVisible = false
-                                )
-                            }
-                        }
-                    }
-
-                    else -> {
+            val playerGames = player.copy(
+                name = player.name,
+                games = player.games + 1,
+                winRatio = if (player.name == state.value.winner) player.winRatio + 1 else player.winRatio,
+                description = player.description,
+                selected = false
+            )
+            val response = playerNetworkRepository.editPlayer(playerGames)
+            when (response) {
+                is RequestResult.Success -> {
+                    item++
+                    if (item == state.value.playerList?.filter { it.selected }?.size) {
                         _state.update {
                             it.copy(
-                                successEditAllPlayer = false,
-                                errorVisible = true
+                                successEditAllPlayer = true,
+                                errorVisible = false
                             )
                         }
                     }
                 }
+
+                else -> {
+                    _state.update {
+                        it.copy(
+                            successEditAllPlayer = false,
+                            errorVisible = true
+                        )
+                    }
+                }
             }
         }
+    }
 
 }

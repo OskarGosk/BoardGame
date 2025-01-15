@@ -1,8 +1,11 @@
 package com.goskar.boardgame.ui.games.play
 
 import android.annotation.SuppressLint
-import android.util.Log
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +22,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -43,7 +47,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,19 +59,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
 import com.goskar.boardgame.data.rest.models.Player
 import com.goskar.boardgame.ui.theme.BoardGameTheme
-import java.time.LocalDate
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import org.koin.androidx.compose.koinViewModel
-import pl.ecp.app.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 
 class GamePlayActivityScreen(
     val game: Game
@@ -86,10 +93,6 @@ class GamePlayActivityScreen(
         }
 
         LaunchedEffect(state.successEditAllPlayer) {
-            Log.d("Oskar22","${state.successAddPlayGame}")
-            Log.d("Oskar22","${state.successEditAllPlayer}")
-            Log.d("Oskar22","${state.successAddHistoryGame}")
-
             if(state.successEditAllPlayer && state.successAddPlayGame && state.successAddHistoryGame) {
                 navigator?.pop()
             }
@@ -116,9 +119,11 @@ fun GamePlayContent(
     addGamePlay: () -> Unit = {},
 ) {
     val calendarState = rememberSheetState()
-    var playGameDate by remember { mutableStateOf(LocalDate.now()) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+
+
 
     CalendarDialog(
         state = calendarState,
@@ -148,6 +153,9 @@ fun GamePlayContent(
     BoardGameScaffold(
         titlePage = stringResource(R.string.board_list)
     ) { paddingValues ->
+        var visible by remember { mutableStateOf(false) }
+
+
 
         Column(
             modifier = Modifier
@@ -156,6 +164,28 @@ fun GamePlayContent(
                 .verticalScroll(scrollState),
 
             ) {
+            AnimatedVisibility(visible = visible) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.Gray)
+                        .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .zIndex(100f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Error",
+                    )
+                    //DO PRZEROBIENIA NA POTRZEBY APKI
+                }
+//        AppAlert(
+//            modifier = Modifier,
+//            text = state.successMessage.asString(),
+//            type = AlertType.SUCCESS,
+//        )
+            }
             Row() {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_background),
@@ -228,8 +258,14 @@ fun GamePlayContent(
                             ) {
                                 var isChecked by remember { mutableStateOf(player.selected) }
                                 Checkbox(checked = isChecked, onCheckedChange = {
-                                    isChecked = it
-                                    selectedPlayer(player)
+                                    if(state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || isChecked){
+                                        //DODAC zabezpiecznie gdy maxPlayer jest null lub ""
+                                        isChecked = it
+                                        selectedPlayer(player)
+                                    } else {
+                                        visible = true
+                                        Toast.makeText(context, "Wybrano max graczy", Toast.LENGTH_LONG).show()
+                                    }
                                 })
                                 Text(text = player.name)
                             }

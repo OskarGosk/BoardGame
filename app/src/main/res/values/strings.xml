@@ -8,6 +8,8 @@
     <string name="title_activity_game_play">GamePlayActivity</string>
     <string name="title_activity_choose_the_game">ChooseTheGame</string>
 
+    <string name="empty"></string>
+
     <string name="player_list">Player List</string>
     <string name="add_player">Add new Player</string>
     <string name="edit_player_save">Save change</string>
@@ -35,4 +37,7 @@
     <string name="how_many_played">How many played</string>
 
     <string name="add_gameplay">Add new gameplay</string>
+
+
+    <string name="history_game_screen">Gaming History</string>
 </resources>
