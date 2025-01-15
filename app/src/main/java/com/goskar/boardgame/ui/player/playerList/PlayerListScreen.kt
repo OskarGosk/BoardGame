@@ -30,7 +30,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Player
-import com.goskar.boardgame.ui.components.SearchRow
+import com.goskar.boardgame.ui.player.playerList.components.SearchRow
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import com.goskar.boardgame.ui.player.playerList.components.SinglePlayerCard
 import org.koin.androidx.compose.koinViewModel
@@ -48,6 +48,7 @@ class PlayerListScreen : Screen {
             state = state,
             deletePlayer = viewModel::validateDeletePlayer,
             refreshPlayer = viewModel::getAllPlayer,
+            update = viewModel::update,
             onSearch = viewModel::search
         )
     }
@@ -58,6 +59,7 @@ fun PlayerListContent(
     state: PlayerListState,
     deletePlayer: (String) -> Unit = {},
     refreshPlayer: () -> Unit = {},
+    update: (PlayerListState) -> Unit = {},
     onSearch: (String) -> Unit = {}
 ) {
     val navigator = LocalNavigator.current
@@ -79,9 +81,8 @@ fun PlayerListContent(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     SearchRow(
-                        label = R.string.player_name,
-                        value = "",
-                        onSearch = onSearch
+                        update = update,
+                        state = state
                     )
                     if (state.playerList.isNullOrEmpty()) {
                         Text(
@@ -95,7 +96,8 @@ fun PlayerListContent(
                         PlayerViewList(
                             playerList = state.playerList,
                             deletePlayer = deletePlayer,
-                            refreshPlayer = refreshPlayer
+                            refreshPlayer = refreshPlayer,
+                            state = state
                         )
                     }
                 }
@@ -123,18 +125,20 @@ fun PlayerListContent(
 fun PlayerViewList(
     playerList: List<Player>,
     deletePlayer: (String) -> Unit = {},
-    refreshPlayer: () -> Unit = {}
+    refreshPlayer: () -> Unit = {},
+    state: PlayerListState
 ) {
     LazyColumn(
         modifier = Modifier,
         contentPadding = PaddingValues(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
     )
     {
         items(items = playerList) { player ->
-            SinglePlayerCard(
-                player, deletePlayer, refreshPlayer
-            )
+            if (player.name.startsWith(state.searchTxt)) {
+                SinglePlayerCard(
+                    player, deletePlayer, refreshPlayer
+                )
+            }
         }
 
     }

@@ -15,7 +15,8 @@ data class PlayerListState(
     val playerList: List<Player>? = emptyList(),
     val successDeletePlayer: Boolean = false,
     val errorVisible: Boolean = false,
-    val visibleDialog: Boolean = false
+    val visibleDialog: Boolean = false,
+    val searchTxt: String = ""
 )
 
 @KoinViewModel

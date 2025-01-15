@@ -1,13 +1,12 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package com.goskar.boardgame.ui.components
+package com.goskar.boardgame.ui.player.playerList.components
 
 import android.view.KeyEvent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
@@ -21,10 +20,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -37,14 +32,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.player.playerList.PlayerListState
 
 @Composable
 fun SearchRow(
-    label : Int? = null,
-    value: String = "Search",
     onCLickMenu: () -> Unit = {},
-    onSearch: (String) -> Unit = {}
-) {
+    update: (PlayerListState) -> Unit = {},
+    state: PlayerListState
+    ) {
     val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
@@ -61,17 +56,19 @@ fun SearchRow(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            var text by remember { mutableStateOf(value) }
             OutlinedTextField(
-                value = text,
+                value = state.searchTxt,
                 onValueChange = {
-                    text = it
-                    onSearch(text)
+                    update(
+                        state.copy(
+                            searchTxt = it
+                        )
+                    )
                 },
                 modifier = Modifier
                     .weight(1f),
                 label = {
-                        Text(stringResource(id = label?: R.string.empty))
+                        Text(stringResource(id = R.string.player_name))
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -87,7 +84,12 @@ fun SearchRow(
                         modifier = Modifier
                             .size(25.dp)
                             .clickable {
-                                text = ""
+                                update(
+                                    state.copy(
+                                        searchTxt = ""
+                                    )
+                                )
+                                focusManager.clearFocus()
                             })
                 }
             )
@@ -111,7 +113,7 @@ fun SearchRowPreview() {
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
             SearchRow(
-                label = R.string.player_name
+                state = PlayerListState()
             )
         }
     }

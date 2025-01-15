@@ -47,6 +47,7 @@ fun SinglePlayerCard(
         modifier = Modifier.clickable {
             isExpanded = !isExpanded
         }
+            .padding(bottom = 10.dp)
     ){
         Column {
             Row(
