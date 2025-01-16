@@ -30,6 +30,7 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.games.lists.components.EmptyGameList
+import com.goskar.boardgame.ui.games.lists.components.GameSearchRow
 
 class GameListScreen : Screen {
     @Composable
@@ -45,7 +46,8 @@ class GameListScreen : Screen {
             GameListContent(
                 state = state,
                 deleteGame = viewModel::validateDeleteGame,
-                refresh = viewModel::getAllGame
+                refresh = viewModel::getAllGame,
+                update = viewModel::update
             )
         }
     }
@@ -55,7 +57,8 @@ class GameListScreen : Screen {
 fun GameListContent(
     state: GameListState,
     deleteGame: (String) -> Unit = {},
-    refresh: () -> Unit = {}
+    refresh: () -> Unit = {},
+    update: (GameListState) -> Unit = {}
 ) {
     val navigator = LocalNavigator.current
 
@@ -70,7 +73,8 @@ fun GameListContent(
             if (state.gameList.isNullOrEmpty()) {
                 EmptyGameList()
             } else {
-                GameViewList(state.gameList, deleteGame, refresh)
+                GameSearchRow(update = update, state = state)
+                GameViewList(deleteGame = deleteGame,refresh = refresh, state = state)
             }
         }
         Box(

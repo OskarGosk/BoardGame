@@ -15,7 +15,8 @@ data class GameListState(
     val gameList: List<Game>? = emptyList<Game>(),
     val successDeleteGame: Boolean = false,
     val errorVisible: Boolean = false,
-    )
+    val searchTxt: String = ""
+)
 
 @KoinViewModel
 class GameListViewModel(

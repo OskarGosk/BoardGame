@@ -14,27 +14,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.ui.games.lists.GameListState
 
 @Composable
 fun GameViewList(
-    gameList: List<Game>,
     deleteGame: (String) -> Unit = {},
-    refresh: () -> Unit = {}
+    refresh: () -> Unit = {},
+    state: GameListState
 ) {
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        items(items = gameList) { game ->
+        val newGameList: List<Game> = state.gameList?.filter { it.name.startsWith(state.searchTxt) } ?: emptyList()
+        items(items = newGameList) { game ->
             SingleGameCard(
                 game = game,
-                modifier = Modifier.padding(bottom = if(gameList.indexOf(game)==(gameList.size -1) ) 60.dp else 10.dp),
+                modifier = Modifier.padding(bottom = if(newGameList.indexOf(game) == (newGameList.size - 1)
+                ) 60.dp else 10.dp),
                 deleteGame = deleteGame,
                 refresh = refresh
             )
+
         }
     }
 }
@@ -66,6 +69,6 @@ fun GameViewListPreview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        GameViewList (gameList = gameList)
+        GameViewList (state = GameListState(gameList))
     }
 }
