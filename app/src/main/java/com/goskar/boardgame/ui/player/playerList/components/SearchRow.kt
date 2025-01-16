@@ -44,7 +44,6 @@ fun SearchRow(
     val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
-            .padding(horizontal = 10.dp)
             .onPreInterceptKeyBeforeSoftKeyboard { event ->
                 if (event.key.nativeKeyCode == KeyEvent.KEYCODE_BACK) {
                     focusManager.clearFocus()

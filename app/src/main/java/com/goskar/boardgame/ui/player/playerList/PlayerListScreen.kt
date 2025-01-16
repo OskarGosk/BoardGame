@@ -130,14 +130,14 @@ fun PlayerViewList(
 ) {
     LazyColumn(
         modifier = Modifier,
-        contentPadding = PaddingValues(10.dp),
+        contentPadding = PaddingValues(vertical = 10.dp),
     )
     {
         items(items = playerList) { player ->
             if (player.name.startsWith(state.searchTxt)) {
                 SinglePlayerCard(
                     player = player,
-                    modifier = Modifier.padding(bottom = if(playerList.indexOf(player)==(playerList.size -1) ) 50.dp else 10.dp),
+                    modifier = Modifier.padding(bottom = if(playerList.indexOf(player)==(playerList.size -1) ) 50.dp else 0.dp),
                     deletePlayer = deletePlayer,
                     refreshPlayer = refreshPlayer,
                 )
