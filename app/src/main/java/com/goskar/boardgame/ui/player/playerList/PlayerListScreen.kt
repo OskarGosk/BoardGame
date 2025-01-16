@@ -1,12 +1,12 @@
 package com.goskar.boardgame.ui.player.playerList
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -49,7 +49,6 @@ class PlayerListScreen : Screen {
             deletePlayer = viewModel::validateDeletePlayer,
             refreshPlayer = viewModel::getAllPlayer,
             update = viewModel::update,
-            onSearch = viewModel::search
         )
     }
 }
@@ -60,7 +59,6 @@ fun PlayerListContent(
     deletePlayer: (String) -> Unit = {},
     refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
-    onSearch: (String) -> Unit = {}
 ) {
     val navigator = LocalNavigator.current
 
@@ -108,7 +106,9 @@ fun PlayerListContent(
                     FloatingActionButton(
                         onClick = {
                             navigator?.push(AddEditPlayerScreen(null))
-                        }
+                        },
+                        modifier = Modifier
+                            .size(60.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -136,7 +136,10 @@ fun PlayerViewList(
         items(items = playerList) { player ->
             if (player.name.startsWith(state.searchTxt)) {
                 SinglePlayerCard(
-                    player, deletePlayer, refreshPlayer
+                    player = player,
+                    modifier = Modifier.padding(bottom = if(playerList.indexOf(player)==(playerList.size -1) ) 50.dp else 10.dp),
+                    deletePlayer = deletePlayer,
+                    refreshPlayer = refreshPlayer,
                 )
             }
         }
@@ -155,7 +158,7 @@ fun PlayerListContentPreview() {
         val player2 =
             Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
         PlayerListContent(
-            state = PlayerListState(playerList = listOf(player, player2))
+            state = PlayerListState(playerList = listOf(player, player2, player2, player, player, player2,player2,player, player2))
         )
     }
 }

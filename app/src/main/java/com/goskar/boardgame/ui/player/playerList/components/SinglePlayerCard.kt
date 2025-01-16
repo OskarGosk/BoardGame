@@ -38,17 +38,20 @@ import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 @Composable
 fun SinglePlayerCard(
     player: Player,
-    deletePlayer: (String)-> Unit = {},
-    refreshPlayer: ()-> Unit = {}) {
+    modifier: Modifier,
+    deletePlayer: (String) -> Unit = {},
+    refreshPlayer: () -> Unit = {}
+) {
     var isExpanded by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.current
-    Card (
-        shape = RoundedCornerShape(25),
-        modifier = Modifier.clickable {
-            isExpanded = !isExpanded
-        }
+    Card(
+        shape = RoundedCornerShape(15),
+        modifier = modifier
+            .clickable {
+                isExpanded = !isExpanded
+            }
             .padding(bottom = 10.dp)
-    ){
+    ) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -74,7 +77,7 @@ fun SinglePlayerCard(
                 isExpanded = isExpanded
             )
         }
-        if(isExpanded) {
+        if (isExpanded) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -111,8 +114,8 @@ fun SinglePlayerCardPreview() {
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
-        Box (modifier = Modifier.padding(10.dp)){
-            SinglePlayerCard(player)
+        Box(modifier = Modifier.padding(10.dp)) {
+            SinglePlayerCard(player, modifier = Modifier)
         }
     }
 }

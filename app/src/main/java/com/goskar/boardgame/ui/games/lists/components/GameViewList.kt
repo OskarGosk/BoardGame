@@ -1,29 +1,18 @@
 package com.goskar.boardgame.ui.games.lists.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
 
 @Composable
@@ -38,37 +27,14 @@ fun GameViewList(
         contentPadding = PaddingValues(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.padding(bottom = 60.dp)
     ) {
         items(items = gameList) { game ->
-            Card(
-                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 10.dp),
-                modifier = Modifier
-                    .height(200.dp)
-                    .padding(5.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = game.name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 25.sp,
-                        textAlign = TextAlign.Center,
-                        maxLines = 2,
-                    )
-                    Text (
-                        stringResource(if(game.expansion) R.string.expansion else R.string.base_game),
-                        fontSize = 12.sp)
-
-                    GameDataRow(R.string.min_player, game.minPlayer)
-                    GameDataRow(R.string.max_player, game.maxPlayer)
-                    GameDataRow(R.string.how_many_played, "${game.games}")
-                    ButtonRow(game = game, deleteGame, refresh)
-                }
-            }
+            SingleGameCard(
+                game = game,
+                modifier = Modifier.padding(bottom = if(gameList.indexOf(game)==(gameList.size -1) ) 60.dp else 10.dp),
+                deleteGame = deleteGame,
+                refresh = refresh
+            )
         }
     }
 }

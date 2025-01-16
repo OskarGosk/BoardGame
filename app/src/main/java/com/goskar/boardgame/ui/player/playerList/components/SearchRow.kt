@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -43,7 +44,7 @@ fun SearchRow(
     val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
-            .padding(10.dp)
+            .padding(horizontal = 10.dp)
             .onPreInterceptKeyBeforeSoftKeyboard { event ->
                 if (event.key.nativeKeyCode == KeyEvent.KEYCODE_BACK) {
                     focusManager.clearFocus()
@@ -57,6 +58,7 @@ fun SearchRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
+                shape = RoundedCornerShape(15),
                 value = state.searchTxt,
                 onValueChange = {
                     update(

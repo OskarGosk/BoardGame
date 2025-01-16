@@ -42,14 +42,6 @@ class PlayerListViewModel(
         }
     }
 
-    fun search(searchTxt: String) {
-        _state.update {
-            it.copy(
-                playerList = state.value.playerList?.filter { it.name.startsWith(searchTxt) }
-            )
-        }
-    }
-
     fun validateDeletePlayer(playerID: String) {
         viewModelScope.launch {
             val response = playerNetworkRepository.deletePlayer(playerId = playerID)
