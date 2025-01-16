@@ -17,16 +17,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -36,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.games.play.components.GameInfo
 import com.goskar.boardgame.ui.games.play.components.PlayerListToSelect
+import com.goskar.boardgame.ui.games.play.components.WinnerRow
 
 class GamePlayActivityScreen(
     val game: Game
@@ -191,56 +187,8 @@ fun GamePlayContent(
                     }
                 }
             }
-            val selectedPlayers = state.playerList?.filter { it.selected == true }
-            var expanded by remember { mutableStateOf(false) }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Winner: ",
-                    modifier = Modifier.weight(0.5f),
-                    textAlign = TextAlign.Center
-                )
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    TextField(
-                        modifier = Modifier
-                            .menuAnchor(),
-                        readOnly = true,
-                        value = state.winner,
-                        onValueChange = {},
-                        colors = ExposedDropdownMenuDefaults.textFieldColors(
-                            unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                            focusedContainerColor = MaterialTheme.colorScheme.background,
-                            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                            focusedIndicatorColor = MaterialTheme.colorScheme.background,
-                        )
-                    )
+            WinnerRow(state = state, update = update)
 
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }) {
-                        selectedPlayers?.forEach { player ->
-                            DropdownMenuItem(
-                                text = { Text(text = player.name) },
-                                onClick = {
-                                    update(
-                                        state.copy(
-                                            winner = player.name
-                                        )
-                                    )
-                                    expanded = false
-                                })
-                        }
-                    }
-                }
-            }
             Spacer(modifier = Modifier.height(15.dp))
 
             Text(

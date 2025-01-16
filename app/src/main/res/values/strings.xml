@@ -36,6 +36,7 @@
     <string name="title_activity_add_edit_game">AddEditGame</string>
     <string name="how_many_played">Games Played:</string>
     <string name="play_date">Play data:</string>
+    <string name="winner">Winner:</string>
 
     <string name="add_gameplay">Add new gameplay</string>
 
