@@ -1,15 +1,8 @@
 package com.goskar.boardgame.ui.games.play
 
 import android.annotation.SuppressLint
-import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,16 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -47,19 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
@@ -72,6 +54,8 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.games.play.components.GameInfo
+import com.goskar.boardgame.ui.games.play.components.PlayerListToSelect
 
 class GamePlayActivityScreen(
     val game: Game
@@ -93,7 +77,7 @@ class GamePlayActivityScreen(
         }
 
         LaunchedEffect(state.successEditAllPlayer) {
-            if(state.successEditAllPlayer && state.successAddPlayGame && state.successAddHistoryGame) {
+            if (state.successEditAllPlayer && state.successAddPlayGame && state.successAddHistoryGame) {
                 navigator?.pop()
             }
         }
@@ -113,17 +97,14 @@ class GamePlayActivityScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GamePlayContent(
-    state: GamePLayState,
-    update: (GamePLayState) -> Unit = {},
+    state: GamePlayState,
+    update: (GamePlayState) -> Unit = {},
     selectedPlayer: (Player) -> Unit = {},
     addGamePlay: () -> Unit = {},
 ) {
     val calendarState = rememberSheetState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
-
-
 
     CalendarDialog(
         state = calendarState,
@@ -138,24 +119,10 @@ fun GamePlayContent(
                 )
             )
         })
-    /*
-    Na górze wybrana gra z możliwością edycji?
-    Dodawanie playerów którzy grali
-    Kto wygrał
-    Data gry
-
-    Korzytam z viewMOdel player,game
-    hmm czy daty zapisywać w nowej tebeli?
-
-    póki co jest do dopasowania widok
-     */
 
     BoardGameScaffold(
         titlePage = stringResource(R.string.board_list)
     ) { paddingValues ->
-        var visible by remember { mutableStateOf(false) }
-
-
 
         Column(
             modifier = Modifier
@@ -164,115 +131,33 @@ fun GamePlayContent(
                 .verticalScroll(scrollState),
 
             ) {
-            AnimatedVisibility(visible = visible) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Gray)
-                        .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .zIndex(100f),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Error",
-                    )
-                    //DO PRZEROBIENIA NA POTRZEBY APKI
-                }
+//            AnimatedVisibility(visible = visible) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .clip(RoundedCornerShape(4.dp))
+//                        .background(Color.Gray)
+//                        .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
+//                        .padding(horizontal = 16.dp, vertical = 8.dp)
+//                        .zIndex(100f),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Text(
+//                        text = "Error",
+//                    )
+            //DO PRZEROBIENIA NA POTRZEBY APKI
+//                }
 //        AppAlert(
 //            modifier = Modifier,
 //            text = state.successMessage.asString(),
 //            type = AlertType.SUCCESS,
 //        )
+//            }
+            GameInfo(state = state)
+            if (!state.playerList.isNullOrEmpty()) {
+                PlayerListToSelect(state = state, selectedPlayer = selectedPlayer)
             }
-            Row() {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
-                    contentDescription = "Marvel",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                )
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Text(
-                            text = state.game?.name ?: "",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 25.sp,
-                            textAlign = TextAlign.Center,
-                            maxLines = 2,
-                        )
-                        if (state.game?.expansion != false) Text(text = "expansion") else Text(text = "base")
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Text(text = "Min player:")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(text = state.game?.minPlayer ?: "")
-                            Spacer(modifier = Modifier.width(30.dp))
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Text(text = "Max player:")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(text = state.game?.maxPlayer ?: "")
-                            Spacer(modifier = Modifier.width(30.dp))
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Text(text = "How many played:")
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(text = state.game?.games.toString())
-                            Spacer(modifier = Modifier.width(30.dp))
-                        }
-                    }
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp)
-            ) {
-                if (!state.playerList.isNullOrEmpty()) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        contentPadding = PaddingValues(10.dp)
-                    ) {
-                        items(items = state.playerList) { player ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                var isChecked by remember { mutableStateOf(player.selected) }
-                                Checkbox(checked = isChecked, onCheckedChange = {
-                                    if(state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || isChecked){
-                                        //DODAC zabezpiecznie gdy maxPlayer jest null lub ""
-                                        isChecked = it
-                                        selectedPlayer(player)
-                                    } else {
-                                        visible = true
-                                        Toast.makeText(context, "Wybrano max graczy", Toast.LENGTH_LONG).show()
-                                    }
-                                })
-                                Text(text = player.name)
-                            }
-                        }
-                    }
-                }
-            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -280,6 +165,7 @@ fun GamePlayContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
+                    shape = CutCornerShape(percent = 10),
                     onClick = {
                         calendarState.show()
                     },
@@ -293,7 +179,7 @@ fun GamePlayContent(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Play data: ",
+                            stringResource(R.string.play_date),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center
                         )
@@ -315,7 +201,7 @@ fun GamePlayContent(
             ) {
                 Text(
                     text = "Winner: ",
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(0.5f),
                     textAlign = TextAlign.Center
                 )
                 ExposedDropdownMenuBox(
@@ -344,9 +230,11 @@ fun GamePlayContent(
                             DropdownMenuItem(
                                 text = { Text(text = player.name) },
                                 onClick = {
-                                    update(state.copy(
-                                        winner = player.name
-                                    ))
+                                    update(
+                                        state.copy(
+                                            winner = player.name
+                                        )
+                                    )
                                     expanded = false
                                 })
                         }
@@ -371,6 +259,7 @@ fun GamePlayContent(
             Spacer(modifier = Modifier.height(15.dp))
 
             Button(
+                shape = CutCornerShape(percent = 10),
                 onClick = {
                     addGamePlay()
                 },
@@ -416,6 +305,6 @@ fun GamePlayActivityPreview() {
             games = 6,
             id = "5456"
         )
-        GamePlayContent(GamePLayState(game, playerList = listOf(player, player, player2)))
+        GamePlayContent(GamePlayState(game, playerList = listOf(player, player, player2, player2, player, player, player2)))
     }
 }

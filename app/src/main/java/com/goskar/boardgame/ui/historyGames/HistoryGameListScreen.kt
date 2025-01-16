@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.history
+package com.goskar.boardgame.ui.historyGames
 
 import android.view.KeyEvent
 import androidx.compose.foundation.clickable

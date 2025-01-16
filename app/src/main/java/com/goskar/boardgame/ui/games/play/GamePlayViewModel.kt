@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.games.play
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.GameNetworkRepository
@@ -17,7 +16,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import java.time.LocalDate
 
-data class GamePLayState(
+data class GamePlayState(
     val game: Game? = null,
     val playerList: List<Player>? = emptyList(),
     val successAddPlayGame: Boolean = false,
@@ -36,10 +35,10 @@ class GamePlayViewModel(
     private val historyGameNetworkRepository: HistoryGameNetworkRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(GamePLayState())
+    private val _state = MutableStateFlow(GamePlayState())
     val state = _state.asStateFlow()
 
-    fun update(state: GamePLayState) {
+    fun update(state: GamePlayState) {
         _state.update { state }
     }
 

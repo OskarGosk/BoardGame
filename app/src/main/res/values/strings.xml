@@ -29,12 +29,13 @@
     <string name="new_game">Add new game</string>
     <string name="game_name">Board Game Name</string>
     <string name="base_game">Base Game</string>
-    <string name="min_player">Min players</string>
-    <string name="max_player">Max players</string>
+    <string name="min_player">Min players:</string>
+    <string name="max_player">Max players:</string>
     <string name="empty_game_list">Empty game list.</string>
     <string name="add_more_game">Please add some game\nTo do this, please click button below.</string>
     <string name="title_activity_add_edit_game">AddEditGame</string>
-    <string name="how_many_played">How many played</string>
+    <string name="how_many_played">Games Played:</string>
+    <string name="play_date">Play data:</string>
 
     <string name="add_gameplay">Add new gameplay</string>
 
