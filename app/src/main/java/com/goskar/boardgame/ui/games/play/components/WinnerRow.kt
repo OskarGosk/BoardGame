@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Player
 import com.goskar.boardgame.ui.games.play.GamePlayState
+import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.SmoochBold18
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +47,8 @@ fun WinnerRow(
         Text(
             stringResource(R.string.winner),
             modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            style = Smooch18,
         )
         ExposedDropdownMenuBox(
             expanded = expanded,
@@ -53,6 +56,7 @@ fun WinnerRow(
             modifier = Modifier.weight(1f)
         ) {
             TextField(
+                textStyle = SmoochBold18,
                 modifier = Modifier
                     .menuAnchor(),
                 readOnly = true,

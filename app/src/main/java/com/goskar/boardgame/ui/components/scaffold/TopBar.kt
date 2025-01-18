@@ -13,11 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.goskar.boardgame.ui.theme.SmoochExtraBold32
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,8 +28,7 @@ fun TopBar(titlePage: String) {
         TopAppBar(
             navigationIcon = {
                 Text( text = titlePage,
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
+                    style = SmoochExtraBold32,
                     modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center)

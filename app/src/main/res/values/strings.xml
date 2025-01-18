@@ -18,6 +18,7 @@
     <string name="player_name">Player Name</string>
     <string name="player_description">About Player</string>
     <string name="title_activity_add_edit_player">AddEditPlayer</string>
+    <string name="first_add_player_to_list">Go to player list and Add someone.</string>
 
     <string name="expansion">Expansion</string>
 
@@ -36,6 +37,7 @@
     <string name="title_activity_add_edit_game">AddEditGame</string>
     <string name="how_many_played">Games Played:</string>
     <string name="play_date">Play data:</string>
+    <string name="add_game_to_history">Add New GamePlay</string>
     <string name="winner">Winner:</string>
 
     <string name="add_gameplay">Add new gameplay</string>

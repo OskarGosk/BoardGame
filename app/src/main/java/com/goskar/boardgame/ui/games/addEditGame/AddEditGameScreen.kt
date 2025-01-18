@@ -31,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -39,6 +38,9 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.theme.Smooch14
+import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.SmoochBold18
 
 class AddEditGameScreen(val editGame: Game?) : Screen {
 
@@ -89,13 +91,15 @@ fun AddEditGameContent(
 ) {
 
     BoardGameScaffold(
-        titlePage = stringResource(id = if(state.name == null)R.string.new_game else R.string.edit_game)
+        titlePage = stringResource(id = if (state.name == null) R.string.new_game else R.string.edit_game)
     ) { paddingValues ->
         Column(
-            modifier = Modifier.padding(horizontal = 10.dp)
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
                 .padding(paddingValues)
         ) {
             OutlinedTextField(
+                textStyle = Smooch18,
                 value = state.name ?: "",
                 onValueChange = {
                     update(
@@ -108,12 +112,16 @@ fun AddEditGameContent(
                     .fillMaxWidth()
                     .padding(top = 10.dp),
                 label = {
-                    Text(stringResource(id = R.string.game_name))
+                    Text(
+                        stringResource(id = R.string.game_name),
+                        style = Smooch14
+                    )
                 },
                 singleLine = true
             )
 
             OutlinedTextField(
+                textStyle = Smooch18,
                 value = state.minPlayer,
                 onValueChange = {
                     if (it.isDigitsOnly()) {
@@ -127,13 +135,17 @@ fun AddEditGameContent(
                 modifier = Modifier
                     .fillMaxWidth(),
                 label = {
-                    Text(stringResource(id = R.string.min_player))
+                    Text(
+                        stringResource(id = R.string.min_player),
+                        style = Smooch14
+                    )
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             OutlinedTextField(
+                textStyle = Smooch18,
                 value = state.maxPlayer,
                 onValueChange = {
                     if (it.isDigitsOnly()) {
@@ -147,7 +159,10 @@ fun AddEditGameContent(
                 modifier = Modifier
                     .fillMaxWidth(),
                 label = {
-                    Text(stringResource(id = R.string.max_player))
+                    Text(
+                        stringResource(id = R.string.max_player),
+                        style = Smooch14
+                    )
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -167,10 +182,11 @@ fun AddEditGameContent(
                         )
                     },
                 )
-                Text(stringResource(id = R.string.is_expansion))
+                Text(stringResource(id = R.string.is_expansion), style = Smooch18)
             }
             if (state.expansion) {
                 OutlinedTextField(
+                    textStyle = Smooch18,
                     value = state.baseGame ?: "",
                     onValueChange = {
                         update(
@@ -182,46 +198,40 @@ fun AddEditGameContent(
                     modifier = Modifier
                         .fillMaxWidth(),
                     label = {
-                        Text(stringResource(id = R.string.base_game))
+                        Text(
+                            stringResource(id = R.string.base_game),
+                            style = Smooch14
+                        )
                     },
                     singleLine = true
                 )
             }
 
             Spacer(modifier = Modifier.height(40.dp))
+            val enabled =
+                state.minPlayer.isNotEmpty() && state.maxPlayer.isNotEmpty() && !state.name.isNullOrEmpty() && !state.inProgress
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
                     if (state.id == null) addGame() else editGame()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !state.inProgress
+                enabled = enabled
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (state.id == null) {
-                        Text(
-                            stringResource(id = R.string.add_board),
-                            fontSize = 20.sp
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_board),
-                            modifier = Modifier.size(25.dp)
-                        )
-                    } else {
-                        Text(
-                            stringResource(id = R.string.edit_game_save),
-                            fontSize = 20.sp
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = stringResource(id = R.string.edit_game),
-                            modifier = Modifier.size(25.dp)
-                        )
-
-                    }
+                    Text(
+                        stringResource(id = if (state.id == null) R.string.add_board else R.string.edit_game_save),
+                        style = SmoochBold18
+                    )
+                    Icon(
+                        imageVector = if (state.id == null) Icons.Default.Add else Icons.Default.Edit,
+                        contentDescription = stringResource(id = if (state.id == null) R.string.add_board else R.string.edit_game),
+                        modifier = Modifier
+                            .padding(start = 5.dp)
+                            .size(20.dp)
+                    )
                 }
             }
 
@@ -240,8 +250,7 @@ fun AddEditContentPreview() {
         minPlayer = "1",
         maxPlayer = "4",
         games = 3,
-
-        )
+    )
 
     Surface(
         modifier = Modifier.fillMaxSize(),

@@ -52,6 +52,7 @@ import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.games.play.components.GameInfo
 import com.goskar.boardgame.ui.games.play.components.PlayerListToSelect
 import com.goskar.boardgame.ui.games.play.components.WinnerRow
+import com.goskar.boardgame.ui.theme.SmoochBold18
 
 class GamePlayActivityScreen(
     val game: Game
@@ -150,9 +151,7 @@ fun GamePlayContent(
 //        )
 //            }
             GameInfo(state = state)
-            if (!state.playerList.isNullOrEmpty()) {
-                PlayerListToSelect(state = state, selectedPlayer = selectedPlayer)
-            }
+            PlayerListToSelect(state = state, selectedPlayer = selectedPlayer)
 
             Row(
                 modifier = Modifier
@@ -177,12 +176,14 @@ fun GamePlayContent(
                         Text(
                             stringResource(R.string.play_date),
                             modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            style = SmoochBold18
                         )
                         Text(
                             text = "${state.playDate}",
                             modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            style = SmoochBold18
                         )
                     }
                 }
@@ -207,6 +208,7 @@ fun GamePlayContent(
             Spacer(modifier = Modifier.height(15.dp))
 
             Button(
+                enabled = state.winner != "Who Win?",
                 shape = CutCornerShape(percent = 10),
                 onClick = {
                     addGamePlay()
@@ -221,7 +223,9 @@ fun GamePlayContent(
                         contentDescription = "AddGamePlay",
                         modifier = Modifier.size(25.dp)
                     )
-                    Text(text = "Add New GamePlay")
+                    Text(
+                        stringResource(R.string.add_game_to_history),
+                        style = SmoochBold18)
                 }
             }
             Row {
@@ -240,7 +244,7 @@ fun GamePlayActivityPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         val player =
-            Player(name = "Oskar", winRatio = 2, games = 6, description = "ds", selected = true)
+            Player(name = "Maksymilian Gosk WIelki Gracz", winRatio = 2, games = 6, description = "ds", selected = true)
         val player2 =
             Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
 
@@ -253,6 +257,32 @@ fun GamePlayActivityPreview() {
             games = 6,
             id = "5456"
         )
-        GamePlayContent(GamePlayState(game, playerList = listOf(player, player, player2, player2, player, player, player2)))
+        GamePlayContent(
+            GamePlayState(
+                game,
+                playerList = listOf(player, player, player2, player2, player, player, player2)
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun GamePlayActivityPreviewWithoutPlayer() {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+
+        val game = Game(
+            name = "Nazwa Testowa",
+            expansion = true,
+            baseGame = "Gra bazowa",
+            minPlayer = "1",
+            maxPlayer = "4",
+            games = 6,
+            id = "5456"
+        )
+        GamePlayContent(GamePlayState(game, playerList = emptyList()))
     }
 }

@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
@@ -21,6 +20,7 @@ import com.goskar.boardgame.ui.historyGames.HistoryGameListScreen
 import com.goskar.boardgame.ui.games.lists.GameListScreen
 import com.goskar.boardgame.ui.player.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 
 class HomeScreen : Screen {
     @Composable
@@ -56,7 +56,7 @@ fun HomeScreenContent(
             ) {
                 Text(
                     stringResource(id = R.string.player_list),
-                    fontSize = 20.sp
+                    style = SmoochBold24LetterSpacing2,
                 )
             }
             Button(
@@ -71,7 +71,7 @@ fun HomeScreenContent(
             ) {
                 Text(
                     stringResource(id = R.string.board_list),
-                    fontSize = 20.sp
+                    style = SmoochBold24LetterSpacing2,
                 )
             }
             Button(
@@ -86,7 +86,7 @@ fun HomeScreenContent(
             ) {
                 Text(
                     stringResource(id = R.string.history_game_screen),
-                    fontSize = 20.sp
+                    style = SmoochBold24LetterSpacing2,
                 )
             }
         }
