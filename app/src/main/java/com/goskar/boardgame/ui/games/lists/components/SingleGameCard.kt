@@ -15,14 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.ui.theme.Smooch14
+import com.goskar.boardgame.ui.theme.SmoochBold26
 
 @Composable
 fun SingleGameCard(
@@ -42,18 +42,17 @@ fun SingleGameCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+                Text(
+                    text = game.name,
+                    style = SmoochBold26,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
             Text(
-                text = game.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-
+                stringResource(if (game.expansion) R.string.expansion else R.string.base_game),
+                style = Smooch14
             )
-            Text (
-                stringResource(if(game.expansion) R.string.expansion else R.string.base_game),
-                fontSize = 12.sp)
 
             GameDataRow(R.string.min_player, game.minPlayer)
             GameDataRow(R.string.max_player, game.maxPlayer)
@@ -65,10 +64,33 @@ fun SingleGameCard(
 
 @Preview
 @Composable
-fun SingleGameCardPreview(){
+fun SingleGameCardPreview() {
 
     val game = Game(
         name = "Marvel Marvel Marvel Marel Marvel Marvel Marvel Marvel Mar",
+        expansion = false,
+        baseGame = "",
+        minPlayer = "1",
+        maxPlayer = "4",
+        games = 3,
+        id = "dasfgfsh"
+    )
+
+    Surface(
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Box(modifier = Modifier.padding(10.dp)) {
+            SingleGameCard(game = game, Modifier)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun SingleGameCardPreviewOneLine() {
+
+    val game = Game(
+        name = "Marvel Marvel ",
         expansion = false,
         baseGame = "",
         minPlayer = "1",

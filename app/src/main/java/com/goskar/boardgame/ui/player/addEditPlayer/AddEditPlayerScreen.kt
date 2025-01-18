@@ -24,13 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Player
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.theme.Smooch14
+import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.SmoochBold18
 import java.util.UUID
 
 class AddEditPlayerScreen(val editPlayer: Player?) : Screen {
@@ -81,6 +83,7 @@ fun AddEditPlayerContent(
                 .padding(paddingValues)
         ) {
             OutlinedTextField(
+                textStyle = Smooch18,
                 value = state.name,
                 onValueChange = {
                     update(
@@ -92,7 +95,8 @@ fun AddEditPlayerContent(
                 modifier = Modifier
                     .fillMaxWidth(),
                 label = {
-                    Text(stringResource(id = R.string.player_name))
+                    Text(stringResource(id = R.string.player_name),
+                        style = Smooch14)
                 },
                 singleLine = true
             )
@@ -100,6 +104,7 @@ fun AddEditPlayerContent(
 
             Spacer(modifier = Modifier.height(15.dp))
             OutlinedTextField(
+                textStyle = Smooch18,
                 value = state.description,
                 onValueChange = {
                     update(
@@ -111,7 +116,8 @@ fun AddEditPlayerContent(
                 modifier = Modifier
                     .fillMaxWidth(),
                 label = {
-                    Text(stringResource(id = R.string.player_description))
+                    Text(stringResource(id = R.string.player_description),
+                        style = Smooch14)
                 })
             Spacer(modifier = Modifier.height(40.dp))
             Button(
@@ -119,32 +125,20 @@ fun AddEditPlayerContent(
                     if (newPlayer) addPlayer() else editPlayer()
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) {
+                    .size(40.dp),
+                ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (newPlayer) {
-                        Text(
-                            stringResource(id = R.string.add_player),
-                            fontSize = 20.sp
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_player),
-                            modifier = Modifier.size(25.dp)
-                        )
-                    } else {
-                        Text(
-                            stringResource(id = R.string.edit_player_save),
-                            fontSize = 20.sp
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_player),
-                            modifier = Modifier.size(25.dp)
-                        )
-                    }
-
+                    Text(
+                        stringResource(id = if(newPlayer) R.string.add_player else R.string.edit_player_save),
+                        style = SmoochBold18
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.add_player),
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
         }

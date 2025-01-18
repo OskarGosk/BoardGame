@@ -215,7 +215,8 @@ fun AddEditGameContent(
                 onClick = {
                     if (state.id == null) addGame() else editGame()
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .size(40.dp),
                 enabled = enabled
             ) {
                 Row(

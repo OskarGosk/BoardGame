@@ -27,13 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.data.rest.models.Player
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
+import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.SmoochBold26
 
 @Composable
 fun SinglePlayerCard(
@@ -60,9 +61,15 @@ fun SinglePlayerCard(
             ) {
                 Text(
                     text = player.name,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 25.sp,
+                    style = SmoochBold26,
+                    maxLines = if(isExpanded) 4 else 1,
                     modifier = Modifier.padding(10.dp)
+                        .weight(2.5f),
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "Games played: ${player.games}",
+                    style = Smooch18,
                 )
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
@@ -110,6 +117,21 @@ fun SinglePlayerCard(
 fun SinglePlayerCardPreview() {
     val player =
         Player(name = "Oskar", winRatio = 2, games = 6, description = "ds", selected = true)
+
+    Surface(
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Box(modifier = Modifier.padding(10.dp)) {
+            SinglePlayerCard(player, modifier = Modifier)
+        }
+    }
+}
+
+@Preview
+@Composable
+fun SinglePlayerCardPreview2() {
+    val player =
+        Player(name = "Maksymilian Bardzo długie imie i jeszcze ", winRatio = 2, games = 6, description = "ds", selected = true)
 
     Surface(
         color = MaterialTheme.colorScheme.background

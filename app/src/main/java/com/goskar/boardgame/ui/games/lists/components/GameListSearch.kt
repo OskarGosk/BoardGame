@@ -32,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.games.lists.GameListState
+import com.goskar.boardgame.ui.theme.Smooch14
+import com.goskar.boardgame.ui.theme.Smooch18
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -57,6 +59,7 @@ fun GameSearchRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
+                textStyle = Smooch18,
                 shape = RoundedCornerShape(15),
                 value = state.searchTxt,
                 onValueChange = {
@@ -69,7 +72,10 @@ fun GameSearchRow(
                 modifier = Modifier
                     .weight(1f),
                 label = {
-                    Text(stringResource(id = R.string.game_name))
+                    Text(
+                        stringResource(id = R.string.game_name),
+                        style = Smooch14
+                    )
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(

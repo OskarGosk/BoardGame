@@ -34,13 +34,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.player.playerList.PlayerListState
+import com.goskar.boardgame.ui.theme.Smooch14
+import com.goskar.boardgame.ui.theme.Smooch18
 
 @Composable
 fun SearchRow(
     onCLickMenu: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     state: PlayerListState
-    ) {
+) {
     val focusManager = LocalFocusManager.current
     Column(
         modifier = Modifier
@@ -57,6 +59,7 @@ fun SearchRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
+                textStyle = Smooch18,
                 shape = RoundedCornerShape(15),
                 value = state.searchTxt,
                 onValueChange = {
@@ -67,9 +70,13 @@ fun SearchRow(
                     )
                 },
                 modifier = Modifier
-                    .weight(1f),
+                    .weight(1f)
+                    .padding(end = 10.dp),
                 label = {
-                        Text(stringResource(id = R.string.player_name))
+                    Text(
+                        stringResource(id = R.string.player_name),
+                        style = Smooch14
+                    )
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -99,7 +106,6 @@ fun SearchRow(
                 contentDescription = null,
                 modifier = Modifier
                     .clickable { onCLickMenu() }
-                    .padding(start = 10.dp)
                     .size(35.dp),
             )
         }

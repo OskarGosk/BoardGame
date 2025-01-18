@@ -9,10 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.theme.Smooch16
+import com.goskar.boardgame.ui.theme.SmoochBold16
 
 @Composable
 fun GameDataRow(
@@ -25,22 +25,24 @@ fun GameDataRow(
     ) {
         Text(
             stringResource(header),
-            fontSize = 16.sp)
+            style = Smooch16
+        )
         Text(
             text = value,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold)
+            style = SmoochBold16
+        )
     }
 }
 
 @Preview
 @Composable
-fun GameDataRowPreview(){
+fun GameDataRowPreview() {
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
         GameDataRow(
             header = R.string.min_player,
             value = "4"
-        )    }
+        )
+    }
 }

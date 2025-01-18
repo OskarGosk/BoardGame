@@ -46,7 +46,7 @@ fun ButtonRow(
                 Icon(
                     imageVector = Icons.Outlined.Add,
                     contentDescription = "Add to play",
-                    Modifier.size(35.dp)
+                    Modifier.size(25.dp)
                 )
             }
 
@@ -56,7 +56,7 @@ fun ButtonRow(
                 Icon(
                     imageVector = Icons.Outlined.Edit,
                     contentDescription = "Edit Game",
-                    Modifier.size(35.dp)
+                    Modifier.size(25.dp)
                 )
             }
             IconButton(onClick = {
@@ -66,7 +66,7 @@ fun ButtonRow(
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = "Delete Game",
-                    Modifier.size(35.dp)
+                    Modifier.size(25.dp)
                 )
             }
         }

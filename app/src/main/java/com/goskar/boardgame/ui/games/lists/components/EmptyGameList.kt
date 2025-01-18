@@ -16,10 +16,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
+import com.goskar.boardgame.ui.theme.Smooch22
+import com.goskar.boardgame.ui.theme.SmoochBold18
 
 @Composable
 fun EmptyGameList(
@@ -30,7 +31,7 @@ fun EmptyGameList(
 
         Text(
             stringResource(R.string.empty_game_list),
-            fontSize = 20.sp,
+            style = Smooch22,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -38,7 +39,7 @@ fun EmptyGameList(
         )
         Text(
             stringResource(R.string.add_more_game),
-            fontSize = 20.sp,
+            style = Smooch22,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -52,7 +53,8 @@ fun EmptyGameList(
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(
-                stringResource(R.string.add_board)
+                stringResource(R.string.add_board),
+                style = SmoochBold18
             )
         }
     }

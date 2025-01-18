@@ -49,6 +49,17 @@ val Smooch18 = TextStyle(
     fontWeight = FontWeight(400)
 )
 
+val Smooch20 = TextStyle(
+    fontSize = 20.sp,
+    fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
+    fontWeight = FontWeight(400)
+)
+val Smooch22 = TextStyle(
+    fontSize = 22.sp,
+    fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
+    fontWeight = FontWeight(400)
+)
+
 
 
 //BOLD

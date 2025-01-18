@@ -52,6 +52,7 @@ import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.games.play.components.GameInfo
 import com.goskar.boardgame.ui.games.play.components.PlayerListToSelect
 import com.goskar.boardgame.ui.games.play.components.WinnerRow
+import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
 
 class GamePlayActivityScreen(
@@ -194,11 +195,13 @@ fun GamePlayContent(
 
             Text(
                 text = "Game Description:",
+                style = Smooch18,
                 modifier = Modifier
                     .fillMaxWidth()
             )
             var descriptionGame by remember { mutableStateOf("") }
             OutlinedTextField(
+                textStyle = Smooch18,
                 value = descriptionGame,
                 onValueChange = { descriptionGame = it },
                 modifier = Modifier
