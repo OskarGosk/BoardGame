@@ -33,7 +33,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.rest.models.HistoryGame
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.historyGames.lists.components.GamesHistorySearchRow
+import com.goskar.boardgame.ui.historyGames.lists.components.HistoryGamesList
 
 class HistoryGameListScreen : Screen {
     @Composable
@@ -49,58 +52,33 @@ fun HistoryGameListContent() {
         titlePage = stringResource(id = R.string.history_game_screen)
     ) { paddingValues ->
         val focusManager = LocalFocusManager.current
+
+        val history1 = HistoryGame(
+            gameName = "Marvel",
+            winner = "Oskar",
+            gameData = "2025-01-23",
+            listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
+            description = "",
+            id = "dsa"
+        )
+
+        val history2 = HistoryGame(
+            gameName = "Scrable",
+            winner = "Kamila",
+            gameData = "2025-01-01",
+            listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
+            description = "",
+            id = "dsa"
+        )
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(10.dp)
                 .fillMaxSize()
-                .onPreInterceptKeyBeforeSoftKeyboard { event ->
-                    if (event.key.nativeKeyCode == KeyEvent.KEYCODE_BACK) {
-                        focusManager.clearFocus()
-                        true
-                    } else {
-                        false
-                    }
-                },
         ) {
-            Row (
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                var text by remember { mutableStateOf("Szukaj") }
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = {
-                        text = it
-                    },
-                    modifier = Modifier
-                        .weight(1f),
-                    label = {
-//                        Text(stringResource(id = R.string.player_name))
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions(onDone = {
-                        focusManager.clearFocus()
-                    }),
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(25.dp)
-                                .clickable {
-                                    text = ""
-                                })
-                    }
-                )
-                Icon(
-                    imageVector = Icons.Outlined.Menu,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                        .size(35.dp),)
-            }
+            GamesHistorySearchRow()
+            HistoryGamesList(list = listOf(history1, history2, history1, history1,history2, history1, history2, history1, history1,history2, history1, history2, history1, history1,history2, history1, history2, history1, history1,history2, history1, history2, history1, history1,history2))
         }
     }
 }
