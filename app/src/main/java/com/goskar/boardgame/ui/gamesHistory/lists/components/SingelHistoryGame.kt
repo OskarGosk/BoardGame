@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.historyGames.lists.components
+package com.goskar.boardgame.ui.gamesHistory.lists.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
