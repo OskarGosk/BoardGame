@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.historyGames.HistoryGameListScreen
+import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
 import com.goskar.boardgame.ui.games.lists.GameListScreen
 import com.goskar.boardgame.ui.player.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold

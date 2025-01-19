@@ -12,17 +12,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
 
 @Composable
-fun HistoryGamesList(list: List<HistoryGame>) {
+fun HistoryGamesList(state: GamesHistoryState) {
     Column(
         modifier = Modifier
         .verticalScroll(rememberScrollState())
             .padding(vertical = 10.dp)
 
     ) {
-        list.forEach {
-            SingleHistoryGame(Modifier)
+        state.historyList.forEach {
+            if (it.gameName.lowercase().startsWith(state.searchTxt.lowercase()) || it.winner.lowercase().startsWith(state.searchTxt.lowercase()))
+            SingleHistoryGame(Modifier, it)
         }
     }
 }
@@ -53,8 +55,9 @@ fun HistoryGamesListPreview() {
     ) {
         Box(modifier = Modifier) {
             HistoryGamesList(
-                list = listOf(history1, history2, history1, history1)
-            )
+                GamesHistoryState(
+                historyList = listOf(history1, history2, history1, history1)
+            ))
         }
     }
 }

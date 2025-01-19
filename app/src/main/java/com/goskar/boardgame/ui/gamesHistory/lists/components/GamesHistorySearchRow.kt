@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 
@@ -38,8 +39,8 @@ import com.goskar.boardgame.ui.theme.Smooch18
 @Composable
 fun GamesHistorySearchRow(
     onCLickMenu: () -> Unit = {},
-//    update: (PlayerListState) -> Unit = {},
-//    state: PlayerListState
+    update: (GamesHistoryState) -> Unit = {},
+    state: GamesHistoryState
 ) {
     val focusManager = LocalFocusManager.current
     Column(
@@ -59,23 +60,20 @@ fun GamesHistorySearchRow(
             OutlinedTextField(
                 textStyle = Smooch18,
                 shape = RoundedCornerShape(15),
-//                value = state.searchTxt,
-                value = "Oskar",
+                value = state.searchTxt,
                 onValueChange = {
-//                    update(
-//                        state.copy(
-//                            searchTxt = it
-//                        )
-//                    )
+                    update(
+                        state.copy(
+                            searchTxt = it
+                        )
+                    )
                 },
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 10.dp),
                 label = {
-                    Text(
-                        stringResource(id = R.string.player_name),
-                        style = Smooch14
-                    )
+                    Text(stringResource(R.string.history_search_label),
+                        style = Smooch14)
                 },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -91,11 +89,11 @@ fun GamesHistorySearchRow(
                         modifier = Modifier
                             .size(25.dp)
                             .clickable {
-//                                update(
-//                                    state.copy(
-//                                        searchTxt = ""
-//                                    )
-//                                )
+                                update(
+                                    state.copy(
+                                        searchTxt = ""
+                                    )
+                                )
                                 focusManager.clearFocus()
                             })
                 }
@@ -119,7 +117,7 @@ fun GamesHistorySearchRowPreview() {
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
             GamesHistorySearchRow(
-//                state = PlayerListState()
+                state = GamesHistoryState()
             )
         }
     }

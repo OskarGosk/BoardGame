@@ -43,5 +43,6 @@
     <string name="add_gameplay">Add new gameplay</string>
 
 
+    <string name="history_search_label"> Player or Game</string>
     <string name="history_game_screen">Gaming History</string>
 </resources>

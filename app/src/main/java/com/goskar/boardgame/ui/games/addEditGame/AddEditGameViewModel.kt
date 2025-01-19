@@ -2,7 +2,6 @@ package com.goskar.boardgame.ui.games.addEditGame
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.PrimaryKey
 import com.goskar.boardgame.data.repository.GameNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.rest.models.Game

@@ -19,12 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.data.rest.models.HistoryGame
 import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.SmoochBold26
 
 @Composable
 fun SingleHistoryGame(
-    modifier: Modifier
+    modifier: Modifier,
+    historyGame : HistoryGame
 ) {
     Row(
         modifier = Modifier
@@ -37,18 +39,18 @@ fun SingleHistoryGame(
             modifier = Modifier
                 .padding(start = 10.dp)
                 .fillMaxHeight()
-                .weight(4f),
+                .weight(1f),
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "2025-01-21",
+            Text(text = historyGame.gameData,
                 style = Smooch16)
-            Text("Marvel",
+            Text(historyGame.gameName,
                 style = Smooch16)
         }
 
-        Text("Oskar",
+        Text(text = historyGame.winner,
             style = SmoochBold26,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.End,
             modifier = Modifier
                 .weight(1f)
                 .padding(end = 10.dp)
@@ -59,13 +61,30 @@ fun SingleHistoryGame(
 @Preview
 @Composable
 fun SingleHistoryGamePreview() {
+    val history1 = HistoryGame(
+        gameName = "Marvel",
+        winner = "Oskar",
+        gameData = "2025-01-23",
+        listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
+        description = "",
+        id = "dsa"
+    )
+
+    val history2 = HistoryGame(
+        gameName = "Scrable",
+        winner = "Kamila",
+        gameData = "2025-01-01",
+        listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
+        description = "",
+        id = "dsa"
+    )
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.padding(0.dp)) {
             Column {
-                SingleHistoryGame(modifier = Modifier)
-                SingleHistoryGame(modifier = Modifier)
+                SingleHistoryGame(modifier = Modifier, historyGame = history1)
+                SingleHistoryGame(modifier = Modifier, historyGame = history2)
             }
         }
     }
