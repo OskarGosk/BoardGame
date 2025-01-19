@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.lists.components
+package com.goskar.boardgame.ui.gamesList.lists.components
 
 import android.view.KeyEvent
 import androidx.compose.foundation.clickable
@@ -31,7 +31,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.games.lists.GameListState
+import com.goskar.boardgame.ui.gamesList.lists.GameListState
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 

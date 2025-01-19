@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.lists
+package com.goskar.boardgame.ui.gamesList.lists
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,13 +24,13 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Game
-import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
-import com.goskar.boardgame.ui.games.lists.components.GameViewList
+import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
+import com.goskar.boardgame.ui.gamesList.lists.components.GameViewList
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
-import com.goskar.boardgame.ui.games.lists.components.EmptyGameList
-import com.goskar.boardgame.ui.games.lists.components.GameSearchRow
+import com.goskar.boardgame.ui.gamesList.lists.components.EmptyGameList
+import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
 class GameListScreen : Screen {
     @Composable

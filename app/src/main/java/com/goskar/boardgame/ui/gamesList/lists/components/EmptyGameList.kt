@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.lists.components
+package com.goskar.boardgame.ui.gamesList.lists.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.games.addEditGame.AddEditGameScreen
+import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.theme.Smooch22
 import com.goskar.boardgame.ui.theme.SmoochBold18
 

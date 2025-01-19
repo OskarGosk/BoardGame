@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.addEditGame
+package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

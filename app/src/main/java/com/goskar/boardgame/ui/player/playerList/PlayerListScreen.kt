@@ -92,7 +92,6 @@ fun PlayerListContent(
                         )
                     } else {
                         PlayerViewList(
-                            playerList = state.playerList,
                             deletePlayer = deletePlayer,
                             refreshPlayer = refreshPlayer,
                             state = state
@@ -123,7 +122,6 @@ fun PlayerListContent(
 
 @Composable
 fun PlayerViewList(
-    playerList: List<Player>,
     deletePlayer: (String) -> Unit = {},
     refreshPlayer: () -> Unit = {},
     state: PlayerListState
@@ -133,11 +131,12 @@ fun PlayerViewList(
         contentPadding = PaddingValues(vertical = 10.dp),
     )
     {
-        items(items = playerList) { player ->
-            if (player.name.startsWith(state.searchTxt)) {
+        var newPlayerList: List<Player> = state.playerList?.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) } ?: emptyList()
+        items(items = newPlayerList) { player ->
+            if (player.name.lowercase().contains(state.searchTxt.lowercase())) {
                 SinglePlayerCard(
                     player = player,
-                    modifier = Modifier.padding(bottom = if(playerList.indexOf(player)==(playerList.size -1) ) 50.dp else 0.dp),
+                    modifier = Modifier.padding(bottom = if(newPlayerList.indexOf(player)==(newPlayerList.size -1) ) 50.dp else 0.dp),
                     deletePlayer = deletePlayer,
                     refreshPlayer = refreshPlayer,
                 )

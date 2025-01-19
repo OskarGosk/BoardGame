@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.play
+package com.goskar.boardgame.ui.gamesList.play
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -49,9 +49,9 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
-import com.goskar.boardgame.ui.games.play.components.GameInfo
-import com.goskar.boardgame.ui.games.play.components.PlayerListToSelect
-import com.goskar.boardgame.ui.games.play.components.WinnerRow
+import com.goskar.boardgame.ui.gamesList.play.components.GameInfo
+import com.goskar.boardgame.ui.gamesList.play.components.PlayerListToSelect
+import com.goskar.boardgame.ui.gamesList.play.components.WinnerRow
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
 

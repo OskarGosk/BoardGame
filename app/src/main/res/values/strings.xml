@@ -9,6 +9,11 @@
     <string name="title_activity_choose_the_game">ChooseTheGame</string>
 
     <string name="empty"></string>
+    <string name="confirm">Confirm</string>
+    <string name="back">Back to list</string>
+    <string name="delete">Delete %s ?</string>
+    <string name="delete_game">The removal of the game is irreversible. It will not affect players scores.</string>
+    <string name="delete_player">The removal of a player is irreversible. It will not affect to other players scores or count of played games</string>
 
     <string name="player_list">Player List</string>
     <string name="add_player">Add new Player</string>
@@ -19,6 +24,7 @@
     <string name="player_description">About Player</string>
     <string name="title_activity_add_edit_player">AddEditPlayer</string>
     <string name="first_add_player_to_list">Go to player list and Add someone.</string>
+
 
     <string name="expansion">Expansion</string>
 

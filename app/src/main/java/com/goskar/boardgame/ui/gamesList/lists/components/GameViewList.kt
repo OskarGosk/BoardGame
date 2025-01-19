@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.lists.components
+package com.goskar.boardgame.ui.gamesList.lists.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.data.rest.models.Game
-import com.goskar.boardgame.ui.games.lists.GameListState
+import com.goskar.boardgame.ui.gamesList.lists.GameListState
 
 @Composable
 fun GameViewList(
@@ -28,7 +28,7 @@ fun GameViewList(
         contentPadding = PaddingValues(10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        val newGameList: List<Game> = state.gameList?.filter { it.name.startsWith(state.searchTxt) } ?: emptyList()
+        val newGameList: List<Game> = state.gameList?.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) } ?: emptyList()
         items(items = newGameList) { game ->
             SingleGameCard(
                 game = game,

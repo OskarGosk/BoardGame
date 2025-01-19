@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.addEditGame
+package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.games.lists.components
+package com.goskar.boardgame.ui.gamesList.lists.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
