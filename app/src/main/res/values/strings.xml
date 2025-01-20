@@ -8,24 +8,47 @@
     <string name="title_activity_game_play">GamePlayActivity</string>
     <string name="title_activity_choose_the_game">ChooseTheGame</string>
 
+    <string name="empty"></string>
+    <string name="confirm">Confirm</string>
+    <string name="back">Back to list</string>
+    <string name="delete">Delete %s ?</string>
+    <string name="delete_game">The removal of the game is irreversible. It will not affect players scores.</string>
+    <string name="delete_player">The removal of a player is irreversible. It will not affect to other players scores or count of played games</string>
+
     <string name="player_list">Player List</string>
     <string name="add_player">Add new Player</string>
-    <string name="edit_player">Save change</string>
+    <string name="edit_player_save">Save change</string>
     <string name="new_player">Create new player</string>
+    <string name="edit_player">Edit player</string>
     <string name="player_name">Player Name</string>
     <string name="player_description">About Player</string>
     <string name="title_activity_add_edit_player">AddEditPlayer</string>
+    <string name="first_add_player_to_list">Go to player list and Add someone.</string>
+
+
+    <string name="expansion">Expansion</string>
 
     <string name="board_list">Board Game List</string>
     <string name="add_board">Add new board game</string>
-    <string name="edit_game">Save change</string>
-    <string name="expansion">Is Expansion?</string>
+    <string name="edit_game_save">Save change</string>
+    <string name="edit_game"> Edit Game</string>
+    <string name="is_expansion">Is Expansion?</string>
     <string name="new_game">Add new game</string>
     <string name="game_name">Board Game Name</string>
     <string name="base_game">Base Game</string>
-    <string name="min_player">Min players</string>
-    <string name="max_player">Max players</string>
+    <string name="min_player">Min players:</string>
+    <string name="max_player">Max players:</string>
+    <string name="empty_game_list">Empty game list.</string>
+    <string name="add_more_game">Please add some game\nTo do this, please click button below.</string>
     <string name="title_activity_add_edit_game">AddEditGame</string>
+    <string name="how_many_played">Games Played:</string>
+    <string name="play_date">Play data:</string>
+    <string name="add_game_to_history">Add New GamePlay</string>
+    <string name="winner">Winner:</string>
 
     <string name="add_gameplay">Add new gameplay</string>
+
+
+    <string name="history_search_label"> Player or Game</string>
+    <string name="history_game_screen">Gaming History</string>
 </resources>

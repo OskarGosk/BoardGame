@@ -17,25 +17,25 @@ import retrofit2.http.Path
 interface ApiBoardGame {
 
     @POST("game.json")
-    suspend fun addGame(@Body game: Game): GameIdRespons
+    suspend fun addGame(@Body game: Game): Response<Void>
 
     @GET("game.json")
     suspend fun getAllGame(): Map<String, Game>
 
     @DELETE("game/{id}.json")
-    suspend fun deleteGame(@Path("id") gameId: String)
+    suspend fun deleteGame(@Path("id") gameId: String): Response<Void>
 
     @PUT("game/{id}.json")
     suspend fun editGame(
         @Path("id") gameId: String,
         @Body game: Game
-    )
+    ): Response<Void>
 
     @POST("player.json")
     suspend fun addPlayer(@Body player: Player): Response<Void>
 
     @GET("player.json")
-    suspend fun getAllPlayer(): Map<String, Player>
+    suspend fun getAllPlayer(): Map<String, Player>?
 
     @DELETE("player/{id}.json")
     suspend fun deletePlayer(@Path("id") playerId: String): Response<Void>
@@ -47,7 +47,7 @@ interface ApiBoardGame {
     ): Response<Void>
 
     @POST("historyGame.json")
-    suspend fun addHistory(@Body historyGame: HistoryGame): HistoryIdResponse
+    suspend fun addHistory(@Body historyGame: HistoryGame): Response<Void>
 
     @GET("historyGame.json")
     suspend fun getAllHistoryGame(): Map<String, HistoryGame>

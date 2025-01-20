@@ -22,16 +22,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.rest.models.Player
 import org.koin.androidx.compose.koinViewModel
+import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.theme.Smooch14
+import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.SmoochBold18
 import java.util.UUID
 
 class AddEditPlayerScreen(val editPlayer: Player?) : Screen {
@@ -74,78 +75,71 @@ fun AddEditPlayerContent(
     addPlayer: () -> Unit = {},
     editPlayer: () -> Unit = {}
 ) {
-    Column(
-        modifier = Modifier.padding(10.dp)
-    ) {
-        Text(
-            stringResource(id = R.string.new_player),
-            modifier = Modifier
-                .fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontSize = 25.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(25.dp))
-
-
-        OutlinedTextField(
-            value = state.name,
-            onValueChange = { update(state.copy(
-                name = it
-            )) },
-            modifier = Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(stringResource(id = R.string.player_name))
-            },
-            singleLine = true
-        )
-
-
-        Spacer(modifier = Modifier.height(15.dp))
-        OutlinedTextField(
-            value = state.description,
-            onValueChange = { update(state.copy(
-                description = it
-            ))},
-            modifier = Modifier
-                .fillMaxWidth(),
-            label = {
-                Text(stringResource(id = R.string.player_description))
-            })
-        Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            onClick = {
-                if (newPlayer) addPlayer() else editPlayer()
-            },
-            modifier = Modifier.fillMaxWidth()
+    BoardGameScaffold(
+        titlePage = stringResource( id = if (newPlayer)R.string.new_player else R.string.edit_player)
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier.padding(10.dp)
+                .padding(paddingValues)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (newPlayer) {
+            OutlinedTextField(
+                textStyle = Smooch18,
+                value = state.name,
+                onValueChange = {
+                    update(
+                        state.copy(
+                            name = it
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = {
+                    Text(stringResource(id = R.string.player_name),
+                        style = Smooch14)
+                },
+                singleLine = true
+            )
+
+
+            Spacer(modifier = Modifier.height(15.dp))
+            OutlinedTextField(
+                textStyle = Smooch18,
+                value = state.description,
+                onValueChange = {
+                    update(
+                        state.copy(
+                            description = it
+                        )
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = {
+                    Text(stringResource(id = R.string.player_description),
+                        style = Smooch14)
+                })
+            Spacer(modifier = Modifier.height(40.dp))
+            Button(
+                onClick = {
+                    if (newPlayer) addPlayer() else editPlayer()
+                },
+                modifier = Modifier.fillMaxWidth()
+                    .size(40.dp),
+                ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        stringResource(id = R.string.add_player),
-                        fontSize = 20.sp
+                        stringResource(id = if(newPlayer) R.string.add_player else R.string.edit_player_save),
+                        style = SmoochBold18
                     )
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(id = R.string.add_player),
-                        modifier = Modifier.size(25.dp)
-                    )
-                } else {
-                    Text(
-                        stringResource(id = R.string.edit_player),
-                        fontSize = 20.sp
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.add_player),
-                        modifier = Modifier.size(25.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
-
             }
         }
     }
