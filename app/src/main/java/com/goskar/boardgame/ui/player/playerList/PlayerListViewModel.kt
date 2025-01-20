@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.player.playerList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.repository.PlayerNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.rest.models.Player
@@ -12,11 +13,12 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 data class PlayerListState(
-    val playerList: List<Player>? = emptyList(),
+    val playerList: List<Player>? = mutableListOf(),
     val successDeletePlayer: Boolean = false,
     val errorVisible: Boolean = false,
     val visibleDialog: Boolean = false,
-    val searchTxt: String = ""
+    val searchTxt: String = "",
+    val sortOption: Int = R.string.default_sort
 )
 
 @KoinViewModel
