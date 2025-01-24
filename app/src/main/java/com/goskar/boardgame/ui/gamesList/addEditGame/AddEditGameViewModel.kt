@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.GameNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.models.Game
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

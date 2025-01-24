@@ -1,7 +1,7 @@
 package com.goskar.boardgame.data.repository
 
 import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.models.Game
 
 
 interface GameNetworkRepository {

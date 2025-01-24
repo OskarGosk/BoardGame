@@ -1,4 +1,4 @@
-package com.goskar.boardgame.data.rest.models
+package com.goskar.boardgame.data.models
 
 data class PlayerIdRespons (val name:String)
 

@@ -6,9 +6,9 @@ import com.goskar.boardgame.data.repository.GameNetworkRepository
 import com.goskar.boardgame.data.repository.HistoryGameNetworkRepository
 import com.goskar.boardgame.data.repository.PlayerNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.rest.models.Game
-import com.goskar.boardgame.data.rest.models.HistoryGame
-import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.Player
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

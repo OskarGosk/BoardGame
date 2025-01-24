@@ -9,9 +9,9 @@ import com.goskar.boardgame.data.db.Converters
 import com.goskar.boardgame.data.db.GameDao
 import com.goskar.boardgame.data.db.HistoryGameDao
 import com.goskar.boardgame.data.db.PlayerDao
-import com.goskar.boardgame.data.rest.models.Game
-import com.goskar.boardgame.data.rest.models.HistoryGame
-import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.Player
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
@@ -29,7 +29,7 @@ fun KoinApplication.databaseModule() = module {
 
 }
 
-@Database(entities = [Player::class, Game::class, HistoryGame::class], version = 1, exportSchema = false)
+@Database(entities = [Player::class, Game::class, HistoryGame::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class Db: RoomDatabase() {

@@ -3,7 +3,7 @@ package com.goskar.boardgame.ui.gamesHistory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.HistoryGameNetworkRepository
-import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGame
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

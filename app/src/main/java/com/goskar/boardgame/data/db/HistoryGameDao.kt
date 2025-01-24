@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
-import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGame
 
 @Dao
 interface HistoryGameDao {

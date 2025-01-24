@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
-import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.gamesHistory.lists.components.GamesHistorySearchRow
 import com.goskar.boardgame.ui.gamesHistory.lists.components.HistoryGamesList
