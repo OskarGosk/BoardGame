@@ -26,9 +26,3 @@ fun KoinApplication.restModule() = module {
         get<Retrofit>().create(ApiBoardGame::class.java)
     }
 }
-
-//private var retrofit = Retrofit.Builder()
-//    .baseUrl("https://boardgame-18024-default-rtdb.europe-west1.firebasedatabase.app/")
-//    .addConverterFactory(GsonConverterFactory.create())
-//    .build()
-//val gameService: GameService = retrofit.create(GameService::class.java)
