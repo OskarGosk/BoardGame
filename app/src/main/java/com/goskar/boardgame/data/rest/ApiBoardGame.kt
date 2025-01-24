@@ -1,11 +1,8 @@
 package com.goskar.boardgame.data.rest
 
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.models.GameIdRespons
 import com.goskar.boardgame.data.models.HistoryGame
-import com.goskar.boardgame.data.models.HistoryIdResponse
 import com.goskar.boardgame.data.models.Player
-import com.goskar.boardgame.data.models.PlayerIdRespons
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
