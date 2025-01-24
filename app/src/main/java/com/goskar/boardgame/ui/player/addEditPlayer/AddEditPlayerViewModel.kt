@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.player.addEditPlayer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.data.db.PlayerDao
 import com.goskar.boardgame.data.repository.PlayerNetworkRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.rest.models.Player
@@ -27,7 +28,8 @@ data class AddEditPLayerState(
 
 @KoinViewModel
 class AddEditPlayerViewModel(
-    private val playerNetworkRepository: PlayerNetworkRepository
+    private val playerNetworkRepository: PlayerNetworkRepository,
+    private val playerDao: PlayerDao
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddEditPLayerState())
@@ -47,6 +49,7 @@ class AddEditPlayerViewModel(
                 selected = state.value.selected,
                 id = state.value.id
             )
+            playerDao.insert(player)
             val response = playerNetworkRepository.addPlayer(player)
 
             when (response){
