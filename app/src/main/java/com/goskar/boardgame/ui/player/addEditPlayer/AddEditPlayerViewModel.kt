@@ -51,7 +51,7 @@ class AddEditPlayerViewModel(
             playerDbRepository.insertPlayer(player)
             val response = playerNetworkRepository.addPlayer(player)
 
-            when (response){
+            when (response) {
                 is RequestResult.Success -> {
                     _state.update {
                         it.copy(
@@ -59,6 +59,7 @@ class AddEditPlayerViewModel(
                         )
                     }
                 }
+
                 else -> {
                     _state.update {
                         it.copy(
@@ -80,24 +81,25 @@ class AddEditPlayerViewModel(
                 selected = state.value.selected,
                 id = state.value.id
             )
-            playerDbRepository.editPlayer(player)
+            val response = playerDbRepository.editPlayer(player)
 
-//            when (response){
-//                is RequestResult.Success -> {
-//                    _state.update {
-//                        it.copy(
-//                            successAddEditPlayer = true
-//                        )
-//                    }
-//                }
-//                else -> {
-//                    _state.update {
-//                        it.copy(
-//                            errorVisible = true
-//                        )
-//                    }
-//                }
-//            }
+            when (response) {
+                true -> {
+                    _state.update {
+                        it.copy(
+                            successAddEditPlayer = true
+                        )
+                    }
+                }
+
+                false -> {
+                    _state.update {
+                        it.copy(
+                            errorVisible = true
+                        )
+                    }
+                }
+            }
         }
     }
 }

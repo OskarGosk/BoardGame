@@ -56,7 +56,7 @@ class PlayerListScreen : Screen {
 @Composable
 fun PlayerListContent(
     state: PlayerListState,
-    deletePlayer: (String) -> Unit = {},
+    deletePlayer: (Player) -> Unit = {},
     refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
 ) {
@@ -123,7 +123,7 @@ fun PlayerListContent(
 
 @Composable
 fun PlayerViewList(
-    deletePlayer: (String) -> Unit = {},
+    deletePlayer: (Player) -> Unit = {},
     refreshPlayer: () -> Unit = {},
     state: PlayerListState
 ) {

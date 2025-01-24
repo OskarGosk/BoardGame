@@ -17,7 +17,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.gamesHistory.lists.components.GamesHistorySearchRow
-import com.goskar.boardgame.ui.gamesHistory.lists.components.HistoryGamesList
+import com.goskar.boardgame.ui.gamesHistory.lists.HistoryGamesList
 import org.koin.androidx.compose.koinViewModel
 
 class HistoryGameListScreen : Screen {

@@ -56,7 +56,7 @@ class GameListScreen : Screen {
 @Composable
 fun GameListContent(
     state: GameListState,
-    deleteGame: (String) -> Unit = {},
+    deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {},
     update: (GameListState) -> Unit = {}
 ) {

@@ -48,7 +48,7 @@ import com.goskar.boardgame.ui.theme.SmoochBold26
 fun SinglePlayerCard(
     player: Player,
     modifier: Modifier,
-    deletePlayer: (String) -> Unit = {},
+    deletePlayer: (Player) -> Unit = {},
     refreshPlayer: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -137,8 +137,9 @@ fun SinglePlayerCard(
                     Button(
                         shape = CutCornerShape(percent = 10),
                         onClick = {
+                            showAlertDialog = false
                             isExpanded = false
-                            deletePlayer(player.id)
+                            deletePlayer(player)
                             refreshPlayer()
                         },
                         modifier = Modifier

@@ -2,9 +2,8 @@ package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.goskar.boardgame.data.repository.GameNetworkRepository
-import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,16 +18,16 @@ data class AddEditGameState(
     val minPlayer: String = "",
     val maxPlayer: String = "",
     val games: Int = 0,
-    val id: String? = null ,
+    val id: String? = null,
 
     val successAddEditGame: Boolean = false,
     val errorVisible: Boolean = false,
-    val inProgress: Boolean  = false
+    val inProgress: Boolean = false
 )
 
 class AddEditGameViewModel(
-    private val gameNetworkRepository: GameNetworkRepository
-) : ViewModel(){
+    private val gameDbRepository: GameDbRepository,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AddEditGameState())
     val state = _state.asStateFlow()
@@ -46,18 +45,18 @@ class AddEditGameViewModel(
         viewModelScope.launch {
             delay(1000)
             val game = Game(
-                name = state.value.name?:"",
+                name = state.value.name ?: "",
                 expansion = state.value.expansion,
-                baseGame = state.value.baseGame?:"",
+                baseGame = state.value.baseGame ?: "",
                 minPlayer = state.value.minPlayer,
                 maxPlayer = state.value.maxPlayer,
                 games = state.value.games,
                 id = UUID.randomUUID().toString()
-                )
-            val response = gameNetworkRepository.addGame(game)
+            )
+            val response = gameDbRepository.insertGame(game)
 
             when (response) {
-                is RequestResult.Success -> {
+                true -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = true,
@@ -65,7 +64,8 @@ class AddEditGameViewModel(
                         )
                     }
                 }
-                else -> {
+
+                false -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = false,
@@ -81,25 +81,26 @@ class AddEditGameViewModel(
     fun validateEditGame() {
         viewModelScope.launch {
             val game = Game(
-                name = state.value.name?:"",
+                name = state.value.name ?: "",
                 expansion = state.value.expansion,
-                baseGame = state.value.baseGame?:"",
+                baseGame = state.value.baseGame ?: "",
                 minPlayer = state.value.minPlayer,
                 maxPlayer = state.value.maxPlayer,
                 games = state.value.games,
-                id = state.value.id?:""
+                id = state.value.id ?: ""
             )
-            val response = gameNetworkRepository.editGame(game)
+            val response = gameDbRepository.editGame(game)
 
             when (response) {
-                is RequestResult.Success -> {
+                true -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = true
                         )
                     }
                 }
-                else -> {
+
+                false -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = false,

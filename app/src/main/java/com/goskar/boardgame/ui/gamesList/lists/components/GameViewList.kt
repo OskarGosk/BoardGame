@@ -18,7 +18,7 @@ import com.goskar.boardgame.ui.gamesList.lists.GameListState
 
 @Composable
 fun GameViewList(
-    deleteGame: (String) -> Unit = {},
+    deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {},
     state: GameListState
 ) {
