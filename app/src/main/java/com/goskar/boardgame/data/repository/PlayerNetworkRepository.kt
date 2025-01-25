@@ -2,7 +2,6 @@ package com.goskar.boardgame.data.repository
 
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.models.Player
-import com.goskar.boardgame.data.models.PlayerIdRespons
 
 
 interface PlayerNetworkRepository {
