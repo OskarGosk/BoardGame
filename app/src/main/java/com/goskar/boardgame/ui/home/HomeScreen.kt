@@ -21,17 +21,22 @@ import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.player.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
+import org.koin.androidx.compose.koinViewModel
 
 class HomeScreen : Screen {
     @Composable
     override fun Content() {
-        HomeScreenContent()
+
+        val viewModel: HomeScreenViewModel = koinViewModel()
+        HomeScreenContent(
+            getAllData = viewModel::getAllData
+        )
     }
 }
 
 @Composable
 fun HomeScreenContent(
-
+    getAllData: () -> Unit = {}
 ) {
     val navigator = LocalNavigator.current
 
@@ -86,6 +91,22 @@ fun HomeScreenContent(
             ) {
                 Text(
                     stringResource(id = R.string.history_game_screen),
+                    style = SmoochBold24LetterSpacing2,
+                )
+            }
+
+            Button(
+                shape = CutCornerShape(percent = 10),
+                onClick = {
+                    getAllData()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+                    .height(48.dp),
+            ) {
+                Text(
+                    text = "Pobierz dane z serwera.",
                     style = SmoochBold24LetterSpacing2,
                 )
             }

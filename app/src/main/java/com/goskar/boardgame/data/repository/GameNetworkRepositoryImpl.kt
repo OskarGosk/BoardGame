@@ -3,7 +3,7 @@ package com.goskar.boardgame.data.repository
 
 import com.goskar.boardgame.data.rest.ApiBoardGame
 import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.models.Game
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber

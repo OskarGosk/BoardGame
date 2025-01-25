@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.SmoochBold26
 

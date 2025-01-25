@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.player.playerList.components.SearchRow
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import com.goskar.boardgame.ui.player.playerList.components.SinglePlayerCard
@@ -56,7 +56,7 @@ class PlayerListScreen : Screen {
 @Composable
 fun PlayerListContent(
     state: PlayerListState,
-    deletePlayer: (String) -> Unit = {},
+    deletePlayer: (Player) -> Unit = {},
     refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
 ) {
@@ -64,10 +64,11 @@ fun PlayerListContent(
 
     BoardGameScaffold(
         titlePage = stringResource(id = R.string.player_list)
-        ) { paddingValues ->
+    ) { paddingValues ->
 
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .padding(paddingValues)
         ) {
             Box(
@@ -122,7 +123,7 @@ fun PlayerListContent(
 
 @Composable
 fun PlayerViewList(
-    deletePlayer: (String) -> Unit = {},
+    deletePlayer: (Player) -> Unit = {},
     refreshPlayer: () -> Unit = {},
     state: PlayerListState
 ) {
@@ -131,12 +132,18 @@ fun PlayerViewList(
         contentPadding = PaddingValues(vertical = 10.dp),
     )
     {
-        var newPlayerList: List<Player> = state.playerList?.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) } ?: emptyList()
+        val newPlayerList: List<Player> = when (state.sortOption) {
+            R.string.default_sort -> state.playerList ?: emptyList()
+            R.string.ascending -> state.playerList?.sortedBy { it.name } ?: emptyList()
+            R.string.descending -> state.playerList?.sortedByDescending { it.name } ?: emptyList()
+            else -> state.playerList ?: emptyList()
+        }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
+
         items(items = newPlayerList) { player ->
             if (player.name.lowercase().contains(state.searchTxt.lowercase())) {
                 SinglePlayerCard(
                     player = player,
-                    modifier = Modifier.padding(bottom = if(newPlayerList.indexOf(player)==(newPlayerList.size -1) ) 50.dp else 0.dp),
+                    modifier = Modifier.padding(bottom = if (newPlayerList.indexOf(player) == (newPlayerList.size - 1)) 50.dp else 0.dp),
                     deletePlayer = deletePlayer,
                     refreshPlayer = refreshPlayer,
                 )
@@ -145,6 +152,7 @@ fun PlayerViewList(
 
     }
 }
+
 @Preview
 @Composable
 fun PlayerListContentPreview() {
@@ -157,7 +165,19 @@ fun PlayerListContentPreview() {
         val player2 =
             Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
         PlayerListContent(
-            state = PlayerListState(playerList = listOf(player, player2, player2, player, player, player2,player2,player, player2))
+            state = PlayerListState(
+                playerList = listOf(
+                    player,
+                    player2,
+                    player2,
+                    player,
+                    player,
+                    player2,
+                    player2,
+                    player,
+                    player2
+                )
+            )
         )
     }
 }

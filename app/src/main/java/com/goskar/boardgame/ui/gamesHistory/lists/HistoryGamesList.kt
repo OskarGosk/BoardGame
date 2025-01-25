@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gamesHistory.lists.components
+package com.goskar.boardgame.ui.gamesHistory.lists
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.goskar.boardgame.data.rest.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
+import com.goskar.boardgame.ui.gamesHistory.lists.components.SingleHistoryGame
 
 @Composable
 fun HistoryGamesList(state: GamesHistoryState) {

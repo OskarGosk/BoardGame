@@ -8,6 +8,11 @@
     <string name="title_activity_game_play">GamePlayActivity</string>
     <string name="title_activity_choose_the_game">ChooseTheGame</string>
 
+    //SORT
+    <string name="default_sort">Default</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+
     <string name="empty"></string>
     <string name="confirm">Confirm</string>
     <string name="back">Back to list</string>

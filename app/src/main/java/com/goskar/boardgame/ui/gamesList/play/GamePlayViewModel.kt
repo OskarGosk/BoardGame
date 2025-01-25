@@ -2,13 +2,12 @@ package com.goskar.boardgame.ui.gamesList.play
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.goskar.boardgame.data.repository.GameNetworkRepository
-import com.goskar.boardgame.data.repository.HistoryGameNetworkRepository
-import com.goskar.boardgame.data.repository.PlayerNetworkRepository
-import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.rest.models.Game
-import com.goskar.boardgame.data.rest.models.HistoryGame
-import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.data.oflineRepository.GameDbRepository
+import com.goskar.boardgame.data.oflineRepository.GamesHistoryDbRepository
+import com.goskar.boardgame.data.oflineRepository.PlayerDbRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -30,9 +29,9 @@ data class GamePlayState(
 
 @KoinViewModel
 class GamePlayViewModel(
-    private val gameNetworkRepository: GameNetworkRepository,
-    private val playerNetworkRepository: PlayerNetworkRepository,
-    private val historyGameNetworkRepository: HistoryGameNetworkRepository
+    private val playerDbRepository: PlayerDbRepository,
+    private val gameDbRepository: GameDbRepository,
+    private val gamesHistoryDbRepository: GamesHistoryDbRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GamePlayState())
@@ -65,10 +64,10 @@ class GamePlayViewModel(
             description = ""
         )
 
-        val response = historyGameNetworkRepository.addHistoryGame(historyGame = historyGame)
+        val response = gamesHistoryDbRepository.insertHistoryGame(historyGame = historyGame)
 
         when (response) {
-            is RequestResult.Success -> {
+            true -> {
                 _state.update {
                     it.copy(
                         successAddHistoryGame = true,
@@ -76,7 +75,7 @@ class GamePlayViewModel(
                 }
             }
 
-            else -> {
+            false -> {
                 _state.update {
                     it.copy(
                         successAddHistoryGame = false,
@@ -85,7 +84,6 @@ class GamePlayViewModel(
                 }
             }
         }
-
     }
 
     private suspend fun validateEditGame() {
@@ -93,9 +91,9 @@ class GamePlayViewModel(
             games = (state.value.game?.games ?: 0) + 1,
         )
         if (game != null) {
-            val response = gameNetworkRepository.editGame(game)
+            val response = gameDbRepository.editGame(game)
             when (response) {
-                is RequestResult.Success -> {
+                true -> {
                     _state.update {
                         it.copy(
                             successAddPlayGame = true
@@ -104,7 +102,7 @@ class GamePlayViewModel(
 //                        validateEditAllPlayer()
                 }
 
-                else -> {
+                false -> {
                     _state.update {
                         it.copy(
                             successAddPlayGame = false,
@@ -125,7 +123,7 @@ class GamePlayViewModel(
 
     fun getAllPlayer() {
         viewModelScope.launch {
-            val response = playerNetworkRepository.getAllPlayer()?.toMutableList()
+            val response = playerDbRepository.getAllPlayer().toMutableList()
             _state.update {
                 it.copy(
                     playerList = response
@@ -154,9 +152,9 @@ class GamePlayViewModel(
                 description = player.description,
                 selected = false
             )
-            val response = playerNetworkRepository.editPlayer(playerGames)
+            val response = playerDbRepository.editPlayer(playerGames)
             when (response) {
-                is RequestResult.Success -> {
+                true -> {
                     item++
                     if (item == state.value.playerList?.filter { it.selected }?.size) {
                         _state.update {
@@ -168,7 +166,7 @@ class GamePlayViewModel(
                     }
                 }
 
-                else -> {
+                false -> {
                     _state.update {
                         it.copy(
                             successEditAllPlayer = false,

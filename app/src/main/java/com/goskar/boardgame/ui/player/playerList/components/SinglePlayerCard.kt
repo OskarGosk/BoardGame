@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.Smooch18
@@ -48,7 +48,7 @@ import com.goskar.boardgame.ui.theme.SmoochBold26
 fun SinglePlayerCard(
     player: Player,
     modifier: Modifier,
-    deletePlayer: (String) -> Unit = {},
+    deletePlayer: (Player) -> Unit = {},
     refreshPlayer: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -137,8 +137,9 @@ fun SinglePlayerCard(
                     Button(
                         shape = CutCornerShape(percent = 10),
                         onClick = {
+                            showAlertDialog = false
                             isExpanded = false
-                            deletePlayer(player.id)
+                            deletePlayer(player)
                             refreshPlayer()
                         },
                         modifier = Modifier

@@ -2,9 +2,8 @@ package com.goskar.boardgame.ui.gamesList.lists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.goskar.boardgame.data.repository.GameNetworkRepository
-import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,7 +19,7 @@ data class GameListState(
 
 @KoinViewModel
 class GameListViewModel(
-    private val gameNetworkRepository: GameNetworkRepository
+    private val gameDbRepository: GameDbRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GameListState())
@@ -36,7 +35,7 @@ class GameListViewModel(
 
     fun getAllGame() {
         viewModelScope.launch {
-            val response = gameNetworkRepository.getAllGame().toMutableList()
+            val response = gameDbRepository.getAllGame().toMutableList()
             _state.update {
                 it.copy(
                     gameList = response
@@ -45,11 +44,11 @@ class GameListViewModel(
         }
     }
 
-    fun validateDeleteGame(gameID: String){
+    fun validateDeleteGame(game: Game){
         viewModelScope.launch {
-            val response = gameNetworkRepository.deleteGame(gameId = gameID)
+            val response = gameDbRepository.deleteGame(game = game)
             when (response){
-                is RequestResult.Success -> {
+                true -> {
                     _state.update {
                         it.copy(
                             successDeleteGame = true
@@ -57,7 +56,7 @@ class GameListViewModel(
                     }
                     getAllGame()
                 }
-                else -> {
+                false -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
@@ -68,77 +67,3 @@ class GameListViewModel(
         }
     }
 }
-
-
-
-//class GameViewModel (
-//    private var gameDatabaseRepository: GameDatabaseRepository,
-//    private var gameNetworkRepository: GameNetworkRepository
-//
-//): ViewModel(){
-//
-//    var gameList by mutableStateOf(emptyList<Game>())
-//    var getAllGameStatus by mutableStateOf(OperationStatus.UNKNOWN)
-//    var addEditGameStatus by mutableStateOf(OperationStatus.UNKNOWN)
-//
-//    fun getAllGame (){
-//        viewModelScope.launch {
-//            try {
-//                getAllGameStatus = OperationStatus.LOADING
-//                gameList = gameNetworkRepository.getAllGame().toMutableList()
-//                gameDatabaseRepository.insertAllGame(gameList)
-//                getAllGameStatus = OperationStatus.SUCCESS
-//            } catch (e: Exception) {
-//                getAllGameStatus = OperationStatus.ERROR
-//                Log.d ("Game", "Error in loading all Game --- $e")
-//            }
-//        }
-//    }
-//
-//    fun addGame (game: Game) {
-//        viewModelScope.launch {
-//            try {
-//                addEditGameStatus = OperationStatus.LOADING
-//                val response: GameIdRespons = gameNetworkRepository.addGame(game)
-//                gameDatabaseRepository.insertGame(game.copy(id = response.name))
-//                addEditGameStatus = OperationStatus.SUCCESS
-//            } catch (e: Exception) {
-//                addEditGameStatus = OperationStatus.ERROR
-//                Log.d("Game", "Nie udało się dodać gry --- $e")
-//            }
-//        }
-//    }
-//
-//    fun deleteGame(game: Game) {
-//        viewModelScope.launch {
-//            try {
-//                gameNetworkRepository.deleteGame(game.id)
-//                gameDatabaseRepository.deleteGame(game)
-//                removeGameFromList(game)
-//            }catch (e:Exception) {
-//                Log.d ("Game", "Nie udało się usunąć gry --- $e")
-//            }
-//        }
-//    }
-//
-//    private fun removeGameFromList (game: Game) {
-//        gameList.toMutableList().also {
-//            it.remove(game)
-//            gameList = it
-//        }
-//    }
-//
-//    fun editGame (game: Game) {
-//        viewModelScope.launch {
-//            try {
-//                addEditGameStatus = OperationStatus.LOADING
-//                gameNetworkRepository.editGame(game)
-//                gameDatabaseRepository.editGame(game)
-//                addEditGameStatus = OperationStatus.SUCCESS
-//            } catch (e:Exception) {
-//                addEditGameStatus = OperationStatus.ERROR
-//                Log.d ("Game", "Nie edytowało gry --- $e")
-//            }
-//        }
-//    }
-//}

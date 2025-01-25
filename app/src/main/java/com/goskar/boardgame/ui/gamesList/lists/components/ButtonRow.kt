@@ -24,14 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.data.rest.models.Game
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.gamesList.play.GamePlayActivityScreen
 import com.goskar.boardgame.ui.theme.Smooch16
@@ -41,7 +40,7 @@ import com.goskar.boardgame.ui.theme.SmoochBold22
 @Composable
 fun ButtonRow(
     game: Game,
-    deleteGame: (String) -> Unit = {},
+    deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {}
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
@@ -106,7 +105,7 @@ fun ButtonRow(
                 Button(
                     shape = CutCornerShape(percent = 10),
                     onClick = {
-                        deleteGame(game.id)
+                        deleteGame(game)
                         refresh()
                         showAlertDialog = false
                     },

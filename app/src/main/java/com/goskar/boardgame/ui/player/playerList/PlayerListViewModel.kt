@@ -2,9 +2,9 @@ package com.goskar.boardgame.ui.player.playerList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.goskar.boardgame.data.repository.PlayerNetworkRepository
-import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.rest.models.Player
+import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.data.oflineRepository.PlayerDbRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -12,16 +12,17 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 data class PlayerListState(
-    val playerList: List<Player>? = emptyList(),
+    val playerList: List<Player>? = mutableListOf(),
     val successDeletePlayer: Boolean = false,
     val errorVisible: Boolean = false,
     val visibleDialog: Boolean = false,
-    val searchTxt: String = ""
+    val searchTxt: String = "",
+    val sortOption: Int = R.string.default_sort
 )
 
 @KoinViewModel
 class PlayerListViewModel(
-    private val playerNetworkRepository: PlayerNetworkRepository,
+    private val playerDbRepository: PlayerDbRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PlayerListState())
@@ -33,7 +34,7 @@ class PlayerListViewModel(
 
     fun getAllPlayer() {
         viewModelScope.launch {
-            val response = playerNetworkRepository.getAllPlayer()?.toMutableList()
+            val response = playerDbRepository.getAllPlayer().toMutableList()
             _state.update {
                 it.copy(
                     playerList = response
@@ -42,11 +43,11 @@ class PlayerListViewModel(
         }
     }
 
-    fun validateDeletePlayer(playerID: String) {
+    fun validateDeletePlayer(player: Player) {
         viewModelScope.launch {
-            val response = playerNetworkRepository.deletePlayer(playerId = playerID)
+            val response = playerDbRepository.deletePlayer(player = player)
             when (response) {
-                is RequestResult.Success -> {
+                true -> {
                     _state.update {
                         it.copy(
                             successDeletePlayer = true
@@ -55,7 +56,7 @@ class PlayerListViewModel(
                     getAllPlayer()
                 }
 
-                else -> {
+                false -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
