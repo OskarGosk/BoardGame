@@ -1,5 +1,6 @@
 package com.goskar.boardgame.data.models
 
+import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
@@ -12,6 +13,7 @@ data class Game(
     val baseGame: String,
     val minPlayer: String,
     val maxPlayer: String,
+    val uri: String? = null,
     val games: Int,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
 ) : Serializable

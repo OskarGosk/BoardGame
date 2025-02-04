@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,6 +62,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                         minPlayer = editGame.minPlayer,
                         maxPlayer = editGame.maxPlayer,
                         games = editGame.games,
+                        uri = editGame.uri,
                         id = editGame.id
                     )
                 )
@@ -206,8 +208,14 @@ fun AddEditGameContent(
                     singleLine = true
                 )
             }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ){
+                SinglePhotoPicker(state, update)
+            }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             val enabled =
                 state.minPlayer.isNotEmpty() && state.maxPlayer.isNotEmpty() && !state.name.isNullOrEmpty() && !state.inProgress
             Button(

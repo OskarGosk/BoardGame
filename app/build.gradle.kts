@@ -73,6 +73,7 @@ dependencies {
     implementation (libs.core)
     implementation (libs.calendar)
 
+    implementation(libs.bundles.camera.all)
 
     implementation(libs.bundles.voyager.all)
 //    implementation(libs.bundles.firebase.all)

@@ -18,6 +18,7 @@ data class AddEditGameState(
     val minPlayer: String = "",
     val maxPlayer: String = "",
     val games: Int = 0,
+    val uri: String? = null,
     val id: String? = null,
 
     val successAddEditGame: Boolean = false,
@@ -51,6 +52,7 @@ class AddEditGameViewModel(
                 minPlayer = state.value.minPlayer,
                 maxPlayer = state.value.maxPlayer,
                 games = state.value.games,
+                uri = state.value.uri,
                 id = UUID.randomUUID().toString()
             )
             val response = gameDbRepository.insertGame(game)
@@ -87,6 +89,7 @@ class AddEditGameViewModel(
                 minPlayer = state.value.minPlayer,
                 maxPlayer = state.value.maxPlayer,
                 games = state.value.games,
+                uri = state.value.uri,
                 id = state.value.id ?: ""
             )
             val response = gameDbRepository.editGame(game)
