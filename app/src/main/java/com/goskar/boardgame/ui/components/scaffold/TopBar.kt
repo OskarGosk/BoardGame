@@ -32,26 +32,8 @@ fun TopBar(titlePage: String) {
                     modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center)
-//                Image(
-//                    painter = if (isSystemInDarkTheme()) {
-//                        painterResource(id = R.drawable.belutti_dark)
-//                    } else {
-//                        painterResource(id = R.drawable.belutti_light)
-//                    },
-//                    contentDescription = null,
-//                    contentScale = ContentScale.None
-//                )
             },
-            title = {
-//                Image(
-//                    painter = if (isSystemInDarkTheme()) {
-//                        painterResource(id = R.drawable.belutti_app_dark)
-//                    } else {
-//                        painterResource(id = R.drawable.belutti_app_light)
-//                    },
-//                    contentDescription = null,
-//                    contentScale = ContentScale.None
-//                )
+            title = { // IGNORE
             },
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)

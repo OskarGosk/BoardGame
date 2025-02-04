@@ -129,28 +129,6 @@ fun GamePlayContent(
                 .verticalScroll(scrollState),
 
             ) {
-//            AnimatedVisibility(visible = visible) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .clip(RoundedCornerShape(4.dp))
-//                        .background(Color.Gray)
-//                        .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
-//                        .padding(horizontal = 16.dp, vertical = 8.dp)
-//                        .zIndex(100f),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "Error",
-//                    )
-            //DO PRZEROBIENIA NA POTRZEBY APKI
-//                }
-//        AppAlert(
-//            modifier = Modifier,
-//            text = state.successMessage.asString(),
-//            type = AlertType.SUCCESS,
-//        )
-//            }
             GameInfo(state = state)
             PlayerListToSelect(state = state, selectedPlayer = selectedPlayer)
 

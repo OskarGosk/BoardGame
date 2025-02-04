@@ -16,16 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.utils.keyboardAsState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardGameScaffold(
     modifier: Modifier = Modifier,
     titlePage: String,
-//    showBottomBar: Boolean = true,
-//    selectedScreen: Int?,
     content: @Composable (PaddingValues) -> Unit,
 ) {
-    val keyboardState by keyboardAsState()
     Scaffold(
         modifier = modifier.then(
             Modifier
@@ -35,18 +31,6 @@ fun BoardGameScaffold(
         topBar = { TopBar(titlePage) },
         bottomBar = {
             Box {}
-//            if (showBottomBar) {
-//                if (keyboardState == Keyboard.Closed) {
-//                    EcpBottomNavigation(selectedScreen)
-//                } else {
-//                    Box {}
-//                }
-//            } else {
-//                Divider(
-//                    thickness = 20.dp,
-//                    color = Color.White
-//                )
-//            }
         }
 
     ) {
@@ -60,8 +44,6 @@ fun BoardGameScaffoldPreview() {
     BoardGameTheme {
         BoardGameScaffold (
             titlePage = "Oskar"
-//            showBottomBar = true,
-//            selectedScreen = BottomBarElements.HomeButton.title,
         ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -80,8 +62,6 @@ fun BoardGamePreviewDark() {
     BoardGameTheme (darkTheme = true) {
         BoardGameScaffold (
             titlePage = "Cimeny"
-//            showBottomBar = true,
-//            selectedScreen = BottomBarElements.HomeButton.title,
         ) { paddingValues ->
             Box(
                 modifier = Modifier
