@@ -8,6 +8,12 @@
     <string name="title_activity_game_play">GamePlayActivity</string>
     <string name="title_activity_choose_the_game">ChooseTheGame</string>
 
+    // BOTTOM BAR
+    <string name="home">Home</string>
+    <string name="player_list">Player List</string>
+    <string name="board_list">Board Game List</string>
+    <string name="history_game_screen">Gaming History</string>
+
     //SORT
     <string name="default_sort">Default</string>
     <string name="ascending">Ascending</string>
@@ -19,8 +25,6 @@
     <string name="delete">Delete %s ?</string>
     <string name="delete_game">The removal of the game is irreversible. It will not affect players scores.</string>
     <string name="delete_player">The removal of a player is irreversible. It will not affect to other players scores or count of played games</string>
-
-    <string name="player_list">Player List</string>
     <string name="add_player">Add new Player</string>
     <string name="edit_player_save">Save change</string>
     <string name="new_player">Create new player</string>
@@ -33,7 +37,6 @@
 
     <string name="expansion">Expansion</string>
 
-    <string name="board_list">Board Game List</string>
     <string name="add_board">Add new board game</string>
     <string name="edit_game_save">Save change</string>
     <string name="edit_game"> Edit Game</string>
@@ -55,5 +58,5 @@
 
 
     <string name="history_search_label"> Player or Game</string>
-    <string name="history_game_screen">Gaming History</string>
+
 </resources>

@@ -38,6 +38,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
@@ -91,7 +92,8 @@ fun AddEditGameContent(
 ) {
 
     BoardGameScaffold(
-        titlePage = stringResource(id = if (state.name == null) R.string.new_game else R.string.edit_game)
+        titlePage = if (state.name == null) R.string.new_game else R.string.edit_game,
+        selectedScreen = BottomBarElements.GameListButton.title
     ) { paddingValues ->
         Column(
             modifier = Modifier

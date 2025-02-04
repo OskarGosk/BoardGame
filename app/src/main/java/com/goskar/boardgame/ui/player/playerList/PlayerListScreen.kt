@@ -35,6 +35,7 @@ import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import com.goskar.boardgame.ui.player.playerList.components.SinglePlayerCard
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 
 class PlayerListScreen : Screen {
     @Composable
@@ -63,7 +64,8 @@ fun PlayerListContent(
     val navigator = LocalNavigator.current
 
     BoardGameScaffold(
-        titlePage = stringResource(id = R.string.player_list)
+        titlePage = R.string.player_list,
+        selectedScreen = BottomBarElements.PlayerListButton.title
     ) { paddingValues ->
 
         Column(

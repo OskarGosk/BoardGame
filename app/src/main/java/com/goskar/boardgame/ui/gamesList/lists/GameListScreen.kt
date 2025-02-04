@@ -29,6 +29,7 @@ import com.goskar.boardgame.ui.gamesList.lists.components.GameViewList
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.gamesList.lists.components.EmptyGameList
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
@@ -63,8 +64,10 @@ fun GameListContent(
     val navigator = LocalNavigator.current
 
     BoardGameScaffold(
-        titlePage = stringResource(R.string.board_list)
+        titlePage = R.string.board_list,
+        selectedScreen = BottomBarElements.GameListButton.title
     ) { paddingValues ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -76,10 +79,14 @@ fun GameListContent(
                 GameSearchRow(update = update, state = state)
                 GameViewList(deleteGame = deleteGame,refresh = refresh, state = state)
             }
+
+
         }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .padding(10.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
@@ -95,6 +102,7 @@ fun GameListContent(
                 )
             }
         }
+
     }
 }
 
