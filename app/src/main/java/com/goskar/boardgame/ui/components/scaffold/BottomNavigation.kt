@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.Smooch16
+import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.Smooch20
+import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.ui.theme.primaryLight
 
 
@@ -62,7 +65,7 @@ fun BottomNavigation(
                         Text(
                             text = stringResource(elements.title),
                             textAlign = TextAlign.Center,
-                            style = Smooch16,
+                            style = if(selectedScreen == elements.title) SmoochBold18 else Smooch18,
                             color = if(selectedScreen == elements.title) primaryLight else Black
                         )
                     }
