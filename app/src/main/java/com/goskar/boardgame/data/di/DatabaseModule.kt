@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.goskar.boardgame.Constants.DATABASE_NAME
 import com.goskar.boardgame.data.db.Converters
 import com.goskar.boardgame.data.db.GameDao
 import com.goskar.boardgame.data.db.HistoryGameDao
@@ -19,7 +20,7 @@ fun KoinApplication.databaseModule() = module {
     single<Db> {
         Room.databaseBuilder(
             get(),
-            Db::class.java, "database-name"
+            Db::class.java, DATABASE_NAME
         ).fallbackToDestructiveMigrationOnDowngrade()
             .build()
     }
@@ -29,7 +30,7 @@ fun KoinApplication.databaseModule() = module {
 
 }
 
-@Database(entities = [Player::class, Game::class, HistoryGame::class], version = 2, exportSchema = false)
+@Database(entities = [Player::class, Game::class, HistoryGame::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class Db: RoomDatabase() {
