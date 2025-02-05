@@ -24,10 +24,10 @@
     <string name="player_add">Add new Player</string>
     <string name="player_new">Create new player</string>
     <string name="player_edit">Edit player</string>
-
     <string name="player_name">Player Name</string>
     <string name="player_description">About Player</string>
     <string name="player_empty_list">Empty player list.</string>
+    <string name="player_games_count">Games played: %s</string>
 
     //BOARD GAME
     <string name="board_add">Add new board game</string>
