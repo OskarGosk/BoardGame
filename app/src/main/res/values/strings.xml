@@ -16,8 +16,11 @@
 
     //SORT
     <string name="default_sort">Default</string>
-    <string name="ascending">Ascending</string>
-    <string name="descending">Descending</string>
+    <string name="name_ascending">Name Ascending</string>
+    <string name="name_descending">Name Descending</string>
+    <string name="played_ascending">Games Ascending</string>
+    <string name="played_descending">Games Descending</string>
+
 
     //PLAYER
     <string name="player_delete_info">The removal of a player is irreversible. It will not affect to other players scores or count of played games</string>

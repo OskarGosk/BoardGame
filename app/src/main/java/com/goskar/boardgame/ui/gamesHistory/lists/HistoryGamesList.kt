@@ -24,7 +24,7 @@ fun HistoryGamesList(state: GamesHistoryState) {
 
     ) {
         state.historyList.asReversed().forEach {
-            if (it.gameName.lowercase().startsWith(state.searchTxt.lowercase()) || it.winner.lowercase().startsWith(state.searchTxt.lowercase()))
+            if (it.gameName.lowercase().contains(state.searchTxt.lowercase()) || it.winner.contains(state.searchTxt.lowercase()))
             SingleHistoryGame(Modifier, it)
         }
     }

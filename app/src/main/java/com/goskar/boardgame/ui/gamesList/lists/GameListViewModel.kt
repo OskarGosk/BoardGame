@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.gamesList.lists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,9 @@ data class GameListState(
     val gameList: List<Game>? = emptyList<Game>(),
     val successDeleteGame: Boolean = false,
     val errorVisible: Boolean = false,
-    val searchTxt: String = ""
+    val searchTxt: String = "",
+    val sortOption: Int = R.string.default_sort
+
 )
 
 @KoinViewModel
