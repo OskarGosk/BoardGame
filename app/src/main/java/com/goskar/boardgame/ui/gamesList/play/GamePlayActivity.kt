@@ -154,7 +154,7 @@ fun GamePlayContent(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            stringResource(R.string.play_date),
+                            stringResource(R.string.history_play_date),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
                             style = SmoochBold18
@@ -206,7 +206,7 @@ fun GamePlayContent(
                         modifier = Modifier.size(25.dp)
                     )
                     Text(
-                        stringResource(R.string.add_game_to_history),
+                        stringResource(R.string.history_add),
                         style = SmoochBold18)
                 }
             }

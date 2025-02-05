@@ -98,7 +98,7 @@ fun GameListContent(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_board)
+                    contentDescription = stringResource(id = R.string.board_add)
                 )
             }
         }

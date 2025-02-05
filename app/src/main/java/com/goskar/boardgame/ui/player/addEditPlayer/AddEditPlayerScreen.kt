@@ -77,7 +77,7 @@ fun AddEditPlayerContent(
     editPlayer: () -> Unit = {}
 ) {
     BoardGameScaffold(
-        titlePage = if (newPlayer)R.string.new_player else R.string.edit_player,
+        titlePage = if (newPlayer)R.string.player_new else R.string.player_edit,
         selectedScreen = BottomBarElements.PlayerListButton.title
     ) { paddingValues ->
         Column(
@@ -133,12 +133,12 @@ fun AddEditPlayerContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        stringResource(id = if(newPlayer) R.string.add_player else R.string.edit_player_save),
+                        stringResource(id = if(newPlayer) R.string.player_add else R.string.save),
                         style = SmoochBold18
                     )
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.add_player),
+                        contentDescription = stringResource(id = R.string.player_add),
                         modifier = Modifier.size(20.dp)
                     )
                 }

@@ -73,7 +73,7 @@ fun GameSearchRow(
                     .weight(1f),
                 label = {
                     Text(
-                        stringResource(id = R.string.game_name),
+                        stringResource(id = R.string.board_name),
                         style = Smooch14
                     )
                 },

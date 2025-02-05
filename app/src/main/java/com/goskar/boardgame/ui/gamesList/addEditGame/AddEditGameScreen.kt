@@ -92,7 +92,7 @@ fun AddEditGameContent(
 ) {
 
     BoardGameScaffold(
-        titlePage = if (state.name == null) R.string.new_game else R.string.edit_game,
+        titlePage = if (state.name == null) R.string.board_new else R.string.board_edit,
         selectedScreen = BottomBarElements.GameListButton.title
     ) { paddingValues ->
         Column(
@@ -115,7 +115,7 @@ fun AddEditGameContent(
                     .padding(top = 10.dp),
                 label = {
                     Text(
-                        stringResource(id = R.string.game_name),
+                        stringResource(id = R.string.board_name),
                         style = Smooch14
                     )
                 },
@@ -138,7 +138,7 @@ fun AddEditGameContent(
                     .fillMaxWidth(),
                 label = {
                     Text(
-                        stringResource(id = R.string.min_player),
+                        stringResource(id = R.string.board_min_player),
                         style = Smooch14
                     )
                 },
@@ -162,7 +162,7 @@ fun AddEditGameContent(
                     .fillMaxWidth(),
                 label = {
                     Text(
-                        stringResource(id = R.string.max_player),
+                        stringResource(id = R.string.board_max_player),
                         style = Smooch14
                     )
                 },
@@ -184,7 +184,7 @@ fun AddEditGameContent(
                         )
                     },
                 )
-                Text(stringResource(id = R.string.is_expansion), style = Smooch18)
+                Text(stringResource(id = R.string.board_is_expansion), style = Smooch18)
             }
             if (state.expansion) {
                 OutlinedTextField(
@@ -201,7 +201,7 @@ fun AddEditGameContent(
                         .fillMaxWidth(),
                     label = {
                         Text(
-                            stringResource(id = R.string.base_game),
+                            stringResource(id = R.string.board_base),
                             style = Smooch14
                         )
                     },
@@ -225,12 +225,12 @@ fun AddEditGameContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        stringResource(id = if (state.id == null) R.string.add_board else R.string.edit_game_save),
+                        stringResource(id = if (state.id == null) R.string.board_add else R.string.save),
                         style = SmoochBold18
                     )
                     Icon(
                         imageVector = if (state.id == null) Icons.Default.Add else Icons.Default.Edit,
-                        contentDescription = stringResource(id = if (state.id == null) R.string.add_board else R.string.edit_game),
+                        contentDescription = stringResource(id = if (state.id == null) R.string.board_add else R.string.board_edit),
                         modifier = Modifier
                             .padding(start = 5.dp)
                             .size(20.dp)

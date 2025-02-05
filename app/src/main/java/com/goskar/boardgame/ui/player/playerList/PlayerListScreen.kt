@@ -87,7 +87,7 @@ fun PlayerListContent(
                     )
                     if (state.playerList.isNullOrEmpty()) {
                         Text(
-                            text = "Empty player list",
+                            text = stringResource(R.string.player_empty_list),
                             fontSize = 20.sp,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -114,7 +114,7 @@ fun PlayerListContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_player)
+                            contentDescription = stringResource(id = R.string.player_add)
                         )
                     }
                 }

@@ -130,7 +130,7 @@ fun SinglePlayerCard(
                 },
                 text = {
                     Text(
-                        stringResource(R.string.delete_player),
+                        stringResource(R.string.player_delete_info),
                         style = Smooch16
                     )
                 },confirmButton = {

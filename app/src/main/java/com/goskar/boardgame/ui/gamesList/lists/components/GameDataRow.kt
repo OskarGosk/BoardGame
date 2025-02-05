@@ -41,7 +41,7 @@ fun GameDataRowPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         GameDataRow(
-            header = R.string.min_player,
+            header = R.string.board_min_player,
             value = "4"
         )
     }
