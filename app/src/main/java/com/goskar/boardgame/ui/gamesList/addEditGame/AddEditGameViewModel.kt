@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
+import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +33,7 @@ class AddEditGameViewModel(
     private val _state = MutableStateFlow(AddEditGameState())
     val state = _state.asStateFlow()
 
+
     fun update(state: AddEditGameState) {
         _state.update { state }
     }
@@ -56,7 +58,7 @@ class AddEditGameViewModel(
             val response = gameDbRepository.insertGame(game)
 
             when (response) {
-                true -> {
+                is RequestResult.Success -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = true,
@@ -65,7 +67,7 @@ class AddEditGameViewModel(
                     }
                 }
 
-                false -> {
+                else -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = false,
@@ -92,7 +94,7 @@ class AddEditGameViewModel(
             val response = gameDbRepository.editGame(game)
 
             when (response) {
-                true -> {
+                is RequestResult.Success -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = true
@@ -100,7 +102,7 @@ class AddEditGameViewModel(
                     }
                 }
 
-                false -> {
+                else -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = false,
@@ -111,6 +113,4 @@ class AddEditGameViewModel(
             }
         }
     }
-
-
 }

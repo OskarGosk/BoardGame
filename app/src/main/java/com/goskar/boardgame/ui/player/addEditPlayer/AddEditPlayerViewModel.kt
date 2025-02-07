@@ -84,7 +84,7 @@ class AddEditPlayerViewModel(
             val response = playerDbRepository.editPlayer(player)
 
             when (response) {
-                true -> {
+                is RequestResult.Success -> {
                     _state.update {
                         it.copy(
                             successAddEditPlayer = true
@@ -92,7 +92,7 @@ class AddEditPlayerViewModel(
                     }
                 }
 
-                false -> {
+                else -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
