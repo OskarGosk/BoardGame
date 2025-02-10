@@ -119,7 +119,7 @@ fun GamePlayContent(
         })
 
     BoardGameScaffold(
-        titlePage = R.string.board_list,
+        titlePage = R.string.history_add,
         selectedScreen = null
     ) { paddingValues ->
 
@@ -210,10 +210,6 @@ fun GamePlayContent(
                         style = SmoochBold18)
                 }
             }
-            Row {
-                Text(text = "Row z przyciskami")
-            }
-
         }
     }
 }

@@ -1,5 +1,7 @@
 [versions]
 agp = "8.6.0"
+cameraCamera2 = "1.4.1"
+cameraView = "1.0.0-alpha27"
 core = "1.0.2"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
@@ -26,6 +28,10 @@ media3CommonKtx = "1.5.1"
 
 
 [libraries]
+camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
+camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraView" }
+
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 calendar = { module = "com.maxkeppeler.sheets-compose-dialogs:calendar", version.ref = "core" }
 core = { module = "com.maxkeppeler.sheets-compose-dialogs:core", version.ref = "core" }
@@ -92,3 +98,4 @@ retrofit-gson = ["retrofit2", "retrofit2-converter", "gson"]
 koin-all = ["koin-core", "koin-android", "koin-android-compose", "koin-annotation"]
 room-all = ["room-ktx", "room-runtime"]
 coil-all = ["coil-compose", "coil-base", "coil-gif", "coil-svg"]
+camera-all = ["camera-camera2", "camera-lifecycle", "camera-view"]

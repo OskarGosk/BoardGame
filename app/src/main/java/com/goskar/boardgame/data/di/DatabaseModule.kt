@@ -30,7 +30,7 @@ fun KoinApplication.databaseModule() = module {
 
 }
 
-@Database(entities = [Player::class, Game::class, HistoryGame::class], version = 1, exportSchema = false)
+@Database(entities = [Player::class, Game::class, HistoryGame::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class Db: RoomDatabase() {

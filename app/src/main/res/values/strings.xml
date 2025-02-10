@@ -46,6 +46,8 @@
     <string name="board_empty_list_add">Please add some game\nTo do this, please click button below.</string>
     <string name="board_how_many_played">Games Played:</string>
     <string name="board_delete_info">The removal of the game is irreversible. It will not affect players scores.</string>
+    <string name="board_take_another_photo">Take another photo</string>
+    <string name="board_open_gallery">Open Gallery</string>
 
 
     //HISTORY AND GAMEPLAY
