@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,10 +29,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -43,6 +46,8 @@ import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
+import java.io.File
+import java.io.FileOutputStream
 
 class AddEditGameScreen(val editGame: Game?) : Screen {
 
@@ -63,7 +68,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                         minPlayer = editGame.minPlayer,
                         maxPlayer = editGame.maxPlayer,
                         games = editGame.games,
-                        uri = editGame.uri,
+                        uri = editGame.uri?:"",
                         id = editGame.id
                     )
                 )
@@ -216,6 +221,7 @@ fun AddEditGameContent(
             ){
                 SinglePhotoPicker(state, update)
             }
+            val context = LocalContext.current
 
             Spacer(modifier = Modifier.height(20.dp))
             val enabled =
@@ -223,6 +229,17 @@ fun AddEditGameContent(
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
+                    val tempFile = File(context.cacheDir, "${state.name}.png")
+                    val inputStream = context.contentResolver.openInputStream(state.uri.toUri())
+
+                    inputStream?.use { input ->
+                        val outputStream = FileOutputStream(tempFile)
+                        input.copyTo(outputStream)
+                        outputStream.close()
+
+                        val fileUri = Uri.fromFile(tempFile)
+                        update(state.copy(uri = fileUri.toString()))
+                    }
                     if (state.id == null) addGame() else editGame()
                 },
                 modifier = Modifier.fillMaxWidth()

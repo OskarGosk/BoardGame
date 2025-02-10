@@ -21,6 +21,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BoardGame"
         tools:targetApi="31">
+        
+        <provider
+            android:authorities="com.goskar.boardgame"
+            android:name="androidx.core.content.FileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+        </provider>
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true"

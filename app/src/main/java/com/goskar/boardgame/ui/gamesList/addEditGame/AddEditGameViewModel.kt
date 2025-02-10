@@ -19,7 +19,7 @@ data class AddEditGameState(
     val minPlayer: String = "",
     val maxPlayer: String = "",
     val games: Int = 0,
-    val uri: String? = null,
+    val uri: String = "",
     val id: String? = null,
 
     val successAddEditGame: Boolean = false,

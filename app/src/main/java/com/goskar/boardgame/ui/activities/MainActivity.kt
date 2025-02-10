@@ -20,7 +20,6 @@ class MainActivity : ComponentActivity() {
             Log.i("Camera","Permission Granted")
         } else {
             Log.i("Camera","Permission Denied")
-
         }
     }
 
@@ -39,14 +38,14 @@ class MainActivity : ComponentActivity() {
         when {
             ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> Log.i ("Camera", "Permission previously granted")
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.CAMERA
             ) -> Log.i ("Camera", "Show camera permission dialog")
 
-            else -> requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            else -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 }

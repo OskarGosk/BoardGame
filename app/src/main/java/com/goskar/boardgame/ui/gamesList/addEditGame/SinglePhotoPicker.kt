@@ -1,7 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.ui.theme.SmoochBold18
@@ -32,25 +31,23 @@ fun SinglePhotoPicker(
     update: (AddEditGameState) -> Unit = {},
 ) {
 
-    val singlePhotoPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = {
-            update(
-                state.copy(
-                    uri = it?.path
-                )
-            )
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                update(state.copy(uri = uri.toString()))
+            }
         }
     )
 
     Box(
         modifier = Modifier.size(250.dp),
         contentAlignment = Alignment.Center) {
-        if(state.uri == null) {
+        if(state.uri == "") {
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
-                    singlePhotoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    launcher.launch("image/*")
                 },
                 modifier = Modifier.fillMaxWidth()
                     .size(40.dp),
@@ -61,12 +58,13 @@ fun SinglePhotoPicker(
             }
         } else {
             Column {
+                val imageUri = Uri.parse(state.uri)
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(state.uri.toUri())
+                        .data(imageUri)
                         .build(),
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxWidth()
                         .size(200.dp)
@@ -75,7 +73,7 @@ fun SinglePhotoPicker(
                 Button(
                     shape = CutCornerShape(percent = 10),
                     onClick = {
-                        singlePhotoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        launcher.launch("image/*")
                     },
                     modifier = Modifier.fillMaxWidth()
                         .size(40.dp),
