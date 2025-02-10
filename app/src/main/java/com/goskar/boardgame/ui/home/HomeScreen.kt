@@ -20,6 +20,7 @@ import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.player.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,7 +42,9 @@ fun HomeScreenContent(
     val navigator = LocalNavigator.current
 
     BoardGameScaffold(
-        titlePage = stringResource(id = R.string.app_name)
+        titlePage = R.string.app_name,
+        selectedScreen = BottomBarElements.HomeButton.title
+
     ) { paddingValues ->
         Column(
             modifier = Modifier

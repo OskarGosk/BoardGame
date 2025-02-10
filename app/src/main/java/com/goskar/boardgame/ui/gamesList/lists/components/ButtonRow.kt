@@ -97,7 +97,7 @@ fun ButtonRow(
             },
             text = {
                 Text(
-                    stringResource(R.string.delete_game),
+                    stringResource(R.string.board_delete_info),
                     style = Smooch16
                 )
             },

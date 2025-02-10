@@ -13,7 +13,6 @@ class MainActivity : ComponentActivity() {
             BoardGameTheme {
                 ComposeApp()
             }
-//            ComposeApp()
         }
     }
 }

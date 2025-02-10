@@ -1,6 +1,7 @@
 package com.goskar.boardgame.data.di
 
 import com.google.gson.Gson
+import com.goskar.boardgame.Constants.API_URL
 import com.goskar.boardgame.data.rest.ApiBoardGame
 import okhttp3.OkHttpClient
 import org.koin.core.KoinApplication
@@ -18,7 +19,7 @@ fun KoinApplication.restModule() = module {
     single {
         Retrofit.Builder()
             .client(get())
-            .baseUrl("https://board-game-goskar-default-rtdb.europe-west1.firebasedatabase.app/")
+            .baseUrl(API_URL)
             .addConverterFactory(GsonConverterFactory.create(get()))
             .build()
     }

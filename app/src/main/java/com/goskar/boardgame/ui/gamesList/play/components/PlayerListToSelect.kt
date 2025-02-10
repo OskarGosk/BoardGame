@@ -96,7 +96,7 @@ fun PlayerListToSelect(
                         modifier = Modifier.size(25.dp)
                     )
                     Text(
-                        stringResource(R.string.first_add_player_to_list),
+                        stringResource(R.string.history_empty_player_list_text),
                         style = SmoochBold18)
                 }
             }

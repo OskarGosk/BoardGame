@@ -8,6 +8,7 @@ import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import com.goskar.boardgame.data.oflineRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.oflineRepository.PlayerDbRepository
+import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -67,7 +68,7 @@ class GamePlayViewModel(
         val response = gamesHistoryDbRepository.insertHistoryGame(historyGame = historyGame)
 
         when (response) {
-            true -> {
+            is RequestResult.Success -> {
                 _state.update {
                     it.copy(
                         successAddHistoryGame = true,
@@ -75,7 +76,7 @@ class GamePlayViewModel(
                 }
             }
 
-            false -> {
+            is RequestResult.Error -> {
                 _state.update {
                     it.copy(
                         successAddHistoryGame = false,
@@ -93,7 +94,7 @@ class GamePlayViewModel(
         if (game != null) {
             val response = gameDbRepository.editGame(game)
             when (response) {
-                true -> {
+                is RequestResult.Success -> {
                     _state.update {
                         it.copy(
                             successAddPlayGame = true
@@ -102,7 +103,7 @@ class GamePlayViewModel(
 //                        validateEditAllPlayer()
                 }
 
-                false -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             successAddPlayGame = false,
@@ -123,11 +124,23 @@ class GamePlayViewModel(
 
     fun getAllPlayer() {
         viewModelScope.launch {
-            val response = playerDbRepository.getAllPlayer().toMutableList()
-            _state.update {
-                it.copy(
-                    playerList = response
-                )
+            when (val response = playerDbRepository.getAllPlayer()) {
+                is RequestResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            playerList = response.data,
+                            errorVisible = false
+                        )
+                    }
+                }
+
+                is RequestResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            errorVisible = true
+                        )
+                    }
+                }
             }
         }
     }
@@ -136,7 +149,7 @@ class GamePlayViewModel(
         player.selected = !player.selected
         _state.update {
             it.copy(
-                countSelectedPlayer = state.value.playerList?.filter { it.selected }?.size?:0
+                countSelectedPlayer = state.value.playerList?.filter { it.selected }?.size ?: 0
             )
         }
     }
@@ -154,7 +167,7 @@ class GamePlayViewModel(
             )
             val response = playerDbRepository.editPlayer(playerGames)
             when (response) {
-                true -> {
+                is RequestResult.Success -> {
                     item++
                     if (item == state.value.playerList?.filter { it.selected }?.size) {
                         _state.update {
@@ -166,7 +179,7 @@ class GamePlayViewModel(
                     }
                 }
 
-                false -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             successEditAllPlayer = false,

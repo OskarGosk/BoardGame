@@ -7,18 +7,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -34,8 +43,11 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.gamesList.lists.GameListState
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.Smooch20
+import com.goskar.boardgame.ui.theme.SmoochBold20
+import com.goskar.boardgame.utils.SortList
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun GameSearchRow(
     onCLickMenu: () -> Unit = {},
@@ -43,6 +55,8 @@ fun GameSearchRow(
     state: GameListState
 ) {
     val focusManager = LocalFocusManager.current
+    var expanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .padding(horizontal = 10.dp)
@@ -60,6 +74,7 @@ fun GameSearchRow(
         ) {
             OutlinedTextField(
                 textStyle = Smooch18,
+
                 shape = RoundedCornerShape(15),
                 value = state.searchTxt,
                 onValueChange = {
@@ -70,10 +85,11 @@ fun GameSearchRow(
                     )
                 },
                 modifier = Modifier
+                    .padding(end = 10.dp)
                     .weight(1f),
                 label = {
                     Text(
-                        stringResource(id = R.string.game_name),
+                        stringResource(id = R.string.board_name),
                         style = Smooch14
                     )
                 },
@@ -100,14 +116,57 @@ fun GameSearchRow(
                             })
                 }
             )
-            Icon(
-                imageVector = Icons.Outlined.Menu,
-                contentDescription = null,
-                modifier = Modifier
-                    .clickable { onCLickMenu() }
-                    .padding(start = 10.dp)
-                    .size(35.dp),
-            )
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Menu,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(35.dp)
+                        .menuAnchor(),
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    modifier = Modifier
+                        .weight(1f)
+                        .width(250.dp),
+                    onDismissRequest = { expanded = false }) {
+                    SortList.entries.forEach { sort ->
+                        DropdownMenuItem(
+                            text = {
+                                Row (
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Checkbox(
+                                        checked = if (sort.value == state.sortOption) true else false,
+                                        onCheckedChange = {
+                                            update(
+                                                state.copy(
+                                                    sortOption = sort.value
+                                                )
+                                            )
+                                            expanded = false
+                                        }
+                                    )
+                                    Text(
+                                        text = stringResource(id = sort.value),
+                                        style = if (sort.value == state.sortOption) SmoochBold20 else Smooch20
+                                    )
+                                }
+                            },
+                            onClick = {
+                                update(
+                                    state.copy(
+                                        sortOption = sort.value
+                                    )
+                                )
+                                expanded = false
+                            })
+                    }
+                }
+            }
         }
     }
 }

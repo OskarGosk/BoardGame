@@ -35,6 +35,7 @@ import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import com.goskar.boardgame.ui.player.playerList.components.SinglePlayerCard
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 
 class PlayerListScreen : Screen {
     @Composable
@@ -63,7 +64,8 @@ fun PlayerListContent(
     val navigator = LocalNavigator.current
 
     BoardGameScaffold(
-        titlePage = stringResource(id = R.string.player_list)
+        titlePage = R.string.player_list,
+        selectedScreen = BottomBarElements.PlayerListButton.title
     ) { paddingValues ->
 
         Column(
@@ -85,7 +87,7 @@ fun PlayerListContent(
                     )
                     if (state.playerList.isNullOrEmpty()) {
                         Text(
-                            text = "Empty player list",
+                            text = stringResource(R.string.player_empty_list),
                             fontSize = 20.sp,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -112,7 +114,7 @@ fun PlayerListContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_player)
+                            contentDescription = stringResource(id = R.string.player_add)
                         )
                     }
                 }
@@ -134,8 +136,10 @@ fun PlayerViewList(
     {
         val newPlayerList: List<Player> = when (state.sortOption) {
             R.string.default_sort -> state.playerList ?: emptyList()
-            R.string.ascending -> state.playerList?.sortedBy { it.name } ?: emptyList()
-            R.string.descending -> state.playerList?.sortedByDescending { it.name } ?: emptyList()
+            R.string.name_ascending -> state.playerList?.sortedBy { it.name } ?: emptyList()
+            R.string.name_descending -> state.playerList?.sortedByDescending { it.name } ?: emptyList()
+            R.string.played_ascending -> state.playerList?.sortedBy { it.games } ?: emptyList()
+            R.string.played_descending -> state.playerList?.sortedByDescending { it.games } ?: emptyList()
             else -> state.playerList ?: emptyList()
         }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
 

@@ -119,7 +119,8 @@ fun GamePlayContent(
         })
 
     BoardGameScaffold(
-        titlePage = stringResource(R.string.board_list)
+        titlePage = R.string.board_list,
+        selectedScreen = null
     ) { paddingValues ->
 
         Column(
@@ -129,28 +130,6 @@ fun GamePlayContent(
                 .verticalScroll(scrollState),
 
             ) {
-//            AnimatedVisibility(visible = visible) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .clip(RoundedCornerShape(4.dp))
-//                        .background(Color.Gray)
-//                        .border(1.dp, Color.Red, RoundedCornerShape(4.dp))
-//                        .padding(horizontal = 16.dp, vertical = 8.dp)
-//                        .zIndex(100f),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "Error",
-//                    )
-            //DO PRZEROBIENIA NA POTRZEBY APKI
-//                }
-//        AppAlert(
-//            modifier = Modifier,
-//            text = state.successMessage.asString(),
-//            type = AlertType.SUCCESS,
-//        )
-//            }
             GameInfo(state = state)
             PlayerListToSelect(state = state, selectedPlayer = selectedPlayer)
 
@@ -175,7 +154,7 @@ fun GamePlayContent(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            stringResource(R.string.play_date),
+                            stringResource(R.string.history_play_date),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.Center,
                             style = SmoochBold18
@@ -227,7 +206,7 @@ fun GamePlayContent(
                         modifier = Modifier.size(25.dp)
                     )
                     Text(
-                        stringResource(R.string.add_game_to_history),
+                        stringResource(R.string.history_add),
                         style = SmoochBold18)
                 }
             }

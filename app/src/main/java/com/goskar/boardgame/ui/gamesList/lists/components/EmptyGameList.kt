@@ -30,7 +30,7 @@ fun EmptyGameList(
     Column {
 
         Text(
-            stringResource(R.string.empty_game_list),
+            stringResource(R.string.board_empty_list),
             style = Smooch22,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -38,7 +38,7 @@ fun EmptyGameList(
                 .padding(top = 50.dp)
         )
         Text(
-            stringResource(R.string.add_more_game),
+            stringResource(R.string.board_empty_list_add),
             style = Smooch22,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -53,7 +53,7 @@ fun EmptyGameList(
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(
-                stringResource(R.string.add_board),
+                stringResource(R.string.board_add),
                 style = SmoochBold18
             )
         }

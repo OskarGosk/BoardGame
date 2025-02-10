@@ -23,7 +23,7 @@ import com.goskar.boardgame.ui.theme.Smooch16
 @SuppressLint("DefaultLocale")
 @Composable
 fun WinLinearIndicator(
-    progress: Float, // Wartość od 0f do 1f
+    progress: Float,
     modifier: Modifier = Modifier,
     colorPrimary: Color = Color.Red,
     colorBackground: Color = Color.Black,

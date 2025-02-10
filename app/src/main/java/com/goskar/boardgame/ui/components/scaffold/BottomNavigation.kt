@@ -1,63 +1,86 @@
 package com.goskar.boardgame.ui.components.scaffold
 
-//@Composable
-//fun EcpBottomNavigation(
-//    selectedScreen: Int?
-//) {
-//    val navigator = LocalNavigator.current
-//
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .background(White),
-//        horizontalArrangement = Arrangement.SpaceAround
-//    ) {
-//        BottomBarElements.entries.forEach { elements ->
-//            Column {
-//                Divider(
-//                    modifier = Modifier
-//                        .width(72.dp)
-//                        .padding(bottom = 4.dp),
-//                    color = if (selectedScreen == elements.title) Black else White
-//                )
-//                Box (
-//                    contentAlignment = Alignment.Center,
-//                    modifier = Modifier.width(72.dp)
-//                ) {
-//                    Column(
-//                        modifier = Modifier
-//                            .padding(vertical = 4.dp)
-//                            .clickable {
-//                                if (selectedScreen == elements.title && navigator?.lastItem is OffersScreen) {
-//                                    val offersScreen: OffersScreen =
-//                                        navigator.lastItem as OffersScreen
-//                                    offersScreen.clear()
-//                                } else {
-//                                    elements.navigationScreen?.let {
-//                                        navigator?.replace(it)
-//                                    }
-//                                }
-//                            },
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        Image(
-//                            painter =
-//                            if (selectedScreen == elements.title)
-//                                painterResource(elements.itemSelected)
-//                            else
-//                                painterResource(
-//                                    elements.itemNotSelected
-//                                ),
-//                            contentDescription = null,
-//                            modifier = Modifier.size(24.dp)
-//                        )
-//                        Text(
-//                            text = stringResource(elements.title),
-//                            style = Lato12line16
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.theme.Smooch16
+import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.Smooch20
+import com.goskar.boardgame.ui.theme.SmoochBold18
+import com.goskar.boardgame.ui.theme.primaryLight
+
+
+@Composable
+fun BottomNavigation(
+    selectedScreen: Int?
+) {
+    val navigator = LocalNavigator.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        BottomBarElements.entries.forEach { elements ->
+            Column {
+                HorizontalDivider(
+                    modifier = Modifier
+                        .width(72.dp)
+                        .padding(bottom = 4.dp),
+                    color = if (selectedScreen == elements.title) primaryLight else White
+                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.width(72.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                elements.navigationScreen?.let {
+                                    navigator?.replace(it)
+                                }
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(elements.title),
+                            textAlign = TextAlign.Center,
+                            style = if(selectedScreen == elements.title) SmoochBold18 else Smooch18,
+                            color = if(selectedScreen == elements.title) primaryLight else Black
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun BottomBarNavigationPreview() {
+    Surface(
+        color = MaterialTheme.colorScheme.background
+    ) {
+        BottomNavigation(R.string.home)
+    }
+}

@@ -45,7 +45,7 @@ fun WinnerRow(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            stringResource(R.string.winner),
+            stringResource(R.string.history_winner),
             modifier = Modifier.weight(0.5f),
             textAlign = TextAlign.Center,
             style = Smooch18,

@@ -7,30 +7,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.goskar.boardgame.R
 
-//val Lato16line24 = TextStyle(
-//    fontSize = 16.sp,
-//    lineHeight = 24.sp,
-//    fontFamily = FontFamily(Font(R.font.lato_regular)),
-//    fontWeight = FontWeight(500),
-//    color = Black
-//)
-//
-//val Lato16line32 = TextStyle(
-//    fontSize = 16.sp,
-//    lineHeight = 32.sp,
-//    fontFamily = FontFamily(Font(R.font.lato_regular)),
-//    fontWeight = FontWeight(500),
-//    color = Black
-//)
-//
-//val Lato24line29 = TextStyle(
-//    fontSize = 24.sp,
-//    lineHeight = 29.sp,
-//    fontFamily = FontFamily(Font(R.font.lato_regular)),
-//    fontWeight = FontWeight(500),
-//    color = Black
-//)
-
 val Smooch14 = TextStyle(
     fontSize = 14.sp,
     fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),

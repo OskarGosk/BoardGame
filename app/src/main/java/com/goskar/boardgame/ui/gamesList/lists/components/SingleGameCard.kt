@@ -50,13 +50,13 @@ fun SingleGameCard(
                     overflow = TextOverflow.Ellipsis,
                 )
             Text(
-                stringResource(if (game.expansion) R.string.expansion else R.string.base_game),
+                stringResource(if (game.expansion) R.string.board_expansion else R.string.board_base),
                 style = Smooch14
             )
 
-            GameDataRow(R.string.min_player, game.minPlayer)
-            GameDataRow(R.string.max_player, game.maxPlayer)
-            GameDataRow(R.string.how_many_played, "${game.games}")
+            GameDataRow(R.string.board_min_player, game.minPlayer)
+            GameDataRow(R.string.board_max_player, game.maxPlayer)
+            GameDataRow(R.string.board_how_many_played, "${game.games}")
             ButtonRow(game = game, deleteGame, refresh)
         }
     }

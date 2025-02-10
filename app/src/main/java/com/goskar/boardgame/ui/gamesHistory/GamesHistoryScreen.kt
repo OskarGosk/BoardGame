@@ -9,13 +9,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.gamesHistory.lists.components.GamesHistorySearchRow
 import com.goskar.boardgame.ui.gamesHistory.lists.HistoryGamesList
 import org.koin.androidx.compose.koinViewModel
@@ -40,7 +40,8 @@ fun HistoryGameListContent(
     update: (GamesHistoryState) -> Unit = {}
 ) {
     BoardGameScaffold(
-        titlePage = stringResource(id = R.string.history_game_screen)
+        titlePage = R.string.history_game_screen,
+        selectedScreen= BottomBarElements.HistoryListButton.title
     ) { paddingValues ->
 
 

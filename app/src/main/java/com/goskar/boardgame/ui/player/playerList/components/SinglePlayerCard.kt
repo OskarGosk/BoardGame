@@ -79,7 +79,7 @@ fun SinglePlayerCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "Games played: ${player.games}",
+                    text = stringResource(R.string.player_games_count, player.games),
                     style = Smooch18,
                 )
                 Icon(
@@ -130,7 +130,7 @@ fun SinglePlayerCard(
                 },
                 text = {
                     Text(
-                        stringResource(R.string.delete_player),
+                        stringResource(R.string.player_delete_info),
                         style = Smooch16
                     )
                 },confirmButton = {

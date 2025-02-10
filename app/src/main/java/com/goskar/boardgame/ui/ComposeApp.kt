@@ -24,13 +24,3 @@ fun ComposeApp() {
         Navigator(screen = HomeScreen())
     }
 }
-//@Composable
-//fun ReplyAppPreview() {
-//    AppTheme {
-//        ReplyApp(
-//            replyHomeUIState = ReplyHomeUIState(
-//                emails = LocalEmailsDataProvider.allEmails
-//            )
-//        )
-//    }
-//}

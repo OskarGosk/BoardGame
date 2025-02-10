@@ -57,7 +57,7 @@ fun GameInfo(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                stringResource(if (state.game?.expansion != false) R.string.expansion else R.string.base_game),
+                stringResource(if (state.game?.expansion != false) R.string.board_expansion else R.string.board_base),
                 style = Smooch14
             )
             Row(
@@ -67,7 +67,7 @@ fun GameInfo(
                 horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    stringResource(R.string.min_player),
+                    stringResource(R.string.board_min_player),
                     style = Smooch16
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -84,7 +84,7 @@ fun GameInfo(
                 horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    stringResource(R.string.max_player),
+                    stringResource(R.string.board_max_player),
                     style = Smooch16
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -101,7 +101,7 @@ fun GameInfo(
                 horizontalArrangement = Arrangement.Start
             ) {
                 Text(
-                    stringResource(R.string.how_many_played),
+                    stringResource(R.string.board_how_many_played),
                     style = Smooch16
                 )
                 Spacer(modifier = Modifier.weight(1f))
