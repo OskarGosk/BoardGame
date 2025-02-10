@@ -229,16 +229,18 @@ fun AddEditGameContent(
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
-                    val tempFile = File(context.cacheDir, "${state.name}.png")
-                    val inputStream = context.contentResolver.openInputStream(state.uri.toUri())
+                    if (state.uri.isNotEmpty()) {
+                        val tempFile = File(context.cacheDir, "${state.name}.png")
+                        val inputStream = context.contentResolver.openInputStream(state.uri.toUri())
 
-                    inputStream?.use { input ->
-                        val outputStream = FileOutputStream(tempFile)
-                        input.copyTo(outputStream)
-                        outputStream.close()
+                        inputStream?.use { input ->
+                            val outputStream = FileOutputStream(tempFile)
+                            input.copyTo(outputStream)
+                            outputStream.close()
 
-                        val fileUri = Uri.fromFile(tempFile)
-                        update(state.copy(uri = fileUri.toString()))
+                            val fileUri = Uri.fromFile(tempFile)
+                            update(state.copy(uri = fileUri.toString()))
+                        }
                     }
                     if (state.id == null) addGame() else editGame()
                 },
