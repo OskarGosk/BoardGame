@@ -38,7 +38,7 @@ class GameDbRepositoryImpl(
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun getAllGame(): RequestResult<Boolean> {
+    override suspend fun getAllGame(): RequestResult<List<Game>> {
         return withContext(defaultDispatcher) {
             runCatching {
                 gameDao.getAll()
@@ -47,7 +47,7 @@ class GameDbRepositoryImpl(
                     .e("Can't add all game from list\n ${it.stackTraceToString()}")
             }
         }.fold(
-            onSuccess = { RequestResult.SuccessWithData(it) },
+            onSuccess = { RequestResult.Success(it) },
             onFailure = { RequestResult.Error(it) })
     }
 

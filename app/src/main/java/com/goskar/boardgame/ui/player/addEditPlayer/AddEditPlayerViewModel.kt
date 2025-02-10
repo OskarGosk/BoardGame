@@ -60,7 +60,7 @@ class AddEditPlayerViewModel(
                     }
                 }
 
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
@@ -92,7 +92,7 @@ class AddEditPlayerViewModel(
                     }
                 }
 
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             errorVisible = true

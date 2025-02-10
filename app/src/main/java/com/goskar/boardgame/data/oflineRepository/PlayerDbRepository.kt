@@ -9,7 +9,7 @@ interface PlayerDbRepository {
 
     suspend fun insertAllPlayer(playerList: List<Player>): RequestResult<Boolean>
 
-    suspend fun getAllPlayer(): RequestResult<Boolean>
+    suspend fun getAllPlayer(): RequestResult<List<Player>>
 
     suspend fun deletePlayer(player: Player): RequestResult<Boolean>
 

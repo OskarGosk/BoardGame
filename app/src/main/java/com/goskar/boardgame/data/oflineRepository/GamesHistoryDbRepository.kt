@@ -8,7 +8,7 @@ interface GamesHistoryDbRepository {
 
     suspend fun insertAllHistoryGame(historyGameList: List<HistoryGame>) : RequestResult<Boolean>
 
-    suspend fun getAllHistoryGame(): RequestResult<Boolean>
+    suspend fun getAllHistoryGame(): RequestResult<List<HistoryGame>>
 
     suspend fun deleteHistoryGame(historyGame: HistoryGame) : RequestResult<Boolean>
 

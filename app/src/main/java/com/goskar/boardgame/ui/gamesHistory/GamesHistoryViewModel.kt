@@ -38,16 +38,16 @@ class GamesHistoryViewModel(
         viewModelScope.launch {
             val response = gamesHistoryDbRepository.getAllHistoryGame()
             when (response) {
-                is RequestResult.SuccessWithData -> {
+                is RequestResult.Success -> {
                     _state.update {
                         it.copy(
-                            historyList = response.data as List<HistoryGame>,
+                            historyList = response.data,
                             errorVisible = false,
                             loading = false
                         )
                     }
                 }
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             errorVisible = true,

@@ -36,7 +36,7 @@ class PlayerDbRepositoryImpl(
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun getAllPlayer(): RequestResult<Boolean> {
+    override suspend fun getAllPlayer(): RequestResult<List<Player>> {
         return withContext(defaultDispatcher) {
             runCatching {
                 playerDao.getAll()
@@ -44,7 +44,7 @@ class PlayerDbRepositoryImpl(
                 Timber.tag(TAG).e("Can't get player list\n ${it.stackTraceToString()}")
             }
         }.fold(
-            onSuccess = { RequestResult.SuccessWithData(it) },
+            onSuccess = { RequestResult.Success(it) },
             onFailure = { RequestResult.Error(it) })
     }
 

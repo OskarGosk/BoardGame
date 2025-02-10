@@ -27,7 +27,7 @@ class GamesHistoryDbRepositoryImpl(
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun insertAllHistoryGame(historyGameList: List<HistoryGame>): RequestResult<Boolean>  {
+    override suspend fun insertAllHistoryGame(historyGameList: List<HistoryGame>): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
                 historyGameDao.insertAll(historyGameList)
@@ -37,16 +37,17 @@ class GamesHistoryDbRepositoryImpl(
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun getAllHistoryGame(): RequestResult<Boolean> {
+    override suspend fun getAllHistoryGame(): RequestResult<List<HistoryGame>> {
         return withContext(defaultDispatcher) {
             runCatching {
-                historyGameDao.getAll()            }.onFailure {
+                historyGameDao.getAll()
+            }.onFailure {
                 Timber.tag(TAG).e("Can't get all games history\n  ${it.stackTraceToString()}")
             }
-        }.fold(onSuccess = { RequestResult.SuccessWithData(it) }, onFailure = { RequestResult.Error(it) })
+        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun deleteHistoryGame(historyGame: HistoryGame): RequestResult<Boolean>  {
+    override suspend fun deleteHistoryGame(historyGame: HistoryGame): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
                 historyGameDao.delete(historyGame)
@@ -56,7 +57,7 @@ class GamesHistoryDbRepositoryImpl(
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun editHistoryGame(historyGame: HistoryGame): RequestResult<Boolean>  {
+    override suspend fun editHistoryGame(historyGame: HistoryGame): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
                 historyGameDao.edit(historyGame)

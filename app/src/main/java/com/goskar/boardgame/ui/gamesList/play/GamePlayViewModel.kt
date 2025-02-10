@@ -76,7 +76,7 @@ class GamePlayViewModel(
                 }
             }
 
-            else -> {
+            is RequestResult.Error -> {
                 _state.update {
                     it.copy(
                         successAddHistoryGame = false,
@@ -103,7 +103,7 @@ class GamePlayViewModel(
 //                        validateEditAllPlayer()
                 }
 
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             successAddPlayGame = false,
@@ -125,16 +125,16 @@ class GamePlayViewModel(
     fun getAllPlayer() {
         viewModelScope.launch {
             when (val response = playerDbRepository.getAllPlayer()) {
-                is RequestResult.SuccessWithData -> {
+                is RequestResult.Success -> {
                     _state.update {
                         it.copy(
-                            playerList = response.data as List<Player>,
+                            playerList = response.data,
                             errorVisible = false
                         )
                     }
                 }
 
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
@@ -179,7 +179,7 @@ class GamePlayViewModel(
                     }
                 }
 
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             successEditAllPlayer = false,

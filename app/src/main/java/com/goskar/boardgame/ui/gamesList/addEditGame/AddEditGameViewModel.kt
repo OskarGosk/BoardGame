@@ -67,7 +67,7 @@ class AddEditGameViewModel(
                     }
                 }
 
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = false,
@@ -102,7 +102,7 @@ class AddEditGameViewModel(
                     }
                 }
 
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             successAddEditGame = false,

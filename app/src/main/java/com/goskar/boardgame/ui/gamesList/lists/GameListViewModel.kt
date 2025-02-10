@@ -41,21 +41,14 @@ class GameListViewModel(
         viewModelScope.launch {
             val response = gameDbRepository.getAllGame()
             when (response){
-                is RequestResult.SuccessWithData -> {
+                is RequestResult.Success -> {
                     _state.update {
                         it.copy(
-                            gameList = response.data as List<Game>
+                            gameList = response.data
                         )
                     }
                 }
                 is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            errorVisible = true
-                        )
-                    }
-                }
-                else -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
@@ -77,7 +70,7 @@ class GameListViewModel(
                         )
                     }
                 }
-                else -> {
+                is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
