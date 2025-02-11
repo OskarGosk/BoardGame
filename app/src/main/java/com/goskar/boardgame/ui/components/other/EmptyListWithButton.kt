@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gamesList.lists.components
+package com.goskar.boardgame.ui.components.other
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +22,18 @@ import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.theme.Smooch22
 import com.goskar.boardgame.ui.theme.SmoochBold18
 
-@Composable
-fun EmptyGameList(
-) {
-    val navigator = LocalNavigator.current
 
+@Composable
+fun EmptyListWithButton(
+    headerText: Int,
+    infoText: Int,
+    buttonText: Int,
+    onClick: () -> Unit = {}
+) {
     Column {
 
         Text(
-            stringResource(R.string.board_empty_list),
+            stringResource(headerText),
             style = Smooch22,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -38,7 +41,7 @@ fun EmptyGameList(
                 .padding(top = 50.dp)
         )
         Text(
-            stringResource(R.string.board_empty_list_add),
+            stringResource(infoText),
             style = Smooch22,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -47,13 +50,13 @@ fun EmptyGameList(
         )
         Button(
             shape = CutCornerShape(percent = 10),
-            onClick = { navigator?.push(AddEditGameScreen(null)) },
+            onClick = { onClick() },
             modifier = Modifier
                 .padding(top = 10.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(
-                stringResource(R.string.board_add),
+                stringResource(buttonText),
                 style = SmoochBold18
             )
         }
@@ -62,12 +65,21 @@ fun EmptyGameList(
 
 @Preview
 @Composable
-fun EmptyGameListPreview() {
+fun EmptyListWithButtonPreview() {
+    val navigator = LocalNavigator.current
+
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
-            EmptyGameList()
+            EmptyListWithButton(
+                headerText = R.string.board_empty_list,
+                infoText = R.string.board_empty_list_add,
+                buttonText = R.string.history_add,
+                onClick = {
+                    navigator?.push(AddEditGameScreen(null))
+                }
+            )
         }
     }
 }

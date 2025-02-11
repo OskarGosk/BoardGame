@@ -24,13 +24,13 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.GameViewList
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
-import com.goskar.boardgame.ui.gamesList.lists.components.EmptyGameList
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
 class GameListScreen : Screen {
@@ -74,7 +74,14 @@ fun GameListContent(
                 .padding(paddingValues)
         ) {
             if (state.gameList.isNullOrEmpty()) {
-                EmptyGameList()
+                EmptyListWithButton(
+                    headerText = R.string.board_empty_list,
+                    infoText = R.string.board_empty_list_add,
+                    buttonText = R.string.board_add,
+                    onClick = {
+                        navigator?.push(AddEditGameScreen(null))
+                    }
+                )
             } else {
                 GameSearchRow(update = update, state = state)
                 GameViewList(deleteGame = deleteGame,refresh = refresh, state = state)

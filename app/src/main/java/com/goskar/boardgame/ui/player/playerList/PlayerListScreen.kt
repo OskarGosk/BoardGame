@@ -15,7 +15,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,11 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.player.playerList.components.SearchRow
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
 import com.goskar.boardgame.ui.player.playerList.components.SinglePlayerCard
@@ -86,12 +85,11 @@ fun PlayerListContent(
                         state = state
                     )
                     if (state.playerList.isNullOrEmpty()) {
-                        Text(
-                            text = stringResource(R.string.player_empty_list),
-                            fontSize = 20.sp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.CenterHorizontally)
+                        EmptyListWithButton(
+                            headerText = R.string.player_empty_list,
+                            infoText = R.string.player_empty_list_add,
+                            buttonText = R.string.player_add,
+                            onClick = { navigator?.push(AddEditPlayerScreen(null)) },
                         )
                     } else {
                         PlayerViewList(
@@ -137,9 +135,13 @@ fun PlayerViewList(
         val newPlayerList: List<Player> = when (state.sortOption) {
             R.string.default_sort -> state.playerList ?: emptyList()
             R.string.name_ascending -> state.playerList?.sortedBy { it.name } ?: emptyList()
-            R.string.name_descending -> state.playerList?.sortedByDescending { it.name } ?: emptyList()
+            R.string.name_descending -> state.playerList?.sortedByDescending { it.name }
+                ?: emptyList()
+
             R.string.played_ascending -> state.playerList?.sortedBy { it.games } ?: emptyList()
-            R.string.played_descending -> state.playerList?.sortedByDescending { it.games } ?: emptyList()
+            R.string.played_descending -> state.playerList?.sortedByDescending { it.games }
+                ?: emptyList()
+
             else -> state.playerList ?: emptyList()
         }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
 
@@ -182,6 +184,19 @@ fun PlayerListContentPreview() {
                     player2
                 )
             )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PlayerListEmptyContentPreview() {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        PlayerListContent(
+            state = PlayerListState()
         )
     }
 }
