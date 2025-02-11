@@ -1,4 +1,4 @@
-Prosta aplikacja do zbieranai wyników rozgrywek gier planszowych.
+Prosta aplikacja do zbierania wyników rozgrywek gier planszowych.
 
 Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, oraz graczy z liczbą rozgrywek i win ratio.  
 
