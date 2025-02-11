@@ -59,7 +59,7 @@ fun GameListContent(
     state: GameListState,
     deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {},
-    update: (GameListState) -> Unit = {}
+    update: (GameListState) -> Unit = {},
 ) {
     val navigator = LocalNavigator.current
 

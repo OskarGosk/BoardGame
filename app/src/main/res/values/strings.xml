@@ -50,6 +50,7 @@
     <string name="board_delete_info">The removal of the game is irreversible. It will not affect players scores.</string>
     <string name="board_take_another_photo">Take another photo</string>
     <string name="board_open_gallery">Open Gallery</string>
+    <string name="board_without_cover">This game has no cover.</string>
 
 
     //HISTORY AND GAMEPLAY
@@ -60,6 +61,7 @@
     <string name="history_empty_player_list_text">Go to player list and Add someone.</string>
     <string name="history_empty_list">Empty Gaming History.</string>
     <string name="history_empty_list_add">Please add some game play\nTo do this, please click button below.</string>
+    <string name="history_game_without_cover">Edit game to add Image</string>
 
 
 </resources>

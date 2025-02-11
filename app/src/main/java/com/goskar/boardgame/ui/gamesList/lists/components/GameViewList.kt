@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.gamesList.lists.components
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,13 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
@@ -23,6 +30,8 @@ fun GameViewList(
     refresh: () -> Unit = {},
     state: GameListState
 ) {
+
+    val context = LocalContext.current
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -38,13 +47,30 @@ fun GameViewList(
             else -> state.gameList ?: emptyList()
         }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
         items(items = newGameList) { game ->
-            SingleGameCard(
-                game = game,
-                modifier = Modifier.padding(bottom = if(newGameList.indexOf(game) == (newGameList.size - 1)
-                ) 60.dp else 10.dp),
-                deleteGame = deleteGame,
-                refresh = refresh
-            )
+            var isExpanded by remember { mutableStateOf(true) }
+
+            if(isExpanded && !game.uri.isNullOrEmpty()) {
+                SingleCoverGameCard(
+                    game = game,
+                    modifier = Modifier.padding(bottom = if(newGameList.indexOf(game) == (newGameList.size - 1)
+                    ) 60.dp else 10.dp),
+                    deleteGame = deleteGame,
+                    refresh = refresh,
+                    onCardCLick = { isExpanded = !isExpanded}
+                )
+            } else {
+                Toast.makeText(context, stringResource(R.string.board_without_cover), Toast.LENGTH_LONG).show()
+                SingleGameCard(
+                    game = game,
+                    modifier = Modifier.padding(
+                        bottom = if (newGameList.indexOf(game) == (newGameList.size - 1)
+                        ) 60.dp else 10.dp
+                    ),
+                    deleteGame = deleteGame,
+                    refresh = refresh,
+                    onCardCLick = { isExpanded = !isExpanded}
+                )
+            }
 
         }
     }

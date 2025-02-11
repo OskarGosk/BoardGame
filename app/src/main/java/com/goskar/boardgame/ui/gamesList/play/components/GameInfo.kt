@@ -73,13 +73,12 @@ fun GameInfo(
                     modifier = Modifier.fillMaxWidth()
                         .defaultMinSize(50.dp),
                 ) {
-                    Text(text = "Edit game to add Image",
+                    Text(text = stringResource(R.string.history_game_without_cover),
                         style = SmoochBold18,
                         textAlign = TextAlign.Center
                     )
                 }
             }
-
         }
 
         Column(
