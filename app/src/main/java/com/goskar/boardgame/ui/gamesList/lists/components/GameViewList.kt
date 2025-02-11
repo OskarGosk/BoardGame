@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.gamesList.lists.components
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
@@ -30,9 +28,6 @@ fun GameViewList(
     refresh: () -> Unit = {},
     state: GameListState
 ) {
-
-    val context = LocalContext.current
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(10.dp),
@@ -41,25 +36,30 @@ fun GameViewList(
         val newGameList: List<Game> = when (state.sortOption) {
             R.string.default_sort -> state.gameList ?: emptyList()
             R.string.name_ascending -> state.gameList?.sortedBy { it.name } ?: emptyList()
-            R.string.name_descending -> state.gameList?.sortedByDescending { it.name } ?: emptyList()
+            R.string.name_descending -> state.gameList?.sortedByDescending { it.name }
+                ?: emptyList()
+
             R.string.played_ascending -> state.gameList?.sortedBy { it.games } ?: emptyList()
-            R.string.played_descending -> state.gameList?.sortedByDescending { it.games } ?: emptyList()
+            R.string.played_descending -> state.gameList?.sortedByDescending { it.games }
+                ?: emptyList()
+
             else -> state.gameList ?: emptyList()
         }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
         items(items = newGameList) { game ->
             var isExpanded by remember { mutableStateOf(true) }
 
-            if(isExpanded && !game.uri.isNullOrEmpty()) {
+            if (isExpanded && !game.uri.isNullOrEmpty()) {
                 SingleCoverGameCard(
                     game = game,
-                    modifier = Modifier.padding(bottom = if(newGameList.indexOf(game) == (newGameList.size - 1)
-                    ) 60.dp else 10.dp),
+                    modifier = Modifier.padding(
+                        bottom = if (newGameList.indexOf(game) == (newGameList.size - 1)
+                        ) 60.dp else 10.dp
+                    ),
                     deleteGame = deleteGame,
                     refresh = refresh,
-                    onCardCLick = { isExpanded = !isExpanded}
+                    onCardCLick = { isExpanded = !isExpanded }
                 )
             } else {
-                Toast.makeText(context, stringResource(R.string.board_without_cover), Toast.LENGTH_LONG).show()
                 SingleGameCard(
                     game = game,
                     modifier = Modifier.padding(
@@ -68,7 +68,7 @@ fun GameViewList(
                     ),
                     deleteGame = deleteGame,
                     refresh = refresh,
-                    onCardCLick = { isExpanded = !isExpanded}
+                    onCardCLick = { isExpanded = !isExpanded }
                 )
             }
 
@@ -103,6 +103,6 @@ fun GameViewListPreview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        GameViewList (state = GameListState(gameList))
+        GameViewList(state = GameListState(gameList))
     }
 }

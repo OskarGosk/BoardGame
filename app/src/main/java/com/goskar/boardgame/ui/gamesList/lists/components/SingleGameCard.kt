@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.gamesList.lists.components
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -33,13 +35,18 @@ fun SingleGameCard(
     refresh: () -> Unit = {},
     onCardCLick: () -> Unit = {},
 ) {
+    val context = LocalContext.current
     Card(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 10.dp),
         modifier = modifier
             .height(200.dp)
             .padding(5.dp)
             .clickable {
-                onCardCLick()
+                if (game.uri.isNullOrEmpty()) {
+                    Toast.makeText(context, R.string.board_without_cover, Toast.LENGTH_LONG).show()
+                } else {
+                    onCardCLick()
+                }
             }
     ) {
         Column(
