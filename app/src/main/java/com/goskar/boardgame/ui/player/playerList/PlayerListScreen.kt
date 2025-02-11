@@ -2,13 +2,10 @@ package com.goskar.boardgame.ui.player.playerList
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -19,6 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,17 +30,18 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.player.playerList.components.SearchRow
-import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
-import com.goskar.boardgame.ui.player.playerList.components.SinglePlayerCard
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.player.playerList.components.AddEditDialog
+import com.goskar.boardgame.ui.player.playerList.components.PlayerViewList
 
 class PlayerListScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel: PlayerListViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+
         LaunchedEffect(Unit) {
             viewModel.getAllPlayer()
         }
@@ -49,6 +50,7 @@ class PlayerListScreen : Screen {
             deletePlayer = viewModel::validateDeletePlayer,
             refreshPlayer = viewModel::getAllPlayer,
             update = viewModel::update,
+            addPlayer = viewModel::validateAddEditPLayer
         )
     }
 }
@@ -59,8 +61,9 @@ fun PlayerListContent(
     deletePlayer: (Player) -> Unit = {},
     refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
-) {
-    val navigator = LocalNavigator.current
+    addPlayer: (Boolean) -> Unit = {},
+    ) {
+    var showAddEditDialog by remember { mutableStateOf(false) }
 
     BoardGameScaffold(
         titlePage = R.string.player_list,
@@ -89,12 +92,14 @@ fun PlayerListContent(
                             headerText = R.string.player_empty_list,
                             infoText = R.string.player_empty_list_add,
                             buttonText = R.string.player_add,
-                            onClick = { navigator?.push(AddEditPlayerScreen(null)) },
+                            onClick = { showAddEditDialog = true },
                         )
                     } else {
                         PlayerViewList(
                             deletePlayer = deletePlayer,
                             refreshPlayer = refreshPlayer,
+                            addPlayer = addPlayer,
+                            update = update,
                             state = state
                         )
                     }
@@ -105,7 +110,7 @@ fun PlayerListContent(
                 ) {
                     FloatingActionButton(
                         onClick = {
-                            navigator?.push(AddEditPlayerScreen(null))
+                            showAddEditDialog = true
                         },
                         modifier = Modifier
                             .size(60.dp)
@@ -118,46 +123,23 @@ fun PlayerListContent(
                 }
             }
         }
-    }
-}
 
-@Composable
-fun PlayerViewList(
-    deletePlayer: (Player) -> Unit = {},
-    refreshPlayer: () -> Unit = {},
-    state: PlayerListState
-) {
-    LazyColumn(
-        modifier = Modifier,
-        contentPadding = PaddingValues(vertical = 10.dp),
-    )
-    {
-        val newPlayerList: List<Player> = when (state.sortOption) {
-            R.string.default_sort -> state.playerList ?: emptyList()
-            R.string.name_ascending -> state.playerList?.sortedBy { it.name } ?: emptyList()
-            R.string.name_descending -> state.playerList?.sortedByDescending { it.name }
-                ?: emptyList()
-
-            R.string.played_ascending -> state.playerList?.sortedBy { it.games } ?: emptyList()
-            R.string.played_descending -> state.playerList?.sortedByDescending { it.games }
-                ?: emptyList()
-
-            else -> state.playerList ?: emptyList()
-        }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
-
-        items(items = newPlayerList) { player ->
-            if (player.name.lowercase().contains(state.searchTxt.lowercase())) {
-                SinglePlayerCard(
-                    player = player,
-                    modifier = Modifier.padding(bottom = if (newPlayerList.indexOf(player) == (newPlayerList.size - 1)) 50.dp else 0.dp),
-                    deletePlayer = deletePlayer,
-                    refreshPlayer = refreshPlayer,
-                )
-            }
+        if(showAddEditDialog) {
+            AddEditDialog(
+                newPlayer = true,
+                state = state,
+                confirmButtonClick = {
+                    showAddEditDialog = false
+                    addPlayer(true)
+                    refreshPlayer()
+                },
+                onDismiss = {showAddEditDialog = !showAddEditDialog},
+                update = update
+            )
         }
-
     }
 }
+
 
 @Preview
 @Composable

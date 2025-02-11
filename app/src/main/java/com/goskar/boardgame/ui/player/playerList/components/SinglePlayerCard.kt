@@ -31,11 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
-import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
+import com.goskar.boardgame.ui.player.playerList.PlayerListState
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold26
 
@@ -44,12 +43,15 @@ fun SinglePlayerCard(
     player: Player,
     modifier: Modifier,
     deletePlayer: (Player) -> Unit = {},
-    refreshPlayer: () -> Unit = {}
-) {
+    refreshPlayer: () -> Unit = {},
+    update: (PlayerListState) -> Unit = {},
+    addPlayer: (Boolean) -> Unit = {},
+    state: PlayerListState,
+    ) {
     var isExpanded by remember { mutableStateOf(false) }
     var showAlertDialog by remember { mutableStateOf(false) }
+    var showAddEditDialog by remember { mutableStateOf(false) }
 
-    val navigator = LocalNavigator.current
     Card(
         shape = RoundedCornerShape(15),
         modifier = modifier
@@ -98,8 +100,10 @@ fun SinglePlayerCard(
             )
             {
                 IconButton(onClick = {
-                    navigator?.push(AddEditPlayerScreen(player))
-                    isExpanded = false
+                    update (state.copy(
+                        player = player
+                    ))
+                    showAddEditDialog = true
                 }) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Game")
                 }
@@ -128,6 +132,20 @@ fun SinglePlayerCard(
                 }
             )
         }
+
+        if(showAddEditDialog) {
+            AddEditDialog(
+                newPlayer = false,
+                state = state,
+                confirmButtonClick = {
+                    showAddEditDialog = false
+                    addPlayer(false)
+                    refreshPlayer()
+                },
+                onDismiss = {showAddEditDialog = !showAddEditDialog},
+                update = update
+            )
+        }
     }
 }
 
@@ -141,7 +159,7 @@ fun SinglePlayerCardPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
-            SinglePlayerCard(player, modifier = Modifier)
+            SinglePlayerCard(player, modifier = Modifier, state = PlayerListState())
         }
     }
 }
@@ -162,7 +180,7 @@ fun SinglePlayerCardPreview2() {
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
-            SinglePlayerCard(player, modifier = Modifier)
+            SinglePlayerCard(player, modifier = Modifier, state = PlayerListState())
         }
     }
 }
