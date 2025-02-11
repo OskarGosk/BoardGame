@@ -8,15 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,11 +34,9 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
 import com.goskar.boardgame.ui.player.addEditPlayer.AddEditPlayerScreen
-import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.Smooch18
-import com.goskar.boardgame.ui.theme.SmoochBold18
-import com.goskar.boardgame.ui.theme.SmoochBold22
 import com.goskar.boardgame.ui.theme.SmoochBold26
 
 @Composable
@@ -120,51 +115,16 @@ fun SinglePlayerCard(
         }
 
         if (showAlertDialog) {
-            AlertDialog(
-                onDismissRequest = { showAlertDialog = false },
-                title = {
-                    Text(
-                        stringResource(R.string.delete, player.name),
-                        style = SmoochBold22
-                    )
-                },
-                text = {
-                    Text(
-                        stringResource(R.string.player_delete_info),
-                        style = Smooch16
-                    )
-                },confirmButton = {
-                    Button(
-                        shape = CutCornerShape(percent = 10),
-                        onClick = {
-                            showAlertDialog = false
-                            isExpanded = false
-                            deletePlayer(player)
-                            refreshPlayer()
-                        },
-                        modifier = Modifier
-                            .padding(top = 10.dp)
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(
-                            stringResource(R.string.confirm),
-                            style = SmoochBold18
-                        )
-                    }
-                },
-                dismissButton = {
-                    Button(
-                        shape = CutCornerShape(percent = 10),
-                        onClick = { showAlertDialog = false },
-                        modifier = Modifier
-                            .padding(top = 10.dp)
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(
-                            stringResource(R.string.back),
-                            style = SmoochBold18
-                        )
-                    }
+            SimpleAlertDialog(
+                titleText = stringResource(R.string.delete, player.name),
+                contentText = R.string.player_delete_info,
+                modifierButton = Modifier.align(Alignment.CenterHorizontally),
+                onDismiss = {showAlertDialog = false},
+                confirmButtonClick = {
+                    showAlertDialog = false
+                    isExpanded = false
+                    deletePlayer(player)
+                    refreshPlayer()
                 }
             )
         }

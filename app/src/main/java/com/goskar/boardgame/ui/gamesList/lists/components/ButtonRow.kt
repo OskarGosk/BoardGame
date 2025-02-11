@@ -3,21 +3,16 @@ package com.goskar.boardgame.ui.gamesList.lists.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -31,11 +26,9 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.gamesList.play.GamePlayActivityScreen
-import com.goskar.boardgame.ui.theme.Smooch16
-import com.goskar.boardgame.ui.theme.SmoochBold18
-import com.goskar.boardgame.ui.theme.SmoochBold22
 
 @Composable
 fun ButtonRow(
@@ -87,49 +80,15 @@ fun ButtonRow(
     }
 
     if (showAlertDialog) {
-        AlertDialog(
-            onDismissRequest = { showAlertDialog = false },
-            title = {
-                Text(
-                    stringResource(R.string.delete, game.name),
-                    style = SmoochBold22
-                )
-            },
-            text = {
-                Text(
-                    stringResource(R.string.board_delete_info),
-                    style = Smooch16
-                )
-            },
-            confirmButton = {
-                Button(
-                    shape = CutCornerShape(percent = 10),
-                    onClick = {
-                        deleteGame(game)
-                        refresh()
-                        showAlertDialog = false
-                    },
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                ) {
-                    Text(
-                        stringResource(R.string.confirm),
-                        style = SmoochBold18
-                    )
-                }
-            },
-            dismissButton = {
-                Button(
-                    shape = CutCornerShape(percent = 10),
-                    onClick = { showAlertDialog = false },
-                    modifier = Modifier
-                        .padding(top = 10.dp)
-                ) {
-                    Text(
-                        stringResource(R.string.back),
-                        style = SmoochBold18
-                    )
-                }
+        SimpleAlertDialog(
+            titleText = stringResource(R.string.delete, game.name),
+            contentText = R.string.board_delete_info,
+            modifierButton = Modifier,
+            onDismiss = { showAlertDialog = false },
+            confirmButtonClick = {
+                deleteGame(game)
+                refresh()
+                showAlertDialog = false
             }
         )
     }
