@@ -1,6 +1,6 @@
 Prosta aplikacja do zbierania wyników rozgrywek gier planszowych.
 
-Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, oraz graczy z liczbą rozgrywek i win ratio.  
+Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, listę graczy z liczbą rozgrywek i win ratio, oraz wyniki rozgrywek.
 
 Lista Graczy:
 Przy każdym graczu widniej jego liczba dotychczasowych zarejestrowanych rozgrywek oraz licba wugranych.
@@ -24,5 +24,6 @@ Możemy dodać jakiś opis rozgrywki. Np. róźnicę punktów.
 
 Historia Gier:
 Mamy równeiż Historię Gier, gdzie możemy wyszukiwać wynik rozgrywki po nazwie gry lub gracza.
+Widzimy tutaj, nazwe gry, datę rozgrywki, oraz gracz który wygrał. 
 
 ![HistoryList](https://github.com/user-attachments/assets/e5fea46e-ba16-4212-8292-e97f699cb26c)
