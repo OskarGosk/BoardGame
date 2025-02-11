@@ -9,6 +9,8 @@ Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po na
 ![image](https://github.com/user-attachments/assets/ba0f2ccf-d6c6-47f4-a29d-5f96fdd546c8)
 ![image](https://github.com/user-attachments/assets/e4e32acb-4e3f-46c9-b2de-62a2a1171d14)
 
+![Screenshot_20250211_095445](https://github.com/user-attachments/assets/97452e4f-c16e-458d-9d21-9591d9bac1a4)
+
 
 Na liscie z grami znajdują się podstawowe informacje o grze, jest możliwość, edycji  oraz usunięcia danej gry z kolekcji.
 Użytkownik posiada możlwiość wyszukiwania po nazwie gry w celu zawęzenia wyników, oraz podstawowe sortowanie, co tak samo jak w przypadku graczy można łączyć.
