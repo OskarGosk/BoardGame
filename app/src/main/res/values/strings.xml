@@ -62,6 +62,8 @@
     <string name="history_empty_list">Empty Gaming History.</string>
     <string name="history_empty_list_add">Please add some game play\nTo do this, please click button below.</string>
     <string name="history_game_without_cover">Edit game to add Image</string>
+    <string name="history_description">Description:</string>
+    <string name="history_players_list">List of players:</string>
 
 
 </resources>

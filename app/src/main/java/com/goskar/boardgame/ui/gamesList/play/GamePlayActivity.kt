@@ -101,7 +101,6 @@ fun GamePlayContent(
     addGamePlay: () -> Unit = {},
 ) {
     val calendarState = rememberSheetState()
-    val keyboardController = LocalSoftwareKeyboardController.current
     val scrollState = rememberScrollState()
 
     CalendarDialog(
@@ -173,16 +172,21 @@ fun GamePlayContent(
             Spacer(modifier = Modifier.height(15.dp))
 
             Text(
-                text = "Game Description:",
+                text = stringResource(R.string.history_description),
                 style = Smooch18,
                 modifier = Modifier
                     .fillMaxWidth()
             )
-            var descriptionGame by remember { mutableStateOf("") }
             OutlinedTextField(
                 textStyle = Smooch18,
-                value = descriptionGame,
-                onValueChange = { descriptionGame = it },
+                value = state.descriptionGame,
+                onValueChange = {
+                    update(
+                        state.copy(
+                            descriptionGame = it
+                        )
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .width(200.dp)
