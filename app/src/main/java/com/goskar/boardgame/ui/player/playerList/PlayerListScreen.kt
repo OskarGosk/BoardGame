@@ -25,9 +25,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.player.playerList.components.SearchRow
 import org.koin.androidx.compose.koinViewModel
@@ -48,7 +48,6 @@ class PlayerListScreen : Screen {
         PlayerListContent(
             state = state,
             deletePlayer = viewModel::validateDeletePlayer,
-            refreshPlayer = viewModel::getAllPlayer,
             update = viewModel::update,
             addPlayer = viewModel::validateAddEditPLayer
         )
@@ -59,7 +58,6 @@ class PlayerListScreen : Screen {
 fun PlayerListContent(
     state: PlayerListState,
     deletePlayer: (Player) -> Unit = {},
-    refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
     ) {
@@ -69,7 +67,7 @@ fun PlayerListContent(
         titlePage = R.string.player_list,
         selectedScreen = BottomBarElements.PlayerListButton.title
     ) { paddingValues ->
-
+        if (state.isLoading) AppLoader()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -97,7 +95,6 @@ fun PlayerListContent(
                     } else {
                         PlayerViewList(
                             deletePlayer = deletePlayer,
-                            refreshPlayer = refreshPlayer,
                             addPlayer = addPlayer,
                             update = update,
                             state = state
@@ -131,7 +128,6 @@ fun PlayerListContent(
                 confirmButtonClick = {
                     showAddEditDialog = false
                     addPlayer(true)
-                    refreshPlayer()
                 },
                 onDismiss = {showAddEditDialog = !showAddEditDialog},
                 update = update

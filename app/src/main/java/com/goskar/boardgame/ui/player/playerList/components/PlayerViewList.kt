@@ -18,7 +18,6 @@ import com.goskar.boardgame.ui.player.playerList.PlayerListState
 @Composable
 fun PlayerViewList(
     deletePlayer: (Player) -> Unit = {},
-    refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
     state: PlayerListState
@@ -47,7 +46,6 @@ fun PlayerViewList(
                     player = player,
                     modifier = Modifier.padding(bottom = if (newPlayerList.indexOf(player) == (newPlayerList.size - 1)) 50.dp else 0.dp),
                     deletePlayer = deletePlayer,
-                    refreshPlayer = refreshPlayer,
                     addPlayer = addPlayer,
                     state = state,
                     update = update

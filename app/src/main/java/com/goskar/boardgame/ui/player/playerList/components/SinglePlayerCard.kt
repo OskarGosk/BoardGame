@@ -43,7 +43,6 @@ fun SinglePlayerCard(
     player: Player,
     modifier: Modifier,
     deletePlayer: (Player) -> Unit = {},
-    refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
     state: PlayerListState,
@@ -128,7 +127,6 @@ fun SinglePlayerCard(
                     showAlertDialog = false
                     isExpanded = false
                     deletePlayer(player)
-                    refreshPlayer()
                 }
             )
         }
@@ -140,7 +138,6 @@ fun SinglePlayerCard(
                 confirmButtonClick = {
                     showAddEditDialog = false
                     addPlayer(false)
-                    refreshPlayer()
                 },
                 onDismiss = {showAddEditDialog = !showAddEditDialog},
                 update = update
