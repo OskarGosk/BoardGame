@@ -7,7 +7,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +35,6 @@ class HistoryGameListScreen : Screen {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun HistoryGameListContent(
     state: GamesHistoryState,
@@ -56,7 +54,7 @@ fun HistoryGameListContent(
                 .padding(10.dp)
                 .fillMaxSize()
         ) {
-            if (state.historyList.isNullOrEmpty()) {
+            if (state.historyList.isEmpty()) {
                 EmptyListWithButton(
                     headerText = R.string.history_empty_list,
                     infoText = R.string.history_empty_list_add,
