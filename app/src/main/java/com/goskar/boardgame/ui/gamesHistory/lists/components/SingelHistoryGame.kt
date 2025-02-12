@@ -41,12 +41,12 @@ fun SingleHistoryGame(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end= 10.dp)
             .border(1.dp, Color.Gray)
             .clickable { isExpended = !isExpended },
     ) {
         Row(
             modifier = Modifier
+                .padding(start = 10.dp, end= 10.dp)
                 .fillMaxWidth()
                 .size(48.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -78,14 +78,20 @@ fun SingleHistoryGame(
         if(isExpended) {
             var listOfPlayer = ""
             historyGame.listOfPlayer.forEach{ listOfPlayer = listOfPlayer + it + ", "  }
-            Row {
+            Row (
+                modifier = Modifier
+                    .padding(start = 10.dp, end= 10.dp, bottom = 5.dp)
+            ){
                 Text(text = stringResource(R.string.history_players_list),
                     style = SmoochBold16)
                 Text(text = listOfPlayer,
                     style = Smooch16)
             }
             if (historyGame.description.isNotEmpty()) {
-                Row {
+                Row (
+                    modifier = Modifier
+                        .padding(start = 10.dp, end= 10.dp, bottom = 5.dp)
+                ){
                     Text(text = stringResource(R.string.history_description),
                         style = SmoochBold16)
                     Text(text = historyGame.description,
