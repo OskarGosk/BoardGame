@@ -29,8 +29,10 @@
     <string name="player_edit">Edit player</string>
     <string name="player_name">Player Name</string>
     <string name="player_description">About Player</string>
-    <string name="player_empty_list">Empty player list.</string>
     <string name="player_games_count">Games played: %s</string>
+    <string name="player_empty_list">Empty player list.</string>
+    <string name="player_empty_list_add">Please add player\nTo do this, please click button below.</string>
+
 
     //BOARD GAME
     <string name="board_add">Add new board game</string>
@@ -48,6 +50,7 @@
     <string name="board_delete_info">The removal of the game is irreversible. It will not affect players scores.</string>
     <string name="board_take_another_photo">Take another photo</string>
     <string name="board_open_gallery">Open Gallery</string>
+    <string name="board_without_cover">This game has no cover.</string>
 
 
     //HISTORY AND GAMEPLAY
@@ -56,6 +59,9 @@
     <string name="history_play_date">Play data:</string>
     <string name="history_add">Add New GamePlay</string>
     <string name="history_empty_player_list_text">Go to player list and Add someone.</string>
+    <string name="history_empty_list">Empty Gaming History.</string>
+    <string name="history_empty_list_add">Please add some game play\nTo do this, please click button below.</string>
+    <string name="history_game_without_cover">Edit game to add Image</string>
 
 
 </resources>

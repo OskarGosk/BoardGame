@@ -18,7 +18,8 @@ data class PlayerListState(
     val errorVisible: Boolean = false,
     val visibleDialog: Boolean = false,
     val searchTxt: String = "",
-    val sortOption: Int = R.string.default_sort
+    val sortOption: Int = R.string.default_sort,
+    val player: Player? = null
 )
 
 @KoinViewModel
@@ -72,6 +73,39 @@ class PlayerListViewModel(
                 }
 
                 is RequestResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            errorVisible = true
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun validateAddEditPLayer(newPlayer: Boolean) {
+        viewModelScope.launch {
+            val response = state.value.player?.let { if(newPlayer) playerDbRepository.insertPlayer(it) else playerDbRepository.editPlayer(it) }
+
+            when (response) {
+                is RequestResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            player = null
+                        )
+                    }
+                    getAllPlayer()
+                }
+
+                is RequestResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            errorVisible = true
+                        )
+                    }
+                }
+
+                null -> {
                     _state.update {
                         it.copy(
                             errorVisible = true
