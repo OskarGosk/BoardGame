@@ -65,8 +65,7 @@ fun BottomNavigation(
                         Text(
                             text = stringResource(elements.title),
                             textAlign = TextAlign.Center,
-                            style = if(selectedScreen == elements.title) SmoochBold18 else Smooch18,
-                            color = if(selectedScreen == elements.title) primaryLight else Black
+                            style = if(selectedScreen == elements.title) SmoochBold18.copy(color = primaryLight) else Smooch18,
                         )
                     }
                 }
