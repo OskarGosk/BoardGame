@@ -16,10 +16,10 @@ class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted){
-            Log.i("Camera","Permission Granted")
+        if (isGranted) {
+            Log.i("Camera", "Permission Granted")
         } else {
-            Log.i("Camera","Permission Denied")
+            Log.i("Camera", "Permission Denied")
         }
     }
 
@@ -30,7 +30,6 @@ class MainActivity : ComponentActivity() {
                 ComposeApp()
             }
         }
-
         requestCameraPermission()
     }
 
@@ -39,11 +38,15 @@ class MainActivity : ComponentActivity() {
             ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> Log.i ("Camera", "Permission previously granted")
+            ) == PackageManager.PERMISSION_GRANTED -> Log.i(
+                "Camera",
+                "Permission previously granted"
+            )
+
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
                 Manifest.permission.CAMERA
-            ) -> Log.i ("Camera", "Show camera permission dialog")
+            ) -> Log.i("Camera", "Show camera permission dialog")
 
             else -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }

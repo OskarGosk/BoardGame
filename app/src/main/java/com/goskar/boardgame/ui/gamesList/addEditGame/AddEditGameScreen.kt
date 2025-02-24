@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import android.net.Uri
+import android.os.Environment
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -230,15 +231,20 @@ fun AddEditGameContent(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
                     if (state.uri.isNotEmpty()) {
-                        val tempFile = File(context.cacheDir, "${state.name}.png")
+                        val picturesDir = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "BoardGameImages")
+                        if (!picturesDir.exists()) {
+                            picturesDir.mkdirs()
+                        }
+
+                        val newFile = File(picturesDir, "${state.name}.png")
                         val inputStream = context.contentResolver.openInputStream(state.uri.toUri())
 
                         inputStream?.use { input ->
-                            val outputStream = FileOutputStream(tempFile)
+                            val outputStream = FileOutputStream(newFile)
                             input.copyTo(outputStream)
                             outputStream.close()
 
-                            val fileUri = Uri.fromFile(tempFile)
+                            val fileUri = Uri.fromFile(newFile)
                             update(state.copy(uri = fileUri.toString()))
                         }
                     }
