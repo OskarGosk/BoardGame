@@ -124,13 +124,14 @@ fun SinglePhotoPicker(
                 )
                 Row (
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ){
                     Button(
                         shape = CutCornerShape(percent = 10),
                         onClick = {
                             launcher.launch("image/*")
                         },
+                        enabled = state.name != null,
                         modifier = Modifier
                     ) {
                         Text(text = stringResource(R.string.board_open_gallery),
@@ -142,6 +143,7 @@ fun SinglePhotoPicker(
                         onClick = {
                             shouldOpenCamera = true
                         },
+                        enabled = state.name != null,
                         modifier = Modifier
                     ) {
                         Text(text = "Camera photo",
@@ -152,8 +154,9 @@ fun SinglePhotoPicker(
             }
         }
 
-        if (shouldOpenCamera) {
+        if (shouldOpenCamera && state.name != null) {
             CameraView(
+                fileName = state.name,
                 outputDirectory = outputDirectory,
                 executor = cameraExecutor,
                 onImageCaptured = {uri ->

@@ -40,6 +40,7 @@ import kotlin.coroutines.suspendCoroutine
 
 @Composable
 fun CameraView(
+    fileName: String,
     outputDirectory: File,
     executor: Executor,
     onImageCaptured: (Uri) -> Unit = {},
@@ -62,7 +63,7 @@ fun CameraView(
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
 
-        preview.setSurfaceProvider(previewView.surfaceProvider) // ← DODANE!
+        preview.setSurfaceProvider(previewView.surfaceProvider)
 
         cameraProvider.bindToLifecycle(
             lifecycleOwner,
@@ -87,7 +88,7 @@ fun CameraView(
             onClick = {
                 Log.i ("BoardGame Photo", "ON CICK")
                 takePhoto(
-                    fileNameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
+                    fileName = fileName,
                     imageCapture = imageCapture,
                     outputDirectory = outputDirectory,
                     executor = executor,
@@ -111,7 +112,7 @@ fun CameraView(
 }
 
 private fun takePhoto(
-    fileNameFormat: String,
+    fileName: String,
     imageCapture: ImageCapture,
     outputDirectory: File,
     executor: Executor,
@@ -121,7 +122,7 @@ private fun takePhoto(
 
     val photoFile = File(
         outputDirectory,
-        SimpleDateFormat(fileNameFormat, Locale.US).format(System.currentTimeMillis()) + ".jpg"
+        fileName + ".jpg"
     )
 
     val outputOption = ImageCapture.OutputFileOptions.Builder(photoFile).build()
