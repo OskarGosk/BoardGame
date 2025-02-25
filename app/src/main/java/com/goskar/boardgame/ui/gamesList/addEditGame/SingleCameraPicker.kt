@@ -30,9 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.goskar.boardgame.Constants.GLOBAL_TAG
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -86,7 +85,6 @@ fun CameraView(
         IconButton(
             modifier = Modifier.padding(bottom = 20.dp),
             onClick = {
-                Log.i ("BoardGame Photo", "ON CICK")
                 takePhoto(
                     fileName = fileName,
                     imageCapture = imageCapture,
@@ -99,7 +97,7 @@ fun CameraView(
             content = {
                 Icon(
                     imageVector = Icons.Sharp.Add,
-                    contentDescription = "Take photo",
+                    contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
                         .size(100.dp)
@@ -129,7 +127,7 @@ private fun takePhoto(
 
     imageCapture.takePicture(outputOption, executor, object : ImageCapture.OnImageSavedCallback {
         override fun onError(exception: ImageCaptureException) {
-            Log.e("BoardGame", "Take Photo error:", exception)
+            Log.e(GLOBAL_TAG, "Take Photo error:", exception)
             onError(exception)
         }
 

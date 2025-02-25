@@ -1,8 +1,8 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Environment
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -23,11 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -35,26 +30,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.ui.theme.primaryLight
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 
 @Composable
 fun SinglePhotoPicker(
     state: AddEditGameState,
     update: (AddEditGameState) -> Unit = {},
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
+    val permission = Manifest.permission.CAMERA
     val context = LocalContext.current
-    val outputDirectory = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: context.filesDir
-    val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-
-    var shouldOpenCamera by remember { mutableStateOf(false) }
-
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -65,33 +57,42 @@ fun SinglePhotoPicker(
         }
     )
 
+    val cameraPermission = ContextCompat.checkSelfPermission(
+        context, permission
+    )
+
     Box(
-        modifier = Modifier.size(250.dp),
-        contentAlignment = Alignment.Center,) {
-        if(state.uri == "") {
-            Row (
+        modifier = modifier.size(250.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (state.uri == "") {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
-            ){
+            ) {
                 Button(
                     shape = CutCornerShape(percent = 10),
                     onClick = {
                         launcher.launch("image/*")
                     },
                 ) {
-                    Text(text = stringResource(R.string.board_open_gallery),
+                    Text(
+                        text = stringResource(R.string.board_open_gallery),
                         style = SmoochBold18
                     )
                 }
-                Button(
-                    shape = CutCornerShape(percent = 10),
-                    onClick = {
-                        shouldOpenCamera = true
-                    },
-                ) {
-                    Text(text = "Camera photo",
-                        style = SmoochBold18
-                    )
+                if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
+                    Button(
+                        shape = CutCornerShape(percent = 10),
+                        onClick = {
+                            onClick()
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.board_open_camera),
+                            style = SmoochBold18
+                        )
+                    }
                 }
             }
 
@@ -104,9 +105,11 @@ fun SinglePhotoPicker(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .clickable {
-                        update(state.copy(
-                            uri = ""
-                        ))
+                        update(
+                            state.copy(
+                                uri = ""
+                            )
+                        )
                     }
             )
             Column {
@@ -122,10 +125,10 @@ fun SinglePhotoPicker(
                         .size(200.dp)
                         .padding(bottom = 10.dp)
                 )
-                Row (
+                Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
-                ){
+                ) {
                     Button(
                         shape = CutCornerShape(percent = 10),
                         onClick = {
@@ -134,40 +137,27 @@ fun SinglePhotoPicker(
                         enabled = state.name != null,
                         modifier = Modifier
                     ) {
-                        Text(text = stringResource(R.string.board_open_gallery),
+                        Text(
+                            text = stringResource(R.string.board_open_gallery),
                             style = SmoochBold18
                         )
                     }
-                    Button(
-                        shape = CutCornerShape(percent = 10),
-                        onClick = {
-                            shouldOpenCamera = true
-                        },
-                        enabled = state.name != null,
-                        modifier = Modifier
-                    ) {
-                        Text(text = "Camera photo",
-                            style = SmoochBold18
-                        )
+                    if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
+                        Button(
+                            shape = CutCornerShape(percent = 10),
+                            enabled = state.name != null,
+                            onClick = {
+                                onClick()
+                            },
+                        ) {
+                            Text(
+                                text = stringResource(R.string.board_open_camera),
+                                style = SmoochBold18
+                            )
+                        }
                     }
                 }
             }
-        }
-
-        if (shouldOpenCamera && state.name != null) {
-            CameraView(
-                fileName = state.name,
-                outputDirectory = outputDirectory,
-                executor = cameraExecutor,
-                onImageCaptured = {uri ->
-                    Log.i("BoardGame", "Captured image URI: $uri")
-                    update(state.copy(uri = uri.toString()))
-                    shouldOpenCamera = false
-                },
-                onError = {
-                    Log.e("BoardGame", "Camera view error:", it)
-                }
-            )
         }
     }
 }
@@ -193,6 +183,8 @@ fun SinglePhotoPicker2Preview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        SinglePhotoPicker(AddEditGameState(uri = ""))
+        SinglePhotoPicker(
+            AddEditGameState(uri = "", name = "Oskar"),
+        )
     }
 }

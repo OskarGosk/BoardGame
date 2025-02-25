@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +43,7 @@ import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.Constants.GLOBAL_TAG
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import org.koin.androidx.compose.koinViewModel
@@ -49,6 +54,8 @@ import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class AddEditGameScreen(val editGame: Game?) : Screen {
 
@@ -98,6 +105,14 @@ fun AddEditGameContent(
     addGame: () -> Unit = {},
     editGame: () -> Unit = {}
 ) {
+
+    val context = LocalContext.current
+    val outputDirectory =
+        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: context.filesDir
+    val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+
+    var shouldOpenCamera by remember { mutableStateOf(false) }
+
 
     BoardGameScaffold(
         titlePage = if (state.name == null) R.string.board_new else R.string.board_edit,
@@ -220,10 +235,8 @@ fun AddEditGameContent(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ){
-                SinglePhotoPicker(state, update)
+                SinglePhotoPicker(state, update, onClick = {shouldOpenCamera = true})
             }
-            val context = LocalContext.current
-
             Spacer(modifier = Modifier.height(20.dp))
             val enabled =
                 state.minPlayer.isNotEmpty() && state.maxPlayer.isNotEmpty() && !state.name.isNullOrEmpty() && !state.inProgress
@@ -271,6 +284,29 @@ fun AddEditGameContent(
                 }
             }
 
+        }
+
+        if (shouldOpenCamera && state.name != null) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .padding(paddingValues)
+                    .fillMaxSize()
+            )  {
+                CameraView(
+                    fileName = state.name,
+                    outputDirectory = outputDirectory,
+                    executor = cameraExecutor,
+                    onImageCaptured = { uri ->
+                        Log.i(GLOBAL_TAG, "Captured image URI: $uri")
+                        update(state.copy(uri = uri.toString()))
+                        shouldOpenCamera = false
+                    },
+                    onError = {
+                        Log.e(GLOBAL_TAG, "Camera view error:", it)
+                    }
+                )
+            }
         }
     }
 

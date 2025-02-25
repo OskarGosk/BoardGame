@@ -12,14 +12,19 @@ import androidx.core.content.ContextCompat
 import com.goskar.boardgame.ui.ComposeApp
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
+const val CAMERA = "Camera"
+const val CAMERA_PERMISSION_GRANTED = "Permission Granted"
+const val CAMERA_PERMISSION_DENIED = "Permission Denied"
+const val CAMERA_DIALOG = "Show camera permission dialog"
+
 class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            Log.i("Camera", "Permission Granted")
+            Log.i(CAMERA, CAMERA_PERMISSION_GRANTED)
         } else {
-            Log.i("Camera", "Permission Denied")
+            Log.i(CAMERA, CAMERA_PERMISSION_DENIED)
         }
     }
 
@@ -39,14 +44,14 @@ class MainActivity : ComponentActivity() {
                 this,
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> Log.i(
-                "Camera",
-                "Permission previously granted"
+                CAMERA,
+                CAMERA_PERMISSION_GRANTED
             )
 
             ActivityCompat.shouldShowRequestPermissionRationale(
                 this,
                 Manifest.permission.CAMERA
-            ) -> Log.i("Camera", "Show camera permission dialog")
+            ) -> Log.i(CAMERA, CAMERA_DIALOG )
 
             else -> requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
