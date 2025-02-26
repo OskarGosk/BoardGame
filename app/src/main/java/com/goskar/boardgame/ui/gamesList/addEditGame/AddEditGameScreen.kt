@@ -1,8 +1,12 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
+import android.Manifest
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -112,6 +116,18 @@ fun AddEditGameContent(
     val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
     var shouldOpenCamera by remember { mutableStateOf(false) }
+
+    val permission = Manifest.permission.CAMERA
+    val launcherCamera = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            shouldOpenCamera = true
+        } else {
+            // Show dialog
+            Toast.makeText(context, R.string.camera_denied, Toast.LENGTH_LONG).show()
+        }
+    }
 
 
     BoardGameScaffold(
@@ -235,7 +251,11 @@ fun AddEditGameContent(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ){
-                SinglePhotoPicker(state, update, onClick = {shouldOpenCamera = true})
+                SinglePhotoPicker(state, update, onClick = {
+                    checkAndRequestPermissionWithClick(
+                        context, permission, launcherCamera, {shouldOpenCamera = true}
+                    )
+                })
             }
             Spacer(modifier = Modifier.height(20.dp))
             val enabled =

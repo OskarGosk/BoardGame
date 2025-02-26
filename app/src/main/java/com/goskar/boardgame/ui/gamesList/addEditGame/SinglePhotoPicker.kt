@@ -1,7 +1,5 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,7 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.R
@@ -45,8 +42,6 @@ fun SinglePhotoPicker(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    val permission = Manifest.permission.CAMERA
-    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -55,10 +50,6 @@ fun SinglePhotoPicker(
                 update(state.copy(uri = uri.toString()))
             }
         }
-    )
-
-    val cameraPermission = ContextCompat.checkSelfPermission(
-        context, permission
     )
 
     Box(
@@ -72,6 +63,7 @@ fun SinglePhotoPicker(
             ) {
                 Button(
                     shape = CutCornerShape(percent = 10),
+                    enabled = !state.name.isNullOrEmpty(),
                     onClick = {
                         launcher.launch("image/*")
                     },
@@ -81,18 +73,17 @@ fun SinglePhotoPicker(
                         style = SmoochBold18
                     )
                 }
-                if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
-                    Button(
-                        shape = CutCornerShape(percent = 10),
-                        onClick = {
-                            onClick()
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.board_open_camera),
-                            style = SmoochBold18
-                        )
-                    }
+                Button(
+                    shape = CutCornerShape(percent = 10),
+                    enabled = !state.name.isNullOrEmpty(),
+                    onClick = {
+                        onClick()
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.board_open_camera),
+                        style = SmoochBold18
+                    )
                 }
             }
 
@@ -134,7 +125,7 @@ fun SinglePhotoPicker(
                         onClick = {
                             launcher.launch("image/*")
                         },
-                        enabled = state.name != null,
+                        enabled = !state.name.isNullOrEmpty(),
                         modifier = Modifier
                     ) {
                         Text(
@@ -142,19 +133,17 @@ fun SinglePhotoPicker(
                             style = SmoochBold18
                         )
                     }
-                    if (cameraPermission == PackageManager.PERMISSION_GRANTED) {
-                        Button(
-                            shape = CutCornerShape(percent = 10),
-                            enabled = state.name != null,
-                            onClick = {
-                                onClick()
-                            },
-                        ) {
-                            Text(
-                                text = stringResource(R.string.board_open_camera),
-                                style = SmoochBold18
-                            )
-                        }
+                    Button(
+                        shape = CutCornerShape(percent = 10),
+                        enabled = !state.name.isNullOrEmpty(),
+                        onClick = {
+                            onClick()
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.board_open_camera),
+                            style = SmoochBold18
+                        )
                     }
                 }
             }
