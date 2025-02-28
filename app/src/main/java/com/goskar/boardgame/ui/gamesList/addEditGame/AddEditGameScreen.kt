@@ -1,7 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import android.Manifest
-import android.net.Uri
+import android.content.Context
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
@@ -43,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.core.text.isDigitsOnly
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -56,8 +55,7 @@ import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
-import java.io.File
-import java.io.FileOutputStream
+import com.goskar.boardgame.utils.checkAndRequestPermissionWithClick
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -80,7 +78,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                         minPlayer = editGame.minPlayer,
                         maxPlayer = editGame.maxPlayer,
                         games = editGame.games,
-                        uri = editGame.uri?:"",
+                        uri = editGame.uri ?: "",
                         id = editGame.id
                     )
                 )
@@ -95,8 +93,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
         AddEditGameContent(
             state = state,
             update = viewModel::update,
-            addGame = viewModel::validateAddGame,
-            editGame = viewModel::validateEditGame
+            addEditGame = viewModel::validateAddEitGame
         )
     }
 }
@@ -106,8 +103,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
 fun AddEditGameContent(
     state: AddEditGameState,
     update: (AddEditGameState) -> Unit = {},
-    addGame: () -> Unit = {},
-    editGame: () -> Unit = {}
+    addEditGame: (Context) -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -250,10 +246,10 @@ fun AddEditGameContent(
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center,
-            ){
+            ) {
                 SinglePhotoPicker(state, update, onClick = {
                     checkAndRequestPermissionWithClick(
-                        context, permission, launcherCamera, {shouldOpenCamera = true}
+                        context, permission, launcherCamera, { shouldOpenCamera = true }
                     )
                 })
             }
@@ -263,27 +259,10 @@ fun AddEditGameContent(
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
-                    if (state.uri.isNotEmpty()) {
-                        val picturesDir = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "BoardGameImages")
-                        if (!picturesDir.exists()) {
-                            picturesDir.mkdirs()
-                        }
-
-                        val newFile = File(picturesDir, "${state.name}.png")
-                        val inputStream = context.contentResolver.openInputStream(state.uri.toUri())
-
-                        inputStream?.use { input ->
-                            val outputStream = FileOutputStream(newFile)
-                            input.copyTo(outputStream)
-                            outputStream.close()
-
-                            val fileUri = Uri.fromFile(newFile)
-                            update(state.copy(uri = fileUri.toString()))
-                        }
-                    }
-                    if (state.id == null) addGame() else editGame()
+                    addEditGame(context)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .size(40.dp),
                 enabled = enabled
             ) {
@@ -312,7 +291,7 @@ fun AddEditGameContent(
                     .padding(horizontal = 10.dp)
                     .padding(paddingValues)
                     .fillMaxSize()
-            )  {
+            ) {
                 CameraView(
                     fileName = state.name,
                     outputDirectory = outputDirectory,
