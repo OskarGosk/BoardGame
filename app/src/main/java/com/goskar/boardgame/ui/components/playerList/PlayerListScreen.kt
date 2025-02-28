@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.player.playerList
+package com.goskar.boardgame.ui.components.playerList
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,12 +29,12 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
-import com.goskar.boardgame.ui.player.playerList.components.SearchRow
+import com.goskar.boardgame.ui.components.playerList.components.SearchRow
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
-import com.goskar.boardgame.ui.player.playerList.components.AddEditDialog
-import com.goskar.boardgame.ui.player.playerList.components.PlayerViewList
+import com.goskar.boardgame.ui.components.playerList.components.AddEditDialog
+import com.goskar.boardgame.ui.components.playerList.components.PlayerViewList
 
 class PlayerListScreen : Screen {
     @Composable

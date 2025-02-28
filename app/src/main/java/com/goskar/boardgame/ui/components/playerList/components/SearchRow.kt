@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package com.goskar.boardgame.ui.player.playerList.components
+package com.goskar.boardgame.ui.components.playerList.components
 
 import android.view.KeyEvent
 import androidx.compose.foundation.clickable
@@ -42,7 +42,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.player.playerList.PlayerListState
+import com.goskar.boardgame.ui.components.playerList.PlayerListState
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.Smooch20

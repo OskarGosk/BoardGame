@@ -3,9 +3,13 @@ package com.goskar.boardgame.ui.gamesList.addEditGame
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.Constants.GLOBAL_TAG
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
@@ -16,6 +20,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
+import java.util.concurrent.Executor
 
 data class AddEditGameState(
     val name: String? = null,
@@ -39,6 +44,7 @@ class AddEditGameViewModel(
     companion object {
         const val CHILD = "BoardGameImages"
         const val PNG = ".png"
+        const val JPG = ".jpg"
     }
 
     private val _state = MutableStateFlow(AddEditGameState())
@@ -118,5 +124,37 @@ class AddEditGameViewModel(
                 }
             }
         }
+    }
+
+    fun takePhoto(
+        fileName: String,
+        imageCapture: ImageCapture,
+        outputDirectory: File,
+        executor: Executor,
+        onImageCaptured: (Uri) -> Unit = {},
+        onError: (ImageCaptureException) -> Unit = {}
+    ) {
+
+        val photoFile = File(
+            outputDirectory,
+            fileName + JPG
+        )
+
+        val outputOption = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+        imageCapture.takePicture(
+            outputOption,
+            executor,
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e(GLOBAL_TAG, "Take Photo error:", exception)
+                    onError(exception)
+                }
+
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    val savedUri = Uri.fromFile(photoFile)
+                    onImageCaptured(savedUri)
+                }
+            })
     }
 }

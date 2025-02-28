@@ -18,7 +18,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
-import com.goskar.boardgame.ui.player.playerList.PlayerListScreen
+import com.goskar.boardgame.ui.components.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2

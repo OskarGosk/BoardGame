@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.player.playerList
+package com.goskar.boardgame.ui.components.playerList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
