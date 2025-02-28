@@ -317,7 +317,8 @@ fun AddEditGameContent(
                     onError = {
                         Log.e(GLOBAL_TAG, "Camera view error:", it)
                     },
-                    takePhoto = takePhoto
+                    takePhoto = takePhoto,
+                    backHandler = {shouldOpenCamera = false}
                 )
             }
         }

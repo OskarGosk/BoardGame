@@ -26,10 +26,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
+import cafe.adriel.voyager.navigator.internal.BackHandler
 import com.goskar.boardgame.utils.getCameraProvider
 import java.io.File
 import java.util.concurrent.Executor
 
+@OptIn(InternalVoyagerApi::class)
 @Composable
 fun CameraView(
     fileName: String,
@@ -37,7 +40,8 @@ fun CameraView(
     executor: Executor,
     onImageCaptured: (Uri) -> Unit = {},
     onError: (ImageCaptureException) -> Unit = {},
-    takePhoto: (String, ImageCapture, File, Executor, (Uri) -> Unit, (ImageCaptureException) -> Unit) -> Unit = { _, _, _, _, _, _ -> }
+    takePhoto: (String, ImageCapture, File, Executor, (Uri) -> Unit, (ImageCaptureException) -> Unit) -> Unit = { _, _, _, _, _, _ -> },
+    backHandler: () -> Unit = {}
 ) {
     // 1
     val lensFacing = CameraSelector.LENS_FACING_BACK
@@ -50,6 +54,10 @@ fun CameraView(
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(lensFacing)
         .build()
+
+    BackHandler(enabled = true) {
+        backHandler()
+    }
 
     // 2
     LaunchedEffect(lensFacing) {
