@@ -25,7 +25,8 @@ data class GamePlayState(
     val errorVisible: Boolean = false,
     val winner: String = "Who Win?",
     val playDate: LocalDate = LocalDate.now(),
-    val countSelectedPlayer: Int = 0
+    val countSelectedPlayer: Int = 0,
+    val descriptionGame: String = ""
 )
 
 @KoinViewModel
@@ -62,7 +63,7 @@ class GamePlayViewModel(
             winner = state.value.winner,
             gameName = state.value.game?.name ?: "",
             listOfPlayer = listOfPlayer,
-            description = ""
+            description = state.value.descriptionGame
         )
 
         val response = gamesHistoryDbRepository.insertHistoryGame(historyGame = historyGame)

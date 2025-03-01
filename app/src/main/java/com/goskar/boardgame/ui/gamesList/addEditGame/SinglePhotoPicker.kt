@@ -4,8 +4,10 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,10 +34,13 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.ui.theme.primaryLight
 
+
 @Composable
 fun SinglePhotoPicker(
     state: AddEditGameState,
     update: (AddEditGameState) -> Unit = {},
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
 
     val launcher = rememberLauncherForActivityResult(
@@ -48,21 +53,40 @@ fun SinglePhotoPicker(
     )
 
     Box(
-        modifier = Modifier.size(250.dp),
-        contentAlignment = Alignment.Center) {
-        if(state.uri == "") {
-            Button(
-                shape = CutCornerShape(percent = 10),
-                onClick = {
-                    launcher.launch("image/*")
-                },
-                modifier = Modifier.fillMaxWidth()
-                    .size(40.dp),
+        modifier = modifier.size(250.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (state.uri == "") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(text = stringResource(R.string.board_open_gallery),
-                    style = SmoochBold18
-                )
+                Button(
+                    shape = CutCornerShape(percent = 10),
+                    enabled = !state.name.isNullOrEmpty(),
+                    onClick = {
+                        launcher.launch("image/*")
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.board_open_gallery),
+                        style = SmoochBold18
+                    )
+                }
+                Button(
+                    shape = CutCornerShape(percent = 10),
+                    enabled = !state.name.isNullOrEmpty(),
+                    onClick = {
+                        onClick()
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.board_open_camera),
+                        style = SmoochBold18
+                    )
+                }
             }
+
         } else {
 
             Icon(
@@ -72,9 +96,11 @@ fun SinglePhotoPicker(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .clickable {
-                        update(state.copy(
-                            uri = ""
-                        ))
+                        update(
+                            state.copy(
+                                uri = ""
+                            )
+                        )
                     }
             )
             Column {
@@ -90,21 +116,38 @@ fun SinglePhotoPicker(
                         .size(200.dp)
                         .padding(bottom = 10.dp)
                 )
-                Button(
-                    shape = CutCornerShape(percent = 10),
-                    onClick = {
-                        launcher.launch("image/*")
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                        .size(40.dp),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
-                    Text(text = stringResource(R.string.board_take_another_photo),
-                        style = SmoochBold18
-                    )
+                    Button(
+                        shape = CutCornerShape(percent = 10),
+                        onClick = {
+                            launcher.launch("image/*")
+                        },
+                        enabled = !state.name.isNullOrEmpty(),
+                        modifier = Modifier
+                    ) {
+                        Text(
+                            text = stringResource(R.string.board_open_gallery),
+                            style = SmoochBold18
+                        )
+                    }
+                    Button(
+                        shape = CutCornerShape(percent = 10),
+                        enabled = !state.name.isNullOrEmpty(),
+                        onClick = {
+                            onClick()
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.board_open_camera),
+                            style = SmoochBold18
+                        )
+                    }
                 }
             }
         }
-
     }
 }
 
@@ -118,5 +161,19 @@ fun SinglePhotoPickerPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         SinglePhotoPicker(AddEditGameState(uri = "oskar"))
+    }
+}
+
+@Preview
+@Composable
+fun SinglePhotoPicker2Preview() {
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        SinglePhotoPicker(
+            AddEditGameState(uri = "", name = "Oskar"),
+        )
     }
 }

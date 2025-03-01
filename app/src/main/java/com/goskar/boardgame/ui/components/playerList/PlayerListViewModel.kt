@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.player.playerList
+package com.goskar.boardgame.ui.components.playerList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +19,8 @@ data class PlayerListState(
     val visibleDialog: Boolean = false,
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
-    val player: Player? = null
+    val player: Player? = null,
+    var isLoading: Boolean = false
 )
 
 @KoinViewModel
@@ -36,20 +37,23 @@ class PlayerListViewModel(
 
     fun getAllPlayer() {
         viewModelScope.launch {
+            _state.value.isLoading = true
             val response = playerDbRepository.getAllPlayer()
             when (response) {
                 is RequestResult.Success -> {
                     _state.update {
                         it.copy(
                             playerList = response.data,
-                            errorVisible = false
+                            errorVisible = false,
+                            isLoading = false
                         )
                     }
                 }
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(
-                            errorVisible = true
+                            errorVisible = true,
+                            isLoading = false
                         )
                     }
                 }
@@ -66,7 +70,7 @@ class PlayerListViewModel(
                     _state.update {
                         it.copy(
                             successDeletePlayer = true,
-                            errorVisible = false
+                            errorVisible = false,
                         )
                     }
                     getAllPlayer()
@@ -75,7 +79,7 @@ class PlayerListViewModel(
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(
-                            errorVisible = true
+                            errorVisible = true,
                         )
                     }
                 }
@@ -91,7 +95,7 @@ class PlayerListViewModel(
                 is RequestResult.Success -> {
                     _state.update {
                         it.copy(
-                            player = null
+                            player = null,
                         )
                     }
                     getAllPlayer()
@@ -100,7 +104,7 @@ class PlayerListViewModel(
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(
-                            errorVisible = true
+                            errorVisible = true,
                         )
                     }
                 }
@@ -108,7 +112,7 @@ class PlayerListViewModel(
                 null -> {
                     _state.update {
                         it.copy(
-                            errorVisible = true
+                            errorVisible = true,
                         )
                     }
                 }

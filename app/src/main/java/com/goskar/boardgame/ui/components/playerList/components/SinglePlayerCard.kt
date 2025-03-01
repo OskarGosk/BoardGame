@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.player.playerList.components
+package com.goskar.boardgame.ui.components.playerList.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
-import com.goskar.boardgame.ui.player.playerList.PlayerListState
+import com.goskar.boardgame.ui.components.playerList.PlayerListState
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold26
 
@@ -43,7 +43,6 @@ fun SinglePlayerCard(
     player: Player,
     modifier: Modifier,
     deletePlayer: (Player) -> Unit = {},
-    refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
     state: PlayerListState,
@@ -128,7 +127,6 @@ fun SinglePlayerCard(
                     showAlertDialog = false
                     isExpanded = false
                     deletePlayer(player)
-                    refreshPlayer()
                 }
             )
         }
@@ -140,7 +138,6 @@ fun SinglePlayerCard(
                 confirmButtonClick = {
                     showAddEditDialog = false
                     addPlayer(false)
-                    refreshPlayer()
                 },
                 onDismiss = {showAddEditDialog = !showAddEditDialog},
                 update = update

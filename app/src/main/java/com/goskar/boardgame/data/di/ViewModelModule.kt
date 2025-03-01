@@ -5,7 +5,7 @@ import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameViewModel
 import com.goskar.boardgame.ui.gamesList.play.GamePlayViewModel
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryViewModel
 import com.goskar.boardgame.ui.home.HomeScreenViewModel
-import com.goskar.boardgame.ui.player.playerList.PlayerListViewModel
+import com.goskar.boardgame.ui.components.playerList.PlayerListViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.KoinApplication
 import org.koin.dsl.module

@@ -6,6 +6,7 @@
     <string name="delete">Delete %s ?</string>
     <string name="back">Back to list</string>
     <string name="save">Save change</string>
+    <string name="camera_denied">Camera permission DENIED. Please go to phone settings</string>
 
 
     // BOTTOM BAR
@@ -50,6 +51,8 @@
     <string name="board_delete_info">The removal of the game is irreversible. It will not affect players scores.</string>
     <string name="board_take_another_photo">Take another photo</string>
     <string name="board_open_gallery">Open Gallery</string>
+    <string name="board_open_camera">Open Camera</string>
+
     <string name="board_without_cover">This game has no cover.</string>
 
 
@@ -62,6 +65,8 @@
     <string name="history_empty_list">Empty Gaming History.</string>
     <string name="history_empty_list_add">Please add some game play\nTo do this, please click button below.</string>
     <string name="history_game_without_cover">Edit game to add Image</string>
+    <string name="history_description">Description:</string>
+    <string name="history_players_list">List of players:</string>
 
 
 </resources>

@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.player.playerList.components
+package com.goskar.boardgame.ui.components.playerList.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,12 +13,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
-import com.goskar.boardgame.ui.player.playerList.PlayerListState
+import com.goskar.boardgame.ui.components.playerList.PlayerListState
 
 @Composable
 fun PlayerViewList(
     deletePlayer: (Player) -> Unit = {},
-    refreshPlayer: () -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
     state: PlayerListState
@@ -47,7 +46,6 @@ fun PlayerViewList(
                     player = player,
                     modifier = Modifier.padding(bottom = if (newPlayerList.indexOf(player) == (newPlayerList.size - 1)) 50.dp else 0.dp),
                     deletePlayer = deletePlayer,
-                    refreshPlayer = refreshPlayer,
                     addPlayer = addPlayer,
                     state = state,
                     update = update
