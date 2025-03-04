@@ -41,6 +41,7 @@
     <string name="board_edit">Edit Game</string>
     <string name="board_name">Board Game Name</string>
     <string name="board_is_expansion">Is Expansion?</string>
+    <string name="board_is_cooperate">Cooperate Game?</string>
     <string name="board_base">Base Game</string>
     <string name="board_expansion">Expansion</string>
     <string name="board_min_player">Min players:</string>

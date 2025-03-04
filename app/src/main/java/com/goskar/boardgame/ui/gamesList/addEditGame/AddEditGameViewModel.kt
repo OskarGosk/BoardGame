@@ -31,6 +31,7 @@ data class AddEditGameState(
     val games: Int = 0,
     val uri: String = "",
     val id: String? = null,
+    val cooperate: Boolean = false,
 
     val successAddEditGame: Boolean = false,
     val errorVisible: Boolean = false,

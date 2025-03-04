@@ -89,7 +89,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 firebase = { id = "com.google.gms.google-services", version.ref = "firebase"}
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
+room = { id = "androidx.room", version.ref = "room" }
 
 [bundles]
 voyager-all = ["voyager-core", "voyager-screenModel", "voyager-bottomSheetNavigator", "voyager-tabNavigator", "voyager-transitions", "voyager-koin"]

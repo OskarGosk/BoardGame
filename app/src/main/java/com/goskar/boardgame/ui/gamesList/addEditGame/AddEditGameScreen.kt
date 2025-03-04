@@ -221,6 +221,23 @@ fun AddEditGameContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
+                    checked = state.cooperate,
+                    onCheckedChange = {
+                        update(
+                            state.copy(
+                                expansion = !state.cooperate
+                            )
+                        )
+                    },
+                )
+                Text(stringResource(id = R.string.board_is_cooperate), style = Smooch18)
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
                     checked = state.expansion,
                     onCheckedChange = {
                         update(
