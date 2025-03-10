@@ -159,6 +159,7 @@ fun SearchRowPreview() {
     val game = Game(
         name = "Nazwa Testowa",
         expansion = true,
+        cooperate = true,
         baseGame = "Gra bazowa",
         minPlayer = "1",
         maxPlayer = "4",

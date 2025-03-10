@@ -10,8 +10,8 @@ import java.util.UUID
 data class Game(
     val name: String,
     val expansion: Boolean,
-//    @ColumnInfo(name = "cooperate", defaultValue = "0")
-//    val cooperate: Boolean,
+    @ColumnInfo(name = "cooperate", defaultValue = "0")
+    val cooperate: Boolean,
     val baseGame: String,
     val minPlayer: String,
     val maxPlayer: String,

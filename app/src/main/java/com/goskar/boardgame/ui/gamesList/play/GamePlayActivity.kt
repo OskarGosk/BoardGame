@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.play
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,12 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -98,10 +96,11 @@ fun GamePlayContent(
     state: GamePlayState,
     update: (GamePlayState) -> Unit = {},
     selectedPlayer: (Player) -> Unit = {},
-    addGamePlay: () -> Unit = {},
+    addGamePlay: (Context) -> Unit = {},
 ) {
     val calendarState = rememberSheetState()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     CalendarDialog(
         state = calendarState,
@@ -197,7 +196,7 @@ fun GamePlayContent(
                 enabled = state.winner != "Who Win?",
                 shape = CutCornerShape(percent = 10),
                 onClick = {
-                    addGamePlay()
+                    addGamePlay(context)
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -233,6 +232,7 @@ fun GamePlayActivityPreview() {
         val game = Game(
             name = "Nazwa Testowa",
             expansion = true,
+            cooperate = false,
             baseGame = "Gra bazowa",
             minPlayer = "1",
             maxPlayer = "4",
@@ -259,6 +259,7 @@ fun GamePlayActivityPreviewWithoutPlayer() {
         val game = Game(
             name = "Nazwa Testowa",
             expansion = true,
+            cooperate = false,
             baseGame = "Gra bazowa",
             minPlayer = "1",
             maxPlayer = "4",
