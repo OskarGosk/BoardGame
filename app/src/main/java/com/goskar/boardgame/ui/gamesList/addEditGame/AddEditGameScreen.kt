@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -82,6 +84,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                     state.copy(
                         name = editGame.name,
                         expansion = editGame.expansion,
+                        cooperate = editGame.cooperate,
                         baseGame = editGame.baseGame,
                         minPlayer = editGame.minPlayer,
                         maxPlayer = editGame.maxPlayer,
@@ -145,6 +148,7 @@ fun AddEditGameContent(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
         ) {
             OutlinedTextField(
                 textStyle = Smooch18,
@@ -225,7 +229,7 @@ fun AddEditGameContent(
                     onCheckedChange = {
                         update(
                             state.copy(
-                                expansion = !state.cooperate
+                                cooperate = !state.cooperate
                             )
                         )
                     },
@@ -293,6 +297,7 @@ fun AddEditGameContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(bottom = 10.dp)
                     .size(40.dp),
                 enabled = enabled
             ) {

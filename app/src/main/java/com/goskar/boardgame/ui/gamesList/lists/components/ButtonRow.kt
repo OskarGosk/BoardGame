@@ -100,6 +100,7 @@ fun ButtonRowPreview() {
     val game = Game(
         name = "Marvel",
         expansion = false,
+        cooperate = false,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",

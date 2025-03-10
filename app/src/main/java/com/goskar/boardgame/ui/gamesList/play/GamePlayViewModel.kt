@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.gamesList.play
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.models.Game
@@ -9,6 +10,7 @@ import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import com.goskar.boardgame.data.oflineRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.oflineRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.utils.CooperatePlayers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -33,7 +35,7 @@ data class GamePlayState(
 class GamePlayViewModel(
     private val playerDbRepository: PlayerDbRepository,
     private val gameDbRepository: GameDbRepository,
-    private val gamesHistoryDbRepository: GamesHistoryDbRepository
+    private val gamesHistoryDbRepository: GamesHistoryDbRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GamePlayState())
@@ -43,18 +45,21 @@ class GamePlayViewModel(
         _state.update { state }
     }
 
-    fun validateAllData() {
+    fun validateAllData(context: Context) {
         viewModelScope.launch {
-            validateAddHistoryGameData()
+            validateAddHistoryGameData(context)
             validateEditGame()
-            validateEditAllPlayer()
+            validateEditAllPlayer(context)
         }
     }
 
-    private suspend fun validateAddHistoryGameData() {
+    private suspend fun validateAddHistoryGameData(context: Context) {
         var listOfPlayer: List<String> = emptyList()
         state.value.playerList?.filter { it.selected }?.forEach { player ->
             listOfPlayer = listOfPlayer + player.name
+        }
+        if (state.value.game?.cooperate == true) {
+            listOfPlayer = listOf(context.resources.getString(CooperatePlayers.COMP.value)) + listOfPlayer
         }
 
 
@@ -155,14 +160,14 @@ class GamePlayViewModel(
         }
     }
 
-    private suspend fun validateEditAllPlayer() {
+    private suspend fun validateEditAllPlayer(context: Context) {
         var item = 0
         state.value.playerList?.filter { it.selected }?.forEach { player ->
 
             val playerGames = player.copy(
                 name = player.name,
                 games = player.games + 1,
-                winRatio = if (player.name == state.value.winner) player.winRatio + 1 else player.winRatio,
+                winRatio = if (player.name == state.value.winner || state.value.winner == context.resources.getString(CooperatePlayers.PLAYERS.value)) player.winRatio + 1 else player.winRatio,
                 description = player.description,
                 selected = false
             )

@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +30,7 @@ import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.gamesList.play.GamePlayState
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
+import com.goskar.boardgame.utils.CooperatePlayers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,20 +72,36 @@ fun WinnerRow(
                 )
             )
 
+            val context = LocalContext.current
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }) {
-                selectedPlayers?.forEach { player ->
-                    DropdownMenuItem(
-                        text = { Text(text = player.name) },
-                        onClick = {
-                            update(
-                                state.copy(
-                                    winner = player.name
+                if (state.game?.cooperate == true) {
+                    CooperatePlayers.entries.forEach { it ->
+                        DropdownMenuItem(
+                            text = { Text(stringResource(it.value)) },
+                            onClick = {
+                                update(
+                                    state.copy(
+                                        winner = context.resources.getString(it.value)
+                                    )
                                 )
-                            )
-                            expanded = false
-                        })
+                                expanded = false
+                            })
+                    }
+                } else {
+                    selectedPlayers?.forEach { player ->
+                        DropdownMenuItem(
+                            text = { Text(text = player.name) },
+                            onClick = {
+                                update(
+                                    state.copy(
+                                        winner = player.name
+                                    )
+                                )
+                                expanded = false
+                            })
+                    }
                 }
             }
         }

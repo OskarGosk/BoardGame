@@ -120,6 +120,7 @@ fun GameListContentPreview() {
     val game = Game(
         name = "Marvel",
         expansion = false,
+        cooperate = true,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",

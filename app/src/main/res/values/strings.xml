@@ -68,6 +68,8 @@
     <string name="history_game_without_cover">Edit game to add Image</string>
     <string name="history_description">Description:</string>
     <string name="history_players_list">List of players:</string>
+    <string name="history_comp">Computer</string>
+    <string name="history_players">Players</string>
 
 
 </resources>
