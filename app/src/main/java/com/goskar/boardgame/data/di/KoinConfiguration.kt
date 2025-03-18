@@ -13,6 +13,7 @@ fun Context.configureKoin(inPreview: Boolean = false) {
             coilModule(),
             repositoryModule(),
             viewModelModule(),
+            useCaseModule()
         )
     }
 }
