@@ -6,6 +6,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -24,7 +25,9 @@ data class GameListState(
 @KoinViewModel
 class GameListViewModel(
     private val gameDbRepository: GameDbRepository,
+    private val getAllGameUseCase: GetAllGameUseCase
 ) : ViewModel() {
+
 
     private val _state = MutableStateFlow(GameListState())
     val state = _state.asStateFlow()
@@ -33,43 +36,29 @@ class GameListViewModel(
         _state.update { state }
     }
 
-    init {
-        getAllGame()
-    }
-
-    fun getAllGame() {
+    fun refresh() {
         viewModelScope.launch {
-            val response = gameDbRepository.getAllGame()
-            when (response){
-                is RequestResult.Success -> {
-                    _state.update {
-                        it.copy(
-                            gameList = response.data
-                        )
-                    }
-                }
-                is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            errorVisible = true
-                        )
-                    }
-                }
+            _state.update {
+                it.copy(
+                    gameList = getAllGameUseCase()
+                )
             }
         }
     }
 
-    fun validateDeleteGame(game: Game){
+    fun validateDeleteGame(game: Game) {
         viewModelScope.launch {
             val response = gameDbRepository.deleteGame(game = game)
-            when (response){
+            when (response) {
                 is RequestResult.Success -> {
+                    refresh()
                     _state.update {
                         it.copy(
                             errorVisible = false
                         )
                     }
                 }
+
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(

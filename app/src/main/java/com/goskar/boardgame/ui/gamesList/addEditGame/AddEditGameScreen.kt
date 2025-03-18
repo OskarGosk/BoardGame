@@ -60,6 +60,7 @@ import com.goskar.boardgame.ui.components.other.CameraView
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
@@ -97,7 +98,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
         }
         LaunchedEffect(state.successAddEditGame) {
             if (state.successAddEditGame) {
-                navigator?.pop()
+                navigator?.replace(GameListScreen())
             }
         }
 
