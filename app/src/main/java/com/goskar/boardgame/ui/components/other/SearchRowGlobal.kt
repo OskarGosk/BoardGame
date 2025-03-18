@@ -54,7 +54,7 @@ fun SearchRowGlobal(
     clearTxt: () -> Unit = {},
     updateSort: (Int) -> Unit = {},
     searchTxt: String,
-    sortOption: Int
+    sortOption: Int?
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
