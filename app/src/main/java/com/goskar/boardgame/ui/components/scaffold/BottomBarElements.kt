@@ -6,7 +6,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.home.HomeScreen
-import com.goskar.boardgame.ui.components.playerList.PlayerListScreen
+import com.goskar.boardgame.ui.playerList.PlayerListScreen
 
 enum class BottomBarElements (
     @StringRes var title: Int,

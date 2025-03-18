@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.components.playerList.components
+package com.goskar.boardgame.ui.playerList.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
-import com.goskar.boardgame.ui.components.playerList.PlayerListState
+import com.goskar.boardgame.ui.playerList.PlayerListState
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18

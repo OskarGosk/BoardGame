@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package com.goskar.boardgame.ui.components.playerList.components
+package com.goskar.boardgame.ui.components.other
 
 import android.view.KeyEvent
 import androidx.compose.foundation.clickable
@@ -39,10 +39,7 @@ import androidx.compose.ui.input.key.onPreInterceptKeyBeforeSoftKeyboard
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.components.playerList.PlayerListState
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.Smooch20
@@ -51,10 +48,13 @@ import com.goskar.boardgame.utils.SortList
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun SearchRow(
-    onCLickMenu: () -> Unit = {},
-    update: (PlayerListState) -> Unit = {},
-    state: PlayerListState
+fun SearchRowGlobal(
+    searchHelp: Int,
+    updateTxt: (String) -> Unit = {},
+    clearTxt: () -> Unit = {},
+    updateSort: (Int) -> Unit = {},
+    searchTxt: String,
+    sortOption: Int
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
@@ -76,12 +76,10 @@ fun SearchRow(
             OutlinedTextField(
                 textStyle = Smooch18,
                 shape = RoundedCornerShape(15),
-                value = state.searchTxt,
+                value = searchTxt,
                 onValueChange = {
-                    update(
-                        state.copy(
-                            searchTxt = it
-                        )
+                    updateTxt(
+                        it
                     )
                 },
                 modifier = Modifier
@@ -89,7 +87,7 @@ fun SearchRow(
                     .padding(end = 10.dp),
                 label = {
                     Text(
-                        stringResource(id = R.string.player_name),
+                        stringResource(id = searchHelp),
                         style = Smooch14
                     )
                 },
@@ -107,11 +105,7 @@ fun SearchRow(
                         modifier = Modifier
                             .size(25.dp)
                             .clickable {
-                                update(
-                                    state.copy(
-                                        searchTxt = ""
-                                    )
-                                )
+                                clearTxt()
                                 focusManager.clearFocus()
                             })
                 }
@@ -141,28 +135,21 @@ fun SearchRow(
                                     verticalAlignment = Alignment.CenterVertically
                                 ){
                                     Checkbox(
-                                        checked = if (sort.value == state.sortOption) true else false,
+                                        checked = if (sort.value == sortOption) true else false,
                                         onCheckedChange = {
-                                            update(
-                                                state.copy(
-                                                    sortOption = sort.value
-                                                )
+                                            updateSort(sort.value
                                             )
                                             expanded = false
                                         }
                                     )
                                     Text(
                                         text = stringResource(id = sort.value),
-                                        style = if (sort.value == state.sortOption) SmoochBold20 else Smooch20
+                                        style = if (sort.value == sortOption) SmoochBold20 else Smooch20
                                     )
                                 }
                             },
                             onClick = {
-                                update(
-                                    state.copy(
-                                        sortOption = sort.value
-                                    )
-                                )
+                                updateSort(sort.value)
                                 expanded = false
                             })
                     }
@@ -172,16 +159,16 @@ fun SearchRow(
     }
 }
 
-@Preview
-@Composable
-fun SearchRowPreview() {
-    Surface(
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Box(modifier = Modifier.padding(10.dp)) {
-            SearchRow(
-                state = PlayerListState()
-            )
-        }
-    }
-}
+//@Preview
+//@Composable
+//fun SearchRowPreview() {
+//    Surface(
+//        color = MaterialTheme.colorScheme.background
+//    ) {
+//        Box(modifier = Modifier.padding(10.dp)) {
+//            SearchRow(
+//                state = PlayerListState()
+//            )
+//        }
+//    }
+//}

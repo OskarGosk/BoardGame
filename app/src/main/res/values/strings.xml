@@ -14,6 +14,7 @@
     <string name="player_list">Player List</string>
     <string name="board_list">Board Game List</string>
     <string name="history_game_screen">Gaming History</string>
+    <string name="search_bgg">Search Game by BGG</string>
 
     //SORT
     <string name="default_sort">Default</string>
@@ -70,6 +71,9 @@
     <string name="history_players_list">List of players:</string>
     <string name="history_comp">Computer</string>
     <string name="history_players">Players</string>
+
+    //SEARCH BGG
+
 
 
 </resources>

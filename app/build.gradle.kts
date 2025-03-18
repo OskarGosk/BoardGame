@@ -88,5 +88,8 @@ dependencies {
     implementation(libs.bundles.room.all)
     implementation(libs.bundles.coil.all)
 
+    implementation (libs.converter.simplexml) // SimpleXML do parsowania XML
+    implementation (libs.simple.xml)
+
     ksp(libs.room.ksp)
 }
