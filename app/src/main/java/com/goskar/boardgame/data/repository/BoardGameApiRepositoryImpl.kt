@@ -23,7 +23,7 @@ class BoardGameApiRepositoryImpl(private val apiBoardGame: ApiBoardGame) : Board
     }
 
     override suspend fun searchGame(name: String): SearchList? {
-        return kotlin.runCatching {
+        return runCatching {
             val response = apiBoardGame.searchGame(name)
             if (response.isSuccessful) {
                 response.body()

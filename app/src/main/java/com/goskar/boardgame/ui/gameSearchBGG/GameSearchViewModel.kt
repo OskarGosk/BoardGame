@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.gameSearchBGG
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
@@ -31,10 +32,15 @@ class GameSearchViewModel(
         _state.update { state }
     }
 
+    init {
+        searchGame("Marvel")
+    }
+
     fun  searchGame(name: String) {
         viewModelScope.launch {
             val response = boardGameApiRepository.searchGame(name)
             _gameList.value = response
+            Log.d("Oskar22","GRY --- $response")
         }
     }
 }

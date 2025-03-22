@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.SearchList
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
@@ -31,10 +36,13 @@ class GameSearchScreen:Screen {
 
         val viewModel:  GameSearchViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+        val gameList by viewModel.gameList.collectAsState()
 
         GameSearchContent(
             state = state,
-            update = viewModel::update
+            gameList = gameList,
+            update = viewModel::update,
+            search = viewModel::searchGame
         )
     }
 }
@@ -42,7 +50,9 @@ class GameSearchScreen:Screen {
 @Composable
 fun GameSearchContent(
     state: GameSearchState,
-    update: (GameSearchState) -> Unit = {}
+    gameList: SearchList?,
+    update: (GameSearchState) -> Unit = {},
+    search: (String) -> Unit ={}
 ) {
     BoardGameScaffold(
         titlePage = R.string.search_bgg,
@@ -59,6 +69,9 @@ fun GameSearchContent(
                 searchHelp = R.string.board_name,
                 searchTxt = state.searchTxt,
                 sortOption = state.sortOption,
+                searchFun = {
+                    search(state.searchTxt)
+                },
                 updateTxt = {
                     update(
                         state.copy(
@@ -81,7 +94,19 @@ fun GameSearchContent(
                     )
                 }
             )
+
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+            ) {
+                gameList?.boardGames?.forEach {
+                    Text(
+                        text = it?.name?:""
+                    )
+                }
+            }
         }
+
         val uriHandler = LocalUriHandler.current
         Box(
             modifier = Modifier
@@ -108,6 +133,7 @@ fun GameSearchContent(
 @Composable
 fun GameSearchContentPreview(){
     GameSearchContent(
-        state = GameSearchState()
+        state = GameSearchState(),
+        gameList = null
     )
 }

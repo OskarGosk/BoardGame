@@ -53,6 +53,7 @@ fun SearchRowGlobal(
     updateTxt: (String) -> Unit = {},
     clearTxt: () -> Unit = {},
     updateSort: (Int) -> Unit = {},
+    searchFun:()-> Unit = {},
     searchTxt: String,
     sortOption: Int?
 ) {
@@ -96,6 +97,7 @@ fun SearchRowGlobal(
                     imeAction = ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(onDone = {
+                    searchFun()
                     focusManager.clearFocus()
                 }),
                 trailingIcon = {
