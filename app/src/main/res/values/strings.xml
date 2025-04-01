@@ -74,6 +74,8 @@
 
     //SEARCH BGG
 
+    <string name="bgg_year">Year</string>
+    <string name="bgg_name">Game Name</string>
 
 
 </resources>

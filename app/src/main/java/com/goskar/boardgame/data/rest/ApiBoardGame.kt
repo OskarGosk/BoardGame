@@ -4,7 +4,7 @@ import com.goskar.boardgame.data.models.BoardGames
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.Player
-import com.goskar.boardgame.data.models.SearchList
+import com.goskar.boardgame.data.models.SearchBGGList
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -64,7 +64,7 @@ interface ApiBoardGame {
     @GET("search")
     suspend fun searchGame(
         @Query("search") searchName: String,
-    ): Response<SearchList>
+    ): Response<SearchBGGList>
 
     @GET("game/222589")
     suspend fun getBoardGameInfo(): Response<BoardGames>

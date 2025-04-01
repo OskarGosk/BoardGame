@@ -1,7 +1,7 @@
 package com.goskar.boardgame.data.repository
 
 import com.goskar.boardgame.data.models.BoardGames
-import com.goskar.boardgame.data.models.SearchList
+import com.goskar.boardgame.data.models.SearchBGGList
 import com.goskar.boardgame.data.rest.ApiBoardGame
 import timber.log.Timber
 
@@ -22,7 +22,7 @@ class BoardGameApiRepositoryImpl(private val apiBoardGame: ApiBoardGame) : Board
         }
     }
 
-    override suspend fun searchGame(name: String): SearchList? {
+    override suspend fun searchGame(name: String): SearchBGGList? {
         return runCatching {
             val response = apiBoardGame.searchGame(name)
             if (response.isSuccessful) {

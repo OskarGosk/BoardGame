@@ -4,7 +4,6 @@ package com.goskar.boardgame.ui.components.other
 
 import android.view.KeyEvent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -21,9 +20,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,6 +49,7 @@ fun SearchRowGlobal(
     searchHelp: Int,
     updateTxt: (String) -> Unit = {},
     clearTxt: () -> Unit = {},
+    approveTxt: () -> Unit = {},
     updateSort: (Int) -> Unit = {},
     searchFun:()-> Unit = {},
     searchTxt: String,

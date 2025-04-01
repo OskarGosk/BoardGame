@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,10 +22,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
-import com.goskar.boardgame.data.models.SearchList
+import com.goskar.boardgame.data.models.SearchBGGList
+import com.goskar.boardgame.data.models.SearchBGGListElements
+import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.gameSearchBGG.components.SingleBGGSearchRow
 import org.koin.androidx.compose.koinViewModel
 
 class GameSearchScreen:Screen {
@@ -50,7 +51,7 @@ class GameSearchScreen:Screen {
 @Composable
 fun GameSearchContent(
     state: GameSearchState,
-    gameList: SearchList?,
+    gameList: SearchBGGList?,
     update: (GameSearchState) -> Unit = {},
     search: (String) -> Unit ={}
 ) {
@@ -65,6 +66,7 @@ fun GameSearchContent(
                 .padding(10.dp)
                 .padding(paddingValues)
         ){
+            if (state.isLoading) AppLoader()
             SearchRowGlobal(
                 searchHelp = R.string.board_name,
                 searchTxt = state.searchTxt,
@@ -97,12 +99,11 @@ fun GameSearchContent(
 
             Column(
                 modifier = Modifier
+                    .padding(top = 10.dp, bottom = 50.dp)
                     .verticalScroll(rememberScrollState())
             ) {
                 gameList?.boardGames?.forEach {
-                    Text(
-                        text = it?.name?:""
-                    )
+                    SingleBGGSearchRow(it)
                 }
             }
         }
@@ -132,8 +133,12 @@ fun GameSearchContent(
 @Preview
 @Composable
 fun GameSearchContentPreview(){
+    val game = SearchBGGListElements(name = "Marvel", yearPublished = 2016)
+    val game2 = SearchBGGListElements(name = "Harry Potter Z bardzo długą nazwą na ponad 1 linijkę", yearPublished = 2022)
+    val list = SearchBGGList(listOf( game,game2))
+
     GameSearchContent(
-        state = GameSearchState(),
-        gameList = null
+        state = GameSearchState(isLoading = false),
+        gameList = list
     )
 }
