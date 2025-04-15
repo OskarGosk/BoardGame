@@ -22,7 +22,7 @@ import com.goskar.boardgame.ui.theme.SmoochExtraBold32
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(titlePage: Int) {
+fun TopBar(titlePage: String) {
     Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -31,7 +31,7 @@ fun TopBar(titlePage: Int) {
         TopAppBar(
             navigationIcon = {
                 Text(
-                    text = stringResource(titlePage),
+                    text = titlePage,
                     style = SmoochExtraBold32,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -56,5 +56,5 @@ fun TopBar(titlePage: Int) {
 @Preview
 @Composable
 fun TopBarPreview() {
-    TopBar(titlePage = R.string.app_name)
+//    TopBar(titlePage = R.string.app_name)
 }

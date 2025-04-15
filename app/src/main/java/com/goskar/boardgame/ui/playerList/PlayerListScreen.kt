@@ -64,7 +64,7 @@ fun PlayerListContent(
     var showAddEditDialog by remember { mutableStateOf(false) }
 
     BoardGameScaffold(
-        titlePage = R.string.player_list,
+        titlePage = stringResource(R.string.player_list),
         selectedScreen = BottomBarElements.PlayerListButton.title
     ) { paddingValues ->
         if (state.isLoading) AppLoader()

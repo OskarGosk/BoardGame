@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.gameSearchBGG.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,19 +16,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.SearchBGGListElements
+import com.goskar.boardgame.ui.gameDetailsBGG.GameDetailsBGGScreen
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.SmoochBold26
 
 @Composable
 fun SingleBGGSearchRow(game: SearchBGGListElements){
-
+    val navigator = LocalNavigator.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .border(1.dp, Color.Gray)
             .sizeIn(maxHeight = 90.dp, minHeight = 48.dp)
+            .clickable {
+                navigator?.push(GameDetailsBGGScreen(game.id, game.name?:""))
+            }
     ) {
         Row(
             modifier = Modifier

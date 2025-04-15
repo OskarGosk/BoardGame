@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -56,7 +57,7 @@ fun GameSearchContent(
     search: (String) -> Unit ={}
 ) {
     BoardGameScaffold(
-        titlePage = R.string.search_bgg,
+        titlePage = stringResource(R.string.search_bgg),
         selectedScreen = BottomBarElements.HomeButton.title
 
     ) { paddingValues ->

@@ -117,7 +117,7 @@ fun GamePlayContent(
         })
 
     BoardGameScaffold(
-        titlePage = R.string.history_add,
+        titlePage = stringResource(R.string.history_add),
         selectedScreen = null
     ) { paddingValues ->
 

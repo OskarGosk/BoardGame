@@ -1,6 +1,7 @@
 package com.goskar.boardgame.data.rest
 
-import com.goskar.boardgame.data.models.BoardGames
+import com.goskar.boardgame.data.models.BoardGameBGG
+import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.Player
@@ -64,8 +65,10 @@ interface ApiBoardGame {
     @GET("search")
     suspend fun searchGame(
         @Query("search") searchName: String,
-    ): Response<SearchBGGList>
+    ): SearchBGGList
 
-    @GET("game/222589")
-    suspend fun getBoardGameInfo(): Response<BoardGames>
+    @GET("game/{id}")
+    suspend fun getBoardGameInfo(
+        @Path("id") gameID: String,
+        ): BoardGamesDetails
 }

@@ -64,7 +64,7 @@ fun GameListContent(
     val navigator = LocalNavigator.current
 
     BoardGameScaffold(
-        titlePage = R.string.board_list,
+        titlePage = stringResource(R.string.board_list),
         selectedScreen = BottomBarElements.GameListButton.title
     ) { paddingValues ->
 

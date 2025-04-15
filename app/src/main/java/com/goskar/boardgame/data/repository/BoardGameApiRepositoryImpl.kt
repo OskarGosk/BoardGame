@@ -1,40 +1,47 @@
 package com.goskar.boardgame.data.repository
 
-import com.goskar.boardgame.data.models.BoardGames
+import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.SearchBGGList
 import com.goskar.boardgame.data.rest.ApiBoardGame
+import com.goskar.boardgame.data.rest.RequestResult
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class BoardGameApiRepositoryImpl(private val apiBoardGame: ApiBoardGame) : BoardGameApiRepository {
+class BoardGameApiRepositoryImpl(
+    private val apiBoardGame: ApiBoardGame,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BoardGameApiRepository {
 
-    override suspend fun getGame(): BoardGames? {
-        return runCatching {
-            val response = apiBoardGame.getBoardGameInfo()
-            if (response.isSuccessful) {
-                response.body()
-            } else {
-                Timber.tag("Oskar22").e("Błąd API: ${response.code()} ${response.message()}")
-                null
-            }
-        }.getOrElse {
-            Timber.tag("Oskar22").e("Nie można pobrać gry\n ${it.stackTraceToString()}")
-            null
-        }
+    companion object {
+        val TAG = "BGG API"
     }
 
-    override suspend fun searchGame(name: String): SearchBGGList? {
-        return runCatching {
-            val response = apiBoardGame.searchGame(name)
-            if (response.isSuccessful) {
-                response.body()
-            } else {
-            Timber.tag("Oskar22").e("Błąd API: ${response.code()} ${response.message()}")
-            null
-        }
-        }.getOrElse {
-            Timber.tag("Oskar22").e("Nie można pobrać gry\n ${it.stackTraceToString()}")
-            null
-        }
+    override suspend fun getGame(gameId: String): RequestResult<BoardGamesDetails> {
+        return withContext(defaultDispatcher) {
+            runCatching {
+                apiBoardGame.getBoardGameInfo(gameId)
+            }.onFailure {
+                Timber.tag(TAG).e("Error BGG API (game details): ${it.stackTraceToString()}")
+            }
+        }.fold(
+            onSuccess = { RequestResult.Success(it) },
+            onFailure = { RequestResult.Error(it) }
+        )
+    }
+
+    override suspend fun searchGame(name: String): RequestResult<SearchBGGList> {
+        return withContext(defaultDispatcher) {
+            runCatching {
+                apiBoardGame.searchGame(name)
+            }.onFailure {
+                Timber.tag(TAG).e("Error BGG API (search game): ${it.stackTraceToString()}")
+            }
+        }.fold(
+            onSuccess = { RequestResult.Success(it) },
+            onFailure = { RequestResult.Error(it) }
+        )
     }
 
 }

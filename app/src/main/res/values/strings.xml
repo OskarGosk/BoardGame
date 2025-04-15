@@ -15,6 +15,7 @@
     <string name="board_list">Board Game List</string>
     <string name="history_game_screen">Gaming History</string>
     <string name="search_bgg">Search Game by BGG</string>
+    <string name="details_bgg">Details Game by BGG</string>
 
     //SORT
     <string name="default_sort">Default</string>
@@ -76,6 +77,9 @@
 
     <string name="bgg_year">Year</string>
     <string name="bgg_name">Game Name</string>
+    <string name="bgg_age">Age</string>
+    <string name="bgg_playing_time">Playing Time</string>
+    <string name="bgg_add_game">Add to My game</string>
 
 
 </resources>
