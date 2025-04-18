@@ -4,6 +4,7 @@ package com.goskar.boardgame.ui.components.other
 
 import android.view.KeyEvent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -14,13 +15,16 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +40,9 @@ import androidx.compose.ui.input.key.onPreInterceptKeyBeforeSoftKeyboard
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.Smooch20
@@ -49,11 +55,12 @@ fun SearchRowGlobal(
     searchHelp: Int,
     updateTxt: (String) -> Unit = {},
     clearTxt: () -> Unit = {},
+    searchButton: Boolean = false,
     approveTxt: () -> Unit = {},
     updateSort: (Int) -> Unit = {},
-    searchFun:()-> Unit = {},
+    searchFun: () -> Unit = {},
     searchTxt: String,
-    sortOption: Int?
+    sortOption: Int?,
 ) {
     val focusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
@@ -99,15 +106,26 @@ fun SearchRowGlobal(
                     focusManager.clearFocus()
                 }),
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(25.dp)
-                            .clickable {
-                                clearTxt()
-                                focusManager.clearFocus()
-                            })
+                    Row {
+                        if (searchButton)
+                            Icon(imageVector = Icons.Default.Search,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .clickable {
+                                        searchFun()
+                                        focusManager.clearFocus()
+                                    })
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .clickable {
+                                    clearTxt()
+                                    focusManager.clearFocus()
+                                })
+                    }
                 }
             )
 
@@ -131,13 +149,14 @@ fun SearchRowGlobal(
                     SortList.entries.forEach { sort ->
                         DropdownMenuItem(
                             text = {
-                                Row (
+                                Row(
                                     verticalAlignment = Alignment.CenterVertically
-                                ){
+                                ) {
                                     Checkbox(
                                         checked = if (sort.value == sortOption) true else false,
                                         onCheckedChange = {
-                                            updateSort(sort.value
+                                            updateSort(
+                                                sort.value
                                             )
                                             expanded = false
                                         }
@@ -159,16 +178,19 @@ fun SearchRowGlobal(
     }
 }
 
-//@Preview
-//@Composable
-//fun SearchRowPreview() {
-//    Surface(
-//        color = MaterialTheme.colorScheme.background
-//    ) {
-//        Box(modifier = Modifier.padding(10.dp)) {
-//            SearchRow(
-//                state = PlayerListState()
-//            )
-//        }
-//    }
-//}
+@Preview
+@Composable
+fun SearchRowPreview() {
+    Surface(
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Box(modifier = Modifier.padding(10.dp)) {
+            SearchRowGlobal(
+                searchHelp = R.string.player_name,
+                searchTxt = "Test",
+                searchButton = true,
+                sortOption = R.string.default_sort
+            )
+        }
+    }
+}

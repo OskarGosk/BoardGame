@@ -4,7 +4,6 @@ import org.simpleframework.xml.Attribute
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
-import org.simpleframework.xml.Text
 
 @Root(name = "boardgames", strict = false)
 data class BoardGamesDetails(
@@ -42,15 +41,15 @@ data class BoardGameBGG(
     @field:Element(name = "description", required = false)
     var description: String? = null,
 
-    @field:ElementList(inline = true, required = false)
-    var expansions: List<BoardGameExpansionBGG>? = null
+//    @field:ElementList(inline = true, required = false)
+//    var expansions: List<BoardGameExpansionBGG>? = null
 )
-
-@Root(name = "boardgameexpansion", strict = false)
-data class BoardGameExpansionBGG(
-    @field:Attribute(name = "objectid")
-    var id: String = "",
-
-    @field:Text(required = false)
-    var name: String? = null
-)
+//
+//@Root(name = "boardgameexpansion", strict = false)
+//data class BoardGameExpansionBGG(
+//    @field:Attribute(name = "objectid")
+//    var id: String = "",
+//
+//    @field:Text(required = false)
+//    var name: String? = null
+//)

@@ -3,7 +3,6 @@ package com.goskar.boardgame.ui.gameDetailsBGG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.goskar.boardgame.data.models.BoardGameBGG
 import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
@@ -19,7 +18,10 @@ data class GameDetailsBGGState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val successAddEditGame: Boolean = false,
-    val gameName: String? = ""
+    val gameName: String? = "",
+    val cooperate: Boolean = false,
+    val expansion: Boolean = false,
+    val baseGame: String? = null
 )
 
 class GameDetailsBGGViewModel(
@@ -65,7 +67,7 @@ class GameDetailsBGGViewModel(
             }
         }
     }
-/*
+
     fun validateAddGame() {
         viewModelScope.launch {
             _state.update {
@@ -83,7 +85,7 @@ class GameDetailsBGGViewModel(
                 minPlayer = gameToAdd?.minPlayers.toString(),
                 maxPlayer = gameToAdd?.maxPlayers.toString(),
                 games = 0,
-                uri = gameToAdd?.image,
+                uriFromBgg = gameToAdd?.image,
                 id = UUID.randomUUID().toString()
             )
 
@@ -112,6 +114,6 @@ class GameDetailsBGGViewModel(
         }
     }
 
- */
+
 
 }

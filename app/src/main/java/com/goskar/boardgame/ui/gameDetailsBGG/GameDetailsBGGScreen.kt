@@ -37,6 +37,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGameBGG
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.gameDetailsBGG.components.AddGameDialog
 import com.goskar.boardgame.ui.gamesList.lists.components.GameDataRow
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch16
@@ -63,6 +64,8 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
         GameDetailsBGGContent(
             state = state,
             gameDetails = gameDetails?.boardGamesBGG?.firstOrNull(),
+            addGame = viewModel::validateAddGame,
+            update = viewModel::update
         )
     }
 }
@@ -71,6 +74,8 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
 fun GameDetailsBGGContent(
     state: GameDetailsBGGState,
     gameDetails: BoardGameBGG?,
+    addGame: () -> Unit = {},
+    update: (GameDetailsBGGState) -> Unit = {}
 ) {
 
     BoardGameScaffold(
@@ -78,6 +83,7 @@ fun GameDetailsBGGContent(
         selectedScreen = null
     ) { paddingValues ->
 
+        var showAddEditDialog by remember { mutableStateOf(false) }
         var expendedDesc by remember { mutableStateOf(false) }
 
         if (state.isLoading) AppLoader()
@@ -124,10 +130,18 @@ fun GameDetailsBGGContent(
                 maxLines = if (expendedDesc) 100 else 2,
                 modifier = Modifier
                     .clickable { expendedDesc = !expendedDesc })
+        }
 
-            gameDetails?.expansions?.forEach {
-                Text(text = it.name ?: "")
-            }
+        if (showAddEditDialog) {
+            AddGameDialog(
+                state = state,
+                confirmButtonClick = {
+                    showAddEditDialog = false
+                    addGame()
+                },
+                onDismiss = { showAddEditDialog = !showAddEditDialog },
+                update = update
+            )
         }
 
         val uriHandler = LocalUriHandler.current
@@ -141,7 +155,7 @@ fun GameDetailsBGGContent(
                 Button(
                     shape = CutCornerShape(percent = 10),
                     onClick = {
-//                        navigator?.push(GameSearchScreen())
+                        showAddEditDialog = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()

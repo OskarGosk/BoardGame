@@ -23,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
-import com.goskar.boardgame.data.models.SearchBGGList
 import com.goskar.boardgame.data.models.SearchBGGListElements
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
@@ -38,13 +37,14 @@ class GameSearchScreen:Screen {
 
         val viewModel:  GameSearchViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
-        val gameList by viewModel.gameList.collectAsState()
+        val gameList by viewModel.gameListSorted.collectAsState()
 
         GameSearchContent(
             state = state,
             gameList = gameList,
             update = viewModel::update,
-            search = viewModel::searchGame
+            search = viewModel::searchGame,
+            updateSortedList = viewModel::updateSortedList
         )
     }
 }
@@ -52,9 +52,10 @@ class GameSearchScreen:Screen {
 @Composable
 fun GameSearchContent(
     state: GameSearchState,
-    gameList: SearchBGGList?,
+    gameList: List<SearchBGGListElements>?,
     update: (GameSearchState) -> Unit = {},
-    search: (String) -> Unit ={}
+    search: (String) -> Unit ={},
+    updateSortedList: () -> Unit = {}
 ) {
     BoardGameScaffold(
         titlePage = stringResource(R.string.search_bgg),
@@ -72,6 +73,7 @@ fun GameSearchContent(
                 searchHelp = R.string.board_name,
                 searchTxt = state.searchTxt,
                 sortOption = state.sortOption,
+                searchButton = true,
                 searchFun = {
                     search(state.searchTxt)
                 },
@@ -95,15 +97,15 @@ fun GameSearchContent(
                             sortOption = it
                         )
                     )
+                    updateSortedList()
                 }
             )
-
             Column(
                 modifier = Modifier
                     .padding(top = 10.dp, bottom = 50.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                gameList?.boardGames?.forEach {
+                gameList?.forEach {
                     SingleBGGSearchRow(it)
                 }
             }
@@ -136,10 +138,9 @@ fun GameSearchContent(
 fun GameSearchContentPreview(){
     val game = SearchBGGListElements(name = "Marvel", yearPublished = 2016)
     val game2 = SearchBGGListElements(name = "Harry Potter Z bardzo długą nazwą na ponad 1 linijkę", yearPublished = 2022)
-    val list = SearchBGGList(listOf( game,game2))
 
     GameSearchContent(
         state = GameSearchState(isLoading = false),
-        gameList = list
+        gameList = listOf( game,game2)
     )
 }
