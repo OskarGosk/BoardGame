@@ -1,36 +1,30 @@
 package com.goskar.boardgame.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.goskar.boardgame.data.oflineRepository.GameDbRepository
-import com.goskar.boardgame.data.oflineRepository.GamesHistoryDbRepository
-import com.goskar.boardgame.data.oflineRepository.PlayerDbRepository
-import com.goskar.boardgame.data.repository.GameNetworkRepository
-import com.goskar.boardgame.data.repository.HistoryGameNetworkRepository
-import com.goskar.boardgame.data.repository.PlayerNetworkRepository
+import com.goskar.boardgame.data.repository.BoardGameApiRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeScreenViewModel(
-    private val gameNetworkRepository: GameNetworkRepository,
-    private val playerNetworkRepository: PlayerNetworkRepository,
-    private val historyGameNetworkRepository: HistoryGameNetworkRepository,
-    private val playerDbRepository: PlayerDbRepository,
-    private val gameDbRepository: GameDbRepository,
-    private val gamesHistoryDbRepository: GamesHistoryDbRepository
+    private val boardGameApiRepository: BoardGameApiRepository
 ) : ViewModel() {
 
-    fun getAllData(){
+    private val _image = MutableStateFlow("")
+    var image = _image.asStateFlow()
+
+
+    fun getAllData() {
         viewModelScope.launch {
-            val response1 = playerNetworkRepository.getAllPlayer()
-            playerDbRepository.insertAllPlayer(response1?: emptyList())
+            val response = boardGameApiRepository.searchGame("marvel")
+            Log.d("Oskar22","$response")
+//            _image.value = response?.boardGames?.first()?.image.toString()
+//            Log.d("Oskar22","${_image.value}")
 
-            val response2 = gameNetworkRepository.getAllGame()
-            gameDbRepository.insertAllGame(response2)
-
-            val response3 = historyGameNetworkRepository.getAll()
-            gamesHistoryDbRepository.insertAllHistoryGame(response3)
         }
     }
 

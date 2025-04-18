@@ -71,6 +71,7 @@ fun SingleCoverGameCardPreview() {
     val game = Game(
         name = "Marvel Marvel Marvel Marel Marvel Marvel Marvel Marvel Mar",
         expansion = false,
+        cooperate = false,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",
@@ -94,6 +95,7 @@ fun SingleCoverGameCardPreviewOneLine() {
     val game = Game(
         name = "Marvel Marvel ",
         expansion = false,
+        cooperate = false,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",

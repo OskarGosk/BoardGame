@@ -31,6 +31,7 @@ data class AddEditGameState(
     val games: Int = 0,
     val uri: String = "",
     val id: String? = null,
+    val cooperate: Boolean = false,
 
     val successAddEditGame: Boolean = false,
     val errorVisible: Boolean = false,
@@ -90,6 +91,7 @@ class AddEditGameViewModel(
             val game = Game(
                 name = state.value.name ?: "",
                 expansion = state.value.expansion,
+                cooperate = state.value.cooperate,
                 baseGame = state.value.baseGame ?: "",
                 minPlayer = state.value.minPlayer,
                 maxPlayer = state.value.maxPlayer,

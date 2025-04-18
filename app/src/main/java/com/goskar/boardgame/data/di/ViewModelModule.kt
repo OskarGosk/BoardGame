@@ -5,16 +5,18 @@ import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameViewModel
 import com.goskar.boardgame.ui.gamesList.play.GamePlayViewModel
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryViewModel
 import com.goskar.boardgame.ui.home.HomeScreenViewModel
-import com.goskar.boardgame.ui.components.playerList.PlayerListViewModel
+import com.goskar.boardgame.ui.playerList.PlayerListViewModel
+import com.goskar.boardgame.ui.gameSearchBGG.GameSearchViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
 fun KoinApplication.viewModelModule() = module {
     viewModel { PlayerListViewModel(get()) }
-    viewModel { GameListViewModel(get()) }
+    viewModel { GameListViewModel(get(), get()) }
     viewModel { AddEditGameViewModel(get()) }
     viewModel { GamePlayViewModel(get(), get(), get()) }
-    viewModel { GamesHistoryViewModel(get())}
-    viewModel {HomeScreenViewModel(get(), get(),get(),get(),get(),get())}
+    viewModel { GamesHistoryViewModel(get()) }
+    viewModel { HomeScreenViewModel(get()) }
+    viewModel { GameSearchViewModel(get()) }
 }

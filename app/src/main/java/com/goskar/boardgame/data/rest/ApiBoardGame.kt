@@ -1,8 +1,10 @@
 package com.goskar.boardgame.data.rest
 
+import com.goskar.boardgame.data.models.BoardGames
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.data.models.SearchList
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -10,6 +12,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiBoardGame {
 
@@ -52,9 +55,17 @@ interface ApiBoardGame {
     @DELETE("historyGame/{id}.json")
     suspend fun deleteHistoryGame(@Path("id") historyId: String)
 
-    @PUT("historyGame/{id{.json")
+    @PUT("historyGame/{id}.json")
     suspend fun editHistoryGame(
         @Path("id") historyId: String,
         @Body historyGame: HistoryGame
     )
+
+    @GET("search")
+    suspend fun searchGame(
+        @Query("search") searchName: String,
+    ): Response<SearchList>
+
+    @GET("game/222589")
+    suspend fun getBoardGameInfo(): Response<BoardGames>
 }

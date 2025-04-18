@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.firebase)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -20,6 +21,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     buildTypes {
@@ -82,6 +87,9 @@ dependencies {
     implementation(libs.bundles.retrofit.gson)
     implementation(libs.bundles.room.all)
     implementation(libs.bundles.coil.all)
+
+    implementation (libs.converter.simplexml) // SimpleXML do parsowania XML
+    implementation (libs.simple.xml)
 
     ksp(libs.room.ksp)
 }

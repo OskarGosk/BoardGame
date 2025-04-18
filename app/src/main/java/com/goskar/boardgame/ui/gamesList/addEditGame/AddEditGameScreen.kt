@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
@@ -58,6 +60,7 @@ import com.goskar.boardgame.ui.components.other.CameraView
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
@@ -82,6 +85,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                     state.copy(
                         name = editGame.name,
                         expansion = editGame.expansion,
+                        cooperate = editGame.cooperate,
                         baseGame = editGame.baseGame,
                         minPlayer = editGame.minPlayer,
                         maxPlayer = editGame.maxPlayer,
@@ -94,7 +98,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
         }
         LaunchedEffect(state.successAddEditGame) {
             if (state.successAddEditGame) {
-                navigator?.pop()
+                navigator?.replace(GameListScreen())
             }
         }
 
@@ -145,6 +149,7 @@ fun AddEditGameContent(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
         ) {
             OutlinedTextField(
                 textStyle = Smooch18,
@@ -221,6 +226,23 @@ fun AddEditGameContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Checkbox(
+                    checked = state.cooperate,
+                    onCheckedChange = {
+                        update(
+                            state.copy(
+                                cooperate = !state.cooperate
+                            )
+                        )
+                    },
+                )
+                Text(stringResource(id = R.string.board_is_cooperate), style = Smooch18)
+            }
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
                     checked = state.expansion,
                     onCheckedChange = {
                         update(
@@ -276,6 +298,7 @@ fun AddEditGameContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(bottom = 10.dp)
                     .size(40.dp),
                 enabled = enabled
             ) {

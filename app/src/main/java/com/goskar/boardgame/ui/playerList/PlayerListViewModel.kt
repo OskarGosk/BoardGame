@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.components.playerList
+package com.goskar.boardgame.ui.playerList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,6 +49,7 @@ class PlayerListViewModel(
                         )
                     }
                 }
+
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(
@@ -89,7 +90,11 @@ class PlayerListViewModel(
 
     fun validateAddEditPLayer(newPlayer: Boolean) {
         viewModelScope.launch {
-            val response = state.value.player?.let { if(newPlayer) playerDbRepository.insertPlayer(it) else playerDbRepository.editPlayer(it) }
+            val response = state.value.player?.let {
+                if (newPlayer) playerDbRepository.insertPlayer(it) else playerDbRepository.editPlayer(
+                    it
+                )
+            }
 
             when (response) {
                 is RequestResult.Success -> {

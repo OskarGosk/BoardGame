@@ -1,6 +1,6 @@
 package com.goskar.boardgame.data.models
 
-import android.net.Uri
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.io.Serializable
@@ -10,6 +10,8 @@ import java.util.UUID
 data class Game(
     val name: String,
     val expansion: Boolean,
+    @ColumnInfo(name = "cooperate", defaultValue = "0")
+    val cooperate: Boolean,
     val baseGame: String,
     val minPlayer: String,
     val maxPlayer: String,

@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.components.playerList
+package com.goskar.boardgame.ui.playerList
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,12 +29,12 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
-import com.goskar.boardgame.ui.components.playerList.components.SearchRow
+import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
-import com.goskar.boardgame.ui.components.playerList.components.AddEditDialog
-import com.goskar.boardgame.ui.components.playerList.components.PlayerViewList
+import com.goskar.boardgame.ui.playerList.components.AddEditDialog
+import com.goskar.boardgame.ui.playerList.components.PlayerViewList
 
 class PlayerListScreen : Screen {
     @Composable
@@ -60,7 +60,7 @@ fun PlayerListContent(
     deletePlayer: (Player) -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
-    ) {
+) {
     var showAddEditDialog by remember { mutableStateOf(false) }
 
     BoardGameScaffold(
@@ -81,9 +81,31 @@ fun PlayerListContent(
                 Column(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    SearchRow(
-                        update = update,
-                        state = state
+                    SearchRowGlobal(
+                        searchHelp = R.string.player_name,
+                        searchTxt = state.searchTxt,
+                        sortOption = state.sortOption,
+                        updateTxt = {
+                            update(
+                                state.copy(
+                                    searchTxt = it
+                                )
+                            )
+                        },
+                        clearTxt = {
+                            update(
+                                state.copy(
+                                    searchTxt = ""
+                                )
+                            )
+                        },
+                        updateSort = {
+                            update(
+                                state.copy(
+                                    sortOption = it
+                                )
+                            )
+                        }
                     )
                     if (state.playerList.isNullOrEmpty()) {
                         EmptyListWithButton(
@@ -121,7 +143,7 @@ fun PlayerListContent(
             }
         }
 
-        if(showAddEditDialog) {
+        if (showAddEditDialog) {
             AddEditDialog(
                 newPlayer = true,
                 state = state,
@@ -129,7 +151,7 @@ fun PlayerListContent(
                     showAddEditDialog = false
                     addPlayer(true)
                 },
-                onDismiss = {showAddEditDialog = !showAddEditDialog},
+                onDismiss = { showAddEditDialog = !showAddEditDialog },
                 update = update
             )
         }

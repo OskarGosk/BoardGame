@@ -40,14 +40,14 @@ class GameListScreen : Screen {
         val state by viewModel.state.collectAsState()
 
         LaunchedEffect(Unit) {
-            viewModel.getAllGame()
+            viewModel.refresh()
         }
 
         BoardGameTheme {
             GameListContent(
                 state = state,
                 deleteGame = viewModel::validateDeleteGame,
-                refresh = viewModel::getAllGame,
+                refresh = viewModel::refresh,
                 update = viewModel::update
             )
         }
@@ -120,6 +120,7 @@ fun GameListContentPreview() {
     val game = Game(
         name = "Marvel",
         expansion = false,
+        cooperate = true,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",

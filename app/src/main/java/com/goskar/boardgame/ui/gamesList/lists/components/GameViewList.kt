@@ -15,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
@@ -83,6 +82,7 @@ fun GameViewListPreview() {
     val game = Game(
         name = "Marvel",
         expansion = false,
+        cooperate = true,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",
@@ -92,6 +92,7 @@ fun GameViewListPreview() {
     val game2 = Game(
         name = "Scrable",
         expansion = true,
+        cooperate = false,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",

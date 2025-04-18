@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.components.playerList.components
+package com.goskar.boardgame.ui.playerList.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement

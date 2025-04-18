@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -60,11 +61,24 @@ fun SingleGameCard(
                 textAlign = TextAlign.Center,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(horizontal = 5.dp)
             )
-            Text(
-                stringResource(if (game.expansion) R.string.board_expansion else R.string.board_base),
-                style = Smooch14
-            )
+
+            Row {
+                Text(
+                    text = stringResource(if (game.expansion) R.string.board_expansion else R.string.board_base),
+                    style = Smooch14,
+                )
+                if(game.cooperate) {
+                    Text(
+                        text = stringResource(R.string.board_cooperate),
+                        style = Smooch14,
+                        modifier = Modifier.padding(start = 15.dp)
+
+                    )
+                }
+            }
 
             GameDataRow(R.string.board_min_player, game.minPlayer)
             GameDataRow(R.string.board_max_player, game.maxPlayer)
@@ -81,6 +95,7 @@ fun SingleGameCardPreview() {
     val game = Game(
         name = "Marvel Marvel Marvel Marel Marvel Marvel Marvel Marvel Mar",
         expansion = false,
+        cooperate = true,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",
@@ -104,6 +119,7 @@ fun SingleGameCardPreviewOneLine() {
     val game = Game(
         name = "Marvel Marvel ",
         expansion = false,
+        cooperate = false,
         baseGame = "",
         minPlayer = "1",
         maxPlayer = "4",
