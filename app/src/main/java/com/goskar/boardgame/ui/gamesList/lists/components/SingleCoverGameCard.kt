@@ -46,10 +46,11 @@ fun SingleCoverGameCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            if(!game.uri.isNullOrBlank()) {
+            val gameUri = game.uriFromBgg?:game.uri
+            if(!gameUri.isNullOrBlank()) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(Uri.parse(game.uri))
+                        .data(Uri.parse(gameUri))
                         .build(),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,

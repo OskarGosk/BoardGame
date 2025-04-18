@@ -46,8 +46,8 @@ fun GameViewList(
         }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
         items(items = newGameList) { game ->
             var isExpanded by remember { mutableStateOf(true) }
-
-            if (isExpanded && !game.uri.isNullOrEmpty()) {
+            val gameUri = game.uriFromBgg?:game.uri
+            if (isExpanded && !gameUri.isNullOrEmpty()) {
                 SingleCoverGameCard(
                     game = game,
                     modifier = Modifier.padding(

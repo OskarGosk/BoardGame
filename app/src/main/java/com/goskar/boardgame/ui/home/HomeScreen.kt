@@ -46,7 +46,7 @@ fun HomeScreenContent() {
     val navigator = LocalNavigator.current
 
     BoardGameScaffold(
-        titlePage = R.string.app_name,
+        titlePage = stringResource(R.string.app_name),
         selectedScreen = BottomBarElements.HomeButton.title
 
     ) { paddingValues ->

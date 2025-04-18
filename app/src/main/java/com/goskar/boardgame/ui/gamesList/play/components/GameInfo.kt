@@ -45,10 +45,11 @@ fun GameInfo(
 ) {
     val navigator = LocalNavigator.current
     Row() {
-        if(!state.game?.uri.isNullOrBlank()) {
+        val gameUri = state.game?.uriFromBgg?:state.game?.uri
+        if(!gameUri.isNullOrBlank()) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(Uri.parse(state.game?.uri))
+                    .data(Uri.parse(gameUri))
                     .build(),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,

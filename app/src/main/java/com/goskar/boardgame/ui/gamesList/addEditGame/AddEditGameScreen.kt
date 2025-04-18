@@ -142,7 +142,7 @@ fun AddEditGameContent(
     }
 
     BoardGameScaffold(
-        titlePage = if (state.name == null) R.string.board_new else R.string.board_edit,
+        titlePage = stringResource(if (state.name == null) R.string.board_new else R.string.board_edit),
         selectedScreen = BottomBarElements.GameListButton.title
     ) { paddingValues ->
         Column(

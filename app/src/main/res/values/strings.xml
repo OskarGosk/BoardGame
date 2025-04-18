@@ -4,7 +4,8 @@
     <string name="confirm">Confirm</string>
     <string name="empty"></string>
     <string name="delete">Delete %s ?</string>
-    <string name="back">Back to list</string>
+    <string name="back_to_list">Back to list</string>
+    <string name="back">Back</string>
     <string name="save">Save change</string>
     <string name="camera_denied">Camera permission DENIED. Please go to phone settings</string>
 
@@ -15,6 +16,7 @@
     <string name="board_list">Board Game List</string>
     <string name="history_game_screen">Gaming History</string>
     <string name="search_bgg">Search Game by BGG</string>
+    <string name="details_bgg">Details Game by BGG</string>
 
     //SORT
     <string name="default_sort">Default</string>
@@ -74,6 +76,11 @@
 
     //SEARCH BGG
 
+    <string name="bgg_year">Year</string>
+    <string name="bgg_name">Game Name</string>
+    <string name="bgg_age">Age</string>
+    <string name="bgg_playing_time">Playing Time</string>
+    <string name="bgg_add_game">Add to My game</string>
 
 
 </resources>

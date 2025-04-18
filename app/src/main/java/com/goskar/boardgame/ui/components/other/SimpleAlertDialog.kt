@@ -62,7 +62,7 @@ fun SimpleAlertDialog(
                     .padding(top = 10.dp)
             ) {
                 Text(
-                    stringResource(R.string.back),
+                    stringResource(R.string.back_to_list),
                     style = SmoochBold18
                 )
             }

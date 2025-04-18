@@ -19,13 +19,16 @@ import com.goskar.boardgame.ui.gamesHistory.lists.components.SingleHistoryGame
 fun HistoryGamesList(state: GamesHistoryState) {
     Column(
         modifier = Modifier
-        .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState())
             .padding(vertical = 10.dp)
 
     ) {
         state.historyList.asReversed().forEach {
-            if (it.gameName.lowercase().contains(state.searchTxt.lowercase()) || it.winner.lowercase().contains(state.searchTxt.lowercase()))
-            SingleHistoryGame(Modifier, it)
+            if (it.gameName.lowercase()
+                    .contains(state.searchTxt.lowercase()) || it.winner.lowercase()
+                    .contains(state.searchTxt.lowercase())
+            )
+                SingleHistoryGame(Modifier, it)
         }
     }
 }
@@ -57,8 +60,9 @@ fun HistoryGamesListPreview() {
         Box(modifier = Modifier) {
             HistoryGamesList(
                 GamesHistoryState(
-                historyList = listOf(history1, history2, history1, history1)
-            ))
+                    historyList = listOf(history1, history2, history1, history1)
+                )
+            )
         }
     }
 }

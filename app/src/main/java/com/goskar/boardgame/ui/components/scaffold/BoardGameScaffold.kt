@@ -22,7 +22,7 @@ import com.goskar.boardgame.utils.keyboardAsState
 @Composable
 fun BoardGameScaffold(
     modifier: Modifier = Modifier,
-    titlePage: Int,
+    titlePage: String,
     showBottomBar: Boolean = true,
     selectedScreen: Int?,
     content: @Composable (PaddingValues) -> Unit,
@@ -61,7 +61,7 @@ fun BoardGameScaffold(
 fun BoardGameScaffoldPreview() {
     BoardGameTheme {
         BoardGameScaffold(
-            titlePage = BottomBarElements.HomeButton.title,
+            titlePage = "BottomBarElements.HomeButton.title,",
             selectedScreen = BottomBarElements.HomeButton.title,
         ) { paddingValues ->
             Box(
@@ -80,7 +80,7 @@ fun BoardGameScaffoldPreview() {
 fun BoardGamePreviewDark() {
     BoardGameTheme(darkTheme = true) {
         BoardGameScaffold(
-            titlePage = BottomBarElements.GameListButton.title,
+            titlePage = "BottomBarElements.GameListButton.title",
             selectedScreen = BottomBarElements.GameListButton.title
         ) { paddingValues ->
             Box(

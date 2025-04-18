@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -42,7 +43,7 @@ fun HistoryGameListContent(
 ) {
     val navigator = LocalNavigator.current
     BoardGameScaffold(
-        titlePage = R.string.history_game_screen,
+        titlePage = stringResource(R.string.history_game_screen),
         selectedScreen= BottomBarElements.HistoryListButton.title
     ) { paddingValues ->
 

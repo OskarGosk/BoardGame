@@ -6,13 +6,13 @@ import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
 
 @Root(name = "boardgames", strict = false)
-data class SearchList(
+data class SearchBGGList(
     @field:ElementList(inline = true, required = false)
-    var boardGames: List<searchListElements>? = null
+    var boardGames: List<SearchBGGListElements>? = null
 )
 
 @Root(name = "boardgame", strict = false)
-data class searchListElements(
+data class SearchBGGListElements(
     @field:Attribute(name = "objectid")
     var id: String = "",
 

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -16,13 +18,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.SearchBGGListElements
+import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.gameSearchBGG.components.SingleBGGSearchRow
 import org.koin.androidx.compose.koinViewModel
 
 class GameSearchScreen:Screen {
@@ -31,10 +37,14 @@ class GameSearchScreen:Screen {
 
         val viewModel:  GameSearchViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+        val gameList by viewModel.gameListSorted.collectAsState()
 
         GameSearchContent(
             state = state,
-            update = viewModel::update
+            gameList = gameList,
+            update = viewModel::update,
+            search = viewModel::searchGame,
+            updateSortedList = viewModel::updateSortedList
         )
     }
 }
@@ -42,10 +52,13 @@ class GameSearchScreen:Screen {
 @Composable
 fun GameSearchContent(
     state: GameSearchState,
-    update: (GameSearchState) -> Unit = {}
+    gameList: List<SearchBGGListElements>?,
+    update: (GameSearchState) -> Unit = {},
+    search: (String) -> Unit ={},
+    updateSortedList: () -> Unit = {}
 ) {
     BoardGameScaffold(
-        titlePage = R.string.search_bgg,
+        titlePage = stringResource(R.string.search_bgg),
         selectedScreen = BottomBarElements.HomeButton.title
 
     ) { paddingValues ->
@@ -55,10 +68,15 @@ fun GameSearchContent(
                 .padding(10.dp)
                 .padding(paddingValues)
         ){
+            if (state.isLoading) AppLoader()
             SearchRowGlobal(
                 searchHelp = R.string.board_name,
                 searchTxt = state.searchTxt,
                 sortOption = state.sortOption,
+                searchButton = true,
+                searchFun = {
+                    search(state.searchTxt)
+                },
                 updateTxt = {
                     update(
                         state.copy(
@@ -79,9 +97,20 @@ fun GameSearchContent(
                             sortOption = it
                         )
                     )
+                    updateSortedList()
                 }
             )
+            Column(
+                modifier = Modifier
+                    .padding(top = 10.dp, bottom = 50.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                gameList?.forEach {
+                    SingleBGGSearchRow(it)
+                }
+            }
         }
+
         val uriHandler = LocalUriHandler.current
         Box(
             modifier = Modifier
@@ -107,7 +136,11 @@ fun GameSearchContent(
 @Preview
 @Composable
 fun GameSearchContentPreview(){
+    val game = SearchBGGListElements(name = "Marvel", yearPublished = 2016)
+    val game2 = SearchBGGListElements(name = "Harry Potter Z bardzo długą nazwą na ponad 1 linijkę", yearPublished = 2022)
+
     GameSearchContent(
-        state = GameSearchState()
+        state = GameSearchState(isLoading = false),
+        gameList = listOf( game,game2)
     )
 }
