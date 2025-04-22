@@ -53,19 +53,21 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
         val state by viewModel.state.collectAsState()
 
         LaunchedEffect(gameID) {
-            viewModel.getGame(gameID = gameID)
             viewModel.update(
                 state.copy(
-                    gameName = gameName
+                    gameName = gameName,
+                    gameId = gameID
                 )
             )
+            viewModel.getGame()
         }
         val gameDetails by viewModel.gameDetails.collectAsState()
         GameDetailsBGGContent(
             state = state,
             gameDetails = gameDetails?.boardGamesBGG?.firstOrNull(),
             addGame = viewModel::validateAddGame,
-            update = viewModel::update
+            update = viewModel::update,
+            errorReload = viewModel::getGame
         )
     }
 }
@@ -75,7 +77,8 @@ fun GameDetailsBGGContent(
     state: GameDetailsBGGState,
     gameDetails: BoardGameBGG?,
     addGame: () -> Unit = {},
-    update: (GameDetailsBGGState) -> Unit = {}
+    update: (GameDetailsBGGState) -> Unit = {},
+    errorReload: () -> Unit = {},
 ) {
 
     BoardGameScaffold(
@@ -155,7 +158,7 @@ fun GameDetailsBGGContent(
                 Button(
                     shape = CutCornerShape(percent = 10),
                     onClick = {
-                        showAddEditDialog = true
+                        if (state.isError) errorReload() else showAddEditDialog = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -164,7 +167,7 @@ fun GameDetailsBGGContent(
                         .height(48.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.bgg_add_game),
+                        text = stringResource(if (state.isError) R.string.bgg_error_game_details else R.string.bgg_add_game),
                         style = SmoochBold24LetterSpacing2,
                     )
                 }

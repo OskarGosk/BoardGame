@@ -81,6 +81,7 @@
     <string name="bgg_age">Age</string>
     <string name="bgg_playing_time">Playing Time</string>
     <string name="bgg_add_game">Add to My game</string>
+    <string name="bgg_error_game_details">Some Error, please try again.</string>
 
 
 </resources>

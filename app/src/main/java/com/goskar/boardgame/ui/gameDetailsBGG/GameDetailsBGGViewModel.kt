@@ -19,6 +19,7 @@ data class GameDetailsBGGState(
     val isError: Boolean = false,
     val successAddEditGame: Boolean = false,
     val gameName: String? = "",
+    val gameId: String = "",
     val cooperate: Boolean = false,
     val expansion: Boolean = false,
     val baseGame: String? = null
@@ -39,17 +40,16 @@ class GameDetailsBGGViewModel(
         _state.update { state }
     }
 
-    fun getGame(gameID: String) {
+    fun getGame() {
         viewModelScope.launch {
             _state.update {
                 it.copy(
                     isLoading = true
                 )
             }
-            when (val response = boardGameApiRepository.getGame(gameID)) {
+            when (val response = boardGameApiRepository.getGame(_state.value.gameId)) {
                 is RequestResult.Success -> {
                     _gameDetails.value = response.data
-                    Log.d("Oskar22","$response")
                 }
 
                 else -> {
@@ -113,7 +113,4 @@ class GameDetailsBGGViewModel(
             }
         }
     }
-
-
-
 }
