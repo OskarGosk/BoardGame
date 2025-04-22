@@ -1,5 +1,6 @@
 package com.goskar.boardgame.data.di
 
+import com.goskar.boardgame.ui.gameDetailsBGG.GameDetailsBGGViewModel
 import com.goskar.boardgame.ui.gamesList.lists.GameListViewModel
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameViewModel
 import com.goskar.boardgame.ui.gamesList.play.GamePlayViewModel
@@ -19,4 +20,5 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { GamesHistoryViewModel(get()) }
     viewModel { HomeScreenViewModel(get()) }
     viewModel { GameSearchViewModel(get()) }
+    viewModel { GameDetailsBGGViewModel(get(), get()) }
 }

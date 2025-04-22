@@ -2,7 +2,10 @@ package com.goskar.boardgame.ui.gamesList.play
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +33,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -98,6 +104,7 @@ fun GamePlayContent(
     selectedPlayer: (Player) -> Unit = {},
     addGamePlay: (Context) -> Unit = {},
 ) {
+    val uriHandler = LocalUriHandler.current
     val calendarState = rememberSheetState()
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -117,7 +124,7 @@ fun GamePlayContent(
         })
 
     BoardGameScaffold(
-        titlePage = R.string.history_add,
+        titlePage = stringResource(R.string.history_add),
         selectedScreen = null
     ) { paddingValues ->
 
@@ -213,6 +220,25 @@ fun GamePlayContent(
                         style = SmoochBold18)
                 }
             }
+        }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(10.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+
+            Image(
+                painter = painterResource(R.drawable.bgg),
+                contentScale = ContentScale.Fit,
+                contentDescription = "BGG LOGO",
+                modifier = Modifier
+                    .height(50.dp)
+                    .clickable {
+                        uriHandler.openUri("https://boardgamegeek.com/")
+                    })
         }
     }
 }

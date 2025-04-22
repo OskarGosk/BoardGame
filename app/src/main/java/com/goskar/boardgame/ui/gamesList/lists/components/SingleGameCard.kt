@@ -43,7 +43,7 @@ fun SingleGameCard(
             .height(200.dp)
             .padding(5.dp)
             .clickable {
-                if (game.uri.isNullOrEmpty()) {
+                if (game.uri.isNullOrEmpty() && game.uriFromBgg.isNullOrEmpty()) {
                     Toast.makeText(context, R.string.board_without_cover, Toast.LENGTH_LONG).show()
                 } else {
                     onCardCLick()
