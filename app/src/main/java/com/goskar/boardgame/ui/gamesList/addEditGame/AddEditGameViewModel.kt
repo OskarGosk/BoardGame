@@ -13,6 +13,7 @@ import com.goskar.boardgame.Constants.GLOBAL_TAG
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -30,6 +31,7 @@ data class AddEditGameState(
     val maxPlayer: String = "",
     val games: Int = 0,
     val uri: String = "",
+    val uriFromBgg: String? = null,
     val id: String? = null,
     val cooperate: Boolean = false,
 
@@ -40,6 +42,7 @@ data class AddEditGameState(
 
 class AddEditGameViewModel(
     private val gameDbRepository: GameDbRepository,
+    private val getAllGameUseCase: GetAllGameUseCase
 ) : ViewModel() {
 
     companion object {
@@ -50,6 +53,15 @@ class AddEditGameViewModel(
 
     private val _state = MutableStateFlow(AddEditGameState())
     val state = _state.asStateFlow()
+
+    private val _allBaseGame = MutableStateFlow<List<Game>>(emptyList())
+    val allBaseGame = _allBaseGame.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _allBaseGame.value = getAllGameUseCase.invoke().filter { !it.expansion }
+        }
+    }
 
 
     fun update(state: AddEditGameState) {
@@ -90,13 +102,14 @@ class AddEditGameViewModel(
             }
             val game = Game(
                 name = state.value.name ?: "",
-                expansion = state.value.expansion,
+                expansion = state.value.expansion && !state.value.baseGame.isNullOrEmpty(),
                 cooperate = state.value.cooperate,
                 baseGame = state.value.baseGame ?: "",
                 minPlayer = state.value.minPlayer,
                 maxPlayer = state.value.maxPlayer,
                 games = state.value.games,
                 uri = state.value.uri,
+                uriFromBgg = state.value.uriFromBgg,
                 id = state.value.id ?: UUID.randomUUID().toString()
             )
 

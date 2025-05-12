@@ -60,6 +60,7 @@ import com.goskar.boardgame.ui.components.other.CameraView
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.gamesList.addEditGame.components.DropdownBaseGame
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
@@ -77,6 +78,8 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
 
         val viewModel: AddEditGameViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+        val allBaseGame by viewModel.allBaseGame.collectAsState()
+
         val navigator = LocalNavigator.current
 
         LaunchedEffect(editGame) {
@@ -91,6 +94,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                         maxPlayer = editGame.maxPlayer,
                         games = editGame.games,
                         uri = editGame.uri ?: "",
+                        uriFromBgg = editGame.uriFromBgg,
                         id = editGame.id
                     )
                 )
@@ -104,6 +108,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
 
         AddEditGameContent(
             state = state,
+            allBaseGame = allBaseGame,
             update = viewModel::update,
             addEditGame = viewModel::validateAddEitGame,
             takePhoto = viewModel::takePhoto
@@ -115,6 +120,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
 @Composable
 fun AddEditGameContent(
     state: AddEditGameState,
+    allBaseGame: List<Game>,
     update: (AddEditGameState) -> Unit = {},
     addEditGame: (Context) -> Unit = {},
     takePhoto: (String, ImageCapture, File, Executor, (Uri) -> Unit, (ImageCaptureException) -> Unit) -> Unit = { _, _, _, _, _, _ -> }
@@ -255,26 +261,13 @@ fun AddEditGameContent(
                 Text(stringResource(id = R.string.board_is_expansion), style = Smooch18)
             }
             if (state.expansion) {
-                OutlinedTextField(
-                    textStyle = Smooch18,
-                    value = state.baseGame ?: "",
-                    onValueChange = {
-                        update(
-                            state.copy(
-                                baseGame = it
-                            )
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    label = {
-                        Text(
-                            stringResource(id = R.string.board_base),
-                            style = Smooch14
-                        )
-                    },
-                    singleLine = true
-                )
+                Row (modifier = Modifier.fillMaxWidth()){
+                    DropdownBaseGame(allBaseGame, selectedName = state.baseGame, selectBaseGame = {
+                        update(state.copy(
+                            baseGame = it
+                        ))
+                    })
+                }
             }
             Box(
                 modifier = Modifier.fillMaxWidth(),
@@ -365,6 +358,6 @@ fun AddEditContentPreview() {
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        AddEditGameContent(state)
+        AddEditGameContent(state, allBaseGame = emptyList())
     }
 }

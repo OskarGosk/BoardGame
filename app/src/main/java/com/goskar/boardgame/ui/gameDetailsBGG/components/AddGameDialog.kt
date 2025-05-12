@@ -21,7 +21,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.gameDetailsBGG.GameDetailsBGGState
+import com.goskar.boardgame.ui.gamesList.addEditGame.components.DropdownBaseGame
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
@@ -31,6 +33,7 @@ import com.goskar.boardgame.ui.theme.SmoochBold22
 @Composable
 fun AddGameDialog(
     state: GameDetailsBGGState,
+    allBaseGame: List<Game>,
     modifierButton: Modifier = Modifier,
     confirmButtonClick: () -> Unit = {},
     onDismiss: () -> Unit = {},
@@ -83,26 +86,13 @@ fun AddGameDialog(
                     Text(stringResource(id = R.string.board_is_expansion), style = Smooch18)
                 }
                 if (state.expansion) {
-                    OutlinedTextField(
-                        textStyle = Smooch18,
-                        value = state.baseGame ?: "",
-                        onValueChange = {
-                            update(
-                                state.copy(
-                                    baseGame = it
-                                )
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        label = {
-                            Text(
-                                stringResource(id = R.string.board_base),
-                                style = Smooch14
-                            )
-                        },
-                        singleLine = true
-                    )
+                    Row (modifier = Modifier.fillMaxWidth()){
+                        DropdownBaseGame(allBaseGame, selectedName = state.baseGame, selectBaseGame = {
+                            update(state.copy(
+                                baseGame = it
+                            ))
+                        })
+                    }
                 }
             }
         }, confirmButton = {
@@ -146,7 +136,8 @@ fun AddEditDialogPreview() {
             AddGameDialog(
                 state = GameDetailsBGGState(
                     expansion = true
-                )
+                ),
+                allBaseGame = emptyList()
             )
 
         }

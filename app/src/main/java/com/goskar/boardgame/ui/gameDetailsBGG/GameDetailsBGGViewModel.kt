@@ -8,6 +8,7 @@ import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.BoardGameApiRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -22,12 +23,14 @@ data class GameDetailsBGGState(
     val gameId: String = "",
     val cooperate: Boolean = false,
     val expansion: Boolean = false,
-    val baseGame: String? = null
+    val baseGame: String? = null,
+    val selectedBaseGame: String? = null
 )
 
 class GameDetailsBGGViewModel(
     private val boardGameApiRepository: BoardGameApiRepository,
-    private val gameDbRepository: GameDbRepository
+    private val gameDbRepository: GameDbRepository,
+    private val getAllGameUseCase: GetAllGameUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GameDetailsBGGState())
@@ -35,6 +38,15 @@ class GameDetailsBGGViewModel(
 
     private val _gameDetails = MutableStateFlow<BoardGamesDetails?>(null)
     val gameDetails = _gameDetails.asStateFlow()
+
+    private val _allBaseGame = MutableStateFlow<List<Game>>(emptyList())
+    val allBaseGame = _allBaseGame.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _allBaseGame.value = getAllGameUseCase.invoke().filter { !it.expansion }
+        }
+    }
 
     fun update(state: GameDetailsBGGState) {
         _state.update { state }

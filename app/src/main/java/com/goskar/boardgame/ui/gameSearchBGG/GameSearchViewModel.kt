@@ -38,10 +38,6 @@ class GameSearchViewModel(
         _state.update { state }
     }
 
-//    init {
-//        searchGame("Marvel")
-//    }
-
     fun updateSortedList() {
         _gameListSorted.value = when (_state.value.sortOption) {
             R.string.default_sort -> _gameList.value

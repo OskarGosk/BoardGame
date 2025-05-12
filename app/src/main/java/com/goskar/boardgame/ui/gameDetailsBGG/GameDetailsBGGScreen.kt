@@ -35,6 +35,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGameBGG
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.gameDetailsBGG.components.AddGameDialog
@@ -51,6 +52,7 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
     override fun Content() {
         val viewModel: GameDetailsBGGViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+        val allBaseGame by viewModel.allBaseGame.collectAsState()
 
         LaunchedEffect(gameID) {
             viewModel.update(
@@ -64,6 +66,7 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
         val gameDetails by viewModel.gameDetails.collectAsState()
         GameDetailsBGGContent(
             state = state,
+            allBaseGame = allBaseGame,
             gameDetails = gameDetails?.boardGamesBGG?.firstOrNull(),
             addGame = viewModel::validateAddGame,
             update = viewModel::update,
@@ -75,6 +78,7 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
 @Composable
 fun GameDetailsBGGContent(
     state: GameDetailsBGGState,
+    allBaseGame: List<Game>,
     gameDetails: BoardGameBGG?,
     addGame: () -> Unit = {},
     update: (GameDetailsBGGState) -> Unit = {},
@@ -138,6 +142,7 @@ fun GameDetailsBGGContent(
         if (showAddEditDialog) {
             AddGameDialog(
                 state = state,
+                allBaseGame = allBaseGame,
                 confirmButtonClick = {
                     showAddEditDialog = false
                     addGame()
@@ -203,6 +208,7 @@ fun GameDetailsBGGPreview() {
         state = GameDetailsBGGState(
             gameName = "Marvel"
         ),
+        allBaseGame = emptyList(),
         gameDetails = game,
     )
 }
