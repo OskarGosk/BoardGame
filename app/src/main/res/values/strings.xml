@@ -76,6 +76,7 @@
 
     //SEARCH BGG
 
+    <string name="bgg">BGG</string>
     <string name="bgg_year">Year</string>
     <string name="bgg_name">Game Name</string>
     <string name="bgg_age">Age</string>

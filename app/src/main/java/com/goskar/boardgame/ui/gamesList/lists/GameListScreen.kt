@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,12 +36,14 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
+import com.goskar.boardgame.ui.components.other.FloatingMenu
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.GameViewList
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.gamesList.lists.components.AddItemsMenu
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
 class GameListScreen : Screen {
@@ -76,7 +80,10 @@ fun GameListContent(
 
     BoardGameScaffold(
         titlePage = stringResource(R.string.board_list),
-        selectedScreen = BottomBarElements.GameListButton.title
+        selectedScreen = BottomBarElements.GameListButton.title,
+        floatingActionButton = {
+            FloatingMenu(items = AddItemsMenu.entries.map { it.items })
+        }
     ) { paddingValues ->
 
         Column(
@@ -95,7 +102,7 @@ fun GameListContent(
                 )
             } else {
                 GameSearchRow(update = update, state = state)
-                GameViewList(deleteGame = deleteGame,refresh = refresh, state = state)
+                GameViewList(deleteGame = deleteGame, refresh = refresh, state = state)
             }
 
 
@@ -109,11 +116,11 @@ fun GameListContent(
             contentAlignment = Alignment.BottomStart
         ) {
 
-            Row (
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Image(
                     painter = painterResource(R.drawable.bgg),
                     contentScale = ContentScale.Fit,
@@ -124,17 +131,6 @@ fun GameListContent(
                             uriHandler.openUri("https://boardgamegeek.com/")
                         })
 
-                FloatingActionButton(
-                    onClick = {
-                        navigator?.push(AddEditGameScreen(null))
-                    },
-                    modifier = Modifier.size(50.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.board_add)
-                    )
-                }
             }
         }
 
