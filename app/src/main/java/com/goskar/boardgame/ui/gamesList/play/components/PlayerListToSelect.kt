@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.play.components
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -32,9 +33,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.gamesList.play.GamePlayState
+import com.goskar.boardgame.ui.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.SmoochBold18
 
@@ -44,6 +47,7 @@ fun PlayerListToSelect(
     selectedPlayer: (Player) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val navigator = LocalNavigator.current
 
     Box(
         modifier = Modifier
@@ -84,6 +88,7 @@ fun PlayerListToSelect(
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
+                    navigator?.push(PlayerListScreen())
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {

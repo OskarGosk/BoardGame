@@ -39,7 +39,8 @@
 
 
     //BOARD GAME
-    <string name="board_add">Add new board game</string>
+    <string name="board_add">Add manually</string>
+    <string name="board_bgg_add">Add with BGG</string>
     <string name="board_new">Add new game</string>
     <string name="board_edit">Edit Game</string>
     <string name="board_name">Board Game Name</string>
@@ -51,7 +52,7 @@
     <string name="board_min_player">Min players:</string>
     <string name="board_max_player">Max players:</string>
     <string name="board_empty_list">Empty game list.</string>
-    <string name="board_empty_list_add">Please add some game\nTo do this, please click button below.</string>
+    <string name="board_empty_list_add">Please add any game.\nTo do so, please click one of the buttons below.</string>
     <string name="board_how_many_played">Games Played:</string>
     <string name="board_delete_info">The removal of the game is irreversible. It will not affect players scores.</string>
     <string name="board_take_another_photo">Take another photo</string>

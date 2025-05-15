@@ -43,6 +43,7 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.AddItemsMenu
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
@@ -98,6 +99,10 @@ fun GameListContent(
                     buttonText = R.string.board_add,
                     onClick = {
                         navigator?.push(AddEditGameScreen(null))
+                    },
+                    secondButtonText = R.string.board_bgg_add,
+                    onClickSecondButton = {
+                        navigator?.push(GameSearchScreen())
                     }
                 )
             } else {
