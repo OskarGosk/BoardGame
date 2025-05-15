@@ -89,7 +89,8 @@ fun AddGameDialog(
                     Row (modifier = Modifier.fillMaxWidth()){
                         DropdownBaseGame(allBaseGame, selectedName = state.baseGame, selectBaseGame = {
                             update(state.copy(
-                                baseGame = it
+                                baseGame = it?.name,
+                                baseGameId = it?.id
                             ))
                         })
                     }

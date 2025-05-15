@@ -90,6 +90,7 @@ class AddEditGameScreen(val editGame: Game?) : Screen {
                         expansion = editGame.expansion,
                         cooperate = editGame.cooperate,
                         baseGame = editGame.baseGame,
+                        baseGameId = editGame.baseGameId,
                         minPlayer = editGame.minPlayer,
                         maxPlayer = editGame.maxPlayer,
                         games = editGame.games,
@@ -264,7 +265,8 @@ fun AddEditGameContent(
                 Row (modifier = Modifier.fillMaxWidth()){
                     DropdownBaseGame(allBaseGame, selectedName = state.baseGame, selectBaseGame = {
                         update(state.copy(
-                            baseGame = it
+                            baseGame = it?.name,
+                            baseGameId = it?.id
                         ))
                     })
                 }

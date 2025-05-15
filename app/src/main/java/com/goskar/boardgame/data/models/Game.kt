@@ -13,6 +13,7 @@ data class Game(
     @ColumnInfo(name = "cooperate", defaultValue = "0")
     val cooperate: Boolean,
     val baseGame: String,
+    val baseGameId: String? = null,
     val minPlayer: String,
     val maxPlayer: String,
     val uri: String? = null,

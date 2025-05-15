@@ -24,6 +24,7 @@ data class GameDetailsBGGState(
     val cooperate: Boolean = false,
     val expansion: Boolean = false,
     val baseGame: String? = null,
+    val baseGameId: String? = null,
     val selectedBaseGame: String? = null
 )
 
@@ -94,6 +95,7 @@ class GameDetailsBGGViewModel(
                 expansion = state.value.expansion,
                 cooperate = state.value.cooperate,
                 baseGame = state.value.baseGame ?: "",
+                baseGameId = state.value.baseGameId,
                 minPlayer = gameToAdd?.minPlayers.toString(),
                 maxPlayer = gameToAdd?.maxPlayers.toString(),
                 games = 0,

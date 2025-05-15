@@ -27,7 +27,7 @@ import java.util.UUID
 @Composable
 fun DropdownBaseGame(
     baseGameList: List<Game>,
-    selectBaseGame: (String?) -> Unit = {},
+    selectBaseGame: (Game?) -> Unit = {},
     selectedName: String?
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -80,7 +80,7 @@ fun DropdownBaseGame(
                         )
                     },
                     onClick = {
-                        selectBaseGame(it.name)
+                        selectBaseGame(it)
                         expanded = !expanded
                     }
                 )
