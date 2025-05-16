@@ -1,5 +1,8 @@
 Prosta aplikacja do zbierania wyników rozgrywek gier planszowych.
 
+Aplikacja korzysta z [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart)
+Licencja: Apache License 2.0
+
 Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, listę graczy z liczbą rozgrywek i win ratio, oraz wyniki rozgrywek.
 
 Lista Graczy:
