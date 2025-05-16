@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
 import com.goskar.boardgame.ui.gamesHistory.lists.components.SingleHistoryGame
+import java.time.LocalDate
 
 @Composable
 fun HistoryGamesList(state: GamesHistoryState) {
@@ -40,7 +41,7 @@ fun HistoryGamesListPreview() {
     val history1 = HistoryGame(
         gameName = "Marvel",
         winner = "Oskar",
-        gameData = "2025-01-23",
+        gameData = LocalDate.parse("2025-01-23"),
         listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
         description = "",
         id = "dsa"
@@ -49,7 +50,7 @@ fun HistoryGamesListPreview() {
     val history2 = HistoryGame(
         gameName = "Scrable",
         winner = "Kamila",
-        gameData = "2025-01-01",
+        gameData = LocalDate.parse("2025-01-01"),
         listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
         description = "",
         id = "dsa"

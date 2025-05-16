@@ -22,6 +22,7 @@ import com.goskar.boardgame.ui.gamesHistory.lists.components.GamesHistorySearchR
 import com.goskar.boardgame.ui.gamesHistory.lists.HistoryGamesList
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
 
 class HistoryGameListScreen : Screen {
     @Composable
@@ -79,7 +80,7 @@ fun HistoryGameListContentPreview() {
     val history1 = HistoryGame(
         gameName = "Marvel",
         winner = "Oskar",
-        gameData = "2025-01-23",
+        gameData = LocalDate.parse("2025-01-23"),
         listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
         description = "",
         id = "dsa"
@@ -88,7 +89,7 @@ fun HistoryGameListContentPreview() {
     val history2 = HistoryGame(
         gameName = "Scrable",
         winner = "Kamila",
-        gameData = "2025-01-01",
+        gameData = LocalDate.parse("2025-01-01"),
         listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
         description = "",
         id = "dsa"

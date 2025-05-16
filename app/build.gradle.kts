@@ -80,7 +80,7 @@ dependencies {
     implementation (libs.calendar)
 
     //charts
-    implementation (libs.mpandroidchart)
+    implementation (libs.composecharts)
 
     implementation(libs.bundles.camera.all)
 
