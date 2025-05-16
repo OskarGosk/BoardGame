@@ -12,6 +12,7 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.10.01"
+mpandroidchart = "v3.1.0"
 simpleXml = "2.7.1"
 voyager = "1.1.0-beta02"
 firebase = "4.4.2"
@@ -87,6 +88,9 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose
 coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil-compose" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil-compose" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
+
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
