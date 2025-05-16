@@ -59,7 +59,7 @@ fun GameSearchContent(
 ) {
     BoardGameScaffold(
         titlePage = stringResource(R.string.search_bgg),
-        selectedScreen = BottomBarElements.HomeButton.title
+        selectedScreen = BottomBarElements.GameListButton.title
 
     ) { paddingValues ->
         Column (

@@ -65,7 +65,21 @@ fun PlayerListContent(
 
     BoardGameScaffold(
         titlePage = stringResource(R.string.player_list),
-        selectedScreen = BottomBarElements.PlayerListButton.title
+        selectedScreen = BottomBarElements.PlayerListButton.title,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    showAddEditDialog = true
+                },
+                modifier = Modifier
+                    .size(50.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.player_add)
+                )
+            }
+        }
     ) { paddingValues ->
         if (state.isLoading) AppLoader()
         Column(
@@ -120,23 +134,6 @@ fun PlayerListContent(
                             addPlayer = addPlayer,
                             update = update,
                             state = state
-                        )
-                    }
-                }
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                ) {
-                    FloatingActionButton(
-                        onClick = {
-                            showAddEditDialog = true
-                        },
-                        modifier = Modifier
-                            .size(60.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.player_add)
                         )
                     }
                 }

@@ -56,7 +56,7 @@ fun SinglePhotoPicker(
         modifier = modifier.size(250.dp),
         contentAlignment = Alignment.Center,
     ) {
-        if (state.uri == "") {
+        if (state.uri == "" && state.uriFromBgg.isNullOrEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -89,22 +89,9 @@ fun SinglePhotoPicker(
 
         } else {
 
-            Icon(
-                imageVector = Icons.Outlined.Delete,
-                contentDescription = null,
-                tint = primaryLight,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .clickable {
-                        update(
-                            state.copy(
-                                uri = ""
-                            )
-                        )
-                    }
-            )
             Column {
-                val imageUri = Uri.parse(state.uri)
+                val imageUri =
+                    if (state.uriFromBgg.isNullOrEmpty()) Uri.parse(state.uri) else state.uriFromBgg
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(imageUri)
@@ -147,6 +134,20 @@ fun SinglePhotoPicker(
                     }
                 }
             }
+            Icon(
+                imageVector = Icons.Outlined.Delete,
+                contentDescription = null,
+                tint = primaryLight,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .clickable {
+                        update(
+                            state.copy(
+                                uri = ""
+                            )
+                        )
+                    }
+            )
         }
     }
 }

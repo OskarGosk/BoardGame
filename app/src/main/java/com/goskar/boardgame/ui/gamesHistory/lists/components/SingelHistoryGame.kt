@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
@@ -48,13 +48,12 @@ fun SingleHistoryGame(
             modifier = Modifier
                 .padding(start = 10.dp, end= 10.dp)
                 .fillMaxWidth()
-                .size(48.dp),
+                .sizeIn(maxHeight = 90.dp, minHeight = 48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f),
+                    .weight(1.5f),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
@@ -62,8 +61,10 @@ fun SingleHistoryGame(
                     style = Smooch16
                 )
                 Text(
-                    historyGame.gameName,
-                    style = Smooch16
+                    text = historyGame.gameName,
+                    maxLines = if(isExpended) 2 else 1,
+                    style = Smooch16,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
@@ -107,8 +108,8 @@ fun SingleHistoryGame(
 @Composable
 fun SingleHistoryGamePreview() {
     val history1 = HistoryGame(
-        gameName = "Marvel",
-        winner = "Oskar",
+        gameName = "Marvel Z bardzo długą nazwą aby tyrochę to rozdzielić",
+        winner = "Maksymilianjusz",
         gameData = "2025-01-23",
         listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
         description = "Jasne, żę tak było ",

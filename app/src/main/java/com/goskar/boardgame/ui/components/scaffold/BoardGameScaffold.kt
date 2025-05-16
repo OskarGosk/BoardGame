@@ -25,6 +25,7 @@ fun BoardGameScaffold(
     titlePage: String,
     showBottomBar: Boolean = true,
     selectedScreen: Int?,
+    floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val keyboardState by keyboardAsState()
@@ -35,6 +36,7 @@ fun BoardGameScaffold(
                 .systemBarsPadding()
                 .imePadding()
         ),
+        floatingActionButton = floatingActionButton,
         topBar = { TopBar(titlePage) },
         bottomBar = {
             if (showBottomBar) {

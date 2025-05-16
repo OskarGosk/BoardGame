@@ -17,6 +17,7 @@
     <string name="history_game_screen">Gaming History</string>
     <string name="search_bgg">Search Game by BGG</string>
     <string name="details_bgg">Details Game by BGG</string>
+    <string name="reports">Reports</string>
 
     //SORT
     <string name="default_sort">Default</string>
@@ -39,18 +40,20 @@
 
 
     //BOARD GAME
-    <string name="board_add">Add new board game</string>
+    <string name="board_add">Add manually</string>
+    <string name="board_bgg_add">Add with BGG</string>
     <string name="board_new">Add new game</string>
     <string name="board_edit">Edit Game</string>
     <string name="board_name">Board Game Name</string>
     <string name="board_is_expansion">Is Expansion?</string>
     <string name="board_is_cooperate">Cooperate Game?</string>
     <string name="board_base">Base Game</string>
+    <string name="board_base_select">Select Base Game</string>
     <string name="board_expansion">Expansion</string>
     <string name="board_min_player">Min players:</string>
     <string name="board_max_player">Max players:</string>
     <string name="board_empty_list">Empty game list.</string>
-    <string name="board_empty_list_add">Please add some game\nTo do this, please click button below.</string>
+    <string name="board_empty_list_add">Please add any game.\nTo do so, please click one of the buttons below.</string>
     <string name="board_how_many_played">Games Played:</string>
     <string name="board_delete_info">The removal of the game is irreversible. It will not affect players scores.</string>
     <string name="board_take_another_photo">Take another photo</string>
@@ -76,11 +79,13 @@
 
     //SEARCH BGG
 
+    <string name="bgg">BGG</string>
     <string name="bgg_year">Year</string>
     <string name="bgg_name">Game Name</string>
     <string name="bgg_age">Age</string>
     <string name="bgg_playing_time">Playing Time</string>
     <string name="bgg_add_game">Add to My game</string>
+    <string name="bgg_error_game_details">Some Error, please try again.</string>
 
 
 </resources>

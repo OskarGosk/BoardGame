@@ -8,6 +8,7 @@ import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.oflineRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.BoardGameApiRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -19,14 +20,18 @@ data class GameDetailsBGGState(
     val isError: Boolean = false,
     val successAddEditGame: Boolean = false,
     val gameName: String? = "",
+    val gameId: String = "",
     val cooperate: Boolean = false,
     val expansion: Boolean = false,
-    val baseGame: String? = null
+    val baseGame: String? = null,
+    val baseGameId: String? = null,
+    val selectedBaseGame: String? = null
 )
 
 class GameDetailsBGGViewModel(
     private val boardGameApiRepository: BoardGameApiRepository,
-    private val gameDbRepository: GameDbRepository
+    private val gameDbRepository: GameDbRepository,
+    private val getAllGameUseCase: GetAllGameUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GameDetailsBGGState())
@@ -35,21 +40,29 @@ class GameDetailsBGGViewModel(
     private val _gameDetails = MutableStateFlow<BoardGamesDetails?>(null)
     val gameDetails = _gameDetails.asStateFlow()
 
+    private val _allBaseGame = MutableStateFlow<List<Game>>(emptyList())
+    val allBaseGame = _allBaseGame.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _allBaseGame.value = getAllGameUseCase.invoke().filter { !it.expansion }
+        }
+    }
+
     fun update(state: GameDetailsBGGState) {
         _state.update { state }
     }
 
-    fun getGame(gameID: String) {
+    fun getGame() {
         viewModelScope.launch {
             _state.update {
                 it.copy(
                     isLoading = true
                 )
             }
-            when (val response = boardGameApiRepository.getGame(gameID)) {
+            when (val response = boardGameApiRepository.getGame(_state.value.gameId)) {
                 is RequestResult.Success -> {
                     _gameDetails.value = response.data
-                    Log.d("Oskar22","$response")
                 }
 
                 else -> {
@@ -82,6 +95,7 @@ class GameDetailsBGGViewModel(
                 expansion = state.value.expansion,
                 cooperate = state.value.cooperate,
                 baseGame = state.value.baseGame ?: "",
+                baseGameId = state.value.baseGameId,
                 minPlayer = gameToAdd?.minPlayers.toString(),
                 maxPlayer = gameToAdd?.maxPlayers.toString(),
                 games = 0,
@@ -113,7 +127,4 @@ class GameDetailsBGGViewModel(
             }
         }
     }
-
-
-
 }

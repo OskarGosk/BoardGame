@@ -35,6 +35,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGameBGG
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.gameDetailsBGG.components.AddGameDialog
@@ -51,21 +52,25 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
     override fun Content() {
         val viewModel: GameDetailsBGGViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+        val allBaseGame by viewModel.allBaseGame.collectAsState()
 
         LaunchedEffect(gameID) {
-            viewModel.getGame(gameID = gameID)
             viewModel.update(
                 state.copy(
-                    gameName = gameName
+                    gameName = gameName,
+                    gameId = gameID
                 )
             )
+            viewModel.getGame()
         }
         val gameDetails by viewModel.gameDetails.collectAsState()
         GameDetailsBGGContent(
             state = state,
+            allBaseGame = allBaseGame,
             gameDetails = gameDetails?.boardGamesBGG?.firstOrNull(),
             addGame = viewModel::validateAddGame,
-            update = viewModel::update
+            update = viewModel::update,
+            errorReload = viewModel::getGame
         )
     }
 }
@@ -73,9 +78,11 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
 @Composable
 fun GameDetailsBGGContent(
     state: GameDetailsBGGState,
+    allBaseGame: List<Game>,
     gameDetails: BoardGameBGG?,
     addGame: () -> Unit = {},
-    update: (GameDetailsBGGState) -> Unit = {}
+    update: (GameDetailsBGGState) -> Unit = {},
+    errorReload: () -> Unit = {},
 ) {
 
     BoardGameScaffold(
@@ -135,6 +142,7 @@ fun GameDetailsBGGContent(
         if (showAddEditDialog) {
             AddGameDialog(
                 state = state,
+                allBaseGame = allBaseGame,
                 confirmButtonClick = {
                     showAddEditDialog = false
                     addGame()
@@ -155,7 +163,7 @@ fun GameDetailsBGGContent(
                 Button(
                     shape = CutCornerShape(percent = 10),
                     onClick = {
-                        showAddEditDialog = true
+                        if (state.isError) errorReload() else showAddEditDialog = true
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -164,7 +172,7 @@ fun GameDetailsBGGContent(
                         .height(48.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.bgg_add_game),
+                        text = stringResource(if (state.isError) R.string.bgg_error_game_details else R.string.bgg_add_game),
                         style = SmoochBold24LetterSpacing2,
                     )
                 }
@@ -200,6 +208,7 @@ fun GameDetailsBGGPreview() {
         state = GameDetailsBGGState(
             gameName = "Marvel"
         ),
+        allBaseGame = emptyList(),
         gameDetails = game,
     )
 }
