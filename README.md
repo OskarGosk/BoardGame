@@ -4,7 +4,7 @@ Prosta aplikacja do zbierania wyników rozgrywek gier planszowych.
 Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, listę graczy z liczbą rozgrywek i win ratio, oraz wyniki rozgrywek.
 
 Lista Graczy:
-Przy każdym graczu widniej jego liczba dotychczasowych zarejestrowanych rozgrywek oraz licba wugranych.
+Przy każdym graczu widniej jego liczba dotychczasowych zarejestrowanych rozgrywek oraz licba wygranych.
 Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po nazwie lub liczbie rozegranych gier co oczywiście można łączyć.
 
 ![PlayerList](https://github.com/user-attachments/assets/9358b512-ab40-48b7-bf75-54c1cdce23bc)
@@ -18,7 +18,7 @@ Użytkownik posiada możlwiość wyszukiwania po nazwie gry w celu zawęzenia wy
 
 Dodanie rozgrywki:
 Po kliknięciu "+" na ekranie z listą gier, przechodzimy do dodania rozgrywki. Wybieramy listę graczy, datę gry oraz kto wygrał.
-Możemy dodać jakiś opis rozgrywki. Np. róźnicę punktów.
+Możemy dodać jakiś opis rozgrywki. Np. różnicę punktów.
 
 ![Gameplay](https://github.com/user-attachments/assets/3fe291bc-042c-4108-b38c-30decc542ef7)
 
