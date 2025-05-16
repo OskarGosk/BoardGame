@@ -17,6 +17,7 @@
     <string name="history_game_screen">Gaming History</string>
     <string name="search_bgg">Search Game by BGG</string>
     <string name="details_bgg">Details Game by BGG</string>
+    <string name="reports">Reports</string>
 
     //SORT
     <string name="default_sort">Default</string>
