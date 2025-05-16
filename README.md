@@ -45,7 +45,7 @@ This project uses several open-source libraries. Key libraries and their license
 
 [Timber](https://github.com/JakeWharton/timber) – Apache License 2.0
 
-[Simple XML](https://github.com/ehsannarmani/ComposeCharts) – Apache License 2.0
+[Simple XML](http://simple.sourceforge.net/) – Apache License 2.0
 
 [Compose Charts](https://github.com/ehsannarmani/ComposeCharts) – Apache License 2.0
 
