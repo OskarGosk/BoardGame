@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.gameRaports
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.ui.theme.secondaryLight
 import com.goskar.boardgame.utils.Months
 import ir.ehsannarmani.compose_charts.models.Bars
+import ir.ehsannarmani.compose_charts.models.Pie
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,7 +23,7 @@ data class GameReportsState(
 )
 
 class GameReportsViewModel(
-    private val historyDbRepository: GamesHistoryDbRepository
+    private val historyDbRepository: GamesHistoryDbRepository,
 ):ViewModel() {
 
     private val _state = MutableStateFlow(GameReportsState())
@@ -100,6 +102,45 @@ class GameReportsViewModel(
             }
         }
         _chartData.value = yearPlaysTimeData
+    }
+
+    fun playGamesAllTimeData() {
+        val playGamesAllTimeData: MutableList<Pie> = emptyList<Pie>().toMutableList()
+
+        _gameHistory.value.forEach {
+            playGamesAllTimeData += Pie(
+                        label = it.gameName,
+                        data = 20.0,
+                        color = Color.Red,
+                        selectedColor = Color.Green
+                    )
+
+        }
+
+//        var data by remember {
+//            mutableStateOf(
+//                listOf(
+//                    Pie(
+//                        label = "Android",
+//                        data = 20.0,
+//                        color = Color.Red,
+//                        selectedColor = Color.Green
+//                    ),
+//                    Pie(
+//                        label = "Windows",
+//                        data = 45.0,
+//                        color = Color.Cyan,
+//                        selectedColor = Color.Blue
+//                    ),
+//                    Pie(
+//                        label = "Linux",
+//                        data = 35.0,
+//                        color = Color.Gray,
+//                        selectedColor = Color.Yellow
+//                    ),
+//                )
+//            )
+//        }
     }
 }
 
