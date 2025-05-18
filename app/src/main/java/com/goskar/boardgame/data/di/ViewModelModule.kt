@@ -22,5 +22,5 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { HomeScreenViewModel(get()) }
     viewModel { GameSearchViewModel(get()) }
     viewModel { GameDetailsBGGViewModel(get(), get(), get()) }
-    viewModel { GameReportsViewModel(get()) }
+    viewModel { GameReportsViewModel(get(), get()) }
 }

@@ -4,9 +4,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.oflineRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.ui.theme.secondaryLight
 import com.goskar.boardgame.utils.Months
 import ir.ehsannarmani.compose_charts.models.Bars
@@ -24,6 +26,7 @@ data class GameReportsState(
 
 class GameReportsViewModel(
     private val historyDbRepository: GamesHistoryDbRepository,
+    private val allGameUseCase: GetAllGameUseCase
 ):ViewModel() {
 
     private val _state = MutableStateFlow(GameReportsState())
@@ -32,24 +35,35 @@ class GameReportsViewModel(
     private val _gameHistory = MutableStateFlow<List<HistoryGame>>(emptyList())
     val gameHistory = _gameHistory.asStateFlow()
 
+    private val _allGame = MutableStateFlow<List<Game>>(emptyList())
+    val allGame = _allGame.asStateFlow()
+
     private val _chartData = MutableStateFlow<List<Bars>>(emptyList())
     val chartData = _chartData.asStateFlow()
 
+    private val _rowChartData = MutableStateFlow<List<Bars>>(emptyList())
+    val rowChartData = _rowChartData.asStateFlow()
+
     init {
         viewModelScope.launch {
+            _allGame.value = allGameUseCase.invoke()
+            playGamesAllTimeData()
+
             when(val response = historyDbRepository.getAllHistoryGame()) {
                 is RequestResult.Success -> {
                     _gameHistory.value = response.data
-//                    monthlyPlaysTimeData(2025)
 
-                    _state.update {
-                        it.copy(
-                            maxYear = (_gameHistory.value.map { it.gameData.year }).max(),
-                            minYear = (_gameHistory.value.map { it.gameData.year }).min()
-                        )
+                    if(response.data.isNotEmpty()) {
+                        _state.update {
+                            it.copy(
+                                maxYear = (_gameHistory.value.map { it.gameData.year }).max(),
+                                minYear = (_gameHistory.value.map { it.gameData.year }).min()
+                            )
+                        }
+                        yearPlaysTimeData()
                     }
 
-                    yearPlaysTimeData()
+
                 }
                 else -> {
 
@@ -105,42 +119,19 @@ class GameReportsViewModel(
     }
 
     fun playGamesAllTimeData() {
-        val playGamesAllTimeData: MutableList<Pie> = emptyList<Pie>().toMutableList()
+        val playGamesAllTimeData: MutableList<Bars> = emptyList<Bars>().toMutableList()
+        val allGamesCount: Int = _allGame.value.sumOf { it.games }
 
-        _gameHistory.value.forEach {
-            playGamesAllTimeData += Pie(
-                        label = it.gameName,
-                        data = 20.0,
-                        color = Color.Red,
-                        selectedColor = Color.Green
-                    )
-
+        _allGame.value.forEach {
+            playGamesAllTimeData += Bars(
+                label = it.name,
+                values = listOf(
+                    Bars.Data(value = (it.games.toDouble()/allGamesCount), color = SolidColor(Color.Blue))
+                )
+            )
         }
 
-//        var data by remember {
-//            mutableStateOf(
-//                listOf(
-//                    Pie(
-//                        label = "Android",
-//                        data = 20.0,
-//                        color = Color.Red,
-//                        selectedColor = Color.Green
-//                    ),
-//                    Pie(
-//                        label = "Windows",
-//                        data = 45.0,
-//                        color = Color.Cyan,
-//                        selectedColor = Color.Blue
-//                    ),
-//                    Pie(
-//                        label = "Linux",
-//                        data = 35.0,
-//                        color = Color.Gray,
-//                        selectedColor = Color.Yellow
-//                    ),
-//                )
-//            )
-//        }
+        _rowChartData.value = playGamesAllTimeData
     }
 }
 
