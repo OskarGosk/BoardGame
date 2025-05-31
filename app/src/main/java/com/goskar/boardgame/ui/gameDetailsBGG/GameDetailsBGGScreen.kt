@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.R
@@ -53,6 +54,13 @@ class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
         val viewModel: GameDetailsBGGViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
         val allBaseGame by viewModel.allBaseGame.collectAsState()
+        val navigator = LocalNavigator.current
+
+        LaunchedEffect(state.successAddEditGame) {
+            if (state.successAddEditGame) {
+                navigator?.pop()
+            }
+        }
 
         LaunchedEffect(gameID) {
             viewModel.update(
