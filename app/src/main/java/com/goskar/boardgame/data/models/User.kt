@@ -8,7 +8,7 @@ import java.io.Serializable
 data class User (
     @PrimaryKey
     val id: Long = 0,
-    val email: String? = null,
-    val token: String? = null,
-    val userUID: String? = null
+    val email: String?,
+    val token: String?,
+    val userUID: String?
 ) : Serializable

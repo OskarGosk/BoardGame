@@ -41,7 +41,12 @@ class UserRepositoryImpl(
     override suspend fun logout(): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
-                userSessionDao.logout(User(id = 0))
+                userSessionDao.logout(User(
+                    id = 0,
+                    email = null,
+                    token = null,
+                    userUID = null
+                ))
             }.onFailure {
                 Timber.tag(GameDbRepositoryImpl.TAG).e("Can't logOut user\n ${it.stackTraceToString()}")
             }

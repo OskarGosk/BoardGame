@@ -80,10 +80,13 @@ class LoginViewModel(
 
     }
 
-//    fun signOut() {
-//        auth.signOut()
-//        user = null
-//    }
+    private fun signOut() {
+        viewModelScope.launch {
+            auth.signOut()
+            user = null
+            userSession.logout()
+        }
+    }
 //
 //    fun sendEmailVerification() {
 //        auth.currentUser?.sendEmailVerification()
