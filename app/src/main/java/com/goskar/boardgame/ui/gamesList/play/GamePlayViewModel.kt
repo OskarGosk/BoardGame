@@ -64,7 +64,7 @@ class GamePlayViewModel(
 
 
         val historyGame = HistoryGame(
-            gameData = state.value.playDate.toString(),
+            gameData = state.value.playDate,
             winner = state.value.winner,
             gameName = state.value.game?.name ?: "",
             listOfPlayer = listOfPlayer,

@@ -30,6 +30,7 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.SmoochBold16
 import com.goskar.boardgame.ui.theme.SmoochBold26
+import java.time.LocalDate
 
 @Composable
 fun SingleHistoryGame(
@@ -57,7 +58,7 @@ fun SingleHistoryGame(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = historyGame.gameData,
+                    text = historyGame.gameData.toString(),
                     style = Smooch16
                 )
                 Text(
@@ -110,7 +111,7 @@ fun SingleHistoryGamePreview() {
     val history1 = HistoryGame(
         gameName = "Marvel Z bardzo długą nazwą aby tyrochę to rozdzielić",
         winner = "Maksymilianjusz",
-        gameData = "2025-01-23",
+        gameData = LocalDate.parse("2025-01-23"),
         listOfPlayer = listOf("Oskar", "Kamila", "Gerard"),
         description = "Jasne, żę tak było ",
         id = "dsa"
@@ -119,7 +120,7 @@ fun SingleHistoryGamePreview() {
     val history2 = HistoryGame(
         gameName = "Scrable",
         winner = "Kamila",
-        gameData = "2025-01-01",
+        gameData = LocalDate.parse("2025-01-01"),
         listOfPlayer = listOf("Oskar", "Kamila", "Maksymilian", "Marzena", "Magdalena", "Korneliusz", "KtośTamn"),
         description = "",
         id = "dsa"

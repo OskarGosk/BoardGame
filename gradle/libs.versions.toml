@@ -27,6 +27,7 @@ ksp = "1.9.10-1.0.13"
 timber = "5.0.1"
 coil-compose = "2.5.0"
 media3CommonKtx = "1.5.1"
+composeCharts = "0.1.7"
 
 
 [libraries]
@@ -87,6 +88,8 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose
 coil-gif = { module = "io.coil-kt:coil-gif", version.ref = "coil-compose" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil-compose" }
 androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
+
+composecharts = { module = "io.github.ehsannarmani:compose-charts", version.ref = "composeCharts"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

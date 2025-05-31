@@ -79,6 +79,9 @@ dependencies {
     implementation (libs.core)
     implementation (libs.calendar)
 
+    //charts
+    implementation (libs.composecharts)
+
     implementation(libs.bundles.camera.all)
 
     implementation(libs.bundles.voyager.all)

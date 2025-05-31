@@ -3,6 +3,7 @@ package com.goskar.boardgame.data.db
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.time.LocalDate
 
 class Converters {
     @TypeConverter
@@ -15,5 +16,15 @@ class Converters {
     fun fromList(list: List<String>): String {
         val gson = Gson()
         return gson.toJson(list)
+    }
+
+    @TypeConverter
+    fun fromStringToLocalDate(value: String?): LocalDate? {
+        return value?.let { LocalDate.parse(it) }
+    }
+
+    @TypeConverter
+    fun fromLocalDateToString(date: LocalDate?): String? {
+        return date?.toString()
     }
 }
