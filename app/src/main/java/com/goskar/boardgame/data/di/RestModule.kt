@@ -2,6 +2,7 @@ package com.goskar.boardgame.data.di
 
 import com.google.gson.Gson
 import com.goskar.boardgame.Constants.API_URL_BOARD
+import com.goskar.boardgame.Constants.BGG_RETROFIT
 import com.goskar.boardgame.data.rest.ApiBoardGame
 import okhttp3.OkHttpClient
 import org.koin.core.KoinApplication
@@ -17,7 +18,7 @@ fun KoinApplication.restModule() = module {
     single {
         Gson()
     }
-    single {
+    single(BGG_RETROFIT) {
         Retrofit.Builder()
             .client(get())
             .baseUrl(API_URL_BOARD)
@@ -26,6 +27,6 @@ fun KoinApplication.restModule() = module {
             .build()
     }
     single<ApiBoardGame> {
-        get<Retrofit>().create(ApiBoardGame::class.java)
+        get<Retrofit>(BGG_RETROFIT).create(ApiBoardGame::class.java)
     }
 }

@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.firebase)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 }
@@ -85,7 +87,8 @@ dependencies {
     implementation(libs.bundles.camera.all)
 
     implementation(libs.bundles.voyager.all)
-//    implementation(libs.bundles.firebase.all)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase.all)
     implementation(libs.bundles.koin.all)
     implementation(libs.bundles.retrofit.gson)
     implementation(libs.bundles.room.all)

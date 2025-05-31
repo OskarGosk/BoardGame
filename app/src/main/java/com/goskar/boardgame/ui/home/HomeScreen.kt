@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.home
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +22,7 @@ import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.firebaseData.DataFromFirebase
 import com.goskar.boardgame.ui.gameRaports.GameReportsScreen
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
@@ -125,6 +127,24 @@ fun HomeScreenContent() {
             ) {
                 Text(
                     text = stringResource(R.string.reports),
+                    style = SmoochBold24LetterSpacing2,
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                shape = CutCornerShape(percent = 10),
+                onClick = {
+                    navigator?.push(DataFromFirebase())
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
+                    .height(48.dp),
+            ) {
+                Text(
+                    text = "Inne",
                     style = SmoochBold24LetterSpacing2,
                 )
             }

@@ -9,6 +9,7 @@ fun Context.configureKoin(inPreview: Boolean = false) {
         applicationModule(this@configureKoin)
         modules(
             restModule(),
+            restModuleFirebase(),
             databaseModule(),
             coilModule(),
             repositoryModule(),

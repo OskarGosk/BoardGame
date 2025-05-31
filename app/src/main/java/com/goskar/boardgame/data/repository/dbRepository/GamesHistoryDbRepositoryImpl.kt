@@ -1,4 +1,4 @@
-package com.goskar.boardgame.data.oflineRepository
+package com.goskar.boardgame.data.repository.dbRepository
 
 import com.goskar.boardgame.data.db.HistoryGameDao
 import com.goskar.boardgame.data.models.HistoryGame

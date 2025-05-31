@@ -3,7 +3,7 @@ package com.goskar.boardgame.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.goskar.boardgame.data.repository.BoardGameApiRepository
+import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

@@ -4,17 +4,18 @@ import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 
-class GetAllGameUseCase(
+class UpsertAllGameUseCase(
     private val gameDbRepository: GameDbRepository,
 ) {
 
-    suspend operator fun invoke(): List<Game> =
-        when (val response = gameDbRepository.getAllGame()) {
+    suspend operator fun invoke(allGame:List<Game>): Boolean =
+        when (val response = gameDbRepository.insertAllGame(allGame)) {
             is RequestResult.Success -> {
                 response.data
             }
+
             is RequestResult.Error -> {
-                emptyList<Game>()
+                false
             }
         }
 

@@ -8,6 +8,8 @@
     <string name="back">Back</string>
     <string name="save">Save change</string>
     <string name="camera_denied">Camera permission DENIED. Please go to phone settings</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
 
 
     // BOTTOM BAR
@@ -18,6 +20,7 @@
     <string name="search_bgg">Search Game by BGG</string>
     <string name="details_bgg">Details Game by BGG</string>
     <string name="reports">Reports</string>
+    <string name="login_screen">Login Screen</string>
 
     //SORT
     <string name="default_sort">Default</string>

@@ -1,72 +1,69 @@
-package com.goskar.boardgame.data.oflineRepository
+package com.goskar.boardgame.data.repository.dbRepository
 
-import com.goskar.boardgame.data.db.GameDao
-import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.db.PlayerDao
+import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-class GameDbRepositoryImpl(
-    private val gameDao: GameDao,
+class PlayerDbRepositoryImpl(
+    private val playerDao: PlayerDao,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : GameDbRepository {
+) : PlayerDbRepository {
     companion object {
-        val TAG = "GAMES_LIST"
+        val TAG = "PLAYER"
     }
 
-    override suspend fun insertGame(game: Game): RequestResult<Boolean> {
+    override suspend fun insertPlayer(player: Player): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
-                gameDao.insert(game)
+                playerDao.insert(player)
             }.onFailure {
-                Timber.tag(TAG).e("Can't add player\n  ${it.stackTraceToString()}")
+                Timber.tag(TAG).e("Can't add new player\n ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-
-    override suspend fun insertAllGame(gameList: List<Game>): RequestResult<Boolean> {
+    override suspend fun insertAllPlayer(playerList: List<Player>): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
-                gameDao.insertAll(gameList)
+                playerDao.insertAll(playerList)
             }.onFailure {
-                Timber.tag(TAG)
-                    .e("Can't add all game from list\n ${it.stackTraceToString()}")
+                Timber.tag(TAG).e("Can't add all player\n ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun getAllGame(): RequestResult<List<Game>> {
+    override suspend fun getAllPlayer(): RequestResult<List<Player>> {
         return withContext(defaultDispatcher) {
             runCatching {
-                gameDao.getAll()
+                playerDao.getAll()
             }.onFailure {
-                Timber.tag(TAG)
-                    .e("Can't add all game from list\n ${it.stackTraceToString()}")
+                Timber.tag(TAG).e("Can't get player list\n ${it.stackTraceToString()}")
             }
         }.fold(
             onSuccess = { RequestResult.Success(it) },
             onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun deleteGame(game: Game): RequestResult<Boolean> {
+    override suspend fun deletePlayer(player: Player): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
-                gameDao.delete(game)
+                playerDao.delete(player)
             }.onFailure {
-                Timber.tag(TAG).e("Can't delete game\n ${it.stackTraceToString()}")
+                Timber.tag(TAG).e("Can't delete player\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun editGame(game: Game): RequestResult<Boolean> {
+    override suspend fun editPlayer(player: Player): RequestResult<Boolean> {
         return withContext(defaultDispatcher) {
             runCatching {
-                gameDao.edit(game)
+                playerDao.edit(player)
             }.onFailure {
-                Timber.tag(TAG).e("Can't edit game\n ${it.stackTraceToString()}")
+                Timber.tag(TAG).e("Can't edit player\n ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }

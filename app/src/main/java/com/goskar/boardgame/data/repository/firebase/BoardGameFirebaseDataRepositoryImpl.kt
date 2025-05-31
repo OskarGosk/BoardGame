@@ -1,0 +1,104 @@
+package com.goskar.boardgame.data.repository.firebase
+
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.data.rest.ApiFirebaseData
+import com.goskar.boardgame.data.rest.RequestResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import timber.log.Timber
+
+class BoardGameFirebaseDataRepositoryImpl(
+    private val apiFirebaseData: ApiFirebaseData
+) : BoardGameFirebaseDataRepository {
+
+    override suspend fun getAllGame(): RequestResult<List<Game>> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                apiFirebaseData.getAllGame().map { element ->
+                    element.value.copy(id = element.key)
+                }
+            }.onFailure {
+                Timber.tag("Game").e("Can't get All game\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun addAllGame(game: Map<String, Game>): RequestResult<Boolean> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiFirebaseData.addAllGame(game)
+                when {
+                    response.isSuccessful -> {
+                        RequestResult.Success(true)
+                    }
+
+                    else -> throw IllegalStateException()
+                }
+            }.onFailure {
+                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun getAllPlayer(): RequestResult<List<Player>> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                apiFirebaseData.getAllPlayer()?.map { element ->
+                    element.value.copy(id = element.key)
+                }
+            }.onFailure {
+                Timber.tag("Game").e("Can't get All game\n  ${it.stackTraceToString()}")
+            }
+        }.fold(
+            onSuccess = { RequestResult.Success(it ?: emptyList()) },
+            onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun addPlayer(player: Map<String, Player>): RequestResult<Boolean> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiFirebaseData.addPlayer(player)
+                when {
+                    response.isSuccessful -> {
+                        RequestResult.Success(true)
+                    }
+
+                    else -> throw IllegalStateException()
+                }
+            }.onFailure {
+                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun getAllHistoryGame(): RequestResult<List<HistoryGame>> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                apiFirebaseData.getAllHistoryGame().map { element ->
+                    element.value.copy(id = element.key)
+                }
+            }.onFailure {
+                Timber.tag("Game").e("Can't get All game\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun addHistoryGame(historyGame: Map<String, HistoryGame>): RequestResult<Boolean> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiFirebaseData.addHistory(historyGame)
+                when {
+                    response.isSuccessful -> {
+                        RequestResult.Success(true)
+                    }
+
+                    else -> throw IllegalStateException()
+                }
+            }.onFailure {
+                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
+    }
+}
