@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 data class LoginState(
     val login: String = "",
@@ -39,6 +40,32 @@ class LoginViewModel(
         user = auth.currentUser
     }
 
+    fun checkIfLoggedIn(){
+        viewModelScope.launch {
+            user = auth.currentUser
+            if (user != null) {
+                try {
+                    val result = user!!.getIdToken(true).await()
+                    val token = result.token
+
+                    _state.update {
+                        it.copy(
+                            keyValue = token,
+                            userUID = user?.uid,
+                            isLoggedIn = true
+                        )
+                    }
+
+                    getCurrentToken()
+                } catch (e: Exception) {
+                    _state.update { it.copy(isLoggedIn = false) }
+                }
+            } else {
+                _state.update { it.copy(isLoggedIn = false) }
+            }
+        }
+    }
+
     private val _state = MutableStateFlow(LoginState())
     val state = _state.asStateFlow()
 
@@ -51,33 +78,29 @@ class LoginViewModel(
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     user = auth.currentUser
-                    authError = null
-                    _state.update {
-                        it.copy(
-                            successLogin = true
-                        )
-                    }
+
+                    user?.getIdToken(true)
+                        ?.addOnSuccessListener { result ->
+                            val token = result.token
+                            authError = null
+
+                            _state.update {
+                                it.copy(
+                                    successLogin = true,
+                                    keyValue = token,
+                                    userUID = user?.uid
+                                )
+                            }
+                            getCurrentToken()
+                        }
+                        ?.addOnFailureListener { exception ->
+                            authError = exception.message
+                        }
+
                 } else {
                     authError = task.exception?.message
                 }
             }
-
-
-        user?.getIdToken(true)
-            ?.addOnSuccessListener { result ->
-                val token = result.token
-                _state.update {
-                    it.copy(
-                        keyValue = token,
-                        userUID = user?.uid
-                    )
-                }
-                getCurrentToken()
-            }
-            ?.addOnFailureListener { exception ->
-                // Obsłuż błąd np. brak połączenia / wylogowany użytkownik
-            }
-
     }
 
     private fun signOut() {
@@ -109,13 +132,4 @@ class LoginViewModel(
             userSession.logIn(User(email = _state.value.login, token = _state.value.keyValue, userUID = _state.value.userUID))
         }
     }
-
-    suspend fun checkIfLoggedIn() {
-        _state.update {
-            it.copy(
-                isLoggedIn = userSession.isLoggedIn()
-            )
-        }
-    }
-
 }
