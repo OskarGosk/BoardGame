@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.login
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -61,6 +62,7 @@ class LoginViewModel(
                     _state.update { it.copy(isLoggedIn = false) }
                 }
             } else {
+                signOut()
                 _state.update { it.copy(isLoggedIn = false) }
             }
         }
