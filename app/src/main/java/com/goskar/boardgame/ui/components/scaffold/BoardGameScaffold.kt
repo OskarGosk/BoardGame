@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.ui.components.scaffold.topBar.TopBar
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.utils.Keyboard
 import com.goskar.boardgame.utils.keyboardAsState
@@ -25,6 +26,7 @@ fun BoardGameScaffold(
     titlePage: String,
     showBottomBar: Boolean = true,
     selectedScreen: Int?,
+    showSynchronizedIcon: Boolean = true,
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -37,7 +39,7 @@ fun BoardGameScaffold(
                 .imePadding()
         ),
         floatingActionButton = floatingActionButton,
-        topBar = { TopBar(titlePage) },
+        topBar = { TopBar(titlePage, showSynchronizedIcon) },
         bottomBar = {
             if (showBottomBar) {
                 if (keyboardState == Keyboard.Closed) {

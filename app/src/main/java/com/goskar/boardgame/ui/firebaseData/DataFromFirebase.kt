@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.login.LoginViewModel
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import org.koin.androidx.compose.koinViewModel
@@ -26,9 +27,11 @@ class DataFromFirebase : Screen {
     @Composable
     override fun Content() {
         val viewModel: DataFromFirebaseViewModel = koinViewModel()
+        val viewModel2: LoginViewModel = koinViewModel()
         DataFromFirebaseContent(
             uploadBase= viewModel::uploadDataToFirebase,
             downloadBase = viewModel::downloadDataFromFirebase,
+            logOut = viewModel2::signOut
         )
     }
 }
@@ -37,7 +40,7 @@ class DataFromFirebase : Screen {
 fun DataFromFirebaseContent(
     uploadBase: () -> Unit = {},
     downloadBase: () -> Unit = {},
-    signIn: () -> Unit = {}
+    logOut: () -> Unit = {}
 ) {
 
     BoardGameScaffold(
@@ -78,9 +81,10 @@ fun DataFromFirebaseContent(
 
             Button(
                 onClick = {
+                    logOut()
                 }
             ) {
-                Text(text = "Login")
+                Text(text = "LogOut")
             }
 
             Button(

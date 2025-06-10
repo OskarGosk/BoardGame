@@ -1,5 +1,6 @@
 package com.goskar.boardgame.data.di
 
+import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.firebaseData.DataFromFirebaseViewModel
 import com.goskar.boardgame.ui.gameDetailsBGG.GameDetailsBGGViewModel
 import com.goskar.boardgame.ui.gameRaports.GameReportsViewModel
@@ -26,5 +27,6 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { GameDetailsBGGViewModel(get(), get(), get()) }
     viewModel { GameReportsViewModel(get(), get()) }
     viewModel { DataFromFirebaseViewModel(get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(), get(), get(), get(), get()) }
+    viewModel { TopBarViewModel(get(), get(), get(), get()) }
 }

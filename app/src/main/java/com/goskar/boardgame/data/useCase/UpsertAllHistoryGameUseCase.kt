@@ -13,7 +13,6 @@ class UpsertAllHistoryGameUseCase(
             is RequestResult.Success -> {
                 response.data
             }
-
             is RequestResult.Error -> {
                 false
             }

@@ -21,8 +21,6 @@ import kotlinx.coroutines.launch
 data class DataFromFirebaseState(
     val keyVerify: Boolean? = false,
     val keyValue: String? = "",
-    val email: String? = "gosk60@gmail.com",
-    val password: String? = "Viceroy1993"
 )
 
 class DataFromFirebaseViewModel(

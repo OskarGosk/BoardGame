@@ -1,5 +1,6 @@
 package com.goskar.boardgame.data.di
 
+import com.goskar.boardgame.data.useCase.ClearDbUseCase
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllPlayerUseCase
@@ -16,4 +17,5 @@ fun KoinApplication.useCaseModule() = module {
     single { UpsertAllGameUseCase(get()) }
     single { UpsertAllPlayerUseCase(get()) }
     single { UpsertAllHistoryGameUseCase(get()) }
+    single { ClearDbUseCase(get(), get(), get()) }
 }

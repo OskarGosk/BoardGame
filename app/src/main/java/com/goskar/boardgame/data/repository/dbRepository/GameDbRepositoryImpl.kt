@@ -70,4 +70,14 @@ class GameDbRepositoryImpl(
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
+
+    override suspend fun deleteAllGame(): RequestResult<Boolean> {
+        return withContext(defaultDispatcher) {
+            runCatching {
+                gameDao.deleteAll()
+            }.onFailure {
+                Timber.tag(TAG).e("Can't delete all game\n ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
+    }
 }

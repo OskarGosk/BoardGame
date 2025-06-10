@@ -66,4 +66,14 @@ class GamesHistoryDbRepositoryImpl(
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
+
+    override suspend fun deleteAllHistory(): RequestResult<Boolean> {
+        return withContext(defaultDispatcher) {
+            runCatching {
+                historyGameDao.deleteAll()
+            }.onFailure {
+                Timber.tag(GameDbRepositoryImpl.TAG).e("Can't delete all history\n ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
+    }
 }

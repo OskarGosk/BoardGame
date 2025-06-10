@@ -131,6 +131,7 @@ fun GamePlayContent(
         Column(
             modifier = Modifier
                 .padding(10.dp)
+                .padding(bottom = 40.dp)
                 .padding(paddingValues)
                 .verticalScroll(scrollState),
 

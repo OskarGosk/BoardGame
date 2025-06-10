@@ -13,4 +13,7 @@ interface GamesHistoryDbRepository {
     suspend fun deleteHistoryGame(historyGame: HistoryGame) : RequestResult<Boolean>
 
     suspend fun editHistoryGame(historyGame: HistoryGame) : RequestResult<Boolean>
+
+    suspend fun deleteAllHistory():RequestResult<Boolean>
+
 }

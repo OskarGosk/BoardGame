@@ -14,4 +14,7 @@ interface GameDbRepository {
     suspend fun deleteGame(game: Game): RequestResult<Boolean>
 
     suspend fun editGame(game: Game): RequestResult<Boolean>
+
+    suspend fun deleteAllGame():RequestResult<Boolean>
+
 }

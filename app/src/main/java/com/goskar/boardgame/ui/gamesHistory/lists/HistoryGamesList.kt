@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
 import com.goskar.boardgame.ui.gamesHistory.lists.components.SingleHistoryGame
@@ -24,7 +25,15 @@ fun HistoryGamesList(state: GamesHistoryState) {
             .padding(vertical = 10.dp)
 
     ) {
-        state.historyList.asReversed().forEach {
+        val newHistoryList: List<HistoryGame> = when (state.sortOption) {
+            R.string.default_sort -> state.historyList
+            R.string.name_ascending -> state.historyList.sortedBy { it.winner }
+            R.string.name_descending -> state.historyList.sortedByDescending { it.winner }
+            R.string.played_ascending -> state.historyList.sortedBy { it.gameName }
+            R.string.played_descending -> state.historyList.sortedByDescending { it.gameName }
+            else -> state.historyList
+        }
+        newHistoryList.asReversed().forEach {
             if (it.gameName.lowercase()
                     .contains(state.searchTxt.lowercase()) || it.winner.lowercase()
                     .contains(state.searchTxt.lowercase())

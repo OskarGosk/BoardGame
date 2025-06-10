@@ -14,4 +14,6 @@ interface PlayerDbRepository {
     suspend fun deletePlayer(player: Player): RequestResult<Boolean>
 
     suspend fun editPlayer(player: Player): RequestResult<Boolean>
+
+    suspend fun deleteAllPlayer():RequestResult<Boolean>
 }

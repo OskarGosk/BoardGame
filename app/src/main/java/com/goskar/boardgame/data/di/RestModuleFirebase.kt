@@ -1,17 +1,19 @@
 package com.goskar.boardgame.data.di
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.goskar.boardgame.Constants.API_URL
 import com.goskar.boardgame.Constants.FIREBASE_CLIENT
 import com.goskar.boardgame.Constants.FIREBASE_RETROFIT
 import com.goskar.boardgame.data.rest.ApiFirebaseData
 import com.goskar.boardgame.data.rest.AuthInterceptor
+import com.goskar.boardgame.data.rest.LocalDateAdapter
 import com.goskar.boardgame.data.rest.UIDInterceptor
 import okhttp3.OkHttpClient
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDate
 
 fun KoinApplication.restModuleFirebase() = module {
     single(FIREBASE_CLIENT) {
@@ -21,7 +23,8 @@ fun KoinApplication.restModuleFirebase() = module {
             .build()
     }
     single {
-        Gson()
+        GsonBuilder()
+            .registerTypeAdapter(LocalDate::class.java, LocalDateAdapter())
     }
     single(FIREBASE_RETROFIT) {
         Retrofit.Builder()

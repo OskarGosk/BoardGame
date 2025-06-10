@@ -25,6 +25,7 @@ import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
 import com.goskar.boardgame.ui.firebaseData.DataFromFirebase
 import com.goskar.boardgame.ui.gameRaports.GameReportsScreen
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
+import com.goskar.boardgame.ui.login.LoginViewModel
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,6 +34,7 @@ class HomeScreen : Screen {
     override fun Content() {
 
         val viewModel: HomeScreenViewModel = koinViewModel()
+        val loginViewModel: LoginViewModel = koinViewModel()
 
         HomeScreenContent()
     }

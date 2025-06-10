@@ -16,9 +16,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
+import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
-import com.goskar.boardgame.ui.gamesHistory.lists.components.GamesHistorySearchRow
 import com.goskar.boardgame.ui.gamesHistory.lists.HistoryGamesList
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import org.koin.androidx.compose.koinViewModel
@@ -67,7 +67,32 @@ fun HistoryGameListContent(
                 )
             }
             else {
-                GamesHistorySearchRow(state = state, update = update)
+                SearchRowGlobal(
+                    searchHelp = R.string.player_name,
+                    searchTxt = state.searchTxt,
+                    sortOption = state.sortOption,
+                    updateTxt = {
+                        update(
+                            state.copy(
+                                searchTxt = it
+                            )
+                        )
+                    },
+                    clearTxt = {
+                        update(
+                            state.copy(
+                                searchTxt = ""
+                            )
+                        )
+                    },
+                    updateSort = {
+                        update(
+                            state.copy(
+                                sortOption = it
+                            )
+                        )
+                    }
+                )
                 HistoryGamesList(state)
             }
         }
