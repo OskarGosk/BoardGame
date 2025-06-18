@@ -2,6 +2,8 @@ package com.goskar.boardgame.data.di
 
 import com.google.gson.Gson
 import com.goskar.boardgame.Constants.API_URL_BOARD
+import com.goskar.boardgame.Constants.BGG_CLIENT
+import com.goskar.boardgame.Constants.BGG_RETROFIT
 import com.goskar.boardgame.data.rest.ApiBoardGame
 import okhttp3.OkHttpClient
 import org.koin.core.KoinApplication
@@ -11,21 +13,21 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
 fun KoinApplication.restModule() = module {
-    single<OkHttpClient> {
+    single(BGG_CLIENT) {
         OkHttpClient.Builder().build()
     }
     single {
         Gson()
     }
-    single {
+    single(BGG_RETROFIT) {
         Retrofit.Builder()
-            .client(get())
+            .client(get(BGG_CLIENT))
             .baseUrl(API_URL_BOARD)
             .addConverterFactory(SimpleXmlConverterFactory.createNonStrict())
             .addConverterFactory(GsonConverterFactory.create(get()))
             .build()
     }
     single<ApiBoardGame> {
-        get<Retrofit>().create(ApiBoardGame::class.java)
+        get<Retrofit>(BGG_RETROFIT).create(ApiBoardGame::class.java)
     }
 }

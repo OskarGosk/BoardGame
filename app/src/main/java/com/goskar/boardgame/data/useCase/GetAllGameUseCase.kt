@@ -1,7 +1,7 @@
 package com.goskar.boardgame.data.useCase
 
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.oflineRepository.GameDbRepository
+import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 
 class GetAllGameUseCase(

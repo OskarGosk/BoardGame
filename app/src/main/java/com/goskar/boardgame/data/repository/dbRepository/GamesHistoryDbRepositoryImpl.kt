@@ -1,4 +1,4 @@
-package com.goskar.boardgame.data.oflineRepository
+package com.goskar.boardgame.data.repository.dbRepository
 
 import com.goskar.boardgame.data.db.HistoryGameDao
 import com.goskar.boardgame.data.models.HistoryGame
@@ -63,6 +63,16 @@ class GamesHistoryDbRepositoryImpl(
                 historyGameDao.edit(historyGame)
             }.onFailure {
                 Timber.tag(TAG).e("Can't edit game history\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun deleteAllHistory(): RequestResult<Boolean> {
+        return withContext(defaultDispatcher) {
+            runCatching {
+                historyGameDao.deleteAll()
+            }.onFailure {
+                Timber.tag(GameDbRepositoryImpl.TAG).e("Can't delete all history\n ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }

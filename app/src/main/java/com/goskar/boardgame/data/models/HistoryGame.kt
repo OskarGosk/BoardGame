@@ -15,3 +15,12 @@ data class HistoryGame(
     val description: String,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
 ) : Serializable
+
+data class HistoryGameFirebase(
+    val gameName: String,
+    val winner: String,
+    val gameData: String,
+    val listOfPlayer: List<String>,
+    val description: String,
+    @PrimaryKey val id: String = UUID.randomUUID().toString()
+) : Serializable

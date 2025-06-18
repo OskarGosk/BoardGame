@@ -4,7 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import cafe.adriel.voyager.navigator.Navigator
-import com.goskar.boardgame.ui.home.HomeScreen
+import com.goskar.boardgame.ui.login.LoginScreen
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 
@@ -21,6 +21,6 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 @Composable
 fun ComposeApp() {
     BoardGameTheme {
-        Navigator(screen = HomeScreen())
+        Navigator(screen = LoginScreen())
     }
 }

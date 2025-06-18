@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
+import java.time.format.DateTimeParseException
 
 class Converters {
     @TypeConverter
@@ -20,7 +21,12 @@ class Converters {
 
     @TypeConverter
     fun fromStringToLocalDate(value: String?): LocalDate? {
-        return value?.let { LocalDate.parse(it) }
+        return try {
+            if (value.isNullOrBlank() || value == "0000-00-00") LocalDate.parse("1900-01-01")
+            else LocalDate.parse(value)
+        } catch (e: DateTimeParseException) {
+            null
+        }
     }
 
     @TypeConverter

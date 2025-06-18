@@ -124,8 +124,8 @@ fun FloatingMenuItem(icon: ImageVector?, name: Int?, screen: Screen) {
 @Composable
 fun FloatingMenuPreview() {
     val items = listOf(
-        FloatingMenuList(Icons.Default.Search, null, HomeScreen()),
-        FloatingMenuList(Icons.Default.Delete, R.string.delete, HomeScreen())
+        FloatingMenuList(Icons.Default.Search, null, HomeScreen(true)),
+        FloatingMenuList(Icons.Default.Delete, R.string.delete, HomeScreen(false))
     )
 
     FloatingMenu(items)

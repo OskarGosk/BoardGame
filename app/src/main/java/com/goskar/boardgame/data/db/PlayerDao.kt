@@ -27,4 +27,7 @@ interface PlayerDao {
     @Update
     suspend fun edit(player: Player)
 
+    @Query("DELETE FROM Player")
+    suspend fun deleteAll()
+
 }

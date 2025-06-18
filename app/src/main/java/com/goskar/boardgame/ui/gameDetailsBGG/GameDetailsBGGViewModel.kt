@@ -1,12 +1,11 @@
 package com.goskar.boardgame.ui.gameDetailsBGG
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.oflineRepository.GameDbRepository
-import com.goskar.boardgame.data.repository.BoardGameApiRepository
+import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
+import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import kotlinx.coroutines.flow.MutableStateFlow

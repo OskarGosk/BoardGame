@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,8 +45,8 @@ fun GameViewList(
 
             else -> state.gameList ?: emptyList()
         }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
-        items(items = newGameList) { game ->
-            var isExpanded by remember { mutableStateOf(true) }
+        items(items = newGameList, key = { it.id }) { game ->
+            var isExpanded by rememberSaveable(game.id) { mutableStateOf(true) }
             val gameUri = game.uriFromBgg?:game.uri
             if (isExpanded && !gameUri.isNullOrEmpty()) {
                 SingleCoverGameCard(

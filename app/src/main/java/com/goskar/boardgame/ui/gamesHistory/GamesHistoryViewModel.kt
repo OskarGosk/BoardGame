@@ -2,8 +2,9 @@ package com.goskar.boardgame.ui.gamesHistory
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
-import com.goskar.boardgame.data.oflineRepository.GamesHistoryDbRepository
+import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,7 @@ data class GamesHistoryState(
     val historyList: List<HistoryGame> = emptyList(),
     val errorVisible: Boolean = false,
     val searchTxt: String = "",
+    val sortOption: Int = R.string.default_sort,
     val loading: Boolean = true
 )
 
@@ -34,19 +36,20 @@ class GamesHistoryViewModel(
         _state.update { state }
     }
 
-    private fun getAllHistoryGame() {
+    fun getAllHistoryGame() {
         viewModelScope.launch {
             val response = gamesHistoryDbRepository.getAllHistoryGame()
             when (response) {
                 is RequestResult.Success -> {
                     _state.update {
                         it.copy(
-                            historyList = response.data,
+                            historyList = response.data.sortedBy { it.gameData },
                             errorVisible = false,
                             loading = false
                         )
                     }
                 }
+
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(

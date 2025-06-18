@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.SearchBGGListElements
-import com.goskar.boardgame.data.repository.BoardGameApiRepository
+import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

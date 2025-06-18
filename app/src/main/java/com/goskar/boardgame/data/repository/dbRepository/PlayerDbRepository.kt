@@ -1,4 +1,4 @@
-package com.goskar.boardgame.data.oflineRepository
+package com.goskar.boardgame.data.repository.dbRepository
 
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.rest.RequestResult
@@ -14,4 +14,6 @@ interface PlayerDbRepository {
     suspend fun deletePlayer(player: Player): RequestResult<Boolean>
 
     suspend fun editPlayer(player: Player): RequestResult<Boolean>
+
+    suspend fun deleteAllPlayer():RequestResult<Boolean>
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
-import com.goskar.boardgame.data.oflineRepository.PlayerDbRepository
+import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

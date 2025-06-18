@@ -1,4 +1,4 @@
-package com.goskar.boardgame.data.oflineRepository
+package com.goskar.boardgame.data.repository.dbRepository
 
 import com.goskar.boardgame.data.db.GameDao
 import com.goskar.boardgame.data.models.Game
@@ -67,6 +67,16 @@ class GameDbRepositoryImpl(
                 gameDao.edit(game)
             }.onFailure {
                 Timber.tag(TAG).e("Can't edit game\n ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun deleteAllGame(): RequestResult<Boolean> {
+        return withContext(defaultDispatcher) {
+            runCatching {
+                gameDao.deleteAll()
+            }.onFailure {
+                Timber.tag(TAG).e("Can't delete all game\n ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }

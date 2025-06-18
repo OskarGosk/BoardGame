@@ -12,7 +12,7 @@ enum class BottomBarElements (
     @StringRes var title: Int,
     var navigationScreen: Screen?
 ) {
-    HomeButton(R.string.home, HomeScreen()),
+    HomeButton(R.string.home, HomeScreen(false)),
     PlayerListButton(R.string.player_list, PlayerListScreen()),
     GameListButton(R.string.board_list, GameListScreen()),
     HistoryListButton(R.string.history_game_screen, HistoryGameListScreen()),
