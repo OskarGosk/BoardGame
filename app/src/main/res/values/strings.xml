@@ -9,6 +9,7 @@
     <string name="save">Save change</string>
     <string name="camera_denied">Camera permission DENIED. Please go to phone settings</string>
     <string name="login">Login</string>
+    <string name="guest_account">Guest</string>
     <string name="password">Password</string>
 
 

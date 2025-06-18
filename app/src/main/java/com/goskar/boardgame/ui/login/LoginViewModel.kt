@@ -33,10 +33,6 @@ data class LoginState(
 
 class LoginViewModel(
     private val userSession: UserRepository,
-    private val api: BoardGameFirebaseDataRepository,
-    private val addAllGameToDb: UpsertAllGameUseCase,
-    private val addAllPlayerToDb: UpsertAllPlayerUseCase,
-    private val addAllHistoryToDb: UpsertAllHistoryGameUseCase,
 ) : ViewModel() {
 
     val auth = FirebaseAuth.getInstance()
@@ -76,8 +72,13 @@ class LoginViewModel(
                     _state.update { it.copy(isLoggedIn = false, isLoading = false) }
                 }
             } else {
-                signOut()
-                _state.update { it.copy(isLoggedIn = false, isLoading = false) }
+                val questAccount = userSession.getCurrentSession()
+                if (questAccount?.userUID == "guest") {
+                    _state.update { it.copy(isLoggedIn = true, isLoading = false) }
+                } else {
+                    signOut()
+                    _state.update { it.copy(isLoggedIn = false, isLoading = false) }
+                }
             }
         }
     }
@@ -149,69 +150,22 @@ class LoginViewModel(
 //            }
 //    }
 
+    fun questAccount() {
+        _state.update {
+            it.copy(
+                login = "guest",
+                successLogin = true,
+                keyValue = "guest",
+                userUID = "guest",
+                isLoading = false
+            )
+        }
+        getCurrentToken()
+    }
+
     private fun getCurrentToken() {
         viewModelScope.launch {
             userSession.logIn(User(email = _state.value.login, token = _state.value.keyValue, userUID = _state.value.userUID))
         }
-    }
-
-    private fun getAllData() {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(isLoading = true)
-            }
-            val response = attemptToTakeAllData(
-                firstAction = ::getAllGame,
-                secondAction = ::getAllPlayer,
-                thirdAction = ::getAllHistory
-            )
-            _state.update {
-                it.copy(
-                    isLoading = false,
-                    isSuccessDownloadData = response
-                )
-            }
-        }
-    }
-
-    suspend fun getAllGame(): Boolean {
-        val allGame = api.getAllGame()
-
-        if (allGame is RequestResult.Success) {
-            val response = addAllGameToDb.invoke(allGame.data)
-            return response
-        } else return false
-    }
-
-    suspend fun getAllPlayer(): Boolean {
-        val allPlayer = api.getAllPlayer()
-
-        if (allPlayer is RequestResult.Success) {
-            val response = addAllPlayerToDb.invoke(allPlayer.data)
-            return response
-        } else return false
-    }
-
-    suspend fun getAllHistory(): Boolean {
-        val allHistory = api.getAllHistoryGame()
-
-        if (allHistory is RequestResult.Success) {
-            val response = addAllHistoryToDb.invoke(allHistory.data)
-            return response
-        } else return false
-    }
-
-    private suspend fun attemptToTakeAllData(
-        firstAction: suspend () -> Boolean,
-        secondAction: suspend () -> Boolean,
-        thirdAction: suspend () -> Boolean,
-    ): Boolean {
-        if (firstAction()) {
-            if (secondAction()) {
-                if (thirdAction()) {
-                    return true
-                } else return false
-            } else return false
-        } else return false
     }
 }

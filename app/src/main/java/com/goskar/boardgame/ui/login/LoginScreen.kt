@@ -2,14 +2,18 @@ package com.goskar.boardgame.ui.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,20 +48,22 @@ class LoginScreen : Screen {
         val navigator = LocalNavigator.current
 
         LaunchedEffect(state.successLogin) {
-            if(state.successLogin) {
-                navigator?.push(HomeScreen())
+            if (state.successLogin) {
+                navigator?.replaceAll(HomeScreen(state.login != "quest"))
             }
         }
         LaunchedEffect(key1 = state.isLoggedIn) {
             viewModel.checkIfLoggedIn()
             if (state.isLoggedIn) {
-                navigator?.replaceAll(HomeScreen())
+                navigator?.replaceAll(HomeScreen(false))
             }
         }
         LoginContent(
             state = state,
             update = viewModel::update,
-            logIn = viewModel::signIn)
+            logIn = viewModel::signIn,
+            questLogIn = viewModel::questAccount
+        )
     }
 }
 
@@ -65,7 +71,8 @@ class LoginScreen : Screen {
 fun LoginContent(
     state: LoginState,
     update: (LoginState) -> Unit = {},
-    logIn: () -> Unit = {}
+    logIn: () -> Unit = {},
+    questLogIn: () -> Unit = {}
 ) {
 
     val passwordVisible by remember { mutableStateOf(false) }
@@ -76,7 +83,7 @@ fun LoginContent(
         showBottomBar = false,
         showSynchronizedIcon = false
     ) { paddingValues ->
-        if(state.isLoading) AppLoader()
+        if (state.isLoading) AppLoader()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -125,7 +132,7 @@ fun LoginContent(
                     imeAction = ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(onDone = {
-                    if(state.login.isNotEmpty() && state.password.isNotEmpty()) logIn()
+                    if (state.login.isNotEmpty() && state.password.isNotEmpty()) logIn()
                 }),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 label = {
@@ -137,18 +144,37 @@ fun LoginContent(
                 textStyle = Smooch20
             )
 
-            Button(
-                shape = CutCornerShape(percent = 10),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp),
-                enabled = (state.login.isNotEmpty() && state.password.isNotEmpty()),
-                onClick = {
-                    logIn()
-                }) {
-                Text(
-                    stringResource(R.string.login)
+            Row {
+                Button(
+                    shape = CutCornerShape(percent = 10),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp),
+                    enabled = (state.login.isNotEmpty() && state.password.isNotEmpty()),
+                    onClick = {
+                        logIn()
+                    }) {
+                    Text(
+                        stringResource(R.string.login)
+                    )
+                }
+
+                Spacer(
+                    modifier = Modifier.width(15.dp)
                 )
+
+                OutlinedButton(
+                    shape = CutCornerShape(percent = 10),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp),
+                    onClick = {
+                        questLogIn()
+                    }) {
+                    Text(
+                        stringResource(R.string.guest_account)
+                    )
+                }
             }
         }
     }

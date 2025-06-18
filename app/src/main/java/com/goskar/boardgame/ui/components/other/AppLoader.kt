@@ -18,11 +18,13 @@ import androidx.compose.ui.window.DialogWindowProvider
 
 @Preview
 @Composable
-fun AppLoader() {
+fun AppLoader(
+    dimAmount: Float = 0.2f
+) {
     Dialog(
         onDismissRequest = { },
     ) {
-        (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0.2f)
+        (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(dimAmount)
         Box(
             modifier = Modifier
                 .fillMaxSize()

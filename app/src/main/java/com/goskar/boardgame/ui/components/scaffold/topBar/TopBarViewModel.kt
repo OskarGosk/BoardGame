@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
 
 data class TopBarState(
     val isLoading: Boolean = false,
-    val isSuccess: Boolean = true
+    val isSuccess: Boolean = true,
+    val questAccount: Boolean = false,
 )
 
 class TopBarViewModel(
@@ -25,7 +26,7 @@ class TopBarViewModel(
     private val getAllGameDb: GetAllGameUseCase,
     private val getAllPlayerDb: GetAllPlayerUseCase,
     private val getAllHistoryDb: GetAllHistoryGameUseCase,
-) : ViewModel() {
+    ) : ViewModel() {
 
     private val _state = MutableStateFlow(TopBarState())
     val state = _state.asStateFlow()
