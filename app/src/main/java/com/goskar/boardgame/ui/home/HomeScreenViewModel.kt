@@ -7,7 +7,7 @@ import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
-import kotlinx.coroutines.delay
+import com.goskar.boardgame.utils.convertHistoryGameListToDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -71,7 +71,7 @@ class HomeScreenViewModel(
         val allHistory = api.getAllHistoryGame()
 
         if (allHistory is RequestResult.Success) {
-            val response = addAllHistoryToDb.invoke(allHistory.data)
+            val response = addAllHistoryToDb.invoke((convertHistoryGameListToDto( allHistory.data)))
             return response
         } else return false
     }

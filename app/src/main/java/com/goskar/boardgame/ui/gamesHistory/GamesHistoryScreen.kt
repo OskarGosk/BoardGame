@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,8 +29,12 @@ import java.time.LocalDate
 class HistoryGameListScreen : Screen {
     @Composable
     override fun Content() {
-        val viewModel :GamesHistoryViewModel = koinViewModel()
+        val viewModel: GamesHistoryViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
+
+        LaunchedEffect(Unit) {
+            viewModel.getAllHistoryGame()
+        }
 
         HistoryGameListContent(
             state = state,
@@ -45,9 +51,8 @@ fun HistoryGameListContent(
     val navigator = LocalNavigator.current
     BoardGameScaffold(
         titlePage = stringResource(R.string.history_game_screen),
-        selectedScreen= BottomBarElements.HistoryListButton.title
+        selectedScreen = BottomBarElements.HistoryListButton.title
     ) { paddingValues ->
-
 
 
         Column(
@@ -65,8 +70,7 @@ fun HistoryGameListContent(
                         navigator?.push(GameListScreen())
                     }
                 )
-            }
-            else {
+            } else {
                 SearchRowGlobal(
                     searchHelp = R.string.player_name,
                     searchTxt = state.searchTxt,

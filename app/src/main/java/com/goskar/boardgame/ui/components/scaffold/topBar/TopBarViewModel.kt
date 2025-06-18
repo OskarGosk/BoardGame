@@ -3,13 +3,14 @@ package com.goskar.boardgame.ui.components.scaffold.topBar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameFirebase
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllPlayerUseCase
+import com.goskar.boardgame.utils.convertHistoryGameListToFirebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -71,8 +72,8 @@ class TopBarViewModel(
     }
 
     suspend fun addAllHistory(): RequestResult<Boolean> {
-        val allHistory = getAllHistoryDb.invoke()
-        val historyMap: Map<String, HistoryGame> = allHistory.associateBy { it.id }
+        val allHistory = convertHistoryGameListToFirebase(getAllHistoryDb.invoke())
+        val historyMap: Map<String, HistoryGameFirebase> = allHistory.associateBy { it.id }
         val responseHistory = api.addHistoryGame(historyMap)
         return responseHistory
     }

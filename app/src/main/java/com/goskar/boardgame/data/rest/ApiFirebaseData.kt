@@ -1,7 +1,7 @@
 package com.goskar.boardgame.data.rest
 
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameFirebase
 import com.goskar.boardgame.data.models.Player
 import retrofit2.Response
 import retrofit2.http.Body
@@ -26,8 +26,8 @@ interface ApiFirebaseData {
 
     // HISTORY
     @PUT("historyGame/UID.json")
-    suspend fun addHistory(@Body historyGame: Map<String, HistoryGame>): Response<Void>
+    suspend fun addHistory(@Body historyGame: Map<String, HistoryGameFirebase>): Response<Void>
 
     @GET("historyGame/UID.json")
-    suspend fun getAllHistoryGame(): Map<String, HistoryGame>
+    suspend fun getAllHistoryGame(): Map<String, HistoryGameFirebase>
 }

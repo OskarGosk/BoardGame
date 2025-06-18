@@ -1,7 +1,7 @@
 package com.goskar.boardgame.data.repository.firebase
 
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameFirebase
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.rest.ApiFirebaseData
 import com.goskar.boardgame.data.rest.RequestResult
@@ -73,7 +73,7 @@ class BoardGameFirebaseDataRepositoryImpl(
         }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun getAllHistoryGame(): RequestResult<List<HistoryGame>> {
+    override suspend fun getAllHistoryGame(): RequestResult<List<HistoryGameFirebase>> {
         return withContext(Dispatchers.IO) {
             runCatching {
                 apiFirebaseData.getAllHistoryGame().map { element ->
@@ -85,7 +85,7 @@ class BoardGameFirebaseDataRepositoryImpl(
         }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun addHistoryGame(historyGame: Map<String, HistoryGame>): RequestResult<Boolean> {
+    override suspend fun addHistoryGame(historyGame: Map<String, HistoryGameFirebase>): RequestResult<Boolean> {
         return withContext(Dispatchers.IO) {
             runCatching {
                 val response = apiFirebaseData.addHistory(historyGame)

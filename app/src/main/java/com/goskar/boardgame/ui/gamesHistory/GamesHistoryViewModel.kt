@@ -36,7 +36,7 @@ class GamesHistoryViewModel(
         _state.update { state }
     }
 
-    private fun getAllHistoryGame() {
+    fun getAllHistoryGame() {
         viewModelScope.launch {
             val response = gamesHistoryDbRepository.getAllHistoryGame()
             when (response) {
@@ -49,6 +49,7 @@ class GamesHistoryViewModel(
                         )
                     }
                 }
+
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(

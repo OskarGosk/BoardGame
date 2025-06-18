@@ -5,6 +5,9 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameFirebase
+import java.time.LocalDate
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -34,3 +37,29 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider =
             }, ContextCompat.getMainExecutor(this))
         }
     }
+
+fun convertHistoryGameListToDto(oldList :List<HistoryGameFirebase>): List<HistoryGame> {
+    return oldList.map { historyGame ->
+        HistoryGame(
+            gameName = historyGame.gameName,
+            winner = historyGame.winner,
+            gameData = LocalDate.parse(historyGame.gameData), // LocalDate -> String
+            listOfPlayer = historyGame.listOfPlayer,
+            description = historyGame.description,
+            id = historyGame.id
+        )
+    }
+}
+
+fun convertHistoryGameListToFirebase(oldList: List<HistoryGame>): List<HistoryGameFirebase> {
+    return oldList.map { historyGame ->
+        HistoryGameFirebase(
+            gameName = historyGame.gameName,
+            winner = historyGame.winner,
+            gameData = historyGame.gameData.toString(), // LocalDate -> String
+            listOfPlayer = historyGame.listOfPlayer,
+            description = historyGame.description,
+            id = historyGame.id
+        )
+    }
+}

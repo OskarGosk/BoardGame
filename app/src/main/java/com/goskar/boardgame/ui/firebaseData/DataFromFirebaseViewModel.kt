@@ -3,7 +3,7 @@ package com.goskar.boardgame.ui.firebaseData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameFirebase
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.rest.RequestResult
@@ -13,6 +13,8 @@ import com.goskar.boardgame.data.useCase.GetAllPlayerUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
+import com.goskar.boardgame.utils.convertHistoryGameListToDto
+import com.goskar.boardgame.utils.convertHistoryGameListToFirebase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -52,8 +54,8 @@ class DataFromFirebaseViewModel(
             val playerMap: Map<String, Player> = allPlayer.associateBy { it.id }
             api.addPlayer(playerMap)
 
-            val allHistory = getAllHistoryDb.invoke()
-            val historyMap: Map<String, HistoryGame> = allHistory.associateBy { it.id }
+            val allHistory = convertHistoryGameListToFirebase(getAllHistoryDb.invoke())
+            val historyMap: Map<String, HistoryGameFirebase> = allHistory.associateBy { it.id }
             api.addHistoryGame(historyMap)
         }
     }
@@ -65,12 +67,12 @@ class DataFromFirebaseViewModel(
                 addAllGameToDb.invoke(allGame.data)
             }
             val allPlayer = api.getAllPlayer()
-            if(allPlayer is RequestResult.Success) {
+            if (allPlayer is RequestResult.Success) {
                 addAllPlayerToDb.invoke(allPlayer.data)
             }
             val allHistory = api.getAllHistoryGame()
-            if(allHistory is RequestResult.Success) {
-                addAllHistoryToDb.invoke(allHistory.data)
+            if (allHistory is RequestResult.Success) {
+                addAllHistoryToDb.invoke(convertHistoryGameListToDto(allHistory.data))
             }
         }
     }
