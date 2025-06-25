@@ -34,7 +34,8 @@ import com.goskar.boardgame.ui.gamesList.play.GamePlayActivityScreen
 fun ButtonRow(
     game: Game,
     deleteGame: (Game) -> Unit = {},
-    refresh: () -> Unit = {}
+    refresh: () -> Unit = {},
+    modifier: Modifier = Modifier.fillMaxWidth()
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.current
@@ -42,11 +43,10 @@ fun ButtonRow(
 
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
             horizontalArrangement = Arrangement.SpaceEvenly
         )
         {
-
             IconButton(onClick = {
                 navigator?.push(GamePlayActivityScreen(game))
             }) {

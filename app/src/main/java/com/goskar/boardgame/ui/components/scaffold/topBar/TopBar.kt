@@ -31,12 +31,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun TopBar(
     titlePage: String,
-    showSynchronizedIcon: Boolean = true
+    showSynchronizedIcon: Boolean = true,
+    state: TopBarState,
+    uploadDataToFirebase: () -> Unit = {}
 ) {
-    val viewModel: TopBarViewModel = koinViewModel()
-    val state = viewModel.state.collectAsState()
-//    val isLoading: Boolean = true
-//    val isError: Boolean = false
 
     Box(
         modifier = Modifier
@@ -57,10 +55,10 @@ fun TopBar(
                 if (showSynchronizedIcon) {
                     IconButton(
                         onClick = {
-                            viewModel.uploadDataToFirebase()
+                            uploadDataToFirebase()
                         }
                     ) {
-                        if(state.value.isLoading) {
+                        if (state.isLoading) {
                             CircularProgressIndicator(
                                 color = Color.DarkGray,
                                 modifier = Modifier
@@ -69,9 +67,9 @@ fun TopBar(
                             )
                         } else {
                             Icon(
-                                imageVector = if (state.value.isSuccess) Icons.Filled.Refresh else Icons.Filled.Warning ,
+                                imageVector = if (state.isSuccess) Icons.Filled.Refresh else Icons.Filled.Warning,
                                 contentDescription = "LogOut",
-                                tint = if (state.value.isSuccess) Color.Black else Color.Red,
+                                tint = if (state.isSuccess) Color.Black else Color.Red,
                                 modifier = Modifier
                                     .size(25.dp)
                             )
@@ -95,5 +93,5 @@ fun TopBar(
 @Preview
 @Composable
 fun TopBarPreview() {
-    TopBar(titlePage = "Test")
+    TopBar(titlePage = "Test", state = TopBarState())
 }

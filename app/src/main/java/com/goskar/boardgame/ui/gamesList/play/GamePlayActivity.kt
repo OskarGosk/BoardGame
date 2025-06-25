@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +54,7 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
+import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gamesList.play.components.GameInfo
 import com.goskar.boardgame.ui.gamesList.play.components.PlayerListToSelect
 import com.goskar.boardgame.ui.gamesList.play.components.WinnerRow
@@ -68,6 +70,9 @@ class GamePlayActivityScreen(
         val viewModel: GamePlayViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.current
+        val topBarViewModel: TopBarViewModel = koinViewModel()
+        val topBarState by topBarViewModel.state.collectAsState()
+
 
         LaunchedEffect(Unit) {
             viewModel.update(
@@ -84,12 +89,18 @@ class GamePlayActivityScreen(
             }
         }
 
-        BoardGameTheme {
+        BoardGameScaffold(
+            titlePage = stringResource(R.string.history_add),
+            selectedScreen = null,
+            topBarState = topBarState,
+            uploadDataToFirebase = topBarViewModel::uploadDataToFirebase
+        ) { paddingValues ->
             GamePlayContent(
                 state = state,
                 update = viewModel::update,
                 selectedPlayer = viewModel::selectedPlayer,
                 addGamePlay = viewModel::validateAllData,
+                paddingValues = paddingValues
             )
         }
     }
@@ -103,6 +114,7 @@ fun GamePlayContent(
     update: (GamePlayState) -> Unit = {},
     selectedPlayer: (Player) -> Unit = {},
     addGamePlay: (Context) -> Unit = {},
+    paddingValues: PaddingValues
 ) {
     val uriHandler = LocalUriHandler.current
     val calendarState = rememberSheetState()
@@ -123,10 +135,6 @@ fun GamePlayContent(
             )
         })
 
-    BoardGameScaffold(
-        titlePage = stringResource(R.string.history_add),
-        selectedScreen = null
-    ) { paddingValues ->
 
         Column(
             modifier = Modifier
@@ -241,16 +249,16 @@ fun GamePlayContent(
                         uriHandler.openUri("https://boardgamegeek.com/")
                     })
         }
-    }
+
 }
 
 @Preview
 @Composable
 fun GamePlayActivityPreview() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    BoardGameScaffold(
+        titlePage = stringResource(R.string.history_add),
+        selectedScreen = null,
+    ) { paddingValues ->
         val player =
             Player(name = "Maksymilian Gosk WIelki Gracz", winRatio = 2, games = 6, description = "ds", selected = true)
         val player2 =
@@ -270,7 +278,8 @@ fun GamePlayActivityPreview() {
             GamePlayState(
                 game,
                 playerList = listOf(player, player, player2, player2, player, player, player2)
-            )
+            ),
+            paddingValues = paddingValues
         )
     }
 }
@@ -278,10 +287,10 @@ fun GamePlayActivityPreview() {
 @Preview
 @Composable
 fun GamePlayActivityPreviewWithoutPlayer() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    BoardGameScaffold(
+        titlePage = stringResource(R.string.history_add),
+        selectedScreen = null,
+    ) { paddingValues ->
 
         val game = Game(
             name = "Nazwa Testowa",
@@ -293,6 +302,6 @@ fun GamePlayActivityPreviewWithoutPlayer() {
             games = 6,
             id = "5456"
         )
-        GamePlayContent(GamePlayState(game, playerList = emptyList()))
+        GamePlayContent(GamePlayState(game, playerList = emptyList()), paddingValues = paddingValues)
     }
 }

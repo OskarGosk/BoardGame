@@ -18,8 +18,8 @@ data class GameListState(
     val successDeleteGame: Boolean = false,
     val errorVisible: Boolean = false,
     val searchTxt: String = "",
-    val sortOption: Int = R.string.default_sort
-
+    val sortOption: Int = R.string.default_sort,
+    val isLoading: Boolean = false
 )
 
 @KoinViewModel
@@ -36,11 +36,15 @@ class GameListViewModel(
         _state.update { state }
     }
 
+    init {
+        refresh()
+    }
+
     fun refresh() {
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    gameList = getAllGameUseCase()
+                    gameList = getAllGameUseCase.invoke()
                 )
             }
         }
@@ -54,6 +58,7 @@ class GameListViewModel(
                     refresh()
                     _state.update {
                         it.copy(
+                            isLoading = false,
                             errorVisible = false
                         )
                     }
@@ -62,6 +67,7 @@ class GameListViewModel(
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(
+                            isLoading = false,
                             errorVisible = true
                         )
                     }

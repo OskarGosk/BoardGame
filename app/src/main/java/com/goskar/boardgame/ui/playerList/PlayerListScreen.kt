@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.playerList
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +32,8 @@ import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
-import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
+import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.playerList.components.AddEditDialog
 import com.goskar.boardgame.ui.playerList.components.PlayerViewList
 
@@ -42,15 +43,44 @@ class PlayerListScreen : Screen {
         val viewModel: PlayerListViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
 
+        val topBarViewModel: TopBarViewModel = koinViewModel()
+        val topBarState by topBarViewModel.state.collectAsState()
+
         LaunchedEffect(Unit) {
             viewModel.getAllPlayer()
         }
-        PlayerListContent(
-            state = state,
-            deletePlayer = viewModel::validateDeletePlayer,
-            update = viewModel::update,
-            addPlayer = viewModel::validateAddEditPLayer
-        )
+        BoardGameScaffold(
+            titlePage = stringResource(R.string.player_list),
+            selectedScreen = BottomBarElements.PlayerListButton.title,
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = {
+                        viewModel.update(
+                            state.copy(
+                                showAddEditDialog = true
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .size(50.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.player_add)
+                    )
+                }
+            },
+            topBarState = topBarState,
+            uploadDataToFirebase = topBarViewModel::uploadDataToFirebase
+        ) { paddingValues ->
+            PlayerListContent(
+                state = state,
+                deletePlayer = viewModel::validateDeletePlayer,
+                update = viewModel::update,
+                addPlayer = viewModel::validateAddEditPLayer,
+                paddingValues = paddingValues
+            )
+        }
     }
 }
 
@@ -60,17 +90,107 @@ fun PlayerListContent(
     deletePlayer: (Player) -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
+    paddingValues: PaddingValues
 ) {
-    var showAddEditDialog by remember { mutableStateOf(false) }
+    if (state.isLoading) AppLoader()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SearchRowGlobal(
+                    searchHelp = R.string.player_name,
+                    searchTxt = state.searchTxt,
+                    sortOption = state.sortOption,
+                    updateTxt = {
+                        update(
+                            state.copy(
+                                searchTxt = it
+                            )
+                        )
+                    },
+                    clearTxt = {
+                        update(
+                            state.copy(
+                                searchTxt = ""
+                            )
+                        )
+                    },
+                    updateSort = {
+                        update(
+                            state.copy(
+                                sortOption = it
+                            )
+                        )
+                    }
+                )
+                if (state.playerList.isNullOrEmpty()) {
+                    EmptyListWithButton(
+                        headerText = R.string.player_empty_list,
+                        infoText = R.string.player_empty_list_add,
+                        buttonText = R.string.player_add,
+                        onClick = {
+                            update(
+                                state.copy(
+                                    showAddEditDialog = true
+                                )
+                            )
+                        },
+                    )
+                } else {
+                    PlayerViewList(
+                        deletePlayer = deletePlayer,
+                        addPlayer = addPlayer,
+                        update = update,
+                        state = state
+                    )
+                }
+            }
+        }
+    }
 
+    if (state.showAddEditDialog) {
+        AddEditDialog(
+            newPlayer = true,
+            state = state,
+            confirmButtonClick = {
+                update(
+                    state.copy(
+                        showAddEditDialog = false
+                    )
+                )
+                addPlayer(true)
+            },
+            onDismiss = {
+                update(
+                    state.copy(
+                        showAddEditDialog = false
+                    )
+                )
+            },
+            update = update
+        )
+    }
+}
+
+
+@Preview
+@Composable
+fun PlayerListContentPreview() {
     BoardGameScaffold(
         titlePage = stringResource(R.string.player_list),
         selectedScreen = BottomBarElements.PlayerListButton.title,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    showAddEditDialog = true
-                },
+                onClick = {},
                 modifier = Modifier
                     .size(50.dp)
             ) {
@@ -79,90 +199,8 @@ fun PlayerListContent(
                     contentDescription = stringResource(id = R.string.player_add)
                 )
             }
-        }
+        },
     ) { paddingValues ->
-        if (state.isLoading) AppLoader()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxSize()
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SearchRowGlobal(
-                        searchHelp = R.string.player_name,
-                        searchTxt = state.searchTxt,
-                        sortOption = state.sortOption,
-                        updateTxt = {
-                            update(
-                                state.copy(
-                                    searchTxt = it
-                                )
-                            )
-                        },
-                        clearTxt = {
-                            update(
-                                state.copy(
-                                    searchTxt = ""
-                                )
-                            )
-                        },
-                        updateSort = {
-                            update(
-                                state.copy(
-                                    sortOption = it
-                                )
-                            )
-                        }
-                    )
-                    if (state.playerList.isNullOrEmpty()) {
-                        EmptyListWithButton(
-                            headerText = R.string.player_empty_list,
-                            infoText = R.string.player_empty_list_add,
-                            buttonText = R.string.player_add,
-                            onClick = { showAddEditDialog = true },
-                        )
-                    } else {
-                        PlayerViewList(
-                            deletePlayer = deletePlayer,
-                            addPlayer = addPlayer,
-                            update = update,
-                            state = state
-                        )
-                    }
-                }
-            }
-        }
-
-        if (showAddEditDialog) {
-            AddEditDialog(
-                newPlayer = true,
-                state = state,
-                confirmButtonClick = {
-                    showAddEditDialog = false
-                    addPlayer(true)
-                },
-                onDismiss = { showAddEditDialog = !showAddEditDialog },
-                update = update
-            )
-        }
-    }
-}
-
-
-@Preview
-@Composable
-fun PlayerListContentPreview() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
         val player =
             Player(name = "Oskar", winRatio = 2, games = 6, description = "ds", selected = true)
         val player2 =
@@ -180,7 +218,8 @@ fun PlayerListContentPreview() {
                     player,
                     player2
                 )
-            )
+            ),
+            paddingValues = paddingValues
         )
     }
 }
@@ -188,12 +227,24 @@ fun PlayerListContentPreview() {
 @Preview
 @Composable
 fun PlayerListEmptyContentPreview() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
+    BoardGameScaffold(
+        titlePage = stringResource(R.string.player_list),
+        selectedScreen = BottomBarElements.PlayerListButton.title,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {},
+                modifier = Modifier
+                    .size(50.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.player_add)
+                )
+            }
+        },
+    ) { paddingValues ->
         PlayerListContent(
-            state = PlayerListState()
+            state = PlayerListState(), paddingValues = paddingValues
         )
     }
 }

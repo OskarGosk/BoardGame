@@ -8,6 +8,6 @@ import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.utils.FloatingMenuList
 
 enum class AddItemsMenu(val items : FloatingMenuList) {
-    MANUAL(FloatingMenuList(Icons.Filled.Build, null, AddEditGameScreen(null))),
+    MANUAL(FloatingMenuList(R.drawable.icons_search, null, AddEditGameScreen(null))),
     BGG(FloatingMenuList(null, R.string.bgg, GameSearchScreen())),
 }

@@ -11,6 +11,10 @@
     <string name="login">Login</string>
     <string name="guest_account">Guest</string>
     <string name="password">Password</string>
+    <string name="signOut">Sign Out</string>
+    <string name="download">Download</string>
+
+
 
 
     // BOTTOM BAR
@@ -22,6 +26,7 @@
     <string name="details_bgg">Details Game by BGG</string>
     <string name="reports">Reports</string>
     <string name="login_screen">Login Screen</string>
+    <string name="other">Other</string>
 
     //SORT
     <string name="default_sort">Default</string>

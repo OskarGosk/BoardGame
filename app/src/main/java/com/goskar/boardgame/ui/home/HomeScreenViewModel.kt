@@ -1,12 +1,20 @@
 package com.goskar.boardgame.ui.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
+import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
+import com.goskar.boardgame.ui.home.components.OtherBottomMenuList
 import com.goskar.boardgame.utils.convertHistoryGameListToDto
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +24,8 @@ import org.koin.android.annotation.KoinViewModel
 
 data class HomeScreenState(
     val isLoading: Boolean = false,
-    val isSuccessDownloadData: Boolean = false
+    val isSuccessDownloadData: Boolean = false,
+    val isSignOut: Boolean = false,
 )
 
 @KoinViewModel
@@ -24,11 +33,32 @@ class HomeScreenViewModel(
     private val api: BoardGameFirebaseDataRepository,
     private val addAllGameToDb: UpsertAllGameUseCase,
     private val addAllPlayerToDb: UpsertAllPlayerUseCase,
-    private val addAllHistoryToDb: UpsertAllHistoryGameUseCase
+    private val addAllHistoryToDb: UpsertAllHistoryGameUseCase,
+    private val userSession: UserRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeScreenState())
     var state = _state.asStateFlow()
+
+    val otherItems = MutableStateFlow(
+        listOf(
+            OtherBottomMenuList(
+                R.drawable.icons_shutdown, R.string.signOut, ::signOut
+            ),
+            OtherBottomMenuList(
+                R.drawable.icons_download, R.string.download, ::getAllData
+            )
+        )
+    )
+
+    val auth = FirebaseAuth.getInstance()
+
+    var user by mutableStateOf<FirebaseUser?>(null)
+        private set
+
+    init {
+        user = auth.currentUser
+    }
 
 
     fun getAllData() {
@@ -71,7 +101,7 @@ class HomeScreenViewModel(
         val allHistory = api.getAllHistoryGame()
 
         if (allHistory is RequestResult.Success) {
-            val response = addAllHistoryToDb.invoke((convertHistoryGameListToDto( allHistory.data)))
+            val response = addAllHistoryToDb.invoke((convertHistoryGameListToDto(allHistory.data)))
             return response
         } else return false
     }
@@ -86,6 +116,20 @@ class HomeScreenViewModel(
                 thirdAction()
             } else false
         } else false
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            auth.signOut()
+            user = null
+            userSession.logout()
+
+            _state.update {
+                it.copy(
+                    isSignOut = true
+                )
+            }
+        }
     }
 
 }
