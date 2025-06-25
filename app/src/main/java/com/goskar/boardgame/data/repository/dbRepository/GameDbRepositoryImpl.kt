@@ -13,7 +13,7 @@ class GameDbRepositoryImpl(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : GameDbRepository {
     companion object {
-        val TAG = "GAMES_LIST"
+        const val TAG = "GAMES_LIST"
     }
 
     override suspend fun insertGame(game: Game): RequestResult<Boolean> {

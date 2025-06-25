@@ -13,7 +13,7 @@ class PlayerDbRepositoryImpl(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : PlayerDbRepository {
     companion object {
-        val TAG = "PLAYER"
+        const val TAG = "PLAYER"
     }
 
     override suspend fun insertPlayer(player: Player): RequestResult<Boolean> {

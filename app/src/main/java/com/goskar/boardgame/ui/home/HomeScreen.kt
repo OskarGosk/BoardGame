@@ -43,7 +43,7 @@ import com.goskar.boardgame.ui.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 import org.koin.androidx.compose.koinViewModel
 
-class HomeScreen(val firstLogin: Boolean) : Screen {
+class HomeScreen(private val firstLogin: Boolean) : Screen {
     @Composable
     override fun Content() {
 

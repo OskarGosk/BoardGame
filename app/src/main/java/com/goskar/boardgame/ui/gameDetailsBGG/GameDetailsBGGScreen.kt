@@ -49,7 +49,7 @@ import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 import org.koin.androidx.compose.koinViewModel
 
-class GameDetailsBGGScreen(val gameID: String, val gameName: String) : Screen {
+class GameDetailsBGGScreen(private val gameID: String, val gameName: String) : Screen {
 
     @Composable
     override fun Content() {

@@ -117,7 +117,7 @@ class GameReportsViewModel(
         _chartData.value = yearPlaysTimeData
     }
 
-    fun playGamesAllTimeData() {
+    private fun playGamesAllTimeData() {
         val playGamesAllTimeData: MutableList<Bars> = emptyList<Bars>().toMutableList()
         val allGamesCount: Int = _allGame.value.sumOf { it.games }
 

@@ -15,7 +15,7 @@ class BoardGameApiRepositoryImpl(
 ) : BoardGameApiRepository {
 
     companion object {
-        val TAG = "BGG API"
+        const val TAG = "BGG API"
     }
 
     override suspend fun getGame(gameId: String): RequestResult<BoardGamesDetails> {

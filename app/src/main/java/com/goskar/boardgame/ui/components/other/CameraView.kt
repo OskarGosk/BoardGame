@@ -64,7 +64,7 @@ fun CameraView(
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
 
-        preview.setSurfaceProvider(previewView.surfaceProvider)
+        preview.surfaceProvider = previewView.surfaceProvider
 
         cameraProvider.bindToLifecycle(
             lifecycleOwner,

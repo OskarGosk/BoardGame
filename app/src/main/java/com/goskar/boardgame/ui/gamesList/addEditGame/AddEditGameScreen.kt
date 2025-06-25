@@ -71,7 +71,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class AddEditGameScreen(val editGame: Game?) : Screen {
+class AddEditGameScreen(private val editGame: Game?) : Screen {
 
     @Composable
     override fun Content() {

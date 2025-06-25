@@ -30,12 +30,12 @@ class LoginViewModel(
     private val userSession: UserRepository,
 ) : ViewModel() {
 
-    val auth = FirebaseAuth.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     var user by mutableStateOf<FirebaseUser?>(null)
         private set
 
-    var authError by mutableStateOf<String?>(null)
+    private var authError by mutableStateOf<String?>(null)
         private set
 
     init {

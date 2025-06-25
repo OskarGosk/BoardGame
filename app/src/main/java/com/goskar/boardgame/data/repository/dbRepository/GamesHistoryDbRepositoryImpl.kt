@@ -14,7 +14,7 @@ class GamesHistoryDbRepositoryImpl(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : GamesHistoryDbRepository {
     companion object {
-        val TAG = "GAMES_HISTORY"
+        const val TAG = "GAMES_HISTORY"
     }
 
     override suspend fun insertHistoryGame(historyGame: HistoryGame): RequestResult<Boolean> {
