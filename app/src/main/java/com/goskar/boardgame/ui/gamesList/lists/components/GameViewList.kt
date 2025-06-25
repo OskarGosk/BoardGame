@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.gamesList.lists.components
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,9 +16,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,7 +41,7 @@ fun GameViewList(
     val gridState = rememberLazyGridState()
     val listState = rememberLazyListState()
     var isScrollingDown by remember { mutableStateOf(false) }
-    val lastOffset by remember { mutableStateOf(0) }
+    val lastOffset by remember { mutableIntStateOf(0) }
 
     val newGameList: List<Game> = when (state.sortOption) {
         R.string.default_sort -> state.gameList ?: emptyList()
@@ -72,10 +71,6 @@ fun GameViewList(
                     onClick = { selectedList = !selectedList })
             }
         }
-
-        Log.d("Oskar22","Problem z listą state === ${state.gameList?.size}")
-        Log.d("Oskar22","Problem z listą nowa === ${newGameList.size}")
-
 
         if (selectedList) {
             LazyColumn(

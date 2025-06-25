@@ -20,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,7 +51,6 @@ import com.goskar.boardgame.utils.SortList
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun GameSearchRow(
-    onCLickMenu: () -> Unit = {},
     update: (GameListState) -> Unit = {},
     state: GameListState
 ) {
@@ -125,8 +125,8 @@ fun GameSearchRow(
                     contentDescription = null,
                     modifier = Modifier
                         .size(35.dp)
-                        .menuAnchor(),
-                )
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    )
                 ExposedDropdownMenu(
                     expanded = expanded,
                     modifier = Modifier

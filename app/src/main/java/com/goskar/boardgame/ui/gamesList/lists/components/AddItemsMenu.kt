@@ -1,7 +1,5 @@
 package com.goskar.boardgame.ui.gamesList.lists.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen

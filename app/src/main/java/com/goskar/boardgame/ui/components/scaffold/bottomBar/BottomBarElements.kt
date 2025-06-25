@@ -3,7 +3,6 @@ package com.goskar.boardgame.ui.components.scaffold.bottomBar
 import androidx.annotation.StringRes
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.firebaseData.DataFromFirebase
 import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.home.HomeScreen

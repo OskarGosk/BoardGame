@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.gamesList.lists
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,15 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -38,14 +32,12 @@ import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.components.other.FloatingMenu
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.GameViewList
-import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.AddItemsMenu
-import com.goskar.boardgame.ui.gamesList.lists.components.FormatCard
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
 class GameListScreen : Screen {
@@ -112,8 +104,6 @@ fun GameListContent(
                 }
             )
         } else {
-            Log.d("Oskar22","Problem z listą state === ${state.gameList?.size}")
-
             GameSearchRow(update = update, state = state)
             GameViewList(deleteGame = deleteGame, refresh = refresh, state = state)
         }

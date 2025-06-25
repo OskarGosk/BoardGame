@@ -31,9 +31,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,6 +66,7 @@ import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.utils.checkAndRequestPermissionWithClick
+import timber.log.Timber
 import java.io.File
 import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
@@ -341,12 +340,12 @@ fun AddEditGameContent(
                 outputDirectory = outputDirectory,
                 executor = cameraExecutor,
                 onImageCaptured = { uri ->
-                    Log.i(GLOBAL_TAG, "Captured image URI: $uri")
+                    Timber.tag(GLOBAL_TAG).i("Captured image URI: $uri")
                     update(state.copy(uri = uri.toString()))
                     shouldOpenCamera = false
                 },
                 onError = {
-                    Log.e(GLOBAL_TAG, "Camera view error:", it)
+                    Timber.tag(GLOBAL_TAG).e(it, "Camera view error:")
                 },
                 takePhoto = takePhoto,
                 backHandler = { shouldOpenCamera = false }

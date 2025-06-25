@@ -12,19 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -36,21 +29,18 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.other.AppLoader
-import com.goskar.boardgame.ui.components.other.FloatingMenu
-import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
-import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
-import com.goskar.boardgame.ui.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
-import com.goskar.boardgame.ui.home.components.OtherBottomMenu
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gameRaports.GameReportsScreen
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
-import com.goskar.boardgame.ui.gamesList.lists.components.AddItemsMenu
+import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
+import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
+import com.goskar.boardgame.ui.home.components.OtherBottomMenu
 import com.goskar.boardgame.ui.home.components.OtherBottomMenuList
 import com.goskar.boardgame.ui.login.LoginScreen
+import com.goskar.boardgame.ui.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 class HomeScreen(val firstLogin: Boolean) : Screen {
@@ -89,7 +79,6 @@ class HomeScreen(val firstLogin: Boolean) : Screen {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenContent(
     state: HomeScreenState,

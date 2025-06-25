@@ -44,7 +44,7 @@ fun GameInfo(
     state: GamePlayState
 ) {
     val navigator = LocalNavigator.current
-    Row() {
+    Row {
         val gameUri = state.game?.uriFromBgg?:state.game?.uri
         if(!gameUri.isNullOrBlank()) {
             AsyncImage(
