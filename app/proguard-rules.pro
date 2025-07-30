@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Prevent R8 from optimizing or obfuscating the XML classes
+-keep class android.content.res.XmlResourceParser { *; }
+-keep class org.xmlpull.v1.XmlPullParser { *; }
+
+# Keep Retrofit SimpleXML classes (if relevant)
+-keep class com.squareup.retrofit2.converter.simplexml.** { *; }
+-keep class org.simpleframework.** { *; }
