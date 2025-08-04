@@ -58,9 +58,6 @@ class GamePlayViewModel(
         state.value.playerList?.filter { it.selected }?.forEach { player ->
             listOfPlayer = listOfPlayer + player.name
         }
-        if (state.value.game?.cooperate == true) {
-            listOfPlayer = listOf(context.resources.getString(CooperatePlayers.COMP.value)) + listOfPlayer
-        }
 
 
         val historyGame = HistoryGame(

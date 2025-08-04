@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.play.components
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -48,32 +49,43 @@ fun PlayerListToSelect(
     val context = LocalContext.current
     val navigator = LocalNavigator.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(150.dp)
-    ) {
-        if (!state.playerList.isNullOrEmpty()) {
+
+    if (!state.playerList.isNullOrEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+        ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
             ) {
                 items(items = state.playerList) { player ->
+                    var isChecked by remember { mutableStateOf(player.selected) }
+                    val onClick = {
+                        if (state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || isChecked) {
+                            //DODAC zabezpiecznie gdy maxPlayer jest null lub ""
+                            isChecked = !isChecked
+                            selectedPlayer(player)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Wybrano max graczy",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
                         modifier = Modifier.fillMaxWidth()
+                            .clickable {
+                                onClick()
+                            }
                     ) {
-                        var isChecked by remember { mutableStateOf(player.selected) }
                         Checkbox(
                             checked = isChecked, onCheckedChange = {
-                            if(state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || isChecked){
-                                //DODAC zabezpiecznie gdy maxPlayer jest null lub ""
-                                isChecked = it
-                                selectedPlayer(player)
-                            } else {
-                                Toast.makeText(context, "Wybrano max graczy", Toast.LENGTH_LONG).show()
-                            }
-                        })
+                                onClick()
+                            })
                         Text(
                             maxLines = 2,
                             style = Smooch16,
@@ -83,13 +95,22 @@ fun PlayerListToSelect(
                     }
                 }
             }
-        } else {
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = {
                     navigator?.push(PlayerListScreen())
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -101,13 +122,14 @@ fun PlayerListToSelect(
                     )
                     Text(
                         stringResource(R.string.history_empty_player_list_text),
-                        style = SmoochBold18)
+                        style = SmoochBold18
+                    )
                 }
             }
-
         }
     }
 }
+
 
 @Preview
 @Composable
@@ -117,13 +139,19 @@ fun PlayerListToSelectPreview() {
     val player2 =
         Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
     val player3 =
-        Player(name = "Maksymilian WIelki Trzy Linijkowy", winRatio = 2, games = 6, description = "ds", selected = true)
+        Player(
+            name = "Maksymilian WIelki Trzy Linijkowy",
+            winRatio = 2,
+            games = 6,
+            description = "ds",
+            selected = true
+        )
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
             PlayerListToSelect(
-                state = GamePlayState(playerList = listOf(player,player2, player2, player3))
+                state = GamePlayState(playerList = listOf(player, player2, player2, player3))
             )
         }
     }
