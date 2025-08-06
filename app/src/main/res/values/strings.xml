@@ -90,7 +90,9 @@
     <string name="history_coop">Cooperate</string>
     <string name="history_normal">Normal</string>
     <string name="history_who_win">"Who Win?"</string>
-
+    <string name="history_game_info">Game Info</string>
+    <string name="history_player_list">Player List</string>
+    <string name="history_game_data">Game data</string>
 
     //SEARCH BGG
 

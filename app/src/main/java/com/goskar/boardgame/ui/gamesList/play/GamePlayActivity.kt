@@ -153,7 +153,32 @@ fun GamePlayContent(
             .padding(paddingValues)
             .verticalScroll(scrollState),
 
+        ) {
+        val verticalText2 = "Player List".uppercase().toCharArray().joinToString("\n")
+        val verticalText3 = "Game date".uppercase().toCharArray().joinToString("\n")
+
+
+        Row {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .width(20.dp)
+                    .height(150.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(15.dp)
+                    ),
             ) {
+                Text(
+                    text = stringResource(R.string.history_game_info).uppercase().toCharArray().joinToString("\n"),
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    style = Smooch14_line14,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(1.dp)
+                )
+            }
             GameInfo(state = state)
 
         }
@@ -171,7 +196,7 @@ fun GamePlayContent(
                     ),
             ) {
                 Text(
-                    text = verticalText2,
+                    text = stringResource(R.string.history_player_list).uppercase().toCharArray().joinToString("\n"),
                     textAlign = TextAlign.Center,
                     color = Color.White,
                     style = Smooch14_line14,
@@ -198,7 +223,7 @@ fun GamePlayContent(
                     ),
             ) {
                 Text(
-                    text = verticalText3,
+                    text = stringResource(R.string.history_game_data).uppercase().toCharArray().joinToString("\n"),
                     textAlign = TextAlign.Center,
                     color = Color.White,
                     style = Smooch14_line14,
