@@ -15,11 +15,15 @@ import org.koin.android.annotation.KoinViewModel
 
 data class GameListState(
     val gameList: List<Game>? = emptyList(),
+    val gameListEdited: List<Game> = emptyList(),
     val successDeleteGame: Boolean = false,
     val errorVisible: Boolean = false,
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val checkboxBaseGame: Boolean = true,
+    val checkboxExpansionGame: Boolean = true,
+    val checkboxAllGame: Boolean = true
 )
 
 @KoinViewModel
@@ -40,6 +44,36 @@ class GameListViewModel(
         refresh()
     }
 
+    fun refreshGameList() {
+        val newGameList: List<Game> = when (state.value.sortOption) {
+            R.string.default_sort -> state.value.gameList ?: emptyList()
+            R.string.name_ascending -> state.value.gameList?.sortedBy { it.name } ?: emptyList()
+            R.string.name_descending -> state.value.gameList?.sortedByDescending { it.name }
+                ?: emptyList()
+
+            R.string.played_ascending -> state.value.gameList?.sortedBy { it.games } ?: emptyList()
+            R.string.played_descending -> state.value.gameList?.sortedByDescending { it.games }
+                ?: emptyList()
+
+            else -> state.value.gameList ?: emptyList()
+        }.filter { it.name.lowercase().contains(state.value.searchTxt.lowercase()) }
+
+        val selectedGameList = buildList {
+            if (state.value.checkboxBaseGame) {
+                addAll(newGameList.filter { !it.expansion })
+            }
+            if (state.value.checkboxExpansionGame) {
+                addAll(newGameList.filter { it.expansion })
+            }
+        }
+        _state.update {
+            it.copy(
+                gameListEdited = selectedGameList
+            )
+        }
+    }
+
+
     fun refresh() {
         viewModelScope.launch {
             _state.update {
@@ -47,6 +81,7 @@ class GameListViewModel(
                     gameList = getAllGameUseCase.invoke()
                 )
             }
+            refreshGameList()
         }
     }
 

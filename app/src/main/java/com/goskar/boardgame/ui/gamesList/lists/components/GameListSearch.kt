@@ -52,8 +52,9 @@ import com.goskar.boardgame.utils.SortList
 @Composable
 fun GameSearchRow(
     update: (GameListState) -> Unit = {},
-    state: GameListState
-) {
+    state: GameListState,
+    refreshGameList: () -> Unit = {},
+    ) {
     val focusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
 
@@ -83,6 +84,7 @@ fun GameSearchRow(
                             searchTxt = it
                         )
                     )
+                    refreshGameList()
                 },
                 modifier = Modifier
                     .padding(end = 10.dp)
@@ -98,6 +100,7 @@ fun GameSearchRow(
                     imeAction = ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(onDone = {
+                    refreshGameList()
                     focusManager.clearFocus()
                 }),
                 trailingIcon = {
@@ -112,6 +115,7 @@ fun GameSearchRow(
                                         searchTxt = ""
                                     )
                                 )
+                                refreshGameList()
                                 focusManager.clearFocus()
                             })
                 }
@@ -147,6 +151,7 @@ fun GameSearchRow(
                                                     sortOption = sort.value
                                                 )
                                             )
+                                            refreshGameList()
                                             expanded = false
                                         }
                                     )
@@ -162,6 +167,7 @@ fun GameSearchRow(
                                         sortOption = sort.value
                                     )
                                 )
+                                refreshGameList()
                                 expanded = false
                             })
                     }

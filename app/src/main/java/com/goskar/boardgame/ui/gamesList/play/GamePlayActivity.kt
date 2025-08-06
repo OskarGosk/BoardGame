@@ -154,9 +154,6 @@ fun GamePlayContent(
             .verticalScroll(scrollState),
 
         ) {
-        val verticalText2 = "Player List".uppercase().toCharArray().joinToString("\n")
-        val verticalText3 = "Game date".uppercase().toCharArray().joinToString("\n")
-
 
         Row {
             Column(
@@ -170,9 +167,10 @@ fun GamePlayContent(
                     ),
             ) {
                 Text(
-                    text = stringResource(R.string.history_game_info).uppercase().toCharArray().joinToString("\n"),
+                    text = stringResource(R.string.history_game_info).uppercase().toCharArray()
+                        .joinToString("\n"),
                     textAlign = TextAlign.Center,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = Smooch14_line14,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -196,9 +194,10 @@ fun GamePlayContent(
                     ),
             ) {
                 Text(
-                    text = stringResource(R.string.history_player_list).uppercase().toCharArray().joinToString("\n"),
+                    text = stringResource(R.string.history_player_list).uppercase().toCharArray()
+                        .joinToString("\n"),
                     textAlign = TextAlign.Center,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = Smooch14_line14,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -223,9 +222,10 @@ fun GamePlayContent(
                     ),
             ) {
                 Text(
-                    text = stringResource(R.string.history_game_data).uppercase().toCharArray().joinToString("\n"),
+                    text = stringResource(R.string.history_game_data).uppercase().toCharArray()
+                        .joinToString("\n"),
                     textAlign = TextAlign.Center,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = Smooch14_line14,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -348,7 +348,7 @@ fun GamePlayContent(
             state = state,
             selectedPlayer = selectedPlayer,
             update = update,
-            onDismiss = {playerSelectDialog = false}
+            onDismiss = { playerSelectDialog = false }
         )
     }
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
@@ -34,8 +36,10 @@ import com.goskar.boardgame.ui.gamesList.lists.GameListState
 fun GameViewList(
     deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {},
-    state: GameListState
-) {
+    state: GameListState,
+    update: (GameListState) -> Unit = {},
+    refreshGameList: () -> Unit = {},
+    ) {
     var selectedList by remember { mutableStateOf(true) }
 
     val gridState = rememberLazyGridState()
@@ -43,32 +47,54 @@ fun GameViewList(
     var isScrollingDown by remember { mutableStateOf(false) }
     val lastOffset by remember { mutableIntStateOf(0) }
 
-    val newGameList: List<Game> = when (state.sortOption) {
-        R.string.default_sort -> state.gameList ?: emptyList()
-        R.string.name_ascending -> state.gameList?.sortedBy { it.name } ?: emptyList()
-        R.string.name_descending -> state.gameList?.sortedByDescending { it.name }
-            ?: emptyList()
-
-        R.string.played_ascending -> state.gameList?.sortedBy { it.games } ?: emptyList()
-        R.string.played_descending -> state.gameList?.sortedByDescending { it.games }
-            ?: emptyList()
-
-        else -> state.gameList ?: emptyList()
-    }.filter { it.name.lowercase().contains(state.searchTxt.lowercase()) }
-
     Column {
         AnimatedVisibility(visible = !isScrollingDown) {
-            Row {
-                FormatCard(
-                    Modifier.weight(1f),
-                    "List",
-                    selectedList,
-                    onClick = { selectedList = !selectedList })
-                FormatCard(
-                    Modifier.weight(1f),
-                    "Square",
-                    !selectedList,
-                    onClick = { selectedList = !selectedList })
+            Column {
+                Row {
+                    FormatCard(
+                        Modifier.weight(1f),
+                        "List",
+                        selectedList,
+                        onClick = { selectedList = !selectedList })
+                    FormatCard(
+                        Modifier.weight(1f),
+                        "Square",
+                        !selectedList,
+                        onClick = { selectedList = !selectedList })
+                }
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    GameCheckbox(
+                        modifier = Modifier.weight(1f),
+                        checkboxText = stringResource(R.string.board_base),
+                        checked = state.checkboxBaseGame,
+                        onCheckedChange = {
+                            update(
+                                state.copy(
+                                    checkboxBaseGame = !state.checkboxBaseGame,
+                                )
+                            )
+                            refreshGameList()
+
+                        }
+                    )
+                    GameCheckbox(
+                        modifier = Modifier.weight(1f),
+                        checkboxText = stringResource(R.string.board_expansion),
+                        checked = state.checkboxExpansionGame,
+                        onCheckedChange = {
+                            update(
+                                state.copy(
+                                    checkboxExpansionGame = !state.checkboxExpansionGame,
+                                )
+                            )
+                            refreshGameList()
+                        }
+                    )
+
+                }
             }
         }
 
@@ -77,13 +103,13 @@ fun GameViewList(
                 state = listState,
                 contentPadding = PaddingValues(10.dp),
             ) {
-                items(items = newGameList) { game ->
+                items(items = state.gameListEdited) { game ->
                     isScrollingDown = listState.firstVisibleItemIndex != lastOffset
 
                     SingleLineGame(
                         game = game,
                         modifier = Modifier.padding(
-                            bottom = if (newGameList.indexOf(game) == (newGameList.size - 1)
+                            bottom = if (state.gameListEdited.indexOf(game) == (state.gameListEdited.size - 1)
                             ) 60.dp else 10.dp
                         ),
                         deleteGame = deleteGame,
@@ -98,7 +124,7 @@ fun GameViewList(
                 contentPadding = PaddingValues(10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items(items = newGameList, key = { it.id }) { game ->
+                items(items = state.gameListEdited, key = { it.id }) { game ->
                     isScrollingDown = gridState.firstVisibleItemIndex != lastOffset
 
                     var isExpanded by rememberSaveable(game.id) { mutableStateOf(true) }
@@ -107,7 +133,7 @@ fun GameViewList(
                         SingleCoverGameCard(
                             game = game,
                             modifier = Modifier.padding(
-                                bottom = if (newGameList.indexOf(game) == (newGameList.size - 1)
+                                bottom = if (state.gameListEdited.indexOf(game) == (state.gameListEdited.size - 1)
                                 ) 60.dp else 10.dp
                             ),
                             deleteGame = deleteGame,
@@ -118,7 +144,7 @@ fun GameViewList(
                         SingleGameCard(
                             game = game,
                             modifier = Modifier.padding(
-                                bottom = if (newGameList.indexOf(game) == (newGameList.size - 1)
+                                bottom = if (state.gameListEdited.indexOf(game) == (state.gameListEdited.size - 1)
                                 ) 60.dp else 10.dp
                             ),
                             deleteGame = deleteGame,

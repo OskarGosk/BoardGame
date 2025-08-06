@@ -66,6 +66,7 @@ class GameListScreen : Screen {
                 deleteGame = viewModel::validateDeleteGame,
                 refresh = viewModel::refresh,
                 update = viewModel::update,
+                refreshGameList = viewModel::refreshGameList,
                 paddingValues = paddingValues
             )
         }
@@ -78,6 +79,7 @@ fun GameListContent(
     deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {},
     update: (GameListState) -> Unit = {},
+    refreshGameList: () -> Unit = {},
     paddingValues: PaddingValues
 ) {
     val navigator = LocalNavigator.current
@@ -104,8 +106,8 @@ fun GameListContent(
                 }
             )
         } else {
-            GameSearchRow(update = update, state = state)
-            GameViewList(deleteGame = deleteGame, refresh = refresh, state = state)
+            GameSearchRow(update = update, state = state, refreshGameList = refreshGameList)
+            GameViewList(deleteGame = deleteGame, refresh = refresh, state = state, update = update, refreshGameList = refreshGameList)
         }
     }
 

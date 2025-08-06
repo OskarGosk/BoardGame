@@ -2,10 +2,10 @@ package com.goskar.boardgame.ui.components.scaffold
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,10 +38,9 @@ fun BoardGameScaffold(
     val keyboardState by keyboardAsState()
 
     Scaffold(
+        contentWindowInsets = WindowInsets.safeGestures,
         modifier = modifier.then(
             Modifier
-                .systemBarsPadding()
-                .imePadding()
         ),
         floatingActionButton = floatingActionButton,
         topBar = { TopBar(titlePage, showSynchronizedIcon, topBarState, uploadDataToFirebase) },

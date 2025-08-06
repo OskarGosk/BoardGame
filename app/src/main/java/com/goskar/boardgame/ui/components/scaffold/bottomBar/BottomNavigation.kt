@@ -1,13 +1,17 @@
 package com.goskar.boardgame.ui.components.scaffold.bottomBar
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,11 +38,15 @@ fun BottomNavigation(
     val navigator = LocalNavigator.current
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .background(MaterialTheme.colorScheme.background), // Jeśli chcesz kolor
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         BottomBarElements.entries.forEach { elements ->
-            Column {
+            Column(
+                modifier = Modifier
+            ) {
                 HorizontalDivider(
                     modifier = Modifier
                         .width(72.dp)
@@ -62,7 +70,7 @@ fun BottomNavigation(
                         Text(
                             text = stringResource(elements.title),
                             textAlign = TextAlign.Center,
-                            style = if(selectedScreen == elements.title) SmoochBold18.copy(color = primaryLight) else Smooch18,
+                            style = if (selectedScreen == elements.title) SmoochBold18.copy(color = primaryLight) else Smooch18,
                         )
                     }
                 }
