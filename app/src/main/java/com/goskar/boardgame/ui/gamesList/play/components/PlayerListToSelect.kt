@@ -22,10 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -60,11 +56,9 @@ fun PlayerListToSelect(
                 columns = GridCells.Fixed(3),
             ) {
                 items(items = state.playerList) { player ->
-                    var isChecked by remember { mutableStateOf(player.selected) }
                     val onClick = {
-                        if (state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || isChecked) {
+                        if (state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || player.selected) {
                             //DODAC zabezpiecznie gdy maxPlayer jest null lub ""
-                            isChecked = !isChecked
                             selectedPlayer(player)
                         } else {
                             Toast.makeText(
@@ -83,7 +77,7 @@ fun PlayerListToSelect(
                             }
                     ) {
                         Checkbox(
-                            checked = isChecked, onCheckedChange = {
+                            checked = player.selected, onCheckedChange = {
                                 onClick()
                             })
                         Text(

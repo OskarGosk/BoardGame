@@ -3,6 +3,7 @@ package com.goskar.boardgame.ui.gamesList.play
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,20 +19,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -52,9 +59,13 @@ import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
+import com.goskar.boardgame.ui.gamesList.play.components.CooperateRow
 import com.goskar.boardgame.ui.gamesList.play.components.GameInfo
 import com.goskar.boardgame.ui.gamesList.play.components.PlayerListToSelect
+import com.goskar.boardgame.ui.gamesList.play.components.SelectPlayerDialog
 import com.goskar.boardgame.ui.gamesList.play.components.WinnerRow
+import com.goskar.boardgame.ui.theme.BoardGameTheme
+import com.goskar.boardgame.ui.theme.Smooch14_line14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
 
@@ -78,6 +89,7 @@ class GamePlayActivityScreen(
                 )
             )
             viewModel.getAllPlayer()
+            viewModel.setGameVariant()
         }
 
         LaunchedEffect(state.successEditAllPlayer) {
@@ -117,6 +129,7 @@ fun GamePlayContent(
     val calendarState = rememberSheetState()
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    var playerSelectDialog by remember { mutableStateOf(false) }
 
     CalendarDialog(
         state = calendarState,
@@ -133,172 +146,258 @@ fun GamePlayContent(
         })
 
 
-        Column(
-            modifier = Modifier
-                .padding(10.dp)
-                .padding(bottom = 40.dp)
-                .padding(paddingValues)
-                .verticalScroll(scrollState),
+    Column(
+        modifier = Modifier
+            .padding(10.dp)
+            .padding(bottom = 40.dp)
+            .padding(paddingValues)
+            .verticalScroll(scrollState),
 
             ) {
             GameInfo(state = state)
-            PlayerListToSelect(state = state, selectedPlayer = selectedPlayer)
 
-            Row(
+        }
+
+        Spacer(modifier = Modifier.height(15.dp))
+        Row {
+            Column(
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .width(20.dp)
+                    .height(150.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(15.dp)
+                    ),
             ) {
-                Button(
-                    shape = CutCornerShape(percent = 10),
-                    onClick = {
-                        calendarState.show()
-                    },
+                Text(
+                    text = verticalText2,
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    style = Smooch14_line14,
                     modifier = Modifier
                         .fillMaxWidth()
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            stringResource(R.string.history_play_date),
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center,
-                            style = SmoochBold18
-                        )
-                        Text(
-                            text = "${state.playDate}",
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center,
-                            style = SmoochBold18
-                        )
-                    }
-                }
+                        .padding(1.dp)
+                        .clickable {
+                            playerSelectDialog = true
+                        }
+                )
             }
-            WinnerRow(state = state, update = update)
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Text(
-                text = stringResource(R.string.history_description),
-                style = Smooch18,
+            PlayerListToSelect(state = state, selectedPlayer = selectedPlayer)
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+        Row {
+            Column(
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .fillMaxWidth()
-            )
-            OutlinedTextField(
-                textStyle = Smooch18,
-                value = state.descriptionGame,
-                onValueChange = {
-                    update(
-                        state.copy(
-                            descriptionGame = it
-                        )
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .width(200.dp)
-            )
-            Spacer(modifier = Modifier.height(15.dp))
-
-            Button(
-                enabled = state.winner != "Who Win?",
-                shape = CutCornerShape(percent = 10),
-                onClick = {
-                    addGamePlay(context)
-                },
-                modifier = Modifier.fillMaxWidth(),
+                    .width(20.dp)
+                    .height(150.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(15.dp)
+                    ),
             ) {
+                Text(
+                    text = verticalText3,
+                    textAlign = TextAlign.Center,
+                    color = Color.White,
+                    style = Smooch14_line14,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(1.dp)
+                )
+            }
+            Column {
+                CooperateRow(state = state, update = update, Modifier.padding(start = 10.dp))
+
                 Row(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "AddGamePlay",
-                        modifier = Modifier.size(25.dp)
-                    )
-                    Text(
-                        stringResource(R.string.history_add),
-                        style = SmoochBold18)
+                    Button(
+                        shape = CutCornerShape(percent = 10),
+                        onClick = {
+                            calendarState.show()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                stringResource(R.string.history_play_date),
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center,
+                                style = SmoochBold18
+                            )
+                            Text(
+                                text = "${state.playDate}",
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.Center,
+                                style = SmoochBold18
+                            )
+                        }
+                    }
                 }
+                WinnerRow(state = state, update = update, Modifier.padding(start = 10.dp))
             }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(10.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
+        Spacer(modifier = Modifier.height(15.dp))
 
-            Image(
-                painter = painterResource(R.drawable.bgg),
-                contentScale = ContentScale.Fit,
-                contentDescription = "BGG LOGO",
-                modifier = Modifier
-                    .height(50.dp)
-                    .clickable {
-                        uriHandler.openUri("https://boardgamegeek.com/")
-                    })
+        Text(
+            text = stringResource(R.string.history_description),
+            style = Smooch18,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        OutlinedTextField(
+            textStyle = Smooch18,
+            value = state.descriptionGame,
+            onValueChange = {
+                update(
+                    state.copy(
+                        descriptionGame = it
+                    )
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .width(200.dp)
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Button(
+            enabled = state.winner != "Who Win?",
+            shape = CutCornerShape(percent = 10),
+            onClick = {
+                addGamePlay(context)
+            },
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "AddGamePlay",
+                    modifier = Modifier.size(25.dp)
+                )
+                Text(
+                    stringResource(R.string.history_add),
+                    style = SmoochBold18
+                )
+            }
         }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(10.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+
+        Image(
+            painter = painterResource(R.drawable.bgg),
+            contentScale = ContentScale.Fit,
+            contentDescription = "BGG LOGO",
+            modifier = Modifier
+                .height(50.dp)
+                .clickable {
+                    uriHandler.openUri("https://boardgamegeek.com/")
+                })
+    }
+
+
+    if (playerSelectDialog) {
+        SelectPlayerDialog(
+            state = state,
+            selectedPlayer = selectedPlayer,
+            update = update,
+            onDismiss = {playerSelectDialog = false}
+        )
+    }
 
 }
 
 @Preview
 @Composable
 fun GamePlayActivityPreview() {
-    BoardGameScaffold(
-        titlePage = stringResource(R.string.history_add),
-        selectedScreen = null,
-    ) { paddingValues ->
-        val player =
-            Player(name = "Maksymilian Gosk WIelki Gracz", winRatio = 2, games = 6, description = "ds", selected = true)
-        val player2 =
-            Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
+    BoardGameTheme {
+        BoardGameScaffold(
+            titlePage = stringResource(R.string.history_add),
+            selectedScreen = null,
+        ) { paddingValues ->
+            val player =
+                Player(
+                    name = "Maksymilian Gosk WIelki Gracz",
+                    winRatio = 2,
+                    games = 6,
+                    description = "ds",
+                    selected = true
+                )
+            val player2 =
+                Player(
+                    name = "Kamila",
+                    winRatio = 2,
+                    games = 6,
+                    description = "ds",
+                    selected = false
+                )
 
-        val game = Game(
-            name = "Nazwa Testowa",
-            expansion = true,
-            cooperate = false,
-            baseGame = "Gra bazowa",
-            minPlayer = "1",
-            maxPlayer = "4",
-            games = 6,
-            id = "5456"
-        )
-        GamePlayContent(
-            GamePlayState(
-                game,
-                playerList = listOf(player, player, player2, player2, player, player, player2)
-            ),
-            paddingValues = paddingValues
-        )
+            val game = Game(
+                name = "Nazwa Testowa",
+                expansion = true,
+                cooperate = true,
+                baseGame = "Gra bazowa",
+                minPlayer = "1",
+                maxPlayer = "4",
+                games = 6,
+                id = "5456"
+            )
+            GamePlayContent(
+                GamePlayState(
+                    game,
+                    playerList = listOf(player, player, player2, player2, player, player, player2)
+                ),
+                paddingValues = paddingValues
+            )
+        }
     }
 }
 
 @Preview
 @Composable
 fun GamePlayActivityPreviewWithoutPlayer() {
-    BoardGameScaffold(
-        titlePage = stringResource(R.string.history_add),
-        selectedScreen = null,
-    ) { paddingValues ->
+    BoardGameTheme {
+        BoardGameScaffold(
+            titlePage = stringResource(R.string.history_add),
+            selectedScreen = null,
+        ) { paddingValues ->
 
-        val game = Game(
-            name = "Nazwa Testowa",
-            expansion = true,
-            cooperate = false,
-            baseGame = "Gra bazowa",
-            minPlayer = "1",
-            maxPlayer = "4",
-            games = 6,
-            id = "5456"
-        )
-        GamePlayContent(GamePlayState(game, playerList = emptyList()), paddingValues = paddingValues)
+            val game = Game(
+                name = "Nazwa Testowa Z Dwoma linijkami",
+                expansion = true,
+                cooperate = false,
+                baseGame = "Gra bazowa",
+                minPlayer = "1",
+                maxPlayer = "4",
+                games = 6,
+                id = "5456"
+            )
+            GamePlayContent(
+                GamePlayState(game, playerList = emptyList()),
+                paddingValues = paddingValues
+            )
+        }
     }
 }

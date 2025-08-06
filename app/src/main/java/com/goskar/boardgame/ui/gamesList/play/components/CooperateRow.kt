@@ -29,19 +29,20 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.gamesList.play.GamePlayState
+import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.utils.CooperatePlayers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WinnerRow(
+fun CooperateRow(
     state: GamePlayState,
     update: (GamePlayState) -> Unit = {},
     modifier: Modifier
 ) {
-    val selectedPlayers = state.playerList?.filter { it.selected }
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Row(
         modifier = modifier
             .fillMaxWidth(),
@@ -49,7 +50,7 @@ fun WinnerRow(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            stringResource(R.string.history_winner),
+            stringResource(R.string.history_game_variant),
             modifier = Modifier.weight(0.5f),
             textAlign = TextAlign.Start,
             style = Smooch18,
@@ -64,7 +65,7 @@ fun WinnerRow(
                 modifier = Modifier
                     .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 readOnly = true,
-                value = state.winner,
+                value = stringResource(state.gameVariant),
                 onValueChange = {},
                 colors = ExposedDropdownMenuDefaults.textFieldColors(
                     unfocusedContainerColor = MaterialTheme.colorScheme.background,
@@ -74,46 +75,24 @@ fun WinnerRow(
                 )
             )
 
-            val context = LocalContext.current
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }) {
-                if (state.gameVariant == GameVariantEnum.Coop.id) {
-                    CooperatePlayers.entries.forEach { it ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    stringResource(it.value),
-                                    style = if (context.resources.getString(it.value) == state.winner) SmoochBold18 else Smooch18
+                GameVariantEnum.entries.forEach {
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(it.id),
+                                style = if(it.id == state.gameVariant) SmoochBold18 else Smooch18)
+                        },
+                        onClick = {
+                            update(
+                                state.copy(
+                                    gameVariant = it.id,
+                                    winner = context.resources.getString(R.string.history_who_win)
                                 )
-                            },
-                            onClick = {
-                                update(
-                                    state.copy(
-                                        winner = context.resources.getString(it.value)
-                                    )
-                                )
-                                expanded = false
-                            })
-                    }
-                } else {
-                    selectedPlayers?.forEach { player ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = player.name,
-                                    style = if (player.name == state.winner) SmoochBold18 else Smooch18
-                                )
-                            },
-                            onClick = {
-                                update(
-                                    state.copy(
-                                        winner = player.name
-                                    )
-                                )
-                                expanded = false
-                            })
-                    }
+                            )
+                            expanded = false
+                        })
                 }
             }
         }
@@ -122,19 +101,21 @@ fun WinnerRow(
 
 @Preview
 @Composable
-fun WinnerRowPreview() {
-    val player =
-        Player(name = "Oskar", winRatio = 2, games = 6, description = "ds", selected = true)
-    val player2 =
-        Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
-    Surface(
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Box(modifier = Modifier.padding(10.dp)) {
-            WinnerRow(
-                state = GamePlayState(playerList = listOf(player, player2, player2)),
-                modifier = Modifier
-            )
+fun CooperateRowPreview() {
+    BoardGameTheme {
+        val player =
+            Player(name = "Oskar", winRatio = 2, games = 6, description = "ds", selected = true)
+        val player2 =
+            Player(name = "Kamila", winRatio = 2, games = 6, description = "ds", selected = false)
+        Surface(
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Box(modifier = Modifier.padding(10.dp)) {
+                CooperateRow(
+                    state = GamePlayState(playerList = listOf(player, player2, player2)),
+                    modifier = Modifier
+                )
+            }
         }
     }
 }

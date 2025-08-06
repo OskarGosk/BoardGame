@@ -1,8 +1,10 @@
 package com.goskar.boardgame.ui.gamesList.play
 
 import android.content.Context
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.Player
@@ -26,9 +28,12 @@ data class GamePlayState(
     val successAddHistoryGame: Boolean = false,
     val errorVisible: Boolean = false,
     val winner: String = "Who Win?",
+    val gameVariant: Int = R.string.history_normal,
     val playDate: LocalDate = LocalDate.now(),
     val countSelectedPlayer: Int = 0,
-    val descriptionGame: String = ""
+    val descriptionGame: String = "",
+    val searchTxt: String = "",
+    val sortOption: Int = R.string.default_sort,
 )
 
 @KoinViewModel
@@ -123,6 +128,18 @@ class GamePlayViewModel(
                 )
             }
         }
+    }
+
+    fun setGameVariant() {
+        _state.update {
+            it.copy(
+                gameVariant = when (state.value.game?.cooperate) {
+                    true -> R.string.history_coop
+                    else -> R.string.history_normal
+                }
+            )
+        }
+
     }
 
     fun getAllPlayer() {
