@@ -1,7 +1,6 @@
 package com.goskar.boardgame.ui.gamesList.play
 
 import android.content.Context
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
@@ -12,6 +11,7 @@ import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.utils.CooperatePlayers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +22,7 @@ import java.time.LocalDate
 
 data class GamePlayState(
     val game: Game? = null,
+    val gameList: List<ExpansionGameUiState>? = emptyList(),
     val playerList: List<Player>? = emptyList(),
     val successAddPlayGame: Boolean = false,
     val successEditAllPlayer: Boolean = false,
@@ -36,11 +37,17 @@ data class GamePlayState(
     val sortOption: Int = R.string.default_sort,
 )
 
+data class ExpansionGameUiState(
+    val game: Game,
+    val isSelected: Boolean = false
+)
+
 @KoinViewModel
 class GamePlayViewModel(
     private val playerDbRepository: PlayerDbRepository,
     private val gameDbRepository: GameDbRepository,
     private val gamesHistoryDbRepository: GamesHistoryDbRepository,
+    private val getAllGameUseCase: GetAllGameUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GamePlayState())
@@ -48,6 +55,40 @@ class GamePlayViewModel(
 
     fun update(state: GamePlayState) {
         _state.update { state }
+    }
+
+    private fun setGameData() {
+        if (state.value.game?.expansion == true) {
+            val newExpansionGameList = state.value.gameList?.filter {
+                it.game.baseGameId == state.value.game?.baseGameId
+            }
+
+            val tempExpansionId = state.value.game?.id
+
+
+            val game = state.value.gameList?.firstOrNull {
+                it.game.id == state.value.game?.baseGameId
+            }?.game
+
+            _state.update {
+                it.copy(
+                    game = game,
+                    gameList = newExpansionGameList
+                )
+            }
+            tempExpansionId?.let {
+                selectExpansion(it)
+            }
+        } else {
+            val newExpansionGameList = state.value.gameList?.filter {
+                it.game.baseGameId == state.value.game?.id
+            }
+            _state.update {
+                it.copy(
+                    gameList = newExpansionGameList
+                )
+            }
+        }
     }
 
     fun validateAllData(context: Context) {
@@ -139,7 +180,6 @@ class GamePlayViewModel(
                 }
             )
         }
-
     }
 
     fun getAllPlayer() {
@@ -181,7 +221,10 @@ class GamePlayViewModel(
             val playerGames = player.copy(
                 name = player.name,
                 games = player.games + 1,
-                winRatio = if (player.name == state.value.winner || state.value.winner == context.resources.getString(CooperatePlayers.PLAYERS.value)) player.winRatio + 1 else player.winRatio,
+                winRatio = if (player.name == state.value.winner || state.value.winner == context.resources.getString(
+                        CooperatePlayers.PLAYERS.value
+                    )
+                ) player.winRatio + 1 else player.winRatio,
                 description = player.description,
                 selected = false
             )
@@ -208,6 +251,34 @@ class GamePlayViewModel(
                     }
                 }
             }
+        }
+    }
+
+    fun getAllGame() {
+        viewModelScope.launch {
+            val games = getAllGameUseCase.invoke()
+            val gameUiStates = games.map { ExpansionGameUiState(game = it) }
+            _state.update {
+                it.copy(
+                    gameList = gameUiStates
+                )
+            }
+            setGameData()
+        }
+    }
+
+    fun selectExpansion(expansionId: String) {
+        val newGameList = state.value.gameList?.map {
+            if (it.game.id == expansionId) {
+                it.copy(isSelected = !it.isSelected)
+            } else {
+                it
+            }
+        } ?: emptyList()
+        _state.update {
+            it.copy(
+                gameList = newGameList
+            )
         }
     }
 }

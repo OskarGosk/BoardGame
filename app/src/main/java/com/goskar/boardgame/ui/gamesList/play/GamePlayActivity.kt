@@ -62,6 +62,7 @@ import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gamesList.play.components.CooperateRow
 import com.goskar.boardgame.ui.gamesList.play.components.GameInfo
 import com.goskar.boardgame.ui.gamesList.play.components.PlayerListToSelect
+import com.goskar.boardgame.ui.gamesList.play.components.SelectExpansionDialog
 import com.goskar.boardgame.ui.gamesList.play.components.SelectPlayerDialog
 import com.goskar.boardgame.ui.gamesList.play.components.WinnerRow
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -88,6 +89,7 @@ class GamePlayActivityScreen(
                     game = game
                 )
             )
+            viewModel.getAllGame()
             viewModel.getAllPlayer()
             viewModel.setGameVariant()
         }
@@ -109,6 +111,7 @@ class GamePlayActivityScreen(
                 update = viewModel::update,
                 selectedPlayer = viewModel::selectedPlayer,
                 addGamePlay = viewModel::validateAllData,
+                selectExpansion = viewModel::selectExpansion,
                 paddingValues = paddingValues
             )
         }
@@ -123,6 +126,7 @@ fun GamePlayContent(
     update: (GamePlayState) -> Unit = {},
     selectedPlayer: (Player) -> Unit = {},
     addGamePlay: (Context) -> Unit = {},
+    selectExpansion: (String) -> Unit = {},
     paddingValues: PaddingValues
 ) {
     val uriHandler = LocalUriHandler.current
@@ -130,6 +134,7 @@ fun GamePlayContent(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     var playerSelectDialog by remember { mutableStateOf(false) }
+    var expansionSelectDialog by remember { mutableStateOf(false) }
 
     CalendarDialog(
         state = calendarState,
@@ -175,6 +180,9 @@ fun GamePlayContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(1.dp)
+                        .clickable {
+                            expansionSelectDialog = true
+                        }
                 )
             }
             GameInfo(state = state)
@@ -342,6 +350,13 @@ fun GamePlayContent(
                 })
     }
 
+    if (expansionSelectDialog && !state.gameList.isNullOrEmpty()) {
+        SelectExpansionDialog(
+            gameExpansionList = state.gameList,
+            selectExpansion = selectExpansion,
+            onDismiss = { expansionSelectDialog = false }
+        )
+    }
 
     if (playerSelectDialog) {
         SelectPlayerDialog(
