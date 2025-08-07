@@ -148,8 +148,6 @@ fun SelectPlayerDialog(
                     }
                 }
             }
-
-            Text(text = "Oskar Oskar")
         }
 
 

@@ -67,6 +67,8 @@ class GameListScreen : Screen {
                 refresh = viewModel::refresh,
                 update = viewModel::update,
                 refreshGameList = viewModel::refreshGameList,
+                updateExpandedGameCover = viewModel::updateExpandedGameCover,
+                changeAllExpendedGameCover = viewModel::changeAllExpendedGameCover,
                 paddingValues = paddingValues
             )
         }
@@ -80,12 +82,14 @@ fun GameListContent(
     refresh: () -> Unit = {},
     update: (GameListState) -> Unit = {},
     refreshGameList: () -> Unit = {},
+    updateExpandedGameCover: (Game) -> Unit = {},
+    changeAllExpendedGameCover: () -> Unit = {},
     paddingValues: PaddingValues
 ) {
     val navigator = LocalNavigator.current
     val uriHandler = LocalUriHandler.current
 
-    if(state.isLoading) AppLoader()
+    if (state.isLoading) AppLoader()
 
     Column(
         modifier = Modifier
@@ -107,7 +111,15 @@ fun GameListContent(
             )
         } else {
             GameSearchRow(update = update, state = state, refreshGameList = refreshGameList)
-            GameViewList(deleteGame = deleteGame, refresh = refresh, state = state, update = update, refreshGameList = refreshGameList)
+            GameViewList(
+                deleteGame = deleteGame,
+                refresh = refresh,
+                state = state,
+                update = update,
+                refreshGameList = refreshGameList,
+                updateExpandedGameCover = updateExpandedGameCover,
+                changeAllExpendedGameCover = changeAllExpendedGameCover
+            )
         }
     }
 
@@ -151,6 +163,8 @@ fun GameListContentPreview() {
         id = "dasfgfshdasdas"
     )
     val gameList = listOf(game)
+    val gameUiStates = gameList.map { GameUiState(game = it) }
+
     BoardGameScaffold(
         titlePage = stringResource(R.string.board_list),
         selectedScreen = BottomBarElements.GameListButton.title,
@@ -158,7 +172,10 @@ fun GameListContentPreview() {
             FloatingMenu(items = AddItemsMenu.entries.map { it.items })
         }
     ) { paddingValues ->
-        GameListContent(state = GameListState(gameList = gameList), paddingValues = paddingValues)
+        GameListContent(
+            state = GameListState(gameList = gameUiStates),
+            paddingValues = paddingValues
+        )
     }
 }
 

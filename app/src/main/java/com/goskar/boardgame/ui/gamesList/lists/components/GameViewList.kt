@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.gamesList.lists.GameListState
+import com.goskar.boardgame.ui.gamesList.lists.GameUiState
 
 @Composable
 fun GameViewList(
@@ -39,8 +39,10 @@ fun GameViewList(
     state: GameListState,
     update: (GameListState) -> Unit = {},
     refreshGameList: () -> Unit = {},
-    ) {
-    var selectedList by remember { mutableStateOf(true) }
+    updateExpandedGameCover: (Game) -> Unit = {},
+    changeAllExpendedGameCover: () -> Unit = {}
+) {
+    var selectedList by remember { mutableStateOf(GameListFormatEnum.LIST) }
 
     val gridState = rememberLazyGridState()
     val listState = rememberLazyListState()
@@ -54,18 +56,21 @@ fun GameViewList(
                     FormatCard(
                         Modifier.weight(1f),
                         "List",
-                        selectedList,
-                        onClick = { selectedList = !selectedList })
+                        isSelected = selectedList == GameListFormatEnum.LIST,
+                        onClick = { selectedList = GameListFormatEnum.LIST })
                     FormatCard(
                         Modifier.weight(1f),
                         "Square",
-                        !selectedList,
-                        onClick = { selectedList = !selectedList })
+                        isSelected = (selectedList == GameListFormatEnum.SQUARE_COVER || selectedList == GameListFormatEnum.SQUARE_INFO),
+                        onClick = {
+                            if (selectedList == GameListFormatEnum.SQUARE_COVER) changeAllExpendedGameCover()
+                            else selectedList = GameListFormatEnum.SQUARE_COVER
+                        })
                 }
-                Row (
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                ){
+                ) {
                     GameCheckbox(
                         modifier = Modifier.weight(1f),
                         checkboxText = stringResource(R.string.board_base),
@@ -98,18 +103,18 @@ fun GameViewList(
             }
         }
 
-        if (selectedList) {
+        if (selectedList == GameListFormatEnum.LIST) {
             LazyColumn(
                 state = listState,
                 contentPadding = PaddingValues(10.dp),
             ) {
-                items(items = state.gameListEdited) { game ->
+                items(items = state.gameListEdited) { gameUi ->
                     isScrollingDown = listState.firstVisibleItemIndex != lastOffset
 
                     SingleLineGame(
-                        game = game,
+                        game = gameUi.game,
                         modifier = Modifier.padding(
-                            bottom = if (state.gameListEdited.indexOf(game) == (state.gameListEdited.size - 1)
+                            bottom = if (state.gameListEdited.indexOf(gameUi) == (state.gameListEdited.size - 1)
                             ) 60.dp else 10.dp
                         ),
                         deleteGame = deleteGame,
@@ -124,32 +129,31 @@ fun GameViewList(
                 contentPadding = PaddingValues(10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                items(items = state.gameListEdited, key = { it.id }) { game ->
+                items(items = state.gameListEdited, key = { it.game.id }) { gameUi ->
                     isScrollingDown = gridState.firstVisibleItemIndex != lastOffset
 
-                    var isExpanded by rememberSaveable(game.id) { mutableStateOf(true) }
-                    val gameUri = game.uriFromBgg ?: game.uri
-                    if (isExpanded && !gameUri.isNullOrEmpty()) {
+                    val gameUri = gameUi.game.uriFromBgg ?: gameUi.game.uri
+                    if (gameUi.isExpanded && !gameUri.isNullOrEmpty()) {
                         SingleCoverGameCard(
-                            game = game,
+                            game = gameUi.game,
                             modifier = Modifier.padding(
-                                bottom = if (state.gameListEdited.indexOf(game) == (state.gameListEdited.size - 1)
+                                bottom = if (state.gameListEdited.indexOf(gameUi) == (state.gameListEdited.size - 1)
                                 ) 60.dp else 10.dp
                             ),
                             deleteGame = deleteGame,
                             refresh = refresh,
-                            onCardCLick = { isExpanded = !isExpanded }
+                            onCardCLick = { updateExpandedGameCover(gameUi.game) }
                         )
                     } else {
                         SingleGameCard(
-                            game = game,
+                            game = gameUi.game,
                             modifier = Modifier.padding(
-                                bottom = if (state.gameListEdited.indexOf(game) == (state.gameListEdited.size - 1)
+                                bottom = if (state.gameListEdited.indexOf(gameUi) == (state.gameListEdited.size - 1)
                                 ) 60.dp else 10.dp
                             ),
                             deleteGame = deleteGame,
                             refresh = refresh,
-                            onCardCLick = { isExpanded = !isExpanded }
+                            onCardCLick = { updateExpandedGameCover(gameUi.game) }
                         )
                     }
                 }
@@ -183,10 +187,11 @@ fun GameViewListPreview() {
         id = "dasfgfsh2"
     )
     val gameList = listOf(game, game2)
+    val gameUiStates = gameList.map { GameUiState(game = it) }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        GameViewList(state = GameListState(gameList))
+        GameViewList(state = GameListState(gameUiStates))
     }
 }
