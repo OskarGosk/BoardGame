@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import java.time.LocalDate
+import java.util.UUID
 
 data class GamePlayState(
     val game: Game? = null,
@@ -35,6 +37,7 @@ data class GamePlayState(
     val descriptionGame: String = "",
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
+    val id: String = UUID.randomUUID().toString()
 )
 
 data class ExpansionGameUiState(
@@ -111,10 +114,44 @@ class GamePlayViewModel(
             winner = state.value.winner,
             gameName = state.value.game?.name ?: "",
             listOfPlayer = listOfPlayer,
-            description = state.value.descriptionGame
+            description = state.value.descriptionGame,
+            id = state.value.id
         )
 
         val response = gamesHistoryDbRepository.insertHistoryGame(historyGame = historyGame)
+
+        when (response) {
+            is RequestResult.Success -> {
+                validateAddHistoryGameExpansionData()
+            }
+
+            is RequestResult.Error -> {
+                _state.update {
+                    it.copy(
+                        successAddHistoryGame = false,
+                        errorVisible = true,
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun validateAddHistoryGameExpansionData() {
+        var expansionHistoryList : List<HistoryGameExpansion> = emptyList()
+
+        state.value.gameList?.forEach {
+            if (it.isSelected) {
+                val expansionGameData = HistoryGameExpansion(
+                    historyGameId = state.value.id,
+                    expansionName = it.game.name,
+                    expansionId = it.game.id
+                )
+
+                expansionHistoryList = expansionHistoryList + expansionGameData
+            }
+        }
+
+        val response = gamesHistoryDbRepository.insertAllHistoryGameExpansion(expansionHistoryList)
 
         when (response) {
             is RequestResult.Success -> {
@@ -149,7 +186,6 @@ class GamePlayViewModel(
                             successAddPlayGame = true
                         )
                     }
-//                        validateEditAllPlayer()
                 }
 
                 is RequestResult.Error -> {

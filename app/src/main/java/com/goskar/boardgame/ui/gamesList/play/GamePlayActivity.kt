@@ -308,7 +308,8 @@ fun GamePlayContent(
         Spacer(modifier = Modifier.height(15.dp))
 
         Button(
-            enabled = state.winner != "Who Win?",
+            enabled = ((state.winner != "Who Win?" && (state.playerList?.filter { it.selected }?.size
+                ?: 1) >= (state.game?.minPlayer?.toInt() ?: 1))),
             shape = CutCornerShape(percent = 10),
             onClick = {
                 addGamePlay(context)

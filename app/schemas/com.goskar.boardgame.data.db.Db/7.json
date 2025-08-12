@@ -1,0 +1,254 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "ad0fd1a80ea40b928fdb30db5837034b",
+    "entities": [
+      {
+        "tableName": "Player",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `games` INTEGER NOT NULL, `winRatio` INTEGER NOT NULL, `description` TEXT NOT NULL, `selected` INTEGER NOT NULL, `id` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "games",
+            "columnName": "games",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "winRatio",
+            "columnName": "winRatio",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "selected",
+            "columnName": "selected",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "Game",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `expansion` INTEGER NOT NULL, `cooperate` INTEGER NOT NULL DEFAULT 0, `baseGame` TEXT NOT NULL, `baseGameId` TEXT, `minPlayer` TEXT NOT NULL, `maxPlayer` TEXT NOT NULL, `uri` TEXT, `uriFromBgg` TEXT, `games` INTEGER NOT NULL, `id` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expansion",
+            "columnName": "expansion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cooperate",
+            "columnName": "cooperate",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "baseGame",
+            "columnName": "baseGame",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseGameId",
+            "columnName": "baseGameId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "minPlayer",
+            "columnName": "minPlayer",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxPlayer",
+            "columnName": "maxPlayer",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uri",
+            "columnName": "uri",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "uriFromBgg",
+            "columnName": "uriFromBgg",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "games",
+            "columnName": "games",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "HistoryGame",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`gameName` TEXT NOT NULL, `winner` TEXT NOT NULL, `gameData` TEXT NOT NULL, `listOfPlayer` TEXT NOT NULL, `description` TEXT NOT NULL, `id` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "gameName",
+            "columnName": "gameName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "winner",
+            "columnName": "winner",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gameData",
+            "columnName": "gameData",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "listOfPlayer",
+            "columnName": "listOfPlayer",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "User",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `email` TEXT, `token` TEXT, `userUID` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "token",
+            "columnName": "token",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "userUID",
+            "columnName": "userUID",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "HistoryGameExpansion",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`Id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `historyGameId` TEXT NOT NULL, `expansionName` TEXT NOT NULL, `expansionId` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "Id",
+            "columnName": "Id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "historyGameId",
+            "columnName": "historyGameId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expansionName",
+            "columnName": "expansionName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expansionId",
+            "columnName": "expansionId",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "Id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ad0fd1a80ea40b928fdb30db5837034b')"
+    ]
+  }
+}

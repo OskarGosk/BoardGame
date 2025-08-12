@@ -93,6 +93,10 @@
     <string name="history_game_info">Game Info</string>
     <string name="history_player_list">Player List</string>
     <string name="history_game_data">Game data</string>
+    <string name="history_expansion">With Expansion</string>
+    <string name="history_base">Only Base Game</string>
+
+
 
     //SEARCH BGG
     <string name="bgg">BGG</string>

@@ -97,17 +97,9 @@ fun GameInfo(
             )
             Row {
                 Text(
-                    text = stringResource(if (state.game?.expansion != false) R.string.board_expansion else R.string.board_base),
+                    text = stringResource(if (state.gameList?.any { it.isSelected } == true) R.string.history_expansion else R.string.history_base),
                     style = Smooch14,
                 )
-                if(state.game?.cooperate == true) {
-                    Text(
-                        text = stringResource(R.string.board_cooperate),
-                        style = Smooch14,
-                        modifier = Modifier.padding(start = 15.dp)
-
-                    )
-                }
             }
             Row(
                 modifier = Modifier
