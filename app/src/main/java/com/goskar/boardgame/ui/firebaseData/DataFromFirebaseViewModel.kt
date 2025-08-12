@@ -11,6 +11,7 @@ import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllPlayerUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
+import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
 import com.goskar.boardgame.utils.convertHistoryGameListToDto
@@ -33,6 +34,7 @@ class DataFromFirebaseViewModel(
     private val addAllGameToDb: UpsertAllGameUseCase,
     private val addAllPlayerToDb: UpsertAllPlayerUseCase,
     private val addAllHistoryToDb: UpsertAllHistoryGameUseCase,
+    private val addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DataFromFirebaseState())
@@ -73,6 +75,10 @@ class DataFromFirebaseViewModel(
             val allHistory = api.getAllHistoryGame()
             if (allHistory is RequestResult.Success) {
                 addAllHistoryToDb.invoke(convertHistoryGameListToDto(allHistory.data))
+            }
+            val allHistoryExpansion = api.getAllHistoryGameExpansion()
+            if (allHistoryExpansion is RequestResult.Success) {
+                addAllHistoryGameExpansionToDb.invoke(allHistoryExpansion.data)
             }
         }
     }

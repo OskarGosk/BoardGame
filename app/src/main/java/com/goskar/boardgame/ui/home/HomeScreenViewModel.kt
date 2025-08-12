@@ -12,6 +12,7 @@ import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataReposi
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
+import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
 import com.goskar.boardgame.ui.home.components.OtherBottomMenuList
@@ -34,6 +35,7 @@ class HomeScreenViewModel(
     private val addAllGameToDb: UpsertAllGameUseCase,
     private val addAllPlayerToDb: UpsertAllPlayerUseCase,
     private val addAllHistoryToDb: UpsertAllHistoryGameUseCase,
+    private val addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase,
     private val userSession: UserRepository,
 ) : ViewModel() {
 
@@ -72,7 +74,8 @@ class HomeScreenViewModel(
                     isSuccessDownloadData = attemptToTakeAllData(
                         firstAction = ::getAllGame,
                         secondAction = ::getAllPlayer,
-                        thirdAction = ::getAllHistory
+                        thirdAction = ::getAllHistory,
+                        fourthAction = ::getAllHistoryExpansion
                     )
                 )
             }
@@ -106,14 +109,26 @@ class HomeScreenViewModel(
         } else return false
     }
 
+    suspend fun getAllHistoryExpansion(): Boolean {
+        val allHistoryExpansion = api.getAllHistoryGameExpansion()
+
+        if (allHistoryExpansion is RequestResult.Success) {
+            val response = addAllHistoryGameExpansionToDb.invoke((allHistoryExpansion.data))
+            return response
+        } else return false
+    }
+
     private suspend fun attemptToTakeAllData(
         firstAction: suspend () -> Boolean,
         secondAction: suspend () -> Boolean,
         thirdAction: suspend () -> Boolean,
-    ): Boolean {
+        fourthAction: suspend () -> Boolean,
+        ): Boolean {
         return if (firstAction()) {
             if (secondAction()) {
-                thirdAction()
+                if(thirdAction()) {
+                    fourthAction()
+                } else false
             } else false
         } else false
     }

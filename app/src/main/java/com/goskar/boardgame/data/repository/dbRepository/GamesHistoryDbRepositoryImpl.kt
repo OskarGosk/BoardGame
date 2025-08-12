@@ -99,4 +99,14 @@ class GamesHistoryDbRepositoryImpl(
             }
         }.fold(onSuccess = { RequestResult.Success(true) }, onFailure = { RequestResult.Error(it) })
     }
+
+    override suspend fun getAllHistoryGameExpansion(): RequestResult<List<HistoryGameExpansion>> {
+        return withContext(defaultDispatcher) {
+            runCatching {
+                historyGameExpansionDao.getAll()
+            }.onFailure {
+                Timber.tag(TAG).e("Can't get all games history\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
+    }
 }

@@ -21,4 +21,7 @@ interface GamesHistoryDbRepository {
 
     suspend fun insertAllHistoryGameExpansion(expansion: List<HistoryGameExpansion>): RequestResult<Boolean>
 
+    suspend fun getAllHistoryGameExpansion(): RequestResult<List<HistoryGameExpansion>>
+
+
 }

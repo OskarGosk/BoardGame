@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import com.goskar.boardgame.data.models.HistoryGameExpansion
 
 @Dao
@@ -17,4 +18,10 @@ interface HistoryGameExpansionDao {
 
     @Query("DELETE FROM HistoryGameExpansion")
     suspend fun deleteAll()
+
+    @Upsert
+    suspend fun insertAllExpansionFromFirebase(historyExpansionList: List<HistoryGameExpansion>)
+
+    @Query("SELECT * FROM historygameexpansion")
+    suspend fun getAll(): List<HistoryGameExpansion>
 }
