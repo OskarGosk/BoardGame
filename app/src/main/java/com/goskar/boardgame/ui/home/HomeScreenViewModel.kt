@@ -11,6 +11,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.ClearDbUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
@@ -37,6 +38,7 @@ class HomeScreenViewModel(
     private val addAllHistoryToDb: UpsertAllHistoryGameUseCase,
     private val addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase,
     private val userSession: UserRepository,
+    private val clearDbUseCase: ClearDbUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeScreenState())
@@ -138,6 +140,8 @@ class HomeScreenViewModel(
             auth.signOut()
             user = null
             userSession.logout()
+
+            clearDbUseCase.invoke()
 
             _state.update {
                 it.copy(

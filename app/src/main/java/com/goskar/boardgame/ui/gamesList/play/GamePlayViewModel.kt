@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.play
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
@@ -97,6 +98,7 @@ class GamePlayViewModel(
     fun validateAllData(context: Context) {
         viewModelScope.launch {
             validateAddHistoryGameData(context)
+            validateEditAllExpansion()
             validateEditGame()
             validateEditAllPlayer(context)
         }
@@ -282,6 +284,33 @@ class GamePlayViewModel(
                     _state.update {
                         it.copy(
                             successEditAllPlayer = false,
+                            errorVisible = true
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun validateEditAllExpansion() {
+        state.value.gameList?.filter { it.isSelected }?.forEach { expansion ->
+
+            val game = expansion.game.copy(
+                games = (expansion.game.games ?: 0) + 1,
+            )
+            when (val response = gameDbRepository.editGame(game)) {
+                is RequestResult.Success -> {
+                    _state.update {
+                        it.copy(
+//                            successAddPlayGame = true
+                        )
+                    }
+                }
+
+                is RequestResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            successAddPlayGame = false,
                             errorVisible = true
                         )
                     }

@@ -40,6 +40,7 @@ import com.goskar.boardgame.ui.home.components.OtherBottomMenu
 import com.goskar.boardgame.ui.home.components.OtherBottomMenuList
 import com.goskar.boardgame.ui.login.LoginScreen
 import com.goskar.boardgame.ui.playerList.PlayerListScreen
+import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 import org.koin.androidx.compose.koinViewModel
 
@@ -240,7 +241,7 @@ fun HomeScreenContent(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
-        ){
+        ) {
             OtherBottomMenu(items = itemsMenu)
         }
 
@@ -250,10 +251,16 @@ fun HomeScreenContent(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    BoardGameScaffold(
-        titlePage = stringResource(R.string.app_name),
-        selectedScreen = BottomBarElements.HomeButton.title,
-    ) { paddingValues ->
-        HomeScreenContent(state = HomeScreenState(isLoading = false), paddingValues, emptyList())
+    BoardGameTheme {
+        BoardGameScaffold(
+            titlePage = stringResource(R.string.app_name),
+            selectedScreen = BottomBarElements.HomeButton.title,
+        ) { paddingValues ->
+            HomeScreenContent(
+                state = HomeScreenState(isLoading = false),
+                paddingValues,
+                emptyList()
+            )
+        }
     }
 }

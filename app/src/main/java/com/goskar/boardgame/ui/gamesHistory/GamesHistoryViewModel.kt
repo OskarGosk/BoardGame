@@ -6,6 +6,8 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetHistoryWithExpansionUseCase
+import com.goskar.boardgame.data.useCase.HistoryGameWithExpansion
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -14,6 +16,7 @@ import org.koin.android.annotation.KoinViewModel
 
 data class GamesHistoryState(
     val historyList: List<HistoryGame> = emptyList(),
+    val historyGameWithExpansion: List<HistoryGameWithExpansion> = emptyList(),
     val errorVisible: Boolean = false,
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
@@ -22,7 +25,8 @@ data class GamesHistoryState(
 
 @KoinViewModel
 class GamesHistoryViewModel(
-    private val gamesHistoryDbRepository: GamesHistoryDbRepository
+    private val gamesHistoryDbRepository: GamesHistoryDbRepository,
+    private val getHistoryWithExpansionUseCase: GetHistoryWithExpansionUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GamesHistoryState())
@@ -30,6 +34,7 @@ class GamesHistoryViewModel(
 
     init {
         getAllHistoryGame()
+        validateGetHistoryGameWithExpansion()
     }
 
     fun update(state: GamesHistoryState) {
@@ -58,9 +63,33 @@ class GamesHistoryViewModel(
                         )
                     }
                 }
-
             }
 
+        }
+    }
+
+    private fun validateGetHistoryGameWithExpansion() {
+        viewModelScope.launch {
+            when (val response = getHistoryWithExpansionUseCase.invoke()) {
+                is RequestResult.Success -> {
+                    _state.update {
+                        it.copy(
+                            historyGameWithExpansion = response.data.sortedBy { it.history.gameData },
+                            errorVisible = false,
+                            loading = false
+                        )
+                    }
+                }
+
+                is RequestResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            errorVisible = true,
+                            loading = false
+                        )
+                    }
+                }
+            }
         }
     }
 }
