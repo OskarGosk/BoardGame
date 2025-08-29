@@ -26,7 +26,7 @@ data class GameReportsState(
     val maxYear: Int = 2025,
     val selectedYear: Int = 0,
     val selectedMonth: Int = -1,
-    val startDate: LocalDate = LocalDate.of(2022, 12, 22),
+    val startDate: LocalDate = LocalDate.now(),
     val endDate: LocalDate = LocalDate.now(),
     val selectedRowChartVariant: RowChartVariantsEnum = RowChartVariantsEnum.YEAR
 )
@@ -90,7 +90,7 @@ class GameReportsViewModel(
             RowChartVariantsEnum.YEAR -> yearsPlaysTimeData()
             RowChartVariantsEnum.MONTHLY -> monthlyPlaysTimeData()
             RowChartVariantsEnum.MONTH -> monthPlaysTimeData()
-            RowChartVariantsEnum.PERIOD -> {}
+            RowChartVariantsEnum.PERIOD -> periodPlaysTimeData()
         }
     }
 
@@ -163,6 +163,37 @@ class GameReportsViewModel(
             }
         }
         _chartData.value = yearPlaysTimeData
+    }
+
+    private fun periodPlaysTimeData() {
+        val periodPlaysTimeData: MutableList<Bars> = emptyList<Bars>().toMutableList()
+
+        val dates = generateSequence(state.value.startDate) { it.plusDays(1) }
+            .takeWhile { !it.isAfter(state.value.endDate) }
+            .toList()
+
+        dates.forEach { date ->
+            val countRecord =
+                _gameHistory.value.filter {
+                    it.gameData.year == date.year &&
+                            it.gameData.monthValue == date.monthValue &&
+                            it.gameData.dayOfMonth == date.dayOfMonth
+                }
+            if(countRecord.isNotEmpty()) {
+                val bars = Bars(
+                    label = date.toString(),
+                    values = listOf(
+                        Bars.Data(
+                            value = countRecord.size.toDouble(),
+                            color = SolidColor(secondaryLight)
+                        )
+                    )
+                )
+                periodPlaysTimeData += bars
+            }
+        }
+        _chartData.value = periodPlaysTimeData
+
     }
 
     private fun playGamesAllTimeData() {

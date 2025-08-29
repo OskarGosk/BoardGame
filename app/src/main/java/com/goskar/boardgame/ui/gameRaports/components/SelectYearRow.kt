@@ -38,15 +38,20 @@ fun SelectYearRow(
     update: (GameReportsState) -> Unit = {},
     modifier: Modifier,
     prepareChart: () -> Unit = {},
+    selected: Boolean = true
+
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val enabledBackgroundColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
+    val enabledTextColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+
 
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
 
         Row(
             modifier = modifier
                 .background(
-                    MaterialTheme.colorScheme.primary,
+                    enabledBackgroundColor,
                     shape = RoundedCornerShape(10.dp)
                 ),
             verticalAlignment = Alignment.CenterVertically,
@@ -56,7 +61,7 @@ fun SelectYearRow(
                 text = "Year",
                 textAlign = TextAlign.Start,
                 style = Smooch18,
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = enabledTextColor,
                 modifier = Modifier.padding(start = 5.dp, end = 5.dp)
             )
             ExposedDropdownMenuBox(
@@ -67,7 +72,7 @@ fun SelectYearRow(
                 Text(
                     text = if (state.selectedYear != 0) "${state.selectedYear}" else "All",
                     style = SmoochBold18,
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = enabledTextColor,
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth(),

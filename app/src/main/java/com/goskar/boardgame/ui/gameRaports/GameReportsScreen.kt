@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gameRaports.charts.ColumnChartGamesPlay
+import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
 import com.goskar.boardgame.ui.gameRaports.components.SelectMonthRow
 import com.goskar.boardgame.ui.gameRaports.components.SelectYearRow
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -97,15 +99,13 @@ fun GameReportsContent(
             yearSelection = true,
         ),
         selection = CalendarSelection.Period { startDate, endDate ->
-            Log.d("Oskar22", "startDate --- $startDate")
-            Log.d("Oskar22", "endDate --- $endDate")
             update(
                 state.copy(
                     startDate = startDate,
                     endDate = endDate
                 )
             )
-
+            prepareChart()
         })
 
     Column(
@@ -163,7 +163,8 @@ fun GameReportsContent(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                prepareChart = prepareChart
+                prepareChart = prepareChart,
+                selected = state.selectedRowChartVariant != RowChartVariantsEnum.PERIOD
             )
 
             Spacer(modifier = Modifier.width(10.dp))
@@ -174,7 +175,8 @@ fun GameReportsContent(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                prepareChart = prepareChart
+                prepareChart = prepareChart,
+                selected = state.selectedRowChartVariant != RowChartVariantsEnum.PERIOD
             )
         }
 
@@ -188,8 +190,15 @@ fun GameReportsContent(
         ) {
             Button(
                 shape = RoundedCornerShape(10.dp),
+                colors = ButtonColors(
+                    containerColor = if (state.selectedRowChartVariant == RowChartVariantsEnum.PERIOD) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = if (state.selectedRowChartVariant == RowChartVariantsEnum.PERIOD) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary,
+                    disabledContentColor = MaterialTheme.colorScheme.primary
+                ),
                 onClick = {
                     calendarState.show()
+                    update(state.copy(selectedRowChartVariant = RowChartVariantsEnum.PERIOD))
                 },
                 modifier = Modifier
                     .fillMaxWidth()
