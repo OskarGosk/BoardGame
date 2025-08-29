@@ -12,5 +12,11 @@ enum class Months (val monthsName: String, val monthsNumber: Int) {
     SEPTEMBER("Sept",9),
     OCTOBER("Oct",10),
     NOVEMBER("Nov",11),
-    DECEMBER("Dec",12)
+    DECEMBER("Dec",12);
+
+    companion object{
+        fun getMonthByNumber(monthsNumber: Int): Months? {
+            return Months.entries.find { it.monthsNumber == monthsNumber }
+        }
+    }
 }

@@ -9,6 +9,7 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
 import com.goskar.boardgame.ui.theme.secondaryLight
 import com.goskar.boardgame.utils.Months
 import ir.ehsannarmani.compose_charts.models.Bars
@@ -16,17 +17,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.YearMonth
 
 
 data class GameReportsState(
-    val minYear: Int = 2025,
-    val maxYear: Int = 2025
+    val minYear: Int = 2021,
+    val maxYear: Int = 2025,
+    val selectedYear: Int = 0,
+    val selectedMonth: Int = -1,
+    val startDate: LocalDate = LocalDate.of(2022, 12, 22),
+    val endDate: LocalDate = LocalDate.now(),
+    val selectedRowChartVariant: RowChartVariantsEnum = RowChartVariantsEnum.YEAR
 )
 
 class GameReportsViewModel(
     private val historyDbRepository: GamesHistoryDbRepository,
     private val allGameUseCase: GetAllGameUseCase
-):ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(GameReportsState())
     val state = _state.asStateFlow()
@@ -48,22 +56,23 @@ class GameReportsViewModel(
             _allGame.value = allGameUseCase.invoke()
             playGamesAllTimeData()
 
-            when(val response = historyDbRepository.getAllHistoryGame()) {
+            when (val response = historyDbRepository.getAllHistoryGame()) {
                 is RequestResult.Success -> {
                     _gameHistory.value = response.data
 
-                    if(response.data.isNotEmpty()) {
+                    if (response.data.isNotEmpty()) {
                         _state.update {
                             it.copy(
                                 maxYear = (_gameHistory.value.map { it.gameData.year }).max(),
                                 minYear = (_gameHistory.value.map { it.gameData.year }).min()
                             )
                         }
-                        yearPlaysTimeData()
+                        yearsPlaysTimeData()
                     }
 
 
                 }
+
                 else -> {
 
                 }
@@ -76,15 +85,25 @@ class GameReportsViewModel(
         _state.update { state }
     }
 
-    fun monthlyPlaysTimeData(year:Int) {
+    fun prepareChart() {
+        when (state.value.selectedRowChartVariant) {
+            RowChartVariantsEnum.YEAR -> yearsPlaysTimeData()
+            RowChartVariantsEnum.MONTHLY -> monthlyPlaysTimeData()
+            RowChartVariantsEnum.MONTH -> monthPlaysTimeData()
+            RowChartVariantsEnum.PERIOD -> {}
+        }
+    }
+
+    private fun monthlyPlaysTimeData() {
         val monthlyPlaysTimeData: MutableList<Bars> = emptyList<Bars>().toMutableList()
-        Months.entries.forEach{ months ->
-            val countRecord = _gameHistory.value.filter { it.gameData.monthValue == months.monthsNumber && it.gameData.year == year}
+        Months.entries.forEach { months ->
+            val countRecord =
+                _gameHistory.value.filter { it.gameData.monthValue == months.monthsNumber && it.gameData.year == state.value.selectedYear }
             val bars = Bars(
                 label = months.monthsName,
                 values = listOf(
                     Bars.Data(
-                        value =  countRecord.size.toDouble(),
+                        value = countRecord.size.toDouble(),
                         color = SolidColor(secondaryLight)
                     )
                 )
@@ -96,7 +115,36 @@ class GameReportsViewModel(
         _chartData.value = monthlyPlaysTimeData
     }
 
-    fun yearPlaysTimeData() {
+    private fun monthPlaysTimeData() {
+        val monthPlaysTimeData: MutableList<Bars> = emptyList<Bars>().toMutableList()
+
+        val daysInMonth =
+            YearMonth.of(state.value.selectedYear, state.value.selectedMonth).lengthOfMonth()
+
+        (1..daysInMonth).forEach { day ->
+            val countRecord =
+                _gameHistory.value.filter { it.gameData.monthValue == state.value.selectedMonth && it.gameData.year == state.value.selectedYear && it.gameData.dayOfMonth == day }
+
+            if (countRecord.isNotEmpty()) {
+
+                val bars = Bars(
+                    label = "$day",
+                    values = listOf(
+                        Bars.Data(
+                            value = countRecord.size.toDouble(),
+                            color = SolidColor(secondaryLight)
+                        )
+                    )
+                )
+
+                monthPlaysTimeData += bars
+            }
+        }
+
+        _chartData.value = monthPlaysTimeData
+    }
+
+    private fun yearsPlaysTimeData() {
         val yearPlaysTimeData: MutableList<Bars> = emptyList<Bars>().toMutableList()
 
         (state.value.minYear..state.value.maxYear).forEach { year ->
@@ -125,7 +173,10 @@ class GameReportsViewModel(
             playGamesAllTimeData += Bars(
                 label = it.name,
                 values = listOf(
-                    Bars.Data(value = (it.games.toDouble()/allGamesCount), color = SolidColor(Color.Blue))
+                    Bars.Data(
+                        value = (it.games.toDouble() / allGamesCount),
+                        color = SolidColor(Color.Blue)
+                    )
                 )
             )
         }
