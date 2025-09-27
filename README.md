@@ -9,15 +9,16 @@ Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, lis
 <img width="360" height="400" alt="HomeScreen Dark" src="https://github.com/user-attachments/assets/1d002034-f8d5-419f-866f-e7d9936d1b68" /><br/>
 
 <br/><br/>
-Lista Graczy:
+**Player List:**<br/>
 Przy każdym graczu widniej jego liczba dotychczasowych zarejestrowanych rozgrywek oraz licba wygranych.
 Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po nazwie lub liczbie rozegranych gier co oczywiście można łączyć.
+
 
 <img width="720" height="400" alt="Player List Dark" src="https://github.com/user-attachments/assets/60300a2c-fa9b-4464-8007-1595190bd0dd" /><br/>
 <img width="900" height="400" alt="Player list Light" src="https://github.com/user-attachments/assets/43fbce15-4194-4750-b62f-8ecefcf14fd1" /><br/>
 
 <br/><br/>
-Lista Gier:
+**Board Game List:**<br/>
 Lista gier, zawiera podstawowe informację o nich, takie jak min/max graczy. Liczba dotychczasowych rozgrywek.
 Aplikacja pozwala na dodwanie, usuwanie i edycję gier.
 Użytkownik posiada możlwiość wyszukiwania po nazwie gry w celu zawęzenia wyników, oraz podstawowe sortowanie, co tak samo jak w przypadku graczy można łączyć.
@@ -31,7 +32,8 @@ Dodawanie gry jest możlwie poprzez wyszukanie jej z bazy danych udostytępnione
 <img width="720" height="400" alt="AddGame from BGG" src="https://github.com/user-attachments/assets/85d89a33-7afc-4e40-9ce9-66dce5bab4d9" /><br/>
 
 <br/><br/>
-Dodanie rozgrywki:
+**Add gameplay:**<br/>
+
 Po kliknięciu "+" na ekranie z listą gier, przechodzimy do dodania rozgrywki.
 Możemy wybrać czy gramy tylko w podstawe, czy razem z jakimiś dodatkami. 
 Wybieramy listę graczy, datę gry oraz kto wygrał. Mamy możliwość zmiany modelu rozgrywki, pomiędzy normalnym PLvsPL lub CO-OP.
@@ -42,15 +44,21 @@ Jest możliwość dodania opisu rozgrywki. Np. różnicę punktów, ogólnie wra
 
 
 <br/><br/>
-Historia Gier:
+**History game list:**<br/>
+We also have Game History where we can search for the game result by game or player name. <br/>
+On this screen we see the name of the game, the date of the game, the players who played and who won.
+
 Mamy równeiż Historię Gier, gdzie możemy wyszukiwać wynik rozgrywki po nazwie gry lub gracza.
 Widzimy tutaj, nazwe gry, datę rozgrywki, oraz gracz który wygrał.
 
 <img width="720" height="400" alt="Games History" src="https://github.com/user-attachments/assets/a9f88d83-f56b-4fa3-97c8-18ae7eb80f2f" /><br/>
 
 <br/><br/>
-Raprt rozgrywek.
-Aktualnie posaiadamy jedne wykres przedstawiający ilośc rozgrywke w zależności od wyboru. 
+**Reports:**<br/>
+Currently, we have one chart showing the number of gameplays depending on the selection.<br/>
+The chart can show the number of gameplays in each year, in a selected month, or in a selected period.
+
+Aktualnie posaiadamy jedne wykres przedstawiający ilośc rozgrywke w zależności od wyboru.<br/>
 Wykres może przedstawioać ilośc rogrywke w każdym roku, w wybranym roku podzielone na miesiąće, w wybranym miesciu czy w wybranym okresie. 
 
 <img width="540" height="400" alt="Games Reports" src="https://github.com/user-attachments/assets/fd9c80ac-c98c-419f-bc9a-665552aeb1c2" /><br/>
