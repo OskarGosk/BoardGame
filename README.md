@@ -1,4 +1,5 @@
-Prosta aplikacja do zbierania wyników rozgrywek gier planszowych. W aplikacji tworzymy listę graczy, listę gier oraz tworzymy historyczne rogrywki w których podajem, w jaką gre graliśmy, kto grał i wygrał, kiedy graliśmy, krótki opis rozgrywki.
+Prosta aplikacja do zbierania wyników rozgrywek gier planszowych. W aplikacji tworzymy listę graczy i gier planszowych oraz tworzymy historyczne rogrywki w których podajem, w jaką gre graliśmy, kto grał i wygrał, kiedy graliśmy, krótki opis rozgrywki.
+Mamy informację który gracz ile rozegrał rozgrywek i ile z nich wygrał, widzimy liczbe rozgrywem poszczególnych gier. Możemy sprawdzić kto grał i kto wygrał daną rozgrywkę z historii. 
 
 <br/><br/>
 Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, listę graczy z liczbą rozgrywek i win ratio, oraz wyniki rozgrywek.
