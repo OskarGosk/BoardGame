@@ -14,6 +14,7 @@ Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po na
 <img width="900" height="400" alt="Player list Light" src="https://github.com/user-attachments/assets/43fbce15-4194-4750-b62f-8ecefcf14fd1" />
 
 
+
 Lista Gier:
 Lista gier, zawiera podstawowe informację o nich, takie jak min/max graczy. Liczba dotychczasowych rozgrywek.
 Aplikacja pozwala na dodwanie, usuwanie i edycję gier.
@@ -22,6 +23,8 @@ Użytkownik posiada możlwiość wyszukiwania po nazwie gry w celu zawęzenia wy
 
 <img width="720" height="400" alt="Game List Dark" src="https://github.com/user-attachments/assets/18a039a2-9683-4f99-906e-8dd18aae1448" />
 <img width="720" height="400" alt="Game List Light" src="https://github.com/user-attachments/assets/ebed0dd1-3293-47e4-84ae-16af88ff4324" />
+
+
 
 Dodanie rozgrywki:
 Po kliknięciu "+" na ekranie z listą gier, przechodzimy do dodania rozgrywki.
@@ -32,17 +35,23 @@ Jest możliwość dodania opisu rozgrywki. Np. różnicę punktów, ogólnie wra
 <img width="900" height="400" alt="GamePLay Dark" src="https://github.com/user-attachments/assets/75799099-a571-43c8-8074-c698a3af60b3" />
 <img width="540" height="400" alt="GamePlay Light" src="https://github.com/user-attachments/assets/2c6e549b-e734-42aa-a0fe-ece1fbba19e2" />
 
+
+
 Historia Gier:
 Mamy równeiż Historię Gier, gdzie możemy wyszukiwać wynik rozgrywki po nazwie gry lub gracza.
 Widzimy tutaj, nazwe gry, datę rozgrywki, oraz gracz który wygrał.
 
 <img width="720" height="400" alt="Games History" src="https://github.com/user-attachments/assets/a9f88d83-f56b-4fa3-97c8-18ae7eb80f2f" />
 
+
+
 Raprt rozgrywek.
 Aktualnie posaiadamy jedne wykres przedstawiający ilośc rozgrywke w zależności od wyboru. 
 Wykres może przedstawioać ilośc rogrywke w każdym roku, w wybranym roku podzielone na miesiąće, w wybranym miesciu czy w wybranym okresie. 
 
 <img width="540" height="400" alt="Games Reports" src="https://github.com/user-attachments/assets/fd9c80ac-c98c-419f-bc9a-665552aeb1c2" />
+
+
 
 
 📄 Licenses
