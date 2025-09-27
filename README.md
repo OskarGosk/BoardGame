@@ -5,7 +5,6 @@ Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, lis
 
 <img width="360" height="400" alt="Login Screen" src="https://github.com/user-attachments/assets/ec199c14-cf29-4986-95bc-f2b606ea2b4e" /><img width="360" height="400" alt="HomeScreen Light" src="https://github.com/user-attachments/assets/fe78352c-7b77-4c18-b372-ced587280414" /><img width="360" height="400" alt="HomeScreen Dark" src="https://github.com/user-attachments/assets/1d002034-f8d5-419f-866f-e7d9936d1b68" />
 
-
 Lista Graczy:
 Przy każdym graczu widniej jego liczba dotychczasowych zarejestrowanych rozgrywek oraz licba wygranych.
 Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po nazwie lub liczbie rozegranych gier co oczywiście można łączyć.
@@ -14,16 +13,18 @@ Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po na
 <img width="900" height="400" alt="Player list Light" src="https://github.com/user-attachments/assets/43fbce15-4194-4750-b62f-8ecefcf14fd1" />
 
 
-
 Lista Gier:
 Lista gier, zawiera podstawowe informację o nich, takie jak min/max graczy. Liczba dotychczasowych rozgrywek.
 Aplikacja pozwala na dodwanie, usuwanie i edycję gier.
-Dodawanie gry jest możlwie poprzez wyszukanie jej z bazy danych udostytępnionej poprzez BGG lub podanie podatwowych danych manualnie.
 Użytkownik posiada możlwiość wyszukiwania po nazwie gry w celu zawęzenia wyników, oraz podstawowe sortowanie, co tak samo jak w przypadku graczy można łączyć.
 
 <img width="720" height="400" alt="Game List Dark" src="https://github.com/user-attachments/assets/18a039a2-9683-4f99-906e-8dd18aae1448" />
 <img width="720" height="400" alt="Game List Light" src="https://github.com/user-attachments/assets/ebed0dd1-3293-47e4-84ae-16af88ff4324" />
 
+Dodawanie gry jest możlwie poprzez wyszukanie jej z bazy danych udostytępnionej poprzez BGG lub podanie podatwowych danych manualnie.
+
+<img width="540" height="400" alt="AddGame manualy" src="https://github.com/user-attachments/assets/bac62d8f-19af-435e-8c83-2f2d840cacd0" />
+<img width="720" height="400" alt="AddGame from BGG" src="https://github.com/user-attachments/assets/85d89a33-7afc-4e40-9ce9-66dce5bab4d9" />
 
 
 Dodanie rozgrywki:
