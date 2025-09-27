@@ -12,13 +12,16 @@ Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po na
 Lista Gier:
 Lista gier, zawiera podstawowe informację o nich, takie jak min/max graczy. Liczba dotychczasowych rozgrywek.
 Aplikacja pozwala na dodwanie, usuwanie i edycję gier.
+Dodawanie gry jest możlwie poprzez wyszukanie jej z bazy danych udostytępnionej poprzez BGG lub podanie podatwowych danych manualnie.
 Użytkownik posiada możlwiość wyszukiwania po nazwie gry w celu zawęzenia wyników, oraz podstawowe sortowanie, co tak samo jak w przypadku graczy można łączyć.
 
 ![GameList](https://github.com/user-attachments/assets/e8dc199c-3a6c-49dd-a77d-0251a885701a)
 
 Dodanie rozgrywki:
-Po kliknięciu "+" na ekranie z listą gier, przechodzimy do dodania rozgrywki. Wybieramy listę graczy, datę gry oraz kto wygrał.
-Możemy dodać jakiś opis rozgrywki. Np. różnicę punktów.
+Po kliknięciu "+" na ekranie z listą gier, przechodzimy do dodania rozgrywki.
+Możemy wybrać czy gramy tylko w podstawe, czy razem z jakimiś dodatkami. 
+Wybieramy listę graczy, datę gry oraz kto wygrał. Mamy możliwość zmiany modelu rozgrywki, pomiędzy normalnym PLvsPL lub CO-OP.
+Jest możliwość dodania opisu rozgrywki. Np. różnicę punktów, ogólnie wrażenie z rogrywki, czy cookolwiek aby zostało w pamięci. 
 
 ![Gameplay](https://github.com/user-attachments/assets/3fe291bc-042c-4108-b38c-30decc542ef7)
 
@@ -28,6 +31,11 @@ Mamy równeiż Historię Gier, gdzie możemy wyszukiwać wynik rozgrywki po nazw
 Widzimy tutaj, nazwe gry, datę rozgrywki, oraz gracz który wygrał.
 
 ![HistoryList](https://github.com/user-attachments/assets/e5fea46e-ba16-4212-8292-e97f699cb26c)
+
+Raprt rozgrywek.
+Aktualnie posaiadamy jedne wykres przedstawiający ilośc rozgrywke w zależności od wyboru. 
+Wykres może przedstawioać ilośc rogrywke w każdym roku, w wybranym roku podzielone na miesiąće, w wybranym miesciu czy w wybranym okresie. 
+
 
 
 📄 Licenses
