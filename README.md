@@ -1,65 +1,72 @@
-Prosta aplikacja do zbierania wyników rozgrywek gier planszowych. W aplikacji tworzymy listę graczy i gier planszowych oraz tworzymy historyczne rogrywki w których podajem, w jaką gre graliśmy, kto grał i wygrał, kiedy graliśmy, krótki opis rozgrywki.
-Mamy informację który gracz ile rozegrał rozgrywek i ile z nich wygrał, widzimy liczbe rozgrywem poszczególnych gier. Możemy sprawdzić kto grał i kto wygrał daną rozgrywkę z historii. 
+# 🎲 BoardGame
 
-<br/><br/>
-Aplikacja pozwa przechowywać listę gier razem z podstawowymi informacjami, listę graczy z liczbą rozgrywek i win ratio, oraz wyniki rozgrywek.
+The application is designed to **record and analyze board game sessions**.<br/><br/>
+
+With this app you can:<br/>
+- **Create a player list** – each player has their total number of games played and wins stored.<br/>
+- **Create a board game list** – games can be added manually (basic data: name, number of players, type, expansion/base game) or automatically imported from the **BoardGameGeek (BGG)** database.<br/>
+- **Add gameplays** – each session contains information about the game played (base/expansions), participating players, the winner, the date of the session, and an optional description.<br/>
+- **Browse game history** – see a list of past sessions with the date, game name, participants, and the winner.<br/>
+- **Analyze statistics** – e.g., how many players participated in sessions, which games are played most often, how many wins each player has, and reports in chart form.<br/><br/>
+
+The application works in two modes:<br/>
+- **Guest** – data is stored locally.<br/>
+- **Logged-in user** – data is synchronized with the **Firebase Database**, allowing saving and retrieving across devices.<br/>
+<br/>
 
 <img width="360" height="400" alt="Login Screen" src="https://github.com/user-attachments/assets/ec199c14-cf29-4986-95bc-f2b606ea2b4e" /><br/>
 <img width="360" height="400" alt="HomeScreen Light" src="https://github.com/user-attachments/assets/fe78352c-7b77-4c18-b372-ced587280414" /><br/>
 <img width="360" height="400" alt="HomeScreen Dark" src="https://github.com/user-attachments/assets/1d002034-f8d5-419f-866f-e7d9936d1b68" /><br/>
 
 <br/><br/>
-**Player List:**<br/>
-Przy każdym graczu widniej jego liczba dotychczasowych zarejestrowanych rozgrywek oraz licba wygranych.
-Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po nazwie lub liczbie rozegranych gier co oczywiście można łączyć.
+## 👤 Player List<br/>
+
+Each player shows the total number of games played and wins.<br/>
+You can search for players by nickname and sort by name or number of games played.<br/><br/>
 
 
 <img width="720" height="400" alt="Player List Dark" src="https://github.com/user-attachments/assets/60300a2c-fa9b-4464-8007-1595190bd0dd" /><br/>
 <img width="900" height="400" alt="Player list Light" src="https://github.com/user-attachments/assets/43fbce15-4194-4750-b62f-8ecefcf14fd1" /><br/>
 
 <br/><br/>
-**Board Game List:**<br/>
-Lista gier, zawiera podstawowe informację o nich, takie jak min/max graczy. Liczba dotychczasowych rozgrywek.
-Aplikacja pozwala na dodwanie, usuwanie i edycję gier.
-Użytkownik posiada możlwiość wyszukiwania po nazwie gry w celu zawęzenia wyników, oraz podstawowe sortowanie, co tak samo jak w przypadku graczy można łączyć.
+## 🎲 Board Game List<br/>
+
+Shows basic information about each game, including min/max players and total sessions.<br/>
+Games can be added, edited, or deleted.<br/>
+Search and sorting options are available to filter results.<br/><br/>
 
 <img width="720" height="400" alt="Game List Dark" src="https://github.com/user-attachments/assets/18a039a2-9683-4f99-906e-8dd18aae1448" /><br/>
 <img width="720" height="400" alt="Game List Light" src="https://github.com/user-attachments/assets/ebed0dd1-3293-47e4-84ae-16af88ff4324" /><br/>
 <br/><br/>
-Dodawanie gry jest możlwie poprzez wyszukanie jej z bazy danych udostytępnionej poprzez BGG lub podanie podatwowych danych manualnie.
+Games can be added manually or imported from the **BGG database**.<br/><br/>
 
 <img width="540" height="400" alt="AddGame manualy" src="https://github.com/user-attachments/assets/bac62d8f-19af-435e-8c83-2f2d840cacd0" /><br/>
 <img width="720" height="400" alt="AddGame from BGG" src="https://github.com/user-attachments/assets/85d89a33-7afc-4e40-9ce9-66dce5bab4d9" /><br/>
 
 <br/><br/>
-**Add gameplay:**<br/>
+## ➕ Add Gameplay<br/>
 
-Po kliknięciu "+" na ekranie z listą gier, przechodzimy do dodania rozgrywki.
-Możemy wybrać czy gramy tylko w podstawe, czy razem z jakimiś dodatkami. 
-Wybieramy listę graczy, datę gry oraz kto wygrał. Mamy możliwość zmiany modelu rozgrywki, pomiędzy normalnym PLvsPL lub CO-OP.
-Jest możliwość dodania opisu rozgrywki. Np. różnicę punktów, ogólnie wrażenie z rogrywki, czy cookolwiek aby zostało w pamięci. 
+Clicking "+" on the game list allows you to add a new gameplay session.<br/>
+Select if you played only the base game or with expansions.<br/>
+Choose participating players, date, winner, and optionally add a description of the session.<br/>
+You can switch the game mode between normal (Player vs Player) or Co-Op.<br/><br/>
 
 <img width="900" height="400" alt="GamePLay Dark" src="https://github.com/user-attachments/assets/75799099-a571-43c8-8074-c698a3af60b3" /><br/>
 <img width="540" height="400" alt="GamePlay Light" src="https://github.com/user-attachments/assets/2c6e549b-e734-42aa-a0fe-ece1fbba19e2" /><br/>
 
 
-<br/><br/>
-**History game list:**<br/>
-We also have Game History where we can search for the game result by game or player name. <br/>
-On this screen we see the name of the game, the date of the game, the players who played and who won.
+## 📜 Game History<br/>
 
-Mamy równeiż Historię Gier, gdzie możemy wyszukiwać wynik rozgrywki po nazwie gry lub gracza.
-Widzimy tutaj, nazwe gry, datę rozgrywki, oraz gracz który wygrał.
+View past game sessions, search by game or player name.<br/>
+Displays game name, date, players involved, and the winner.<br/><br/>
 
 <img width="720" height="400" alt="Games History" src="https://github.com/user-attachments/assets/a9f88d83-f56b-4fa3-97c8-18ae7eb80f2f" /><br/>
 
 <br/><br/>
-**Reports:**<br/>
-Currently, we have one chart showing the number of gameplays depending on the selection.<br/>
-The chart can show the number of gameplays in each year, in a selected month, or in a selected period.
+## 📊 Reports<br/>
 
-Aktualnie posaiadamy jedne wykres przedstawiający ilośc rozgrywke w zależności od wyboru.<br/>
-Wykres może przedstawioać ilośc rogrywke w każdym roku, w wybranym roku podzielone na miesiąće, w wybranym miesciu czy w wybranym okresie. 
+Currently, one chart is available to show the number of gameplays based on selection.<br/>
+It can display sessions per year, month, or custom period.<br/>
 
 <img width="540" height="400" alt="Games Reports" src="https://github.com/user-attachments/assets/fd9c80ac-c98c-419f-bc9a-665552aeb1c2" /><br/>
 
