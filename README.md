@@ -7,6 +7,9 @@ Lista Graczy:
 Przy każdym graczu widniej jego liczba dotychczasowych zarejestrowanych rozgrywek oraz licba wygranych.
 Jest możliwośc wyszukania gracza po niku/imieniu, oraz proste sortowanie po nazwie lub liczbie rozegranych gier co oczywiście można łączyć.
 
+<img width="720" height="400" alt="Player List Dark" src="https://github.com/user-attachments/assets/60300a2c-fa9b-4464-8007-1595190bd0dd" />
+
+
 ![PlayerList](https://github.com/user-attachments/assets/9358b512-ab40-48b7-bf75-54c1cdce23bc)
 
 Lista Gier:
