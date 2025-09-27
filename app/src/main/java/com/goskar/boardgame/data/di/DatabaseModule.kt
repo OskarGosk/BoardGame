@@ -25,5 +25,6 @@ fun KoinApplication.databaseModule() = module {
     single { get<Db>().gameDao() }
     single { get<Db>().historyGameDao() }
     single { get<Db>().userSessionDao() }
+    single { get<Db>().historyGameExpansionDao() }
 
 }

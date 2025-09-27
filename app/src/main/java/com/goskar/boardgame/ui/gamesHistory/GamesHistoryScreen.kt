@@ -1,10 +1,9 @@
 package com.goskar.boardgame.ui.gamesHistory
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,7 +19,8 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
-import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
+import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gamesHistory.lists.HistoryGamesList
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import org.koin.androidx.compose.koinViewModel
@@ -32,73 +32,79 @@ class HistoryGameListScreen : Screen {
         val viewModel: GamesHistoryViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
 
+        val topBarViewModel: TopBarViewModel = koinViewModel()
+        val topBarState by topBarViewModel.state.collectAsState()
+
         LaunchedEffect(Unit) {
             viewModel.getAllHistoryGame()
         }
 
-        HistoryGameListContent(
-            state = state,
-            update = viewModel::update
-        )
+        BoardGameScaffold(
+            titlePage = stringResource(R.string.history_game_screen),
+            selectedScreen = BottomBarElements.HistoryListButton.title,
+            topBarState = topBarState,
+            uploadDataToFirebase = topBarViewModel::uploadDataToFirebase
+        ) { paddingValues ->
+
+            HistoryGameListContent(
+                state = state,
+                update = viewModel::update,
+                paddingValues = paddingValues
+            )
+        }
     }
 }
 
 @Composable
 fun HistoryGameListContent(
     state: GamesHistoryState,
-    update: (GamesHistoryState) -> Unit = {}
+    update: (GamesHistoryState) -> Unit = {},
+    paddingValues: PaddingValues
 ) {
     val navigator = LocalNavigator.current
-    BoardGameScaffold(
-        titlePage = stringResource(R.string.history_game_screen),
-        selectedScreen = BottomBarElements.HistoryListButton.title
-    ) { paddingValues ->
-
-
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(10.dp)
-                .fillMaxSize()
-        ) {
-            if (state.historyList.isEmpty()) {
-                EmptyListWithButton(
-                    headerText = R.string.history_empty_list,
-                    infoText = R.string.history_empty_list_add,
-                    buttonText = R.string.board_add,
-                    onClick = {
-                        navigator?.push(GameListScreen())
-                    }
-                )
-            } else {
-                SearchRowGlobal(
-                    searchHelp = R.string.player_name,
-                    searchTxt = state.searchTxt,
-                    sortOption = state.sortOption,
-                    updateTxt = {
-                        update(
-                            state.copy(
-                                searchTxt = it
-                            )
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .padding(10.dp)
+            .fillMaxSize()
+    ) {
+        if (state.historyList.isEmpty()) {
+            EmptyListWithButton(
+                headerText = R.string.history_empty_list,
+                infoText = R.string.history_empty_list_add,
+                buttonText = R.string.board_add,
+                onClick = {
+                    navigator?.push(GameListScreen())
+                }
+            )
+        } else {
+            SearchRowGlobal(
+                searchHelp = R.string.player_name,
+                searchTxt = state.searchTxt,
+                sortOption = state.sortOption,
+                updateTxt = {
+                    update(
+                        state.copy(
+                            searchTxt = it
                         )
-                    },
-                    clearTxt = {
-                        update(
-                            state.copy(
-                                searchTxt = ""
-                            )
+                    )
+                },
+                clearTxt = {
+                    update(
+                        state.copy(
+                            searchTxt = ""
                         )
-                    },
-                    updateSort = {
-                        update(
-                            state.copy(
-                                sortOption = it
-                            )
+                    )
+                },
+                updateSort = {
+                    update(
+                        state.copy(
+                            sortOption = it
                         )
-                    }
-                )
-                HistoryGamesList(state)
-            }
+                    )
+                }
+            )
+            HistoryGamesList(state)
         }
     }
 }
@@ -123,12 +129,15 @@ fun HistoryGameListContentPreview() {
         description = "",
         id = "dsa"
     )
-    Surface(
-    ) {
+    BoardGameScaffold(
+        titlePage = stringResource(R.string.history_game_screen),
+        selectedScreen = BottomBarElements.HistoryListButton.title
+    ) { paddingValues ->
         HistoryGameListContent(
             state = GamesHistoryState(
                 historyList = listOf(history1, history2, history1, history2)
-            )
+            ),
+            paddingValues = paddingValues
         )
     }
 }
@@ -137,12 +146,16 @@ fun HistoryGameListContentPreview() {
 @Composable
 fun HistoryGameListEmptyContentPreview() {
 
-    Surface(
-    ) {
+    BoardGameScaffold(
+        titlePage = stringResource(R.string.history_game_screen),
+        selectedScreen = BottomBarElements.HistoryListButton.title
+    ) { paddingValues ->
         HistoryGameListContent(
             state = GamesHistoryState(
-                historyList = emptyList()
-            )
+                historyList = emptyList(),
+            ),
+            paddingValues = paddingValues
         )
     }
+
 }

@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -24,7 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -84,7 +82,7 @@ fun FloatingMenu(
 }
 
 @Composable
-fun FloatingMenuItem(icon: ImageVector?, name: Int?, screen: Screen) {
+fun FloatingMenuItem(icon: Int?, name: Int?, screen: Screen) {
     val navigator = LocalNavigator.current
     Row(
         modifier = Modifier
@@ -98,8 +96,10 @@ fun FloatingMenuItem(icon: ImageVector?, name: Int?, screen: Screen) {
                 modifier = Modifier
                     .height(40.dp)
             ) {
-                Text(text = stringResource(name),
-                    style = SmoochBold18,)
+                Text(
+                    text = stringResource(name),
+                    style = SmoochBold18,
+                )
             }
         }
         if (icon != null) {
@@ -111,8 +111,9 @@ fun FloatingMenuItem(icon: ImageVector?, name: Int?, screen: Screen) {
 
             ) {
                 Icon(
-                    imageVector = icon,
-                    contentDescription = null
+                    painter = painterResource(icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
@@ -124,8 +125,8 @@ fun FloatingMenuItem(icon: ImageVector?, name: Int?, screen: Screen) {
 @Composable
 fun FloatingMenuPreview() {
     val items = listOf(
-        FloatingMenuList(Icons.Default.Search, null, HomeScreen(true)),
-        FloatingMenuList(Icons.Default.Delete, R.string.delete, HomeScreen(false))
+        FloatingMenuList(R.drawable.icons_search, null, HomeScreen(true)),
+        FloatingMenuList(R.drawable.icons_clock, R.string.delete, HomeScreen(false))
     )
 
     FloatingMenu(items)

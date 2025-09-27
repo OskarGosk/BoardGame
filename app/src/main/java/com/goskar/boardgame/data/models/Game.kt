@@ -19,5 +19,5 @@ data class Game(
     val uri: String? = null,
     val uriFromBgg: String? = null,
     val games: Int,
-    @PrimaryKey val id: String = UUID.randomUUID().toString()
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
 ) : Serializable

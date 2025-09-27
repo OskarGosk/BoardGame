@@ -20,7 +20,8 @@ data class PlayerListState(
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
     val player: Player? = null,
-    var isLoading: Boolean = false
+    var isLoading: Boolean = false,
+    val showAddEditDialog: Boolean = false
 )
 
 @KoinViewModel

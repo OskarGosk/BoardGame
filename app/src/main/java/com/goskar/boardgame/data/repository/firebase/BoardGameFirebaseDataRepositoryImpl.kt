@@ -1,6 +1,7 @@
 package com.goskar.boardgame.data.repository.firebase
 
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.models.HistoryGameFirebase
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.rest.ApiFirebaseData
@@ -20,7 +21,7 @@ class BoardGameFirebaseDataRepositoryImpl(
                     element.value.copy(id = element.key)
                 }
             }.onFailure {
-                Timber.tag("Game").e("Can't get All game\n  ${it.stackTraceToString()}")
+                Timber.tag("Firebase DB").e("Can't get All game\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
     }
@@ -37,7 +38,7 @@ class BoardGameFirebaseDataRepositoryImpl(
                     else -> throw IllegalStateException()
                 }
             }.onFailure {
-                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+                Timber.tag("Firebase DB").e("Can't add game\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
     }
@@ -49,7 +50,7 @@ class BoardGameFirebaseDataRepositoryImpl(
                     element.value.copy(id = element.key)
                 }
             }.onFailure {
-                Timber.tag("Game").e("Can't get All game\n  ${it.stackTraceToString()}")
+                Timber.tag("Firebase DB").e("Can't get All player\n  ${it.stackTraceToString()}")
             }
         }.fold(
             onSuccess = { RequestResult.Success(it ?: emptyList()) },
@@ -68,7 +69,7 @@ class BoardGameFirebaseDataRepositoryImpl(
                     else -> throw IllegalStateException()
                 }
             }.onFailure {
-                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+                Timber.tag("Firebase DB").e("Can't add player\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
     }
@@ -80,7 +81,7 @@ class BoardGameFirebaseDataRepositoryImpl(
                     element.value.copy(id = element.key)
                 }
             }.onFailure {
-                Timber.tag("Game").e("Can't get All game\n  ${it.stackTraceToString()}")
+                Timber.tag("Firebase DB").e("Can't get All History Game\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
     }
@@ -97,7 +98,36 @@ class BoardGameFirebaseDataRepositoryImpl(
                     else -> throw IllegalStateException()
                 }
             }.onFailure {
-                Timber.tag("Add player").e("Can't add player\n  ${it.stackTraceToString()}")
+                Timber.tag("Firebase DB").e("Can't add History Game\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun getAllHistoryGameExpansion(): RequestResult<List<HistoryGameExpansion>> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                apiFirebaseData.getAllHistoryGameExpansion().map { element ->
+                    element.value.copy(id = element.key)
+                }
+            }.onFailure {
+                Timber.tag("Firebase DB").e("Can't get All History Game\n  ${it.stackTraceToString()}")
+            }
+        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
+    }
+
+    override suspend fun addHistoryGameExpansion(historyGameExpansion: Map<String, HistoryGameExpansion>): RequestResult<Boolean> {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val response = apiFirebaseData.addHistoryExpansion(historyGameExpansion)
+                when {
+                    response.isSuccessful -> {
+                        RequestResult.Success(true)
+                    }
+
+                    else -> throw IllegalStateException()
+                }
+            }.onFailure {
+                Timber.tag("Firebase DB").e("Can't add History Game\n  ${it.stackTraceToString()}")
             }
         }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
     }

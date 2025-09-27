@@ -8,12 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.goskar.boardgame.data.models.User
-import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
-import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -35,12 +30,12 @@ class LoginViewModel(
     private val userSession: UserRepository,
 ) : ViewModel() {
 
-    val auth = FirebaseAuth.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     var user by mutableStateOf<FirebaseUser?>(null)
         private set
 
-    var authError by mutableStateOf<String?>(null)
+    private var authError by mutableStateOf<String?>(null)
         private set
 
     init {

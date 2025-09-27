@@ -3,11 +3,13 @@ package com.goskar.boardgame.ui.components.scaffold.topBar
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.models.HistoryGameFirebase
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.data.useCase.GetAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.GetAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllPlayerUseCase
 import com.goskar.boardgame.utils.convertHistoryGameListToFirebase
@@ -27,6 +29,7 @@ class TopBarViewModel(
     private val getAllGameDb: GetAllGameUseCase,
     private val getAllPlayerDb: GetAllPlayerUseCase,
     private val getAllHistoryDb: GetAllHistoryGameUseCase,
+    private val getAllHistoryGameExpansionUseDb: GetAllHistoryGameExpansionUseCase
     ) : ViewModel() {
 
     private val _state = MutableStateFlow(TopBarState())
@@ -44,7 +47,8 @@ class TopBarViewModel(
             val synchronizationResult = attemptToSendAllData(
                 firstAction = ::addAllGame,
                 secondAction = ::addAllPlayer,
-                thirdAction = ::addAllHistory
+                thirdAction = ::addAllHistory,
+                fourthAction = ::addAllExpansionHistory
             )
 
             _state.update {
@@ -78,15 +82,25 @@ class TopBarViewModel(
         return responseHistory
     }
 
+    suspend fun addAllExpansionHistory(): RequestResult<Boolean> {
+        val allHistory = getAllHistoryGameExpansionUseDb.invoke()
+        val historyMap: Map<String, HistoryGameExpansion> = allHistory.associateBy { it.id }
+        val responseHistory = api.addHistoryGameExpansion(historyMap)
+        return responseHistory
+    }
+
     private suspend fun attemptToSendAllData(
         firstAction: suspend () -> RequestResult<Boolean>,
         secondAction: suspend () -> RequestResult<Boolean>,
         thirdAction: suspend () -> RequestResult<Boolean>,
+        fourthAction: suspend () -> RequestResult<Boolean>
     ): Boolean {
         if (firstAction() is RequestResult.Success) {
             if (secondAction() is RequestResult.Success) {
                 if (thirdAction() is RequestResult.Success) {
-                    return true
+                    if (fourthAction() is RequestResult.Success) {
+                        return true
+                    } else return false
                 } else return false
             } else return false
         } else return false

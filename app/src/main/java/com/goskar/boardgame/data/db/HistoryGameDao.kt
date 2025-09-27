@@ -27,6 +27,6 @@ interface HistoryGameDao {
     @Update
     suspend fun edit(historyGame: HistoryGame)
 
-    @Query("DELETE FROM Player")
+    @Query("DELETE FROM HistoryGame")
     suspend fun deleteAll()
 }

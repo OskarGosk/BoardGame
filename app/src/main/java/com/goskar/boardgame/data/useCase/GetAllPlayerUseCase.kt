@@ -14,7 +14,7 @@ class GetAllPlayerUseCase (
                 response.data
             }
             is RequestResult.Error -> {
-                emptyList<Player>()
+                emptyList()
             }
         }
 }

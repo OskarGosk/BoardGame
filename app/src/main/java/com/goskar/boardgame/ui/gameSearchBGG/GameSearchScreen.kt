@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,25 +28,38 @@ import com.goskar.boardgame.data.models.SearchBGGListElements
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
-import com.goskar.boardgame.ui.components.scaffold.BottomBarElements
+import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
+import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gameSearchBGG.components.SingleBGGSearchRow
 import org.koin.androidx.compose.koinViewModel
 
-class GameSearchScreen:Screen {
+class GameSearchScreen : Screen {
     @Composable
     override fun Content() {
 
-        val viewModel:  GameSearchViewModel = koinViewModel()
+        val viewModel: GameSearchViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
         val gameList by viewModel.gameListSorted.collectAsState()
 
-        GameSearchContent(
-            state = state,
-            gameList = gameList,
-            update = viewModel::update,
-            search = viewModel::searchGame,
-            updateSortedList = viewModel::updateSortedList
-        )
+        val topBarViewModel: TopBarViewModel = koinViewModel()
+        val topBarState by topBarViewModel.state.collectAsState()
+
+        BoardGameScaffold(
+            titlePage = stringResource(R.string.search_bgg),
+            selectedScreen = BottomBarElements.GameListButton.title,
+            topBarState = topBarState,
+            uploadDataToFirebase = topBarViewModel::uploadDataToFirebase
+
+        ) { paddingValues ->
+            GameSearchContent(
+                state = state,
+                gameList = gameList,
+                update = viewModel::update,
+                search = viewModel::searchGame,
+                updateSortedList = viewModel::updateSortedList,
+                paddingValues = paddingValues
+            )
+        }
     }
 }
 
@@ -54,93 +68,100 @@ fun GameSearchContent(
     state: GameSearchState,
     gameList: List<SearchBGGListElements>?,
     update: (GameSearchState) -> Unit = {},
-    search: (String) -> Unit ={},
-    updateSortedList: () -> Unit = {}
+    search: (String) -> Unit = {},
+    updateSortedList: () -> Unit = {},
+    paddingValues: PaddingValues
+
 ) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp)
+            .padding(paddingValues)
+    ) {
+        if (state.isLoading) AppLoader()
+        SearchRowGlobal(
+            searchHelp = R.string.board_name,
+            searchTxt = state.searchTxt,
+            sortOption = state.sortOption,
+            searchButton = true,
+            searchFun = {
+                search(state.searchTxt)
+            },
+            updateTxt = {
+                update(
+                    state.copy(
+                        searchTxt = it
+                    )
+                )
+            },
+            clearTxt = {
+                update(
+                    state.copy(
+                        searchTxt = ""
+                    )
+                )
+            },
+            updateSort = {
+                update(
+                    state.copy(
+                        sortOption = it
+                    )
+                )
+                updateSortedList()
+            }
+        )
+        Column(
+            modifier = Modifier
+                .padding(top = 10.dp, bottom = 50.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            gameList?.forEach {
+                SingleBGGSearchRow(it)
+            }
+        }
+    }
+
+    val uriHandler = LocalUriHandler.current
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Image(
+            painter = painterResource(R.drawable.bgg),
+            contentScale = ContentScale.Fit,
+            contentDescription = "BGG LOGO",
+            modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .clickable {
+                    uriHandler.openUri("https://boardgamegeek.com/")
+                })
+    }
+
+}
+
+@Preview
+@Composable
+fun GameSearchContentPreview() {
+    val game = SearchBGGListElements(name = "Marvel", yearPublished = 2016)
+    val game2 = SearchBGGListElements(
+        name = "Harry Potter Z bardzo długą nazwą na ponad 1 linijkę",
+        yearPublished = 2022
+    )
+
     BoardGameScaffold(
         titlePage = stringResource(R.string.search_bgg),
         selectedScreen = BottomBarElements.GameListButton.title
 
     ) { paddingValues ->
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-                .padding(paddingValues)
-        ){
-            if (state.isLoading) AppLoader()
-            SearchRowGlobal(
-                searchHelp = R.string.board_name,
-                searchTxt = state.searchTxt,
-                sortOption = state.sortOption,
-                searchButton = true,
-                searchFun = {
-                    search(state.searchTxt)
-                },
-                updateTxt = {
-                    update(
-                        state.copy(
-                            searchTxt = it
-                        )
-                    )
-                },
-                clearTxt = {
-                    update(
-                        state.copy(
-                            searchTxt = ""
-                        )
-                    )
-                },
-                updateSort = {
-                    update(
-                        state.copy(
-                            sortOption = it
-                        )
-                    )
-                    updateSortedList()
-                }
-            )
-            Column(
-                modifier = Modifier
-                    .padding(top = 10.dp, bottom = 50.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                gameList?.forEach {
-                    SingleBGGSearchRow(it)
-                }
-            }
-        }
-
-        val uriHandler = LocalUriHandler.current
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Image(
-                painter = painterResource( R.drawable.bgg),
-                contentScale = ContentScale.Fit,
-                contentDescription = "BGG LOGO",
-                modifier = Modifier
-                    .height(50.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        uriHandler.openUri("https://boardgamegeek.com/")
-                    })
-        }
-
+        GameSearchContent(
+            state = GameSearchState(isLoading = false),
+            gameList = listOf(game, game2),
+            paddingValues = paddingValues
+        )
     }
-}
-
-@Preview
-@Composable
-fun GameSearchContentPreview(){
-    val game = SearchBGGListElements(name = "Marvel", yearPublished = 2016)
-    val game2 = SearchBGGListElements(name = "Harry Potter Z bardzo długą nazwą na ponad 1 linijkę", yearPublished = 2022)
-
-    GameSearchContent(
-        state = GameSearchState(isLoading = false),
-        gameList = listOf( game,game2)
-    )
 }

@@ -10,6 +10,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,12 +37,13 @@ import com.goskar.boardgame.utils.CooperatePlayers
 @Composable
 fun WinnerRow(
     state: GamePlayState,
-    update: (GamePlayState) -> Unit = {}
+    update: (GamePlayState) -> Unit = {},
+    modifier: Modifier
 ) {
     val selectedPlayers = state.playerList?.filter { it.selected }
     var expanded by remember { mutableStateOf(false) }
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -49,7 +51,7 @@ fun WinnerRow(
         Text(
             stringResource(R.string.history_winner),
             modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start,
             style = Smooch18,
         )
         ExposedDropdownMenuBox(
@@ -60,7 +62,7 @@ fun WinnerRow(
             TextField(
                 textStyle = SmoochBold18,
                 modifier = Modifier
-                    .menuAnchor(),
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                 readOnly = true,
                 value = state.winner,
                 onValueChange = {},
@@ -76,10 +78,15 @@ fun WinnerRow(
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }) {
-                if (state.game?.cooperate == true) {
+                if (state.gameVariant == GameVariantEnum.Coop.id) {
                     CooperatePlayers.entries.forEach { it ->
                         DropdownMenuItem(
-                            text = { Text(stringResource(it.value)) },
+                            text = {
+                                Text(
+                                    stringResource(it.value),
+                                    style = if (context.resources.getString(it.value) == state.winner) SmoochBold18 else Smooch18
+                                )
+                            },
                             onClick = {
                                 update(
                                     state.copy(
@@ -92,7 +99,12 @@ fun WinnerRow(
                 } else {
                     selectedPlayers?.forEach { player ->
                         DropdownMenuItem(
-                            text = { Text(text = player.name) },
+                            text = {
+                                Text(
+                                    text = player.name,
+                                    style = if (player.name == state.winner) SmoochBold18 else Smooch18
+                                )
+                            },
                             onClick = {
                                 update(
                                     state.copy(
@@ -120,7 +132,8 @@ fun WinnerRowPreview() {
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
             WinnerRow(
-                state = GamePlayState(playerList = listOf(player,player2, player2))
+                state = GamePlayState(playerList = listOf(player, player2, player2)),
+                modifier = Modifier
             )
         }
     }

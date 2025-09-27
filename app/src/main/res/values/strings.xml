@@ -11,6 +11,10 @@
     <string name="login">Login</string>
     <string name="guest_account">Guest</string>
     <string name="password">Password</string>
+    <string name="signOut">Sign Out</string>
+    <string name="download">Download</string>
+
+
 
 
     // BOTTOM BAR
@@ -22,6 +26,7 @@
     <string name="details_bgg">Details Game by BGG</string>
     <string name="reports">Reports</string>
     <string name="login_screen">Login Screen</string>
+    <string name="other">Other</string>
 
     //SORT
     <string name="default_sort">Default</string>
@@ -80,9 +85,22 @@
     <string name="history_players_list">List of players:</string>
     <string name="history_comp">Computer</string>
     <string name="history_players">Players</string>
+    <string name="history_game_variant">Game variant:</string>
+    <string name="history_solo">Solo</string>
+    <string name="history_coop">Cooperate</string>
+    <string name="history_normal">Normal</string>
+    <string name="history_who_win">"Who Win?"</string>
+    <string name="history_game_info">Game Info</string>
+    <string name="history_player_list">Player List</string>
+    <string name="history_game_data">Game data</string>
+    <string name="history_expansion">With Expansion</string>
+    <string name="history_base">Only Base Game</string>
+    <string name="history_expansion_list">Expansion:</string>
+
+
+
 
     //SEARCH BGG
-
     <string name="bgg">BGG</string>
     <string name="bgg_year">Year</string>
     <string name="bgg_name">Game Name</string>

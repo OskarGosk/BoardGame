@@ -8,14 +8,16 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.models.User
 
 @Database(
-    entities = [Player::class, Game::class, HistoryGame::class, User::class],
-    version = 6,
+    entities = [Player::class, Game::class, HistoryGame::class, User::class, HistoryGameExpansion::class],
+    version = 7,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
+        AutoMigration(from = 6, to = 7),
     ]
 )
 @TypeConverters(Converters::class)
@@ -25,6 +27,7 @@ abstract class Db : RoomDatabase() {
     abstract fun gameDao(): GameDao
     abstract fun historyGameDao(): HistoryGameDao
     abstract fun userSessionDao(): UserSessionDao
+    abstract fun historyGameExpansionDao(): HistoryGameExpansionDao
 
     companion object {
         val MIGRATION_3_4 = object : Migration(3, 4) {

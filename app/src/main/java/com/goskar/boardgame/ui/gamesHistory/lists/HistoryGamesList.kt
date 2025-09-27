@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.useCase.HistoryGameWithExpansion
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
 import com.goskar.boardgame.ui.gamesHistory.lists.components.SingleHistoryGame
 import java.time.LocalDate
@@ -25,17 +26,17 @@ fun HistoryGamesList(state: GamesHistoryState) {
             .padding(vertical = 10.dp)
 
     ) {
-        val newHistoryList: List<HistoryGame> = when (state.sortOption) {
-            R.string.default_sort -> state.historyList
-            R.string.name_ascending -> state.historyList.sortedBy { it.winner }
-            R.string.name_descending -> state.historyList.sortedByDescending { it.winner }
-            R.string.played_ascending -> state.historyList.sortedBy { it.gameName }
-            R.string.played_descending -> state.historyList.sortedByDescending { it.gameName }
-            else -> state.historyList
+        val newHistoryList: List<HistoryGameWithExpansion> = when (state.sortOption) {
+            R.string.default_sort -> state.historyGameWithExpansion
+            R.string.name_ascending -> state.historyGameWithExpansion.sortedBy { it.history.winner }
+            R.string.name_descending -> state.historyGameWithExpansion.sortedByDescending { it.history.winner }
+            R.string.played_ascending -> state.historyGameWithExpansion.sortedBy { it.history.gameName }
+            R.string.played_descending -> state.historyGameWithExpansion.sortedByDescending { it.history.gameName }
+            else -> state.historyGameWithExpansion
         }
         newHistoryList.asReversed().forEach {
-            if (it.gameName.lowercase()
-                    .contains(state.searchTxt.lowercase()) || it.winner.lowercase()
+            if (it.history.gameName.lowercase()
+                    .contains(state.searchTxt.lowercase()) || it.history.winner.lowercase()
                     .contains(state.searchTxt.lowercase())
             )
                 SingleHistoryGame(Modifier, it)

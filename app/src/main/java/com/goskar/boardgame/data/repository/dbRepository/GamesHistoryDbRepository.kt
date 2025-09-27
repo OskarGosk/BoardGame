@@ -1,6 +1,7 @@
 package com.goskar.boardgame.data.repository.dbRepository
 
 import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.rest.RequestResult
 
 interface GamesHistoryDbRepository {
@@ -15,5 +16,13 @@ interface GamesHistoryDbRepository {
     suspend fun editHistoryGame(historyGame: HistoryGame) : RequestResult<Boolean>
 
     suspend fun deleteAllHistory():RequestResult<Boolean>
+
+    suspend fun insertHistoryGameExpansion(expansion: HistoryGameExpansion) : RequestResult<Boolean>
+
+    suspend fun insertAllHistoryGameExpansion(expansion: List<HistoryGameExpansion>): RequestResult<Boolean>
+
+    suspend fun getAllHistoryGameExpansion(): RequestResult<List<HistoryGameExpansion>>
+
+    suspend fun deleteAllHistoryExpansion():RequestResult<Boolean>
 
 }

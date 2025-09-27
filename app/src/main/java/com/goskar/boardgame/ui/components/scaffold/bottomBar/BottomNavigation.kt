@@ -1,13 +1,17 @@
-package com.goskar.boardgame.ui.components.scaffold
+package com.goskar.boardgame.ui.components.scaffold.bottomBar
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -15,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -23,9 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.Smooch18
-import com.goskar.boardgame.ui.theme.Smooch20
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.ui.theme.primaryLight
 
@@ -37,11 +38,15 @@ fun BottomNavigation(
     val navigator = LocalNavigator.current
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .background(MaterialTheme.colorScheme.background), // Jeśli chcesz kolor
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         BottomBarElements.entries.forEach { elements ->
-            Column {
+            Column(
+                modifier = Modifier
+            ) {
                 HorizontalDivider(
                     modifier = Modifier
                         .width(72.dp)
@@ -65,7 +70,7 @@ fun BottomNavigation(
                         Text(
                             text = stringResource(elements.title),
                             textAlign = TextAlign.Center,
-                            style = if(selectedScreen == elements.title) SmoochBold18.copy(color = primaryLight) else Smooch18,
+                            style = if (selectedScreen == elements.title) SmoochBold18.copy(color = primaryLight) else Smooch18,
                         )
                     }
                 }

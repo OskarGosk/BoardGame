@@ -1,6 +1,7 @@
 package com.goskar.boardgame.data.rest
 
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.models.HistoryGameFirebase
 import com.goskar.boardgame.data.models.Player
 import retrofit2.Response
@@ -30,4 +31,11 @@ interface ApiFirebaseData {
 
     @GET("historyGame/UID.json")
     suspend fun getAllHistoryGame(): Map<String, HistoryGameFirebase>
+
+    // HISTORY EXPANSION
+    @PUT("historyGameExpansion/UID.json")
+    suspend fun addHistoryExpansion(@Body historyGame: Map<String, HistoryGameExpansion>): Response<Void>
+
+    @GET("historyGameExpansion/UID.json")
+    suspend fun getAllHistoryGameExpansion(): Map<String, HistoryGameExpansion>
 }

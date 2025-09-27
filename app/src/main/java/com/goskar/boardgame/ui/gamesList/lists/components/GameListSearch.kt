@@ -20,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,10 +51,10 @@ import com.goskar.boardgame.utils.SortList
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun GameSearchRow(
-    onCLickMenu: () -> Unit = {},
     update: (GameListState) -> Unit = {},
-    state: GameListState
-) {
+    state: GameListState,
+    refreshGameList: () -> Unit = {},
+    ) {
     val focusManager = LocalFocusManager.current
     var expanded by remember { mutableStateOf(false) }
 
@@ -83,6 +84,7 @@ fun GameSearchRow(
                             searchTxt = it
                         )
                     )
+                    refreshGameList()
                 },
                 modifier = Modifier
                     .padding(end = 10.dp)
@@ -98,6 +100,7 @@ fun GameSearchRow(
                     imeAction = ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(onDone = {
+                    refreshGameList()
                     focusManager.clearFocus()
                 }),
                 trailingIcon = {
@@ -112,6 +115,7 @@ fun GameSearchRow(
                                         searchTxt = ""
                                     )
                                 )
+                                refreshGameList()
                                 focusManager.clearFocus()
                             })
                 }
@@ -125,8 +129,8 @@ fun GameSearchRow(
                     contentDescription = null,
                     modifier = Modifier
                         .size(35.dp)
-                        .menuAnchor(),
-                )
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    )
                 ExposedDropdownMenu(
                     expanded = expanded,
                     modifier = Modifier
@@ -147,6 +151,7 @@ fun GameSearchRow(
                                                     sortOption = sort.value
                                                 )
                                             )
+                                            refreshGameList()
                                             expanded = false
                                         }
                                     )
@@ -162,6 +167,7 @@ fun GameSearchRow(
                                         sortOption = sort.value
                                     )
                                 )
+                                refreshGameList()
                                 expanded = false
                             })
                     }

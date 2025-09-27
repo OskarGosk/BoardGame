@@ -14,8 +14,7 @@ class GetAllHistoryGameUseCase (
                 response.data
             }
             is RequestResult.Error -> {
-                emptyList<HistoryGame>()
+                emptyList()
             }
         }
-
 }

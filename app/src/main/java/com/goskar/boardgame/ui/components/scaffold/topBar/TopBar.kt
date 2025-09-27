@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,18 +24,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.ui.theme.SmoochExtraBold32
-import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
     titlePage: String,
-    showSynchronizedIcon: Boolean = true
+    showSynchronizedIcon: Boolean = true,
+    state: TopBarState,
+    uploadDataToFirebase: () -> Unit = {}
 ) {
-    val viewModel: TopBarViewModel = koinViewModel()
-    val state = viewModel.state.collectAsState()
-//    val isLoading: Boolean = true
-//    val isError: Boolean = false
 
     Box(
         modifier = Modifier
@@ -57,10 +53,10 @@ fun TopBar(
                 if (showSynchronizedIcon) {
                     IconButton(
                         onClick = {
-                            viewModel.uploadDataToFirebase()
+                            uploadDataToFirebase()
                         }
                     ) {
-                        if(state.value.isLoading) {
+                        if (state.isLoading) {
                             CircularProgressIndicator(
                                 color = Color.DarkGray,
                                 modifier = Modifier
@@ -69,9 +65,9 @@ fun TopBar(
                             )
                         } else {
                             Icon(
-                                imageVector = if (state.value.isSuccess) Icons.Filled.Refresh else Icons.Filled.Warning ,
+                                imageVector = if (state.isSuccess) Icons.Filled.Refresh else Icons.Filled.Warning,
                                 contentDescription = "LogOut",
-                                tint = if (state.value.isSuccess) Color.Black else Color.Red,
+                                tint = if (state.isSuccess) Color.Black else Color.Red,
                                 modifier = Modifier
                                     .size(25.dp)
                             )
@@ -95,5 +91,5 @@ fun TopBar(
 @Preview
 @Composable
 fun TopBarPreview() {
-    TopBar(titlePage = "Test")
+    TopBar(titlePage = "Test", state = TopBarState())
 }

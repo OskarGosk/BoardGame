@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.components.scaffold
+package com.goskar.boardgame.ui.components.scaffold.bottomBar
 
 import androidx.annotation.StringRes
 import cafe.adriel.voyager.core.screen.Screen
