@@ -13,6 +13,8 @@ The application works in two modes:<br/>
 - **Guest** – data is stored locally.<br/>
 - **Logged-in user** – data is synchronized with the **Firebase Database**, allowing saving and retrieving across devices.<br/>
 <br/>
+Test login: oskar.a.gosk@gmail.com<br/>
+Test pass: TestTest123!<br/><br/>
 
 <img width="360" height="400" alt="Login Screen" src="https://github.com/user-attachments/assets/ec199c14-cf29-4986-95bc-f2b606ea2b4e" /><br/>
 <img width="360" height="400" alt="HomeScreen Light" src="https://github.com/user-attachments/assets/fe78352c-7b77-4c18-b372-ced587280414" /><br/>
