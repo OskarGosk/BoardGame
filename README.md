@@ -2,6 +2,8 @@
 
 The application is designed to **record and analyze board game sessions**.<br/><br/>
 
+**Due to recent API changes on the BoardGameGeek side, detailed game information imported from BGG is currently not working.**
+
 With this app you can:<br/>
 - **Create a player list** – each player has their total number of games played and wins stored.<br/>
 - **Create a board game list** – games can be added manually (basic data: name, number of players, type, expansion/base game) or automatically imported from the **BoardGameGeek (BGG)** database.<br/>
