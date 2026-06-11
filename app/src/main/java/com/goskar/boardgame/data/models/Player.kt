@@ -8,7 +8,6 @@ import java.util.UUID
 @Entity
 data class Player(
     val name: String,
-//    val image: Image,
     val games: Int,
     val winRatio: Int,
     val description: String,

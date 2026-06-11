@@ -116,12 +116,11 @@ fun SelectPlayerDialog(
                 items(items = newPlayerList) { player ->
                     val onClick = {
                         if (state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || player.selected) {
-                            //DODAC zabezpiecznie gdy maxPlayer jest null lub ""
                             selectedPlayer(player)
                         } else {
                             Toast.makeText(
                                 context,
-                                "Wybrano max graczy",
+                                context.getString(R.string.history_max_player_selected),
                                 Toast.LENGTH_LONG
                             ).show()
                         }
