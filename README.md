@@ -15,12 +15,11 @@ The application works in two modes:<br/>
 - **Guest** – data is stored locally.<br/>
 - **Logged-in user** – data is synchronized with the **Firebase Database**, allowing saving and retrieving across devices.<br/>
 <br/>
-Test login: oskar.a.gosk@gmail.com<br/>
-Test pass: TestTest123!<br/><br/>
+A demo account is available on request, or you can try the app right away in **Guest** mode.<br/><br/>
 
-<img width="360" height="400" alt="Login Screen" src="https://github.com/user-attachments/assets/ec199c14-cf29-4986-95bc-f2b606ea2b4e" /><br/>
-<img width="360" height="400" alt="HomeScreen Light" src="https://github.com/user-attachments/assets/fe78352c-7b77-4c18-b372-ced587280414" /><br/>
-<img width="360" height="400" alt="HomeScreen Dark" src="https://github.com/user-attachments/assets/1d002034-f8d5-419f-866f-e7d9936d1b68" /><br/>
+<img width="360" height="400" alt="Login Screen" src="screenshots/login_screen.png" /><br/>
+<img width="360" height="400" alt="HomeScreen Light" src="screenshots/home_screen_light.png" /><br/>
+<img width="360" height="400" alt="HomeScreen Dark" src="screenshots/home_screen_dark.png" /><br/>
 
 <br/><br/>
 ## 👤 Player List<br/>
@@ -29,8 +28,8 @@ Each player shows the total number of games played and wins.<br/>
 You can search for players by nickname and sort by name or number of games played.<br/><br/>
 
 
-<img width="720" height="400" alt="Player List Dark" src="https://github.com/user-attachments/assets/60300a2c-fa9b-4464-8007-1595190bd0dd" /><br/>
-<img width="900" height="400" alt="Player list Light" src="https://github.com/user-attachments/assets/43fbce15-4194-4750-b62f-8ecefcf14fd1" /><br/>
+<img width="720" height="400" alt="Player List Dark" src="screenshots/player_list_dark.png" /><br/>
+<img width="900" height="400" alt="Player list Light" src="screenshots/player_list_light.png" /><br/>
 
 <br/><br/>
 ## 🎲 Board Game List<br/>
@@ -39,13 +38,13 @@ Shows basic information about each game, including min/max players and total ses
 Games can be added, edited, or deleted.<br/>
 Search and sorting options are available to filter results.<br/><br/>
 
-<img width="720" height="400" alt="Game List Dark" src="https://github.com/user-attachments/assets/18a039a2-9683-4f99-906e-8dd18aae1448" /><br/>
-<img width="720" height="400" alt="Game List Light" src="https://github.com/user-attachments/assets/ebed0dd1-3293-47e4-84ae-16af88ff4324" /><br/>
+<img width="720" height="400" alt="Game List Dark" src="screenshots/game_list_dark.png" /><br/>
+<img width="720" height="400" alt="Game List Light" src="screenshots/game_list_light.png" /><br/>
 <br/><br/>
 Games can be added manually or imported from the **BGG database**.<br/><br/>
 
-<img width="540" height="400" alt="AddGame manualy" src="https://github.com/user-attachments/assets/bac62d8f-19af-435e-8c83-2f2d840cacd0" /><br/>
-<img width="720" height="400" alt="AddGame from BGG" src="https://github.com/user-attachments/assets/85d89a33-7afc-4e40-9ce9-66dce5bab4d9" /><br/>
+<img width="540" height="400" alt="AddGame manually" src="screenshots/add_game_manually.png" /><br/>
+<img width="720" height="400" alt="AddGame from BGG" src="screenshots/add_game_from_bgg.png" /><br/>
 
 <br/><br/>
 ## ➕ Add Gameplay<br/>
@@ -55,8 +54,8 @@ Select if you played only the base game or with expansions.<br/>
 Choose participating players, date, winner, and optionally add a description of the session.<br/>
 You can switch the game mode between normal (Player vs Player) or Co-Op.<br/><br/>
 
-<img width="900" height="400" alt="GamePLay Dark" src="https://github.com/user-attachments/assets/75799099-a571-43c8-8074-c698a3af60b3" /><br/>
-<img width="540" height="400" alt="GamePlay Light" src="https://github.com/user-attachments/assets/2c6e549b-e734-42aa-a0fe-ece1fbba19e2" /><br/>
+<img width="900" height="400" alt="GamePlay Dark" src="screenshots/gameplay_dark.png" /><br/>
+<img width="540" height="400" alt="GamePlay Light" src="screenshots/gameplay_light.png" /><br/>
 
 
 ## 📜 Game History<br/>
@@ -64,7 +63,7 @@ You can switch the game mode between normal (Player vs Player) or Co-Op.<br/><br
 View past game sessions, search by game or player name.<br/>
 Displays game name, date, players involved, and the winner.<br/><br/>
 
-<img width="720" height="400" alt="Games History" src="https://github.com/user-attachments/assets/a9f88d83-f56b-4fa3-97c8-18ae7eb80f2f" /><br/>
+<img width="720" height="400" alt="Games History" src="screenshots/games_history.png" /><br/>
 
 <br/><br/>
 ## 📊 Reports<br/>
@@ -72,7 +71,7 @@ Displays game name, date, players involved, and the winner.<br/><br/>
 Currently, one chart is available to show the number of gameplays based on selection.<br/>
 It can display sessions per year, month, or custom period.<br/>
 
-<img width="540" height="400" alt="Games Reports" src="https://github.com/user-attachments/assets/fd9c80ac-c98c-419f-bc9a-665552aeb1c2" /><br/>
+<img width="540" height="400" alt="Games Reports" src="screenshots/games_reports.png" /><br/>
 
 <br/><br/><br/>
 📄 Licenses
