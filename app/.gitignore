@@ -1,2 +1,7 @@
 /build
 google-services.json
+
+# Signing keys / credentials - never commit these
+*.jks
+*.keystore
+keystore.properties
