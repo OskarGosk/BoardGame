@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -147,7 +148,10 @@ fun AddEditGameContent(
 
     val outputDirectory =
         context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) ?: context.filesDir
-    val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
+    DisposableEffect(Unit) {
+        onDispose { cameraExecutor.shutdown() }
+    }
 
     val launcherCamera = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()

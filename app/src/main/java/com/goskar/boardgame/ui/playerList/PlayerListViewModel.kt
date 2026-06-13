@@ -20,7 +20,7 @@ data class PlayerListState(
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
     val player: Player? = null,
-    var isLoading: Boolean = false,
+    val isLoading: Boolean = false,
     val showAddEditDialog: Boolean = false
 )
 
@@ -38,7 +38,7 @@ class PlayerListViewModel(
 
     fun getAllPlayer() {
         viewModelScope.launch {
-            _state.value.isLoading = true
+            _state.update { it.copy(isLoading = true) }
             val response = playerDbRepository.getAllPlayer()
             when (response) {
                 is RequestResult.Success -> {

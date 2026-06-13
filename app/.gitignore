@@ -1,3 +1,7 @@
 /build
 google-services.json
-proguard-rules.pro
+
+# Signing keys / credentials - never commit these
+*.jks
+*.keystore
+keystore.properties

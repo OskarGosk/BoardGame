@@ -244,10 +244,13 @@ class GamePlayViewModel(
     }
 
     fun selectedPlayer(player: Player) {
-        player.selected = !player.selected
+        val newPlayerList = state.value.playerList?.map {
+            if (it.id == player.id) it.copy(selected = !it.selected) else it
+        }
         _state.update {
             it.copy(
-                countSelectedPlayer = state.value.playerList?.filter { it.selected }?.size ?: 0
+                playerList = newPlayerList,
+                countSelectedPlayer = newPlayerList?.count { p -> p.selected } ?: 0
             )
         }
     }

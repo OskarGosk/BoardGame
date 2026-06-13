@@ -95,8 +95,8 @@ class GameDetailsBGGViewModel(
                 cooperate = state.value.cooperate,
                 baseGame = state.value.baseGame ?: "",
                 baseGameId = state.value.baseGameId,
-                minPlayer = gameToAdd?.minPlayers.toString(),
-                maxPlayer = gameToAdd?.maxPlayers.toString(),
+                minPlayer = gameToAdd?.minPlayers?.toString() ?: "0",
+                maxPlayer = gameToAdd?.maxPlayers?.toString() ?: "0",
                 games = 0,
                 uriFromBgg = gameToAdd?.image,
                 id = UUID.randomUUID().toString()

@@ -40,16 +40,4 @@ data class BoardGameBGG(
 
     @field:Element(name = "description", required = false)
     var description: String? = null,
-
-//    @field:ElementList(inline = true, required = false)
-//    var expansions: List<BoardGameExpansionBGG>? = null
 )
-//
-//@Root(name = "boardgameexpansion", strict = false)
-//data class BoardGameExpansionBGG(
-//    @field:Attribute(name = "objectid")
-//    var id: String = "",
-//
-//    @field:Text(required = false)
-//    var name: String? = null
-//)

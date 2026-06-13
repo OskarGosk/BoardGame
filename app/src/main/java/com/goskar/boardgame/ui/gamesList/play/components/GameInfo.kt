@@ -147,7 +147,7 @@ fun GameInfo(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = state.game?.games.toString(),
+                    text = state.game?.games?.toString() ?: "0",
                     style = SmoochBold16
                 )
                 Spacer(modifier = Modifier.width(30.dp))

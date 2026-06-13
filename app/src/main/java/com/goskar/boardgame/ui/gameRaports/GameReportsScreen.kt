@@ -131,28 +131,6 @@ fun GameReportsContent(
                     textAlign = TextAlign.Center)
             }
         }
-//            ColumnChart(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(bottom = 15.dp)
-//                    .height(150.dp),
-//                data = chartData,
-//                indicatorProperties = HorizontalIndicatorProperties(
-//                    textStyle = Smooch16.copy(color = MaterialTheme.colorScheme.primaryContainer),
-//                    contentBuilder = { indicator ->
-//                        "%.0f".format(indicator) + ""
-//                    },
-//                ),
-//                labelProperties = labelProperties,
-//                labelHelperProperties = LabelHelperProperties(false),
-//                barProperties = BarProperties(
-//                    cornerRadius = Bars.Data.Radius.Rectangle(topRight = 6.dp, topLeft = 6.dp),
-//                ),
-//                animationSpec = spring(
-//                    dampingRatio = Spring.DampingRatioMediumBouncy,
-//                    stiffness = Spring.StiffnessLow
-//                ),
-//            )
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -232,27 +210,6 @@ fun GameReportsContent(
             }
         }
     }
-
-
-    Text(text = "Wykres słupkowy z liczbą gier")
-    Text(text = "Do wyboru - rok kalendarzowy, miesiąc")
-
-
-//            RowChart(
-//                modifier = Modifier.fillMaxWidth()
-//                    .padding(horizontal = 22.dp)
-//                    .height(150.dp),
-//                data = rowChartData,
-//                barProperties = BarProperties(
-//                    cornerRadius = Bars.Data.Radius.Rectangle(topRight = 6.dp, topLeft = 6.dp),
-//                    spacing = 3.dp,
-//                ),
-//                animationSpec = spring(
-//                    dampingRatio = Spring.DampingRatioMediumBouncy,
-//                    stiffness = Spring.StiffnessLow
-//                ),
-//            )
-
 }
 
 

@@ -138,11 +138,11 @@ fun GameDetailsBGGContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(text = state.gameName ?: "", style = SmoochBold18)
-                GameDataRow(R.string.board_min_player, gameDetails?.minPlayers.toString())
-                GameDataRow(R.string.board_max_player, gameDetails?.maxPlayers.toString())
-                GameDataRow(R.string.bgg_year, gameDetails?.yearPublished.toString())
-                GameDataRow(R.string.bgg_age, gameDetails?.age.toString())
-                GameDataRow(R.string.bgg_playing_time, gameDetails?.playingTime.toString())
+                GameDataRow(R.string.board_min_player, gameDetails?.minPlayers?.toString() ?: "-")
+                GameDataRow(R.string.board_max_player, gameDetails?.maxPlayers?.toString() ?: "-")
+                GameDataRow(R.string.bgg_year, gameDetails?.yearPublished?.toString() ?: "-")
+                GameDataRow(R.string.bgg_age, gameDetails?.age?.toString() ?: "-")
+                GameDataRow(R.string.bgg_playing_time, gameDetails?.playingTime?.toString() ?: "-")
             }
         }
 

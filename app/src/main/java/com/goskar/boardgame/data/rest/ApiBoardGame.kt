@@ -13,7 +13,7 @@ interface ApiBoardGame {
         @Query("search") searchName: String,
     ): SearchBGGList
 
-    @GET("game/{id}")
+    @GET("boardgame/{id}")
     suspend fun getBoardGameInfo(
         @Path("id") gameID: String,
         ): BoardGamesDetails

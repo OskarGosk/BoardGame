@@ -128,22 +128,6 @@ class LoginViewModel(
             userSession.logout()
         }
     }
-//
-//    fun sendEmailVerification() {
-//        auth.currentUser?.sendEmailVerification()
-//    }
-//
-//    fun createAccount(email: String, password: String) {
-//        auth.createUserWithEmailAndPassword(email, password)
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    user = auth.currentUser
-//                    authError = null
-//                } else {
-//                    authError = task.exception?.message
-//                }
-//            }
-//    }
 
     fun questAccount() {
         _state.update {

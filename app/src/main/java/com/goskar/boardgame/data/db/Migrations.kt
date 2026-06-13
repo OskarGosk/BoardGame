@@ -48,13 +48,11 @@ abstract class Db : RoomDatabase() {
                         "                id INTEGER NOT NULL default (0),\n" +
                         "                email TEXT default(NULL),\n" +
                         "                token TEXT default(NULL),\n" +
+                        "                userUID TEXT default(NULL),\n" +
                         "                PRIMARY KEY(id)\n" +
                         "            )")
             }
         }
     }
-
-//    @RenameColumn (tableName = "Game", fromColumnName = "created", toColumnName = "createdAt") // Manual Migration
-//    class Migration3To4: AutoMigrationSpec
 }
 
