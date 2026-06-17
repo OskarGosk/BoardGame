@@ -37,8 +37,8 @@ class PlayerListViewModel(
     }
 
     fun getAllPlayer() {
+        _state.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
             val response = playerDbRepository.getAllPlayer()
             when (response) {
                 is RequestResult.Success -> {

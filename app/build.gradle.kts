@@ -85,6 +85,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    //noinspection UseTomlInstead
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
