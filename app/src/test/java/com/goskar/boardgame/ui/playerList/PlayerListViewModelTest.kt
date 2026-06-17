@@ -43,17 +43,18 @@ class PlayerListViewModelTest {
     }
 
     @Test
-    fun getAllPlayer_setsIsLoadingTrueBeforeRepositoryCallAndFalseAfter() = runTest(testDispatcher) {
-        coEvery { repo.getAllPlayer() } returns RequestResult.Success(emptyList())
+    fun getAllPlayer_setsIsLoadingTrueBeforeRepositoryCallAndFalseAfter() =
+        runTest(testDispatcher) {
+            coEvery { repo.getAllPlayer() } returns RequestResult.Success(emptyList())
 
-        viewModel.state.test {
-            skipItems(1)
-            viewModel.getAllPlayer()
-            assertEquals(true, awaitItem().isLoading)
-            assertEquals(false, awaitItem().isLoading)
-            cancelAndIgnoreRemainingEvents()
+            viewModel.state.test {
+                skipItems(1)
+                viewModel.getAllPlayer()
+                assertEquals(true, awaitItem().isLoading)
+                assertEquals(false, awaitItem().isLoading)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun getAllPlayer_success_setsPlayerListAndClearsLoadingAndError() = runTest(testDispatcher) {
@@ -101,8 +102,8 @@ class PlayerListViewModelTest {
     @Test
     fun validateDeletePlayer_success_setsSuccessFlagAndRefreshesList() = runTest(testDispatcher) {
         coEvery { repo.getAllPlayer() } returns
-            RequestResult.Success(listOf(player1, player2)) andThen
-            RequestResult.Success(listOf(player2))
+                RequestResult.Success(listOf(player1, player2)) andThen
+                RequestResult.Success(listOf(player2))
         coEvery { repo.deletePlayer(player1) } returns RequestResult.Success(true)
 
         viewModel.state.test {
@@ -144,36 +145,37 @@ class PlayerListViewModelTest {
     }
 
     @Test
-    fun validateAddEditPlayer_newPlayer_success_clearsPlayerAndRefreshes() = runTest(testDispatcher) {
-        coEvery { repo.getAllPlayer() } returns
-            RequestResult.Success(listOf(player1)) andThen
-            RequestResult.Success(listOf(player1, player2))
-        coEvery { repo.insertPlayer(player2) } returns RequestResult.Success(true)
+    fun validateAddEditPlayer_newPlayer_success_clearsPlayerAndRefreshes() =
+        runTest(testDispatcher) {
+            coEvery { repo.getAllPlayer() } returns
+                    RequestResult.Success(listOf(player1)) andThen
+                    RequestResult.Success(listOf(player1, player2))
+            coEvery { repo.insertPlayer(player2) } returns RequestResult.Success(true)
 
-        viewModel.state.test {
-            viewModel.getAllPlayer()
-            skipItems(2)
-            val item = awaitItem()
-            assertEquals(listOf(player1), item.playerList)
+            viewModel.state.test {
+                viewModel.getAllPlayer()
+                skipItems(2)
+                val item = awaitItem()
+                assertEquals(listOf(player1), item.playerList)
 
-            viewModel.update(state = viewModel.state.value.copy(player = player2))
-            viewModel.validateAddEditPLayer(newPlayer = true)
+                viewModel.update(state = viewModel.state.value.copy(player = player2))
+                viewModel.validateAddEditPLayer(newPlayer = true)
 
-            val loadingItem = awaitItem()
-            assertEquals(player2, loadingItem.player)
+                val loadingItem = awaitItem()
+                assertEquals(player2, loadingItem.player)
 
-            val nextItem = awaitItem()
-            assertEquals(null, nextItem.player)
-            assertEquals(true, nextItem.isLoading)
+                val nextItem = awaitItem()
+                assertEquals(null, nextItem.player)
+                assertEquals(true, nextItem.isLoading)
 
-            val finalItem = awaitItem()
-            assertEquals(null, finalItem.player)
-            assertEquals(listOf(player1, player2), finalItem.playerList)
-            assertEquals(false, finalItem.isLoading)
+                val finalItem = awaitItem()
+                assertEquals(null, finalItem.player)
+                assertEquals(listOf(player1, player2), finalItem.playerList)
+                assertEquals(false, finalItem.isLoading)
 
-            cancelAndIgnoreRemainingEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun validateAddEditPlayer_newPlayer_error_showsError() = runTest(testDispatcher) {
@@ -193,8 +195,8 @@ class PlayerListViewModelTest {
     @Test
     fun validateAddEditPlayer_editExistingPlayer_callsEditNotInsert() = runTest(testDispatcher) {
         coEvery { repo.getAllPlayer() } returns
-            RequestResult.Success(listOf(player1, player2)) andThen
-            RequestResult.Success(listOf(player1edited, player2))
+                RequestResult.Success(listOf(player1, player2)) andThen
+                RequestResult.Success(listOf(player1edited, player2))
         coEvery { repo.editPlayer(player1edited) } returns RequestResult.Success(true)
         coEvery { repo.insertPlayer(player1edited) } returns RequestResult.Error(Throwable("should not be called"))
 
