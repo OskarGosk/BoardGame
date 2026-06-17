@@ -42,10 +42,6 @@ class PlayerListViewModelTest {
         Dispatchers.resetMain()
     }
 
-    // -------------------------------------------------------------------------
-    // getAllPlayer()
-    // -------------------------------------------------------------------------
-
     @Test
     fun getAllPlayer_setsIsLoadingTrueBeforeRepositoryCallAndFalseAfter() = runTest(testDispatcher) {
         coEvery { repo.getAllPlayer() } returns RequestResult.Success(emptyList())
@@ -102,17 +98,11 @@ class PlayerListViewModelTest {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // validateDeletePlayer(player)
-    // validateDeletePlayer() calls getAllPlayer() internally on success.
-    // -------------------------------------------------------------------------
-
     @Test
     fun validateDeletePlayer_success_setsSuccessFlagAndRefreshesList() = runTest(testDispatcher) {
-        // Given
         coEvery { repo.getAllPlayer() } returns
-                RequestResult.Success(listOf(player1, player2)) andThen
-                RequestResult.Success(listOf(player2))
+            RequestResult.Success(listOf(player1, player2)) andThen
+            RequestResult.Success(listOf(player2))
         coEvery { repo.deletePlayer(player1) } returns RequestResult.Success(true)
 
         viewModel.state.test {
@@ -120,10 +110,7 @@ class PlayerListViewModelTest {
             skipItems(2)
             assertEquals(listOf(player1, player2), awaitItem().playerList)
 
-            // When
             viewModel.validateDeletePlayer(player1)
-
-            // Then
 
             val loadingItem = awaitItem()
             assertEquals(true, loadingItem.successDeletePlayer)
@@ -150,11 +137,6 @@ class PlayerListViewModelTest {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // validateAddEditPLayer(newPlayer: Boolean)
-    // validateAddEditPLayer() calls getAllPlayer() internally on success.
-    // -------------------------------------------------------------------------
-
     @Test
     fun validateAddEditPlayer_nullPlayer_setsErrorVisible() {
         viewModel.validateAddEditPLayer(newPlayer = true)
@@ -176,7 +158,7 @@ class PlayerListViewModelTest {
 
             viewModel.update(state = viewModel.state.value.copy(player = player2))
             viewModel.validateAddEditPLayer(newPlayer = true)
-            // Emits: {player=player2} (update) → {player=null} → {isLoading=true} → {isLoading=false, playerList=[p1,p2]}
+
             val loadingItem = awaitItem()
             assertEquals(player2, loadingItem.player)
 
@@ -184,7 +166,6 @@ class PlayerListViewModelTest {
             assertEquals(null, nextItem.player)
             assertEquals(true, nextItem.isLoading)
 
-            // End
             val finalItem = awaitItem()
             assertEquals(null, finalItem.player)
             assertEquals(listOf(player1, player2), finalItem.playerList)
@@ -215,7 +196,6 @@ class PlayerListViewModelTest {
             RequestResult.Success(listOf(player1, player2)) andThen
             RequestResult.Success(listOf(player1edited, player2))
         coEvery { repo.editPlayer(player1edited) } returns RequestResult.Success(true)
-        // If insertPlayer were called instead, it returns Error → errorVisible=true (implicit verify)
         coEvery { repo.insertPlayer(player1edited) } returns RequestResult.Error(Throwable("should not be called"))
 
         viewModel.state.test {
@@ -229,7 +209,7 @@ class PlayerListViewModelTest {
 
             viewModel.update(state = viewModel.state.value.copy(player = player1edited))
             viewModel.validateAddEditPLayer(newPlayer = false)
-            // Emits: {player=player1edited} (update) → {player=null} → {isLoading=true} → {isLoading=false, playerList=[p1edited,p2]}
+
             skipItems(1)
             val item2 = awaitItem()
             assertEquals(null, item2.player)
