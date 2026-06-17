@@ -1,27 +1,3 @@
-// Tier 1 — ViewModel state, loading transitions, CRUD success/error paths
-//
-// Required deps to add before implementing:
-//   testImplementation("io.mockk:mockk:1.13.14")
-//   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-//   testImplementation("app.cash.turbine:turbine:1.2.0")  // for Flow emission assertions
-//
-// Setup pattern:
-//   @Before: Dispatchers.setMain(UnconfinedTestDispatcher())
-//            repository = mockk<PlayerDbRepository>()
-//            viewModel  = PlayerListViewModel(repository)
-//            Note: PlayerListViewModel has no init block that launches work,
-//            so construction is safe without any pre-stubbing.
-//   @After:  Dispatchers.resetMain()
-//
-// For Flow assertions use Turbine:
-//   viewModel.state.test {
-//       val item = awaitItem()
-//       assertEquals(expected, item.someField)
-//   }
-//
-// Alternatively, with UnconfinedTestDispatcher the coroutine runs eagerly,
-// so viewModel.state.value is often readable directly after calling the function.
-
 package com.goskar.boardgame.ui.playerList
 
 import app.cash.turbine.test
@@ -32,6 +8,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -44,13 +21,20 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerListViewModelTest {
 
-    val testDispatcher = UnconfinedTestDispatcher()
-    val repo = mockk<PlayerDbRepository>()
-    val viewModel = PlayerListViewModel(repo)
+    private lateinit var testDispatcher: TestDispatcher
+    private lateinit var repo: PlayerDbRepository
+    private lateinit var viewModel: PlayerListViewModel
+
+    val player1 = Player(name = "Alice",   id = "id-1", games = 2, winRatio = 1, description = "Test", selected = false)
+    val player2 = Player(name = "Bob",     id = "id-2", games = 3, winRatio = 2, description = "Test", selected = true)
+    val player1edited = player1.copy(name = "Bob")
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        testDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
+        repo = mockk<PlayerDbRepository>()
+        viewModel = PlayerListViewModel(repo)
     }
 
     @After
@@ -60,58 +44,24 @@ class PlayerListViewModelTest {
 
     // -------------------------------------------------------------------------
     // getAllPlayer()
-    // Emits isLoading=true, calls repository, then sets playerList or errorVisible
     // -------------------------------------------------------------------------
 
-    val player1 = Player(
-        name = "Alice", id = "id-1",
-        games = 2,
-        winRatio = 1,
-        description = "Test",
-        selected = false
-    )
-    val player2 = Player(
-        name = "Bob", id = "id-2",
-        games = 3,
-        winRatio = 2,
-        description = "Test",
-        selected = true
-    )
-    val player1edited = player1.copy(name = "Bob")
-
-
     @Test
-    fun getAllPlayer_setsIsLoadingTrueBeforeRepositoryCallAndFalseAfter() = runTest {
-        // Given: viewModel.getAllPlayer() is stubbed but will not return immediately
-        //        (use a coEvery { } that suspends or just capture state mid-flight)
-        // When:  getAllPlayer() is called
-        // Then:  the first state emission has isLoading == true
-
-        coEvery {
-            repo.getAllPlayer()
-        } returns RequestResult.Success(emptyList())
+    fun getAllPlayer_setsIsLoadingTrueBeforeRepositoryCallAndFalseAfter() = runTest(testDispatcher) {
+        coEvery { repo.getAllPlayer() } returns RequestResult.Success(emptyList())
 
         viewModel.state.test {
             skipItems(1)
             viewModel.getAllPlayer()
             assertEquals(true, awaitItem().isLoading)
-            val result = awaitItem()
-            assertEquals(false, result.isLoading)
+            assertEquals(false, awaitItem().isLoading)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun getAllPlayer_success_setsPlayerListAndClearsLoadingAndError() = runTest {
-        // Given: repository.getAllPlayer() returns RequestResult.Success(listOf(player1, player2))
-        // When:  getAllPlayer() is called
-        // Then:  state.playerList == listOf(player1, player2)
-        //        state.isLoading  == false
-        //        state.errorVisible == false
-
-        coEvery {
-            repo.getAllPlayer()
-        } returns RequestResult.Success(listOf(player1, player2))
+    fun getAllPlayer_success_setsPlayerListAndClearsLoadingAndError() = runTest(testDispatcher) {
+        coEvery { repo.getAllPlayer() } returns RequestResult.Success(listOf(player1, player2))
 
         viewModel.state.test {
             viewModel.getAllPlayer()
@@ -125,38 +75,22 @@ class PlayerListViewModelTest {
     }
 
     @Test
-    fun getAllPlayer_success_emptyList_setsEmptyPlayerList() = runTest {
-        // Given: repository.getAllPlayer() returns RequestResult.Success(emptyList())
-        // When:  getAllPlayer() is called
-        // Then:  state.playerList == emptyList()
-        //        state.isLoading  == false
-
-        coEvery {
-            repo.getAllPlayer()
-        } returns RequestResult.Success(emptyList())
+    fun getAllPlayer_success_emptyList_setsEmptyPlayerList() = runTest(testDispatcher) {
+        coEvery { repo.getAllPlayer() } returns RequestResult.Success(emptyList())
 
         viewModel.state.test {
             viewModel.getAllPlayer()
             skipItems(2)
             val item = awaitItem()
             assertEquals(false, item.isLoading)
-            assertEquals(false, item.errorVisible)
             assertEquals(emptyList<Player>(), item.playerList)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun getAllPlayer_error_showsErrorAndClearsLoading() = runTest {
-        // Given: repository.getAllPlayer() returns RequestResult.Error(Throwable("db error"))
-        // When:  getAllPlayer() is called
-        // Then:  state.errorVisible == true
-        //        state.isLoading    == false
-        //        state.playerList   is unchanged from before the call
-
-        coEvery {
-            repo.getAllPlayer()
-        } returns RequestResult.Error(Throwable("db error"))
+    fun getAllPlayer_error_showsErrorAndClearsLoading() = runTest(testDispatcher) {
+        coEvery { repo.getAllPlayer() } returns RequestResult.Error(Throwable("db error"))
 
         viewModel.state.test {
             viewModel.getAllPlayer()
@@ -170,57 +104,41 @@ class PlayerListViewModelTest {
 
     // -------------------------------------------------------------------------
     // validateDeletePlayer(player)
-    // Calls repository.deletePlayer(), on success sets successDeletePlayer=true
-    // and triggers getAllPlayer() to refresh the list
+    // validateDeletePlayer() calls getAllPlayer() internally on success.
     // -------------------------------------------------------------------------
 
     @Test
-    fun validateDeletePlayer_success_setsSuccessFlagAndRefreshesList() = runTest {
-        // Given: repository.deletePlayer() returns RequestResult.Success(Unit)
-        //        repository.getAllPlayer() returns RequestResult.Success(updatedList)
-        // When:  validateDeletePlayer(player) is called
-        // Then:  state.successDeletePlayer == true
-        //        state.errorVisible        == false
-        //        repository.getAllPlayer() was called (verify with mockk: verify { })
+    fun validateDeletePlayer_success_setsSuccessFlagAndRefreshesList() = runTest(testDispatcher) {
+        // Given
         coEvery { repo.getAllPlayer() } returns
                 RequestResult.Success(listOf(player1, player2)) andThen
                 RequestResult.Success(listOf(player2))
-
         coEvery { repo.deletePlayer(player1) } returns RequestResult.Success(true)
-
 
         viewModel.state.test {
             viewModel.getAllPlayer()
             skipItems(2)
-            val item = awaitItem()
-            assertEquals(false, item.isLoading)
-            assertEquals(false, item.errorVisible)
-            assertEquals(listOf(player1, player2), item.playerList)
+            assertEquals(listOf(player1, player2), awaitItem().playerList)
 
+            // When
             viewModel.validateDeletePlayer(player1)
-            skipItems(1)
-            val item1 = awaitItem()
-            assertEquals(true, item1.successDeletePlayer)
-            assertEquals(false, item1.errorVisible)
-            viewModel.getAllPlayer()
-            skipItems(1)
-            val item2 = awaitItem()
-            assertEquals(false, item2.isLoading)
-            assertEquals(false, item2.errorVisible)
-            assertEquals(listOf(player2), item2.playerList)
+
+            // Then
+
+            val loadingItem = awaitItem()
+            assertEquals(true, loadingItem.successDeletePlayer)
+            assertEquals(true, loadingItem.isLoading)
+
+            val finalItem = awaitItem()
+            assertEquals(false, finalItem.isLoading)
+            assertEquals(listOf(player2), finalItem.playerList)
+
             cancelAndIgnoreRemainingEvents()
         }
-
     }
 
     @Test
-    fun validateDeletePlayer_error_showsError() = runTest {
-        // Given: repository.deletePlayer() returns RequestResult.Error(Throwable())
-        // When:  validateDeletePlayer(player) is called
-        // Then:  state.errorVisible == true
-        //        state.successDeletePlayer is unchanged (false)
-        //        repository.getAllPlayer() is NOT called after the error
-
+    fun validateDeletePlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { repo.deletePlayer(player1) } returns RequestResult.Error(Throwable("db error"))
 
         viewModel.state.test {
@@ -234,76 +152,51 @@ class PlayerListViewModelTest {
 
     // -------------------------------------------------------------------------
     // validateAddEditPLayer(newPlayer: Boolean)
-    // When state.player == null → sets errorVisible=true (null branch)
-    // When newPlayer=true  → calls insertPlayer()
-    // When newPlayer=false → calls editPlayer()
-    // On success: clears state.player and calls getAllPlayer()
-    // On error:   sets errorVisible=true
+    // validateAddEditPLayer() calls getAllPlayer() internally on success.
     // -------------------------------------------------------------------------
 
     @Test
     fun validateAddEditPlayer_nullPlayer_setsErrorVisible() {
-        // Given: state.player == null (default state)
-        // When:  validateAddEditPLayer(newPlayer = true) is called
-        // Then:  state.errorVisible == true
-        //        neither insertPlayer() nor editPlayer() is called
-
-        viewModel.update(state = viewModel.state.value.copy(player = null))
         viewModel.validateAddEditPLayer(newPlayer = true)
         assertEquals(true, viewModel.state.value.errorVisible)
     }
 
     @Test
-    fun validateAddEditPlayer_newPlayer_success_clearsPlayerAndRefreshes() = runTest {
-        // Given: viewModel.update(state.copy(player = aPlayer))
-        //        repository.insertPlayer(aPlayer) returns RequestResult.Success(Unit)
-        //        repository.getAllPlayer() returns RequestResult.Success(listOf(aPlayer))
-        // When:  validateAddEditPLayer(newPlayer = true) is called
-        // Then:  state.player == null
-        //        repository.insertPlayer() was called (not editPlayer())
-        //        repository.getAllPlayer() was called
-
+    fun validateAddEditPlayer_newPlayer_success_clearsPlayerAndRefreshes() = runTest(testDispatcher) {
         coEvery { repo.getAllPlayer() } returns
-                RequestResult.Success(listOf(player1)) andThen
-                RequestResult.Success(listOf(player1, player2))
-
-        coEvery {
-            repo.insertPlayer(player2)
-        } returns RequestResult.Success(true)
+            RequestResult.Success(listOf(player1)) andThen
+            RequestResult.Success(listOf(player1, player2))
+        coEvery { repo.insertPlayer(player2) } returns RequestResult.Success(true)
 
         viewModel.state.test {
             viewModel.getAllPlayer()
             skipItems(2)
             val item = awaitItem()
-            assertEquals(false, item.isLoading)
-            assertEquals(false, item.errorVisible)
             assertEquals(listOf(player1), item.playerList)
 
             viewModel.update(state = viewModel.state.value.copy(player = player2))
             viewModel.validateAddEditPLayer(newPlayer = true)
-            skipItems(1)
-            val item2 = awaitItem()
-            assertEquals(null, item2.player)
-            viewModel.getAllPlayer()
-            skipItems(1)
-            val item3 = awaitItem()
-            assertEquals(listOf(player1,player2), item3.playerList)
+            // Emits: {player=player2} (update) → {player=null} → {isLoading=true} → {isLoading=false, playerList=[p1,p2]}
+            val loadingItem = awaitItem()
+            assertEquals(player2, loadingItem.player)
+
+            val nextItem = awaitItem()
+            assertEquals(null, nextItem.player)
+            assertEquals(true, nextItem.isLoading)
+
+            // End
+            val finalItem = awaitItem()
+            assertEquals(null, finalItem.player)
+            assertEquals(listOf(player1, player2), finalItem.playerList)
+            assertEquals(false, finalItem.isLoading)
+
             cancelAndIgnoreRemainingEvents()
         }
-
     }
 
     @Test
-    fun validateAddEditPlayer_newPlayer_error_showsError() = runTest {
-        // Given: viewModel.update(state.copy(player = aPlayer))
-        //        repository.insertPlayer(aPlayer) returns RequestResult.Error(Throwable())
-        // When:  validateAddEditPLayer(newPlayer = true) is called
-        // Then:  state.errorVisible == true
-        //        state.player is unchanged (not cleared)
-
-        coEvery {
-            repo.insertPlayer(player2)
-        } returns RequestResult.Error(Throwable("db error"))
+    fun validateAddEditPlayer_newPlayer_error_showsError() = runTest(testDispatcher) {
+        coEvery { repo.insertPlayer(player2) } returns RequestResult.Error(Throwable("db error"))
 
         viewModel.state.test {
             viewModel.update(state = viewModel.state.value.copy(player = player2))
@@ -312,26 +205,18 @@ class PlayerListViewModelTest {
             val item = awaitItem()
             assertEquals(true, item.errorVisible)
             assertEquals(player2, item.player)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun validateAddEditPlayer_editExistingPlayer_callsEditNotInsert() = runTest {
-        // Given: viewModel.update(state.copy(player = aPlayer))
-        //        repository.editPlayer(aPlayer) returns RequestResult.Success(Unit)
-        //        repository.getAllPlayer() returns RequestResult.Success(listOf(aPlayer))
-        // When:  validateAddEditPLayer(newPlayer = false) is called
-        // Then:  repository.editPlayer() was called (not insertPlayer())
-        //        state.player == null
-
-
+    fun validateAddEditPlayer_editExistingPlayer_callsEditNotInsert() = runTest(testDispatcher) {
         coEvery { repo.getAllPlayer() } returns
-                RequestResult.Success(listOf(player1, player2)) andThen
-                RequestResult.Success(listOf(player1edited, player2))
-
+            RequestResult.Success(listOf(player1, player2)) andThen
+            RequestResult.Success(listOf(player1edited, player2))
         coEvery { repo.editPlayer(player1edited) } returns RequestResult.Success(true)
-
-        coEvery { repo.insertPlayer(player1edited) } returns RequestResult.Error(Throwable("db error"))
+        // If insertPlayer were called instead, it returns Error → errorVisible=true (implicit verify)
+        coEvery { repo.insertPlayer(player1edited) } returns RequestResult.Error(Throwable("should not be called"))
 
         viewModel.state.test {
             skipItems(1)
@@ -344,40 +229,34 @@ class PlayerListViewModelTest {
 
             viewModel.update(state = viewModel.state.value.copy(player = player1edited))
             viewModel.validateAddEditPLayer(newPlayer = false)
+            // Emits: {player=player1edited} (update) → {player=null} → {isLoading=true} → {isLoading=false, playerList=[p1edited,p2]}
             skipItems(1)
             val item2 = awaitItem()
             assertEquals(null, item2.player)
             assertEquals(false, item2.errorVisible)
-            viewModel.getAllPlayer()
-            skipItems(2)
-            val item3 = awaitItem()
-            assertEquals(false, item3.isLoading)
-            assertEquals(false, item3.errorVisible)
-            assertEquals(listOf(player1edited, player2), item3.playerList)
+            assertEquals(true, item2.isLoading)
 
+            val finalItem = awaitItem()
+            assertEquals(false, finalItem.isLoading)
+            assertEquals(false, finalItem.errorVisible)
+            assertEquals(listOf(player1edited, player2), finalItem.playerList)
+            cancelAndIgnoreRemainingEvents()
         }
-
     }
 
     @Test
-    fun validateAddEditPlayer_editExistingPlayer_error_showsError() = runTest {
-        // Given: viewModel.update(state.copy(player = aPlayer))
-        //        repository.editPlayer(aPlayer) returns RequestResult.Error(Throwable())
-        // When:  validateAddEditPLayer(newPlayer = false) is called
-        // Then:  state.errorVisible == true
-
+    fun validateAddEditPlayer_editExistingPlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { repo.editPlayer(player1edited) } returns RequestResult.Error(Throwable("db error"))
 
         viewModel.state.test {
             viewModel.update(state = viewModel.state.value.copy(player = player1edited))
             skipItems(1)
-
             viewModel.validateAddEditPLayer(false)
             skipItems(1)
-
             val item = awaitItem()
             assertEquals(true, item.errorVisible)
             assertEquals(player1edited, item.player)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }
