@@ -19,24 +19,80 @@
 
 package com.goskar.boardgame.ui.gamesList.lists
 
+import app.cash.turbine.test
+import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class GameListViewModelTest {
+
+    private lateinit var gameRepo: GameDbRepository
+    private lateinit var getAllGameUseCase: GetAllGameUseCase
+    private lateinit var testDispatcher: TestDispatcher
+    private lateinit var viewModel: GameListViewModel
+
+    private val chess = createGame(name = "Chess", games = 8)
+    private val azul = createGame(name = "Azul", games = 2)
+    private val wingspan = createGame(name = "Wingspan", games = 5)
+    private val wingspanExpansion =
+        createGame(name = "Wingspan: European Expansion", expansion = true, games = 1)
+
+    private fun createGame(
+        name: String,
+        expansion: Boolean = false,
+        games: Int = 0,
+        id: String = name
+    ) = Game(
+        name = name,
+        expansion = expansion,
+        cooperate = false,
+        baseGame = "",
+        minPlayer = "1",
+        maxPlayer = "4",
+        games = games,
+        id = id
+    )
+
+    private val game1 = GameUiState(chess, true)
+    private val game2 = GameUiState(azul, true)
+    private val game3 = GameUiState(wingspan, true)
+    private val game4 = GameUiState(wingspanExpansion, true)
+
+
+    private fun createGameUiState(game: Game, isExpanded: Boolean = true) =
+        GameUiState(game = game, isExpanded = isExpanded)
 
     @Before
     fun setUp() {
-        // Dispatchers.setMain(UnconfinedTestDispatcher())
-        // gameDbRepository = mockk<GameDbRepository>()
-        // getAllGameUseCase = mockk<GetAllGameUseCase>()
-        // coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        // viewModel = GameListViewModel(gameDbRepository, getAllGameUseCase)
+        testDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
+        gameRepo = mockk<GameDbRepository>()
+        getAllGameUseCase = mockk<GetAllGameUseCase>()
+
+        coEvery { getAllGameUseCase.invoke() } returns emptyList()
+
+        viewModel =
+            GameListViewModel(gameDbRepository = gameRepo, getAllGameUseCase = getAllGameUseCase)
     }
 
     @After
     fun tearDown() {
-        // Dispatchers.resetMain()
+        Dispatchers.resetMain()
     }
 
     // -------------------------------------------------------------------------
@@ -46,17 +102,45 @@ class GameListViewModelTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun refreshGameList_defaultSort_preservesOriginalOrder() {
-        // Given: state.gameList has 3 games in arbitrary order
+    fun refreshGameList_defaultSort_preservesOriginalOrder() = runTest(testDispatcher) {
+        // Given: state.gameList has 4 games in original order
         //        state.sortOption = R.string.default_sort
+        viewModel.update(
+            state = viewModel.state.value.copy(
+                gameList = listOf(game1, game2, game3, game4),
+                sortOption = R.string.default_sort
+            )
+        )
+
         // When:  refreshGameList() is called
+        viewModel.refreshGameList()
+
         // Then:  state.gameListEdited has the same order as state.gameList
+        viewModel.state.test {
+            val finalItems = awaitItem()
+            assertEquals(listOf(game1, game2, game3, game4), finalItems.gameListEdited)
+        }
     }
 
     @Test
-    fun refreshGameList_nameAscending_sortsAlphabetically() {
-        // Given: state.gameList = [Chess, Azul, Wingspan] (unsorted)
-        //        state.sortOption = R.string.name_ascending
+    fun refreshGameList_nameAscending_sortsAlphabetically() = runTest(testDispatcher) {
+                // Given: state.gameList = [Chess, Azul, Wingspan]
+        viewModel.update(
+            state = viewModel.state.value.copy(
+                gameList = listOf(game1, game2, game3),
+                sortOption = R.string.name_ascending
+            )
+        )
+
+        viewModel.refreshGameList()
+
+        viewModel.state.test {
+            val finalItems = awaitItem()
+
+            assertEquals(listOf( game2, game1, game3), finalItems.gameListEdited)
+
+        }
+
         // When:  refreshGameList() is called
         // Then:  state.gameListEdited = [Azul, Chess, Wingspan]
     }
