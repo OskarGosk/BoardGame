@@ -29,6 +29,7 @@ class PlayerListViewModel(
     private val playerDbRepository: PlayerDbRepository,
 ) : ViewModel() {
 
+
     private val _state = MutableStateFlow(PlayerListState())
     val state = _state.asStateFlow()
 
