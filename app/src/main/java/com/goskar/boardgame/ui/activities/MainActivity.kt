@@ -17,9 +17,7 @@ class MainActivity : ComponentActivity() {
                 isAppearanceLightNavigationBars = true
                 isAppearanceLightStatusBars = true
             }
-            BoardGameTheme {
                 ComposeApp()
-            }
         }
     }
 

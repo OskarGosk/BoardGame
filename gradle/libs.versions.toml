@@ -12,7 +12,9 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.10.01"
+mockk = "1.14.11"
 simpleXml = "2.7.1"
+turbine = "1.2.1"
 voyager = "1.1.0-beta02"
 firebase = "4.4.2"
 firebase-bom = "33.5.1"
@@ -22,7 +24,6 @@ firebase-analytics-ktx = "22.4.0"
 retrofit = "2.11.0"
 gson = "2.11.0"
 koin = "3.5.3"
-koin-annotation = "1.3.0"
 room = "2.7.1"
 ksp = "2.1.21-2.0.1"
 timber = "5.0.1"
@@ -52,6 +53,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 simple-xml = { module = "org.simpleframework:simple-xml", version.ref = "simpleXml" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
@@ -63,13 +65,12 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson"}
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin"}
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-android-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
-koin-annotation = { module = "io.insert-koin:koin-annotations", version.ref = "koin-annotation" }
-koin-annotation-ksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-annotation" }
 
 room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 voyager-core = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
 voyager-bottomSheetNavigator = { module = "cafe.adriel.voyager:voyager-bottom-sheet-navigator", version.ref = "voyager" }
@@ -107,7 +108,7 @@ room = { id = "androidx.room", version.ref = "room" }
 voyager-all = ["voyager-core", "voyager-screenModel", "voyager-bottomSheetNavigator", "voyager-tabNavigator", "voyager-transitions", "voyager-koin"]
 firebase-all = ["firebase-bom", "firebase-crashlytics-ktx", "firebase-analytics-ktx", "firebase-database", "firebase-auth"]
 retrofit-gson = ["retrofit2", "retrofit2-converter", "gson"]
-koin-all = ["koin-core", "koin-android", "koin-android-compose", "koin-annotation"]
+koin-all = ["koin-core", "koin-android", "koin-android-compose"]
 room-all = ["room-ktx", "room-runtime"]
 coil-all = ["coil-compose", "coil-base", "coil-gif", "coil-svg"]
 camera-all = ["camera-camera2", "camera-lifecycle", "camera-view"]

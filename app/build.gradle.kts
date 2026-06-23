@@ -19,7 +19,7 @@ android {
         minSdk = 30
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0.1"
+        versionName = "1.1.1"
 
         val localProperties  = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
@@ -85,6 +85,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    //noinspection UseTomlInstead
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -108,8 +112,19 @@ dependencies {
     implementation(libs.bundles.room.all)
     implementation(libs.bundles.coil.all)
 
-    implementation (libs.converter.simplexml) // SimpleXML do parsowania XML
-    implementation (libs.simple.xml)
+    // SimpleXML for parsing the BGG XML API.
+    // Exclude xpp3 / stax: they bundle a duplicate org.xmlpull.v1.XmlPullParser
+    // that the Android platform already provides, which breaks R8 (release minify).
+    implementation(libs.converter.simplexml) {
+        exclude(group = "stax", module = "stax-api")
+        exclude(group = "stax", module = "stax")
+        exclude(group = "xpp3", module = "xpp3")
+    }
+    implementation(libs.simple.xml) {
+        exclude(group = "stax", module = "stax-api")
+        exclude(group = "stax", module = "stax")
+        exclude(group = "xpp3", module = "xpp3")
+    }
 
     ksp(libs.room.ksp)
 }

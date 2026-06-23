@@ -17,7 +17,7 @@ import org.koin.dsl.module
 
 fun KoinApplication.viewModelModule() = module {
     viewModel { PlayerListViewModel(get()) }
-    viewModel { GameListViewModel(get(), get()) }
+    viewModel { GameListViewModel(get()) }
     viewModel { AddEditGameViewModel(get(), get()) }
     viewModel { GamePlayViewModel(get(), get(), get(), get()) }
     viewModel { GamesHistoryViewModel(get(), get()) }

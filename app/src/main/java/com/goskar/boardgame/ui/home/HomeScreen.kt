@@ -92,7 +92,7 @@ fun HomeScreenContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
+//            .padding(10.dp)
             .padding(paddingValues)
     ) {
         Button(

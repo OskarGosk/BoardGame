@@ -6,12 +6,11 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.utils.SortList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
 data class GameListState(
     val gameList: List<GameUiState>? = emptyList(),
@@ -19,7 +18,7 @@ data class GameListState(
     val successDeleteGame: Boolean = false,
     val errorVisible: Boolean = false,
     val searchTxt: String = "",
-    val sortOption: Int = R.string.default_sort,
+    val sortOption: SortList = SortList.DEFAULT,
     val isLoading: Boolean = false,
     val checkboxBaseGame: Boolean = true,
     val checkboxExpansionGame: Boolean = true,
@@ -31,10 +30,8 @@ data class GameUiState(
     val isExpanded: Boolean = true
 )
 
-@KoinViewModel
 class GameListViewModel(
-    private val gameDbRepository: GameDbRepository,
-    private val getAllGameUseCase: GetAllGameUseCase
+    private val gameDbRepository: GameDbRepository
 ) : ViewModel() {
 
 
@@ -51,29 +48,23 @@ class GameListViewModel(
 
     fun refreshGameList() {
         val newGameList: List<GameUiState> = when (state.value.sortOption) {
-            R.string.default_sort -> state.value.gameList ?: emptyList()
-            R.string.name_ascending -> state.value.gameList?.sortedBy { it.game.name }
+            SortList.DEFAULT -> state.value.gameList ?: emptyList()
+            SortList.A_Z -> state.value.gameList?.sortedBy { it.game.name }
                 ?: emptyList()
 
-            R.string.name_descending -> state.value.gameList?.sortedByDescending { it.game.name }
+            SortList.Z_A -> state.value.gameList?.sortedByDescending { it.game.name }
                 ?: emptyList()
 
-            R.string.played_ascending -> state.value.gameList?.sortedBy { it.game.games }
+            SortList.GAMES_MIN -> state.value.gameList?.sortedBy { it.game.games }
                 ?: emptyList()
 
-            R.string.played_descending -> state.value.gameList?.sortedByDescending { it.game.games }
+            SortList.GAMES_MAX -> state.value.gameList?.sortedByDescending { it.game.games }
                 ?: emptyList()
-
-            else -> state.value.gameList ?: emptyList()
         }.filter { it.game.name.lowercase().contains(state.value.searchTxt.lowercase()) }
 
-        val selectedGameList = buildList {
-            if (state.value.checkboxBaseGame) {
-                addAll(newGameList.filter { !it.game.expansion })
-            }
-            if (state.value.checkboxExpansionGame) {
-                addAll(newGameList.filter { it.game.expansion })
-            }
+        val selectedGameList = newGameList.filter { uiState ->
+            (state.value.checkboxBaseGame && !uiState.game.expansion) ||
+                    (state.value.checkboxExpansionGame && uiState.game.expansion)
         }
         _state.update {
             it.copy(
@@ -115,15 +106,24 @@ class GameListViewModel(
 
     fun refresh() {
         viewModelScope.launch {
+            when (val response = gameDbRepository.getAllGame()) {
+                is RequestResult.Success -> {
+                    val gameUiStates = response.data.map { GameUiState(game = it) }
+                    _state.update {
+                        it.copy(
+                            gameList = gameUiStates,
+                            errorVisible = false
+                        )
+                    }
+                    refreshGameList()
+                }
 
-            val games = getAllGameUseCase.invoke()
-            val gameUiStates = games.map { GameUiState(game = it) }
-            _state.update {
-                it.copy(
-                    gameList = gameUiStates
-                )
+                is RequestResult.Error -> {
+                    _state.update {
+                        it.copy(errorVisible = true)
+                    }
+                }
             }
-            refreshGameList()
         }
     }
 

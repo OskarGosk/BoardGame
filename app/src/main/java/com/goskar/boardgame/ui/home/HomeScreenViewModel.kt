@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
 data class HomeScreenState(
     val isLoading: Boolean = false,
@@ -30,7 +29,6 @@ data class HomeScreenState(
     val isSignOut: Boolean = false,
 )
 
-@KoinViewModel
 class HomeScreenViewModel(
     private val api: BoardGameFirebaseDataRepository,
     private val addAllGameToDb: UpsertAllGameUseCase,
