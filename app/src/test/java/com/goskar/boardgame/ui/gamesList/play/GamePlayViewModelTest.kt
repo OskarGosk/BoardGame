@@ -1,193 +1,238 @@
-// Tier 2 — player selection, expansion toggling, game variant, setGameData filtering
-//
-// Required deps to add before implementing:
-//   testImplementation("io.mockk:mockk:1.13.14")
-//   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-//
-// Setup pattern:
-//   @Before: Dispatchers.setMain(UnconfinedTestDispatcher())
-//            playerDbRepository      = mockk<PlayerDbRepository>()
-//            gameDbRepository        = mockk<GameDbRepository>()
-//            gamesHistoryDbRepository= mockk<GamesHistoryDbRepository>()
-//            getAllGameUseCase        = mockk<GetAllGameUseCase>()
-//            viewModel = GamePlayViewModel(playerDbRepository, gameDbRepository,
-//                                         gamesHistoryDbRepository, getAllGameUseCase)
-//            Note: no init block — construction is safe without pre-stubbing.
-//   @After:  Dispatchers.resetMain()
-//
-// Private functions (setGameData, validateAddHistoryGameData, validateEditAllPlayer, etc.)
-// are tested indirectly via the public functions that call them:
-//   setGameData()               → tested via getAllGame()
-//   validateAddHistoryGameData  → tested via validateAllData() — but this needs Context;
-//                                  consider Robolectric for validateAllData() tests
-//
-// Focus here is on the pure-state functions that don't need Context.
-
 package com.goskar.boardgame.ui.gamesList.play
 
+import app.cash.turbine.test
+import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
+import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
+import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
+import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class GamePlayViewModelTest {
+
+    private lateinit var playerRepo: PlayerDbRepository
+    private lateinit var gameRepo: GameDbRepository
+    private lateinit var historyRepo: GamesHistoryDbRepository
+    private lateinit var useCase: GetAllGameUseCase
+    private lateinit var testDispatcher: TestDispatcher
+    private lateinit var viewModel: GamePlayViewModel
+
+    // Test Data
+    private val chess = createGame(name = "Chess", games = 8)
+    private val azul = createGame(name = "Azul", games = 2)
+    private val wingspan = createGame(name = "Wingspan", games = 5)
+    private val wingspanExpansion =
+        createGame(name = "Wingspan: European Expansion", expansion = true, games = 4, baseGameId = "Wingspan")
+    private val azulExpansion =
+        createGame(name = "Azul And Dark Knight", expansion = true, games = 1, baseGameId = "Azul")
+
+    private fun createGame(
+        name: String,
+        expansion: Boolean = false,
+        games: Int = 0,
+        id: String = name,
+        baseGameId: String? = null
+    ) = Game(
+        name = name,
+        expansion = expansion,
+        cooperate = false,
+        baseGame = "",
+        baseGameId = baseGameId,
+        minPlayer = "1",
+        maxPlayer = "4",
+        games = games,
+        id = id
+    )
+
+    val player1 = Player(
+        name = "Alice",
+        id = "id-1",
+        games = 2,
+        winRatio = 1,
+        description = "Test",
+        selected = false
+    )
+    val player2 = Player(
+        name = "Bob",
+        id = "id-2",
+        games = 3,
+        winRatio = 2,
+        description = "Test",
+        selected = false
+    )
 
     @Before
     fun setUp() {
-        // Dispatchers.setMain(UnconfinedTestDispatcher())
-        // playerDbRepository       = mockk<PlayerDbRepository>()
-        // gameDbRepository         = mockk<GameDbRepository>()
-        // gamesHistoryDbRepository = mockk<GamesHistoryDbRepository>()
-        // getAllGameUseCase         = mockk<GetAllGameUseCase>()
-        // viewModel = GamePlayViewModel(playerDbRepository, gameDbRepository,
-        //                               gamesHistoryDbRepository, getAllGameUseCase)
+        testDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
+        playerRepo = mockk()
+        gameRepo = mockk()
+        historyRepo = mockk()
+        useCase = mockk()
+
+        coEvery { useCase.invoke() } returns listOf(
+            chess,
+            azul,
+            wingspan,
+            wingspanExpansion,
+            azulExpansion
+        )
+
+        viewModel = GamePlayViewModel(
+            playerDbRepository = playerRepo,
+            gameDbRepository = gameRepo,
+            gamesHistoryDbRepository = historyRepo,
+            getAllGameUseCase = useCase
+        )
     }
 
     @After
     fun tearDown() {
-        // Dispatchers.resetMain()
+        Dispatchers.resetMain()
     }
 
     // -------------------------------------------------------------------------
     // selectedPlayer(player)
-    // Toggles player.selected by id, updates countSelectedPlayer
-    // This was the bug fixed in task #8 — tests act as a regression guard.
     // -------------------------------------------------------------------------
 
     @Test
-    fun selectedPlayer_unselectedPlayer_becomesSelected() {
-        // Given: state.playerList = [player(id="1", selected=false), player(id="2", selected=false)]
-        //        set via viewModel.update(state.copy(playerList = ...))
-        // When:  selectedPlayer(player(id="1")) is called
-        // Then:  state.playerList[0].selected == true   (player "1" toggled)
-        //        state.playerList[1].selected == false  (player "2" unchanged)
-        //        state.countSelectedPlayer    == 1
+    fun selectedPlayer_unselectedPlayer_becomesSelected() = runTest(testDispatcher) {
+        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(listOf(player1, player2))
+
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.getAllPlayer()
+            assertEquals(listOf(player1, player2), awaitItem().playerList)
+
+            viewModel.selectedPlayer(player1)
+
+            val finalItem = awaitItem()
+            assertEquals(1, finalItem.countSelectedPlayer)
+            assertEquals(true, finalItem.playerList?.find { it.id == "id-1" }?.selected)
+        }
     }
 
     @Test
-    fun selectedPlayer_selectedPlayer_becomesDeselected() {
-        // Given: state.playerList = [player(id="1", selected=true)]
-        // When:  selectedPlayer(player(id="1")) is called
-        // Then:  state.playerList[0].selected  == false
-        //        state.countSelectedPlayer      == 0
-    }
+    fun selectedPlayer_selectedPlayer_becomesDeselected() = runTest(testDispatcher) {
+        val player1selected = player1.copy(selected = true)
+        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(listOf(player1selected, player2))
 
-    @Test
-    fun selectedPlayer_onlyTargetPlayerChanges() {
-        // Given: 3 players, all selected=false
-        // When:  selectedPlayer(player[1]) is called
-        // Then:  player[0].selected == false
-        //        player[1].selected == true
-        //        player[2].selected == false
-    }
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.getAllPlayer()
+            assertEquals(true, awaitItem().playerList?.find { it.id == "id-1" }?.selected)
 
-    @Test
-    fun selectedPlayer_calledTwiceOnSamePlayer_returnsToOriginalState() {
-        // Given: player(id="1", selected=false)
-        // When:  selectedPlayer(player) called twice
-        // Then:  player.selected == false (double-toggle round-trips)
-        //        countSelectedPlayer == 0
-    }
+            viewModel.selectedPlayer(player1)
 
-    @Test
-    fun selectedPlayer_countReflectsTotalSelectedAcrossAllPlayers() {
-        // Given: 4 players, all selected=false
-        // When:  selectedPlayer(player[0]), selectedPlayer(player[2]) called sequentially
-        // Then:  countSelectedPlayer == 2
+            val finalItem = awaitItem()
+            assertEquals(0, finalItem.countSelectedPlayer)
+            assertEquals(false, finalItem.playerList?.find { it.id == "id-1" }?.selected)
+        }
     }
 
     // -------------------------------------------------------------------------
     // selectExpansion(expansionId)
-    // Toggles isSelected for the matching ExpansionGameUiState by game.id
     // -------------------------------------------------------------------------
 
     @Test
-    fun selectExpansion_unselectedExpansion_becomesSelected() {
-        // Given: state.gameList = [ExpansionGameUiState(game(id="exp-1"), isSelected=false)]
-        // When:  selectExpansion("exp-1") is called
-        // Then:  state.gameList[0].isSelected == true
+    fun selectExpansion_unselectedExpansion_becomesSelected() = runTest(testDispatcher) {
+        val exp1 = ExpansionGameUiState(createGame(name = "Exp 1", id = "exp-1", expansion = true), isSelected = false)
+        viewModel.update(viewModel.state.value.copy(gameList = listOf(exp1)))
+
+        viewModel.state.test {
+            assertEquals(false, awaitItem().gameList?.get(0)?.isSelected)
+
+            viewModel.selectExpansion("exp-1")
+
+            val finalItem = awaitItem()
+            assertEquals(true, finalItem.gameList?.get(0)?.isSelected)
+        }
     }
 
     @Test
-    fun selectExpansion_selectedExpansion_becomesDeselected() {
-        // Given: state.gameList = [ExpansionGameUiState(game(id="exp-1"), isSelected=true)]
-        // When:  selectExpansion("exp-1") is called
-        // Then:  state.gameList[0].isSelected == false
-    }
+    fun selectExpansion_selectedExpansion_becomesDeselected() = runTest(testDispatcher) {
+        val exp1 = ExpansionGameUiState(createGame(name = "Exp 1", id = "exp-1", expansion = true), isSelected = true)
+        viewModel.update(viewModel.state.value.copy(gameList = listOf(exp1)))
 
-    @Test
-    fun selectExpansion_onlyTargetExpansionChanges() {
-        // Given: 3 ExpansionGameUiState entries, all isSelected=false
-        // When:  selectExpansion(gameList[1].game.id) is called
-        // Then:  gameList[0].isSelected == false
-        //        gameList[1].isSelected == true
-        //        gameList[2].isSelected == false
+        viewModel.state.test {
+            assertEquals(true, awaitItem().gameList?.get(0)?.isSelected)
+
+            viewModel.selectExpansion("exp-1")
+
+            val finalItem = awaitItem()
+            assertEquals(false, finalItem.gameList?.get(0)?.isSelected)
+        }
     }
 
     // -------------------------------------------------------------------------
     // setGameVariant()
-    // Sets state.gameVariant based on state.game.cooperate
     // -------------------------------------------------------------------------
 
     @Test
-    fun setGameVariant_cooperateGame_setsCoopVariant() {
-        // Given: state.game = game(cooperate=true)
-        //        set via viewModel.update(state.copy(game = cooperateGame))
-        // When:  setGameVariant() is called
-        // Then:  state.gameVariant == R.string.history_coop
+    fun setGameVariant_cooperateGame_setsCoopVariant() = runTest(testDispatcher) {
+        val coopGame = chess.copy(cooperate = true)
+        viewModel.update(viewModel.state.value.copy(game = coopGame))
+
+        viewModel.setGameVariant()
+
+        assertEquals(R.string.history_coop, viewModel.state.value.gameVariant)
     }
 
     @Test
-    fun setGameVariant_nonCooperateGame_setsNormalVariant() {
-        // Given: state.game = game(cooperate=false)
-        // When:  setGameVariant() is called
-        // Then:  state.gameVariant == R.string.history_normal
-    }
+    fun setGameVariant_nonCooperateGame_setsNormalVariant() = runTest(testDispatcher) {
+        val normalGame = chess.copy(cooperate = false)
+        viewModel.update(viewModel.state.value.copy(game = normalGame))
 
-    @Test
-    fun setGameVariant_nullGame_setsNormalVariant() {
-        // Given: state.game == null (default)
-        // When:  setGameVariant() is called
-        // Then:  state.gameVariant == R.string.history_normal
-        //        (when(null?.cooperate) → when(null) → else → R.string.history_normal)
+        viewModel.setGameVariant()
+
+        assertEquals(R.string.history_normal, viewModel.state.value.gameVariant)
     }
 
     // -------------------------------------------------------------------------
-    // getAllGame() + setGameData() (private, tested indirectly)
-    //
-    // setGameData() behaviour:
-    //   If state.game.expansion == false (base game):
-    //     → gameList is filtered to expansions whose baseGameId == game.id
-    //   If state.game.expansion == true (the user started from an expansion):
-    //     → resolve state.game to its base (firstOrNull { it.game.id == game.baseGameId })
-    //     → filter gameList to expansions of that same baseGameId
-    //     → auto-select the original expansion (the one the user tapped)
+    // getAllGame() + setGameData()
     // -------------------------------------------------------------------------
 
     @Test
-    fun getAllGame_baseGame_gameListFilteredToDirectExpansions() {
-        // Given: getAllGameUseCase.invoke() returns a list containing:
-        //          baseGame(id="base-1", expansion=false)
-        //          expansion1(id="exp-A", expansion=true, baseGameId="base-1")
-        //          expansion2(id="exp-B", expansion=true, baseGameId="base-1")
-        //          unrelated(id="other", expansion=false)
-        //        state.game = baseGame (set via update() BEFORE calling getAllGame())
-        // When:  getAllGame() is called
-        // Then:  state.gameList contains only exp-A and exp-B
-        //        state.game is still the baseGame (unchanged for base-game path)
+    fun getAllGame_baseGame_gameListFilteredToDirectExpansions() = runTest(testDispatcher) {
+        viewModel.update(viewModel.state.value.copy(game = wingspan))
+
+        viewModel.getAllGame()
+
+        val list = viewModel.state.value.gameList ?: emptyList()
+        assertEquals(1, list.size)
+        assertEquals("Wingspan: European Expansion", list[0].game.name)
+        assertEquals(false, list[0].isSelected)
     }
 
     @Test
-    fun getAllGame_expansionGame_resolvesToBaseAndAutoSelectsOriginalExpansion() {
-        // Given: getAllGameUseCase.invoke() returns:
-        //          baseGame(id="base-1", expansion=false)
-        //          expansion1(id="exp-A", expansion=true, baseGameId="base-1")
-        //          expansion2(id="exp-B", expansion=true, baseGameId="base-1")
-        //        state.game = expansion1 (expansion=true, baseGameId="base-1")
-        // When:  getAllGame() is called
-        // Then:  state.game == baseGame     (resolved to the base)
-        //        state.gameList contains exp-A and exp-B
-        //        exp-A.isSelected == true   (auto-selected because it was the starting expansion)
-        //        exp-B.isSelected == false
+    fun getAllGame_expansionGame_resolvesToBaseAndAutoSelectsOriginalExpansion() = runTest(testDispatcher) {
+        // User starts with an expansion
+        viewModel.update(viewModel.state.value.copy(game = wingspanExpansion))
+
+        viewModel.getAllGame()
+
+        val state = viewModel.state.value
+        assertEquals("Wingspan", state.game?.name) // Resolved to base
+        val list = state.gameList ?: emptyList()
+        assertEquals(1, list.size)
+        assertEquals("Wingspan: European Expansion", list[0].game.name)
+        assertEquals(true, list[0].isSelected) // Auto-selected original
     }
 
     // -------------------------------------------------------------------------
@@ -195,17 +240,21 @@ class GamePlayViewModelTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun getAllPlayer_success_setsPlayerListAndClearsError() {
-        // Given: playerDbRepository.getAllPlayer() returns Success([player1, player2])
-        // When:  getAllPlayer() is called
-        // Then:  state.playerList   == [player1, player2]
-        //        state.errorVisible == false
+    fun getAllPlayer_success_setsPlayerListAndClearsError() = runTest(testDispatcher) {
+        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(listOf(player1, player2))
+
+        viewModel.getAllPlayer()
+
+        assertEquals(listOf(player1, player2), viewModel.state.value.playerList)
+        assertEquals(false, viewModel.state.value.errorVisible)
     }
 
     @Test
-    fun getAllPlayer_error_showsError() {
-        // Given: playerDbRepository.getAllPlayer() returns RequestResult.Error(Throwable())
-        // When:  getAllPlayer() is called
-        // Then:  state.errorVisible == true
+    fun getAllPlayer_error_showsError() = runTest(testDispatcher) {
+        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Error(Throwable())
+
+        viewModel.getAllPlayer()
+
+        assertEquals(true, viewModel.state.value.errorVisible)
     }
 }

@@ -144,11 +144,11 @@ fun GameSearchRow(
                                     verticalAlignment = Alignment.CenterVertically
                                 ){
                                     Checkbox(
-                                        checked = if (sort.value == state.sortOption) true else false,
+                                        checked = if (sort == state.sortOption) true else false,
                                         onCheckedChange = {
                                             update(
                                                 state.copy(
-                                                    sortOption = sort.value
+                                                    sortOption = sort
                                                 )
                                             )
                                             refreshGameList()
@@ -157,14 +157,14 @@ fun GameSearchRow(
                                     )
                                     Text(
                                         text = stringResource(id = sort.value),
-                                        style = if (sort.value == state.sortOption) SmoochBold20 else Smooch20
+                                        style = if (sort == state.sortOption) SmoochBold20 else Smooch20
                                     )
                                 }
                             },
                             onClick = {
                                 update(
                                     state.copy(
-                                        sortOption = sort.value
+                                        sortOption = sort
                                     )
                                 )
                                 refreshGameList()

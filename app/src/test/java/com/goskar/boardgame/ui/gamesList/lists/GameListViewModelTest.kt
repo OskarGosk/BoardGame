@@ -1,29 +1,11 @@
-// Tier 1 — ViewModel state / sorting / filtering logic
-//
-// Required deps to add before implementing:
-//   testImplementation("io.mockk:mockk:1.13.14")
-//   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-//
-// Setup pattern:
-//   @Before: Dispatchers.setMain(UnconfinedTestDispatcher())
-//            gameDbRepository  = mockk<GameDbRepository>()
-//            getAllGameUseCase  = mockk<GetAllGameUseCase>()
-//            viewModel         = GameListViewModel(gameDbRepository, getAllGameUseCase)
-//            Note: init { refresh() } runs immediately — mock getAllGameUseCase.invoke()
-//            to return emptyList() as the default stub.
-//   @After:  Dispatchers.resetMain()
-//
-// Tip: refreshGameList() is public and operates purely on the current state,
-// so most tests can set state via viewModel.update(state.copy(...)) and then
-// call refreshGameList() directly — no coroutines needed for those cases.
-
 package com.goskar.boardgame.ui.gamesList.lists
 
 import app.cash.turbine.test
-import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.utils.SortList
+import com.goskar.boardgame.data.rest.RequestResult
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -46,11 +28,20 @@ class GameListViewModelTest {
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var viewModel: GameListViewModel
 
+    // Test Data
     private val chess = createGame(name = "Chess", games = 8)
     private val azul = createGame(name = "Azul", games = 2)
     private val wingspan = createGame(name = "Wingspan", games = 5)
     private val wingspanExpansion =
-        createGame(name = "Wingspan: European Expansion", expansion = true, games = 1)
+        createGame(name = "Wingspan: European Expansion", expansion = true, games = 4)
+    private val azulExpansion =
+        createGame(name = "Azul And Dark Knight", expansion = true, games = 1)
+
+    private val game1Chess = GameUiState(chess, true)
+    private val game2Azul = GameUiState(azul, true)
+    private val game3Wingspan = GameUiState(wingspan, true)
+    private val game4WingspanExpansion = GameUiState(wingspanExpansion, true)
+    private val game5AzulExpansion = GameUiState(azulExpansion, true)
 
     private fun createGame(
         name: String,
@@ -68,26 +59,16 @@ class GameListViewModelTest {
         id = id
     )
 
-    private val game1 = GameUiState(chess, true)
-    private val game2 = GameUiState(azul, true)
-    private val game3 = GameUiState(wingspan, true)
-    private val game4 = GameUiState(wingspanExpansion, true)
-
-
-    private fun createGameUiState(game: Game, isExpanded: Boolean = true) =
-        GameUiState(game = game, isExpanded = isExpanded)
-
     @Before
     fun setUp() {
         testDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(testDispatcher)
-        gameRepo = mockk<GameDbRepository>()
-        getAllGameUseCase = mockk<GetAllGameUseCase>()
+        gameRepo = mockk()
+        getAllGameUseCase = mockk()
 
-        coEvery { getAllGameUseCase.invoke() } returns emptyList()
+        coEvery { getAllGameUseCase.invoke() } returns listOf(chess, azul, wingspan, wingspanExpansion, azulExpansion)
 
-        viewModel =
-            GameListViewModel(gameDbRepository = gameRepo, getAllGameUseCase = getAllGameUseCase)
+        viewModel = GameListViewModel(gameDbRepository = gameRepo, getAllGameUseCase = getAllGameUseCase)
     }
 
     @After
@@ -96,39 +77,35 @@ class GameListViewModelTest {
     }
 
     // -------------------------------------------------------------------------
-    // refreshGameList() — sort options
-    // Uses state.sortOption (Int = R.string.*) and state.gameList as input,
-    // writes result to state.gameListEdited
+    // refreshGameList() — Sorting Options
     // -------------------------------------------------------------------------
 
     @Test
     fun refreshGameList_defaultSort_preservesOriginalOrder() = runTest(testDispatcher) {
-        // Given: state.gameList has 4 games in original order
-        //        state.sortOption = R.string.default_sort
         viewModel.update(
             state = viewModel.state.value.copy(
-                gameList = listOf(game1, game2, game3, game4),
-                sortOption = R.string.default_sort
+                gameList = listOf(game1Chess, game2Azul, game3Wingspan, game4WingspanExpansion),
+                sortOption = SortList.DEFAULT
             )
         )
 
-        // When:  refreshGameList() is called
         viewModel.refreshGameList()
 
-        // Then:  state.gameListEdited has the same order as state.gameList
         viewModel.state.test {
             val finalItems = awaitItem()
-            assertEquals(listOf(game1, game2, game3, game4), finalItems.gameListEdited)
+            assertEquals(
+                listOf(game1Chess, game2Azul, game3Wingspan, game4WingspanExpansion),
+                finalItems.gameListEdited
+            )
         }
     }
 
     @Test
     fun refreshGameList_nameAscending_sortsAlphabetically() = runTest(testDispatcher) {
-                // Given: state.gameList = [Chess, Azul, Wingspan]
         viewModel.update(
             state = viewModel.state.value.copy(
-                gameList = listOf(game1, game2, game3),
-                sortOption = R.string.name_ascending
+                gameList = listOf(game1Chess, game2Azul, game3Wingspan, game4WingspanExpansion, game5AzulExpansion),
+                sortOption = SortList.A_Z
             )
         )
 
@@ -136,177 +113,282 @@ class GameListViewModelTest {
 
         viewModel.state.test {
             val finalItems = awaitItem()
-
-            assertEquals(listOf( game2, game1, game3), finalItems.gameListEdited)
-
+            // Azul, Azul And Dark Knight, Chess, Wingspan, Wingspan: European Expansion
+            assertEquals(
+                listOf(game2Azul, game5AzulExpansion, game1Chess, game3Wingspan, game4WingspanExpansion),
+                finalItems.gameListEdited
+            )
         }
-
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited = [Azul, Chess, Wingspan]
     }
 
     @Test
-    fun refreshGameList_nameDescending_sortsReverseAlphabetically() {
-        // Given: state.gameList = [Azul, Chess, Wingspan]
-        //        state.sortOption = R.string.name_descending
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited = [Wingspan, Chess, Azul]
+    fun refreshGameList_nameDescending_sortsReverseAlphabetically() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1) // skip initial state
+
+            viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.Z_A))
+            viewModel.refreshGameList()
+            
+            val finalItems = expectMostRecentItem()
+            assertEquals(SortList.Z_A, finalItems.sortOption)
+            // Z-A: Wingspan: European Expansion, Wingspan, Chess, Azul And Dark Knight, Azul
+            assertEquals(
+                listOf(
+                    game4WingspanExpansion,
+                    game3Wingspan,
+                    game1Chess,
+                    game5AzulExpansion,
+                    game2Azul,
+                ), finalItems.gameListEdited
+            )
+        }
     }
 
     @Test
-    fun refreshGameList_playedAscending_sortsByGamesCountLowToHigh() {
-        // Given: games with games counts: Wingspan=5, Azul=2, Chess=8
-        //        state.sortOption = R.string.played_ascending
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited order = Azul(2), Wingspan(5), Chess(8)
+    fun refreshGameList_playedAscending_sortsByGamesCountLowToHigh() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.GAMES_MIN))
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(SortList.GAMES_MIN, finalItems.sortOption)
+            // 1 (Azul Expansion), 2 (Azul), 4 (Wingspan Expansion), 5 (Wingspan), 8 (Chess)
+            assertEquals(
+                listOf(
+                    game5AzulExpansion,
+                    game2Azul,
+                    game4WingspanExpansion,
+                    game3Wingspan,
+                    game1Chess
+                ), finalItems.gameListEdited
+            )
+        }
     }
 
     @Test
-    fun refreshGameList_playedDescending_sortsByGamesCountHighToLow() {
-        // Given: games with games counts: Wingspan=5, Azul=2, Chess=8
-        //        state.sortOption = R.string.played_descending
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited order = Chess(8), Wingspan(5), Azul(2)
-    }
+    fun refreshGameList_playedDescending_sortsByGamesCountHighToLow() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
 
-    @Test
-    fun refreshGameList_unknownSortOption_treatsAsDefault() {
-        // Given: state.sortOption = -1 (hits the else branch)
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited preserves original order (same as default)
-    }
+            viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.GAMES_MAX))
+            viewModel.refreshGameList()
 
-    // -------------------------------------------------------------------------
-    // refreshGameList() — search filter
-    // Applied after sorting: filters by game.name.lowercase().contains(searchTxt)
-    // -------------------------------------------------------------------------
-
-    @Test
-    fun refreshGameList_searchTxtMatches_onlyMatchingGamesInResult() {
-        // Given: games = [Azul, Chess, Wingspan]
-        //        state.searchTxt = "az"
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited contains only Azul
-    }
-
-    @Test
-    fun refreshGameList_searchTxtMatchesNone_resultIsEmpty() {
-        // Given: games = [Azul, Chess, Wingspan]
-        //        state.searchTxt = "zzz"
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited is empty
-    }
-
-    @Test
-    fun refreshGameList_searchTxtIsCaseInsensitive() {
-        // Given: game.name = "Chess", state.searchTxt = "CHESS"
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited contains Chess (case does not block match)
-    }
-
-    @Test
-    fun refreshGameList_emptySearchTxt_allGamesPassFilter() {
-        // Given: 3 games, state.searchTxt = ""
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited contains all 3 games
-    }
-
-    // -------------------------------------------------------------------------
-    // refreshGameList() — checkbox visibility filters
-    // checkboxBaseGame controls expansion=false items
-    // checkboxExpansionGame controls expansion=true items
-    // -------------------------------------------------------------------------
-
-    @Test
-    fun refreshGameList_bothCheckboxesTrue_allGamesVisible() {
-        // Given: 2 base games + 2 expansions
-        //        checkboxBaseGame=true, checkboxExpansionGame=true
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited contains all 4 games
-    }
-
-    @Test
-    fun refreshGameList_onlyBaseCheckbox_onlyBaseGamesVisible() {
-        // Given: 2 base games (expansion=false) + 2 expansions (expansion=true)
-        //        checkboxBaseGame=true, checkboxExpansionGame=false
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited contains only the 2 base games
-    }
-
-    @Test
-    fun refreshGameList_onlyExpansionCheckbox_onlyExpansionsVisible() {
-        // Given: 2 base games + 2 expansions
-        //        checkboxBaseGame=false, checkboxExpansionGame=true
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited contains only the 2 expansions
-    }
-
-    @Test
-    fun refreshGameList_bothCheckboxesFalse_resultIsEmpty() {
-        // Given: 2 base games + 2 expansions
-        //        checkboxBaseGame=false, checkboxExpansionGame=false
-        // When:  refreshGameList() is called
-        // Then:  state.gameListEdited is empty
+            val finalItems = expectMostRecentItem()
+            assertEquals(SortList.GAMES_MAX, finalItems.sortOption)
+            // 8, 5, 4, 2, 1
+            assertEquals(
+                listOf(
+                    game1Chess,
+                    game3Wingspan,
+                    game4WingspanExpansion,
+                    game2Azul,
+                    game5AzulExpansion
+                ), finalItems.gameListEdited
+            )
+        }
     }
 
     // -------------------------------------------------------------------------
-    // updateExpandedGameCover(game)
-    // Toggles isExpanded for the matching game only, then calls refreshGameList()
+    // refreshGameList() — Search Filter
     // -------------------------------------------------------------------------
 
     @Test
-    fun updateExpandedGameCover_matchingGame_togglesIsExpanded() {
-        // Given: state.gameList has a game with isExpanded=true
-        // When:  updateExpandedGameCover(thatGame) is called
-        // Then:  that game's isExpanded == false in state.gameList
+    fun refreshGameList_searchTxtMatches_onlyMatchingGamesInResult() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.update(state = viewModel.state.value.copy(searchTxt = "az"))
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(listOf(game2Azul, game5AzulExpansion), finalItems.gameListEdited)
+        }
     }
 
     @Test
-    fun updateExpandedGameCover_onlyTargetGameChanges() {
-        // Given: 3 games, all isExpanded=true
-        // When:  updateExpandedGameCover(game[1]) is called
-        // Then:  game[0].isExpanded == true, game[2].isExpanded == true (unchanged)
-        //        game[1].isExpanded == false
+    fun refreshGameList_searchTxtMatchesNone_resultIsEmpty() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.update(state = viewModel.state.value.copy(searchTxt = "zzz"))
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(emptyList<GameUiState>(), finalItems.gameListEdited)
+        }
+    }
+
+    @Test
+    fun refreshGameList_searchTxtIsCaseInsensitive() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.update(state = viewModel.state.value.copy(searchTxt = "CHESS"))
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(listOf(game1Chess), finalItems.gameListEdited)
+        }
+    }
+
+    @Test
+    fun refreshGameList_emptySearchTxt_allGamesPassFilter() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            // 1. Search for specific game
+            viewModel.update(state = viewModel.state.value.copy(searchTxt = "CHESS"))
+            viewModel.refreshGameList()
+            assertEquals(listOf(game1Chess), expectMostRecentItem().gameListEdited)
+
+            // 2. Clear search
+            viewModel.update(state = viewModel.state.value.copy(searchTxt = ""))
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(5, finalItems.gameListEdited.size)
+        }
     }
 
     // -------------------------------------------------------------------------
-    // changeAllExpendedGameCover()
-    // Inverts isExpanded for every game in the list
+    // refreshGameList() — Checkbox Visibility Filters
     // -------------------------------------------------------------------------
 
     @Test
-    fun changeAllExpendedGameCover_allExpanded_allBecomeFolded() {
-        // Given: 3 games, all isExpanded=true
-        // When:  changeAllExpendedGameCover() is called
-        // Then:  all games have isExpanded=false
+    fun refreshGameList_onlyBaseCheckbox_onlyBaseGamesVisible() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.update(state = viewModel.state.value.copy(checkboxExpansionGame = false))
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(listOf(game1Chess, game2Azul, game3Wingspan), finalItems.gameListEdited)
+        }
     }
 
     @Test
-    fun changeAllExpendedGameCover_allFolded_allBecomeExpanded() {
-        // Given: 3 games, all isExpanded=false
-        // When:  changeAllExpendedGameCover() is called
-        // Then:  all games have isExpanded=true
+    fun refreshGameList_onlyExpansionCheckbox_onlyExpansionsVisible() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.update(state = viewModel.state.value.copy(checkboxBaseGame = false))
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(listOf(game4WingspanExpansion, game5AzulExpansion), finalItems.gameListEdited)
+        }
+    }
+
+    @Test
+    fun refreshGameList_bothCheckboxesFalse_resultIsEmpty() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.update(
+                state = viewModel.state.value.copy(
+                    checkboxBaseGame = false,
+                    checkboxExpansionGame = false
+                )
+            )
+            viewModel.refreshGameList()
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(emptyList<GameUiState>(), finalItems.gameListEdited)
+        }
     }
 
     // -------------------------------------------------------------------------
-    // validateDeleteGame(game)
-    // Calls gameDbRepository.deleteGame(), then refresh() on success
+    // UI Expansion Logic
     // -------------------------------------------------------------------------
 
     @Test
-    fun validateDeleteGame_success_clearsErrorAndLoading() {
-        // Given: gameDbRepository.deleteGame() returns RequestResult.Success(Unit)
-        //        getAllGameUseCase.invoke() returns emptyList() (for the refresh call)
-        // When:  validateDeleteGame(game) is called
-        // Then:  state.isLoading == false
-        //        state.errorVisible == false
+    fun updateExpandedGameCover_matchingGame_togglesIsExpanded() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.updateExpandedGameCover(azul)
+
+            val finalItems = expectMostRecentItem()
+            assertEquals(false, finalItems.gameList?.find { it.game.name == "Azul" }?.isExpanded)
+        }
     }
 
     @Test
-    fun validateDeleteGame_error_showsError() {
-        // Given: gameDbRepository.deleteGame() returns RequestResult.Error(Throwable())
-        // When:  validateDeleteGame(game) is called
-        // Then:  state.errorVisible == true
-        //        state.isLoading == false
+    fun updateExpandedGameCover_onlyTargetGameChanges() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.updateExpandedGameCover(azul)
+
+            val list = expectMostRecentItem().gameList ?: emptyList()
+            assertEquals(false, list.find { it.game.id == azul.id }?.isExpanded)
+            assertEquals(true, list.find { it.game.id == chess.id }?.isExpanded)
+            assertEquals(true, list.find { it.game.id == wingspan.id }?.isExpanded)
+        }
+    }
+
+    @Test
+    fun changeAllExpendedGameCover_allExpanded_allBecomeFolded() = runTest(testDispatcher) {
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.changeAllExpendedGameCover()
+
+            val list = expectMostRecentItem().gameList ?: emptyList()
+            list.forEach { assertEquals(false, it.isExpanded) }
+        }
+    }
+
+    @Test
+    fun changeAllExpendedGameCover_allFolded_allBecomeExpanded() = runTest(testDispatcher) {
+        viewModel.changeAllExpendedGameCover() // First toggle to false
+
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.changeAllExpendedGameCover() // Toggle back to true
+
+            val list = expectMostRecentItem().gameList ?: emptyList()
+            list.forEach { assertEquals(true, it.isExpanded) }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Delete Logic
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun validateDeleteGame_success_clearsErrorAndLoading() = runTest(testDispatcher) {
+        coEvery { gameRepo.deleteGame(any()) } returns RequestResult.Success(true)
+        coEvery { getAllGameUseCase.invoke() } returns listOf(chess, azul)
+
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.validateDeleteGame(wingspan)
+
+            val finalState = expectMostRecentItem()
+            assertEquals(false, finalState.isLoading)
+            assertEquals(false, finalState.errorVisible)
+            assertEquals(2, finalState.gameList?.size)
+        }
+    }
+
+    @Test
+    fun validateDeleteGame_error_showsError() = runTest(testDispatcher) {
+        coEvery { gameRepo.deleteGame(any()) } returns RequestResult.Error(Exception("Failed"))
+
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.validateDeleteGame(wingspan)
+
+            val finalState = expectMostRecentItem()
+            assertEquals(true, finalState.errorVisible)
+            assertEquals(false, finalState.isLoading)
+        }
     }
 }
