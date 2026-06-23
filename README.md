@@ -1,3 +1,6 @@
+![Android CI](https://github.com/OskarGosk/BoardGame/actions/workflows/android-ci.yml/badge.svg)
+
+
 # 🎲 BoardGame
 
 The application is designed to **record and analyze board game sessions**.<br/><br/>
