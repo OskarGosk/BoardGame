@@ -27,3 +27,14 @@
 # Keep Retrofit SimpleXML classes (if relevant)
 -keep class com.squareup.retrofit2.converter.simplexml.** { *; }
 -keep class org.simpleframework.** { *; }
+
+# SimpleXML references StAX (javax.xml.stream), which Android does not ship.
+# On Android SimpleXML falls back to the XmlPull parser, so these are never used at runtime.
+-dontwarn javax.xml.stream.**
+
+# Keep annotations and generic signatures used by reflection-based (de)serialization.
+-keepattributes *Annotation*, Signature, EnclosingMethod
+
+# Keep data models that are (de)serialized by reflection:
+# SimpleXML (BGG XML API), Gson/Retrofit and Firebase Realtime Database.
+-keep class com.goskar.boardgame.data.models.** { *; }

@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 import java.time.LocalDate
 import java.util.UUID
 
@@ -46,7 +45,6 @@ data class ExpansionGameUiState(
     val isSelected: Boolean = false
 )
 
-@KoinViewModel
 class GamePlayViewModel(
     private val playerDbRepository: PlayerDbRepository,
     private val gameDbRepository: GameDbRepository,

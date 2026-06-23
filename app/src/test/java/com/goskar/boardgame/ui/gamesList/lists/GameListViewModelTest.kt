@@ -3,7 +3,6 @@ package com.goskar.boardgame.ui.gamesList.lists
 import app.cash.turbine.test
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
-import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.utils.SortList
 import com.goskar.boardgame.data.rest.RequestResult
 import io.mockk.coEvery
@@ -24,7 +23,6 @@ import org.junit.Test
 class GameListViewModelTest {
 
     private lateinit var gameRepo: GameDbRepository
-    private lateinit var getAllGameUseCase: GetAllGameUseCase
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var viewModel: GameListViewModel
 
@@ -64,11 +62,12 @@ class GameListViewModelTest {
         testDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(testDispatcher)
         gameRepo = mockk()
-        getAllGameUseCase = mockk()
 
-        coEvery { getAllGameUseCase.invoke() } returns listOf(chess, azul, wingspan, wingspanExpansion, azulExpansion)
+        coEvery { gameRepo.getAllGame() } returns RequestResult.Success(
+            listOf(chess, azul, wingspan, wingspanExpansion, azulExpansion)
+        )
 
-        viewModel = GameListViewModel(gameDbRepository = gameRepo, getAllGameUseCase = getAllGameUseCase)
+        viewModel = GameListViewModel(gameDbRepository = gameRepo)
     }
 
     @After
@@ -363,7 +362,7 @@ class GameListViewModelTest {
     @Test
     fun validateDeleteGame_success_clearsErrorAndLoading() = runTest(testDispatcher) {
         coEvery { gameRepo.deleteGame(any()) } returns RequestResult.Success(true)
-        coEvery { getAllGameUseCase.invoke() } returns listOf(chess, azul)
+        coEvery { gameRepo.getAllGame() } returns RequestResult.Success(listOf(chess, azul))
 
         viewModel.state.test {
             skipItems(1)
@@ -390,5 +389,18 @@ class GameListViewModelTest {
             assertEquals(true, finalState.errorVisible)
             assertEquals(false, finalState.isLoading)
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // refresh() — error propagation (error is no longer swallowed)
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun refresh_repositoryError_setsErrorVisible() = runTest(testDispatcher) {
+        coEvery { gameRepo.getAllGame() } returns RequestResult.Error(Exception("db error"))
+
+        viewModel.refresh()
+
+        assertEquals(true, viewModel.state.value.errorVisible)
     }
 }

@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
 data class GamesHistoryState(
     val historyList: List<HistoryGame> = emptyList(),
@@ -23,7 +22,6 @@ data class GamesHistoryState(
     val loading: Boolean = true
 )
 
-@KoinViewModel
 class GamesHistoryViewModel(
     private val gamesHistoryDbRepository: GamesHistoryDbRepository,
     private val getHistoryWithExpansionUseCase: GetHistoryWithExpansionUseCase

@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
 data class PlayerListState(
     val playerList: List<Player>? = mutableListOf(),
@@ -24,7 +23,6 @@ data class PlayerListState(
     val showAddEditDialog: Boolean = false
 )
 
-@KoinViewModel
 class PlayerListViewModel(
     private val playerDbRepository: PlayerDbRepository,
 ) : ViewModel() {

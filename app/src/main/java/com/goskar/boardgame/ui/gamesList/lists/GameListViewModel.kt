@@ -6,13 +6,11 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.utils.SortList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
 data class GameListState(
     val gameList: List<GameUiState>? = emptyList(),
@@ -32,10 +30,8 @@ data class GameUiState(
     val isExpanded: Boolean = true
 )
 
-@KoinViewModel
 class GameListViewModel(
-    private val gameDbRepository: GameDbRepository,
-    private val getAllGameUseCase: GetAllGameUseCase
+    private val gameDbRepository: GameDbRepository
 ) : ViewModel() {
 
 
@@ -110,15 +106,24 @@ class GameListViewModel(
 
     fun refresh() {
         viewModelScope.launch {
+            when (val response = gameDbRepository.getAllGame()) {
+                is RequestResult.Success -> {
+                    val gameUiStates = response.data.map { GameUiState(game = it) }
+                    _state.update {
+                        it.copy(
+                            gameList = gameUiStates,
+                            errorVisible = false
+                        )
+                    }
+                    refreshGameList()
+                }
 
-            val games = getAllGameUseCase.invoke()
-            val gameUiStates = games.map { GameUiState(game = it) }
-            _state.update {
-                it.copy(
-                    gameList = gameUiStates
-                )
+                is RequestResult.Error -> {
+                    _state.update {
+                        it.copy(errorVisible = true)
+                    }
+                }
             }
-            refreshGameList()
         }
     }
 
