@@ -1,73 +1,117 @@
-// Tier 2 — use-case logic: branching on two RequestResult values and joining data
-//
-// Required deps to add before implementing:
-//   testImplementation("io.mockk:mockk:1.13.14")
-//   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-//
-// Setup pattern:
-//   @Before: repository = mockk<GamesHistoryDbRepository>()
-//            useCase    = GetHistoryWithExpansionUseCase(repository)
-//
-// All tests call: runTest { val result = useCase() }
-// The function calls TWO repository methods sequentially:
-//   1. repository.getAllHistoryGame()    → RequestResult<List<HistoryGame>>
-//   2. repository.getAllHistoryGameExpansion() → RequestResult<List<HistoryGameExpansion>>
-//
-// Logic summary (from the when-expression in invoke()):
-//   history=Error                         → return that Error  (expansion NOT checked)
-//   history=Success, expansion=Error      → return expansion's Error
-//   history=Success, expansion=Success    → join: each HistoryGame gets the expansions
-//                                           whose historyGameId == game.id
-//   else (both not Success/Error)         → Error("Coś poszło nie tak...")
-
 package com.goskar.boardgame.data.useCase
 
+import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.HistoryGameExpansion
+import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
+import com.goskar.boardgame.data.rest.RequestResult
+import io.mockk.coEvery
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDate
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class GetHistoryWithExpansionUseCaseTest {
+
+    private val chess = createGame(name = "Chess")
+    private val azul = createGame(name = "Azul")
+
+    private fun createGame(
+        name: String,
+        gameData: LocalDate = LocalDate.parse("2025-01-01"),
+        listOfPlayer: List<String> = listOf("Oskar", "Alice"),
+        winner: String = listOfPlayer.first(),
+        description: String = "",
+        id: String = name + winner,
+    ) = HistoryGame(
+        gameName = name,
+        winner = winner,
+        gameData = gameData,
+        listOfPlayer = listOfPlayer,
+        description = description,
+        id = id
+    )
+
+    private lateinit var testDispatcher: TestDispatcher
+    private lateinit var repo: GamesHistoryDbRepository
+    private lateinit var useCase: GetHistoryWithExpansionUseCase
 
     @Before
     fun setUp() {
-        // repository = mockk<GamesHistoryDbRepository>()
-        // useCase    = GetHistoryWithExpansionUseCase(repository)
+        testDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
+        repo = mockk()
+        useCase = GetHistoryWithExpansionUseCase(repo)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     // -------------------------------------------------------------------------
-    // Success path — both repos return data
+    // Success path
     // -------------------------------------------------------------------------
 
     @Test
-    fun invoke_bothRepositoriesSucceed_returnsSuccessWithJoinedData() {
-        // Given: repository.getAllHistoryGame() returns Success([game1, game2])
-        //        game1.id = "id-1", game2.id = "id-2"
-        //        repository.getAllHistoryGameExpansion() returns
-        //          Success([expansion(historyGameId="id-1"), expansion(historyGameId="id-1"),
-        //                   expansion(historyGameId="id-2")])
-        // When:  useCase() is called
-        // Then:  result is RequestResult.Success
-        //        result.data has size 2
-        //        result.data[0].history == game1
-        //        result.data[0].expansion has size 2   (both belong to "id-1")
-        //        result.data[1].history == game2
-        //        result.data[1].expansion has size 1   (only the "id-2" expansion)
+    fun invoke_bothRepositoriesSucceed_returnsSuccessWithJoinedData() = runTest(testDispatcher) {
+        val game1 = chess.copy(id = "id-1")
+        val game2 = azul.copy(id = "id-2")
+        val exp1 = HistoryGameExpansion(id = "e1", historyGameId = "id-1", expansionName = "Exp 1", expansionId = "exp-1")
+        val exp2 = HistoryGameExpansion(id = "e2", historyGameId = "id-1", expansionName = "Exp 2", expansionId = "exp-2")
+        val exp3 = HistoryGameExpansion(id = "e3", historyGameId = "id-2", expansionName = "Exp 3", expansionId = "exp-3")
+
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(listOf(game1, game2))
+        coEvery { repo.getAllHistoryGameExpansion() } returns RequestResult.Success(listOf(exp1, exp2, exp3))
+
+        val result = useCase.invoke()
+
+        assertTrue(result is RequestResult.Success)
+        val data = (result as RequestResult.Success).data
+        assertEquals(2, data.size)
+
+        assertEquals(game1, data[0].history)
+        assertEquals(2, data[0].expansion?.size)
+        assertTrue(data[0].expansion?.contains(exp1) == true)
+        assertTrue(data[0].expansion?.contains(exp2) == true)
+
+        assertEquals(game2, data[1].history)
+        assertEquals(1, data[1].expansion?.size)
+        assertEquals(exp3, data[1].expansion?.get(0))
     }
 
     @Test
-    fun invoke_gameHasNoMatchingExpansions_expansionListIsEmpty() {
-        // Given: repository.getAllHistoryGame() returns Success([game1])
-        //        repository.getAllHistoryGameExpansion() returns Success([]) (no expansions)
-        // When:  useCase() is called
-        // Then:  result.data[0].expansion is empty (not null, just empty)
+    fun invoke_gameHasNoMatchingExpansions_expansionListIsEmpty() = runTest(testDispatcher) {
+        val game1 = chess.copy(id = "id-1")
+
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(listOf(game1))
+        coEvery { repo.getAllHistoryGameExpansion() } returns RequestResult.Success(emptyList())
+
+        val result = useCase.invoke()
+        assertTrue(result is RequestResult.Success)
+        val data = (result as RequestResult.Success).data
+        assertTrue(data[0].expansion?.isEmpty() == true)
     }
 
     @Test
-    fun invoke_emptyHistoryList_returnsSuccessWithEmptyData() {
-        // Given: repository.getAllHistoryGame() returns Success([])
-        //        repository.getAllHistoryGameExpansion() returns Success([])
-        // When:  useCase() is called
-        // Then:  result is RequestResult.Success
-        //        result.data is empty
+    fun invoke_emptyHistoryList_returnsSuccessWithEmptyData() = runTest(testDispatcher) {
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(emptyList())
+        coEvery { repo.getAllHistoryGameExpansion() } returns RequestResult.Success(emptyList())
+
+        val result = useCase.invoke()
+        assertTrue(result is RequestResult.Success)
+        val data = (result as RequestResult.Success).data
+        assertTrue(data.isEmpty())
     }
 
     // -------------------------------------------------------------------------
@@ -75,37 +119,50 @@ class GetHistoryWithExpansionUseCaseTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun invoke_historyRepositoryFails_returnsHistoryError() {
-        // Given: repository.getAllHistoryGame() returns RequestResult.Error(Throwable("db error"))
-        //        (getAllHistoryGameExpansion does not need to be stubbed — it won't be called)
-        // When:  useCase() is called
-        // Then:  result is RequestResult.Error
-        //        the error is the same Throwable from the history repo
-        //        repository.getAllHistoryGameExpansion() was NOT called
-        //        (verify with mockk: verify(exactly = 0) { repository.getAllHistoryGameExpansion() })
+    fun invoke_historyRepositoryFails_returnsHistoryError() = runTest(testDispatcher) {
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Error(Throwable("db error"))
+        coEvery { repo.getAllHistoryGameExpansion() } returns RequestResult.Success(emptyList())
+
+        val result = useCase.invoke()
+        assertTrue(result is RequestResult.Error)
     }
 
     @Test
-    fun invoke_expansionRepositoryFails_returnsExpansionError() {
-        // Given: repository.getAllHistoryGame() returns Success([game1])
-        //        repository.getAllHistoryGameExpansion() returns RequestResult.Error(Throwable("exp error"))
-        // When:  useCase() is called
-        // Then:  result is RequestResult.Error
-        //        the error is the same Throwable from the expansion repo
+    fun invoke_expansionRepositoryFails_returnsExpansionError() = runTest(testDispatcher) {
+        val game1 = chess.copy(id = "id-1")
+
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(listOf(game1))
+        coEvery { repo.getAllHistoryGameExpansion() } returns RequestResult.Error(Throwable("exp error"))
+
+        val result = useCase.invoke()
+        assertTrue(result is RequestResult.Error)
     }
 
     // -------------------------------------------------------------------------
-    // Data isolation — expansions are correctly partitioned per game
+    // Data isolation
     // -------------------------------------------------------------------------
 
     @Test
-    fun invoke_expansionsForDifferentGames_noCrossContamination() {
-        // Given: 3 history games (id-A, id-B, id-C)
-        //        expansions: two belong to id-A, one to id-C, none to id-B
-        // When:  useCase() is called
-        // Then:  result.data[0] (id-A) has 2 expansions
-        //        result.data[1] (id-B) has 0 expansions
-        //        result.data[2] (id-C) has 1 expansion
-        //        no expansion appears in more than one game's list
+    fun invoke_expansionsForDifferentGames_noCrossContamination() = runTest(testDispatcher) {
+        val game1 = chess.copy(id = "id-1")
+        val game2 = azul.copy(id = "id-2")
+        val game3 = azul.copy(id = "id-3", gameName = "Wingspan")
+
+        val exp1 = HistoryGameExpansion(id = "e1", historyGameId = "id-1", expansionName = "Exp 1", expansionId = "exp-1")
+        val exp2 = HistoryGameExpansion(id = "e2", historyGameId = "id-1", expansionName = "Exp 2", expansionId = "exp-2")
+        val exp3 = HistoryGameExpansion(id = "e3", historyGameId = "id-3", expansionName = "Exp 3", expansionId = "exp-3")
+
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(listOf(game1, game2, game3))
+        coEvery { repo.getAllHistoryGameExpansion() } returns RequestResult.Success(listOf(exp1, exp2, exp3))
+
+        val result = useCase.invoke()
+        assertTrue(result is RequestResult.Success)
+        val data = (result as RequestResult.Success).data
+        assertEquals(3, data.size)
+
+        assertEquals(game1, data[0].history)
+        assertEquals(2, data[0].expansion?.size)
+        assertEquals(0, data[1].expansion?.size)
+        assertEquals(1, data[2].expansion?.size)
     }
 }

@@ -1,79 +1,94 @@
-// Tier 3 — Room DAO integration tests for Player entity (runs on device/emulator)
-//
-// Required deps to add before implementing:
-//   androidTestImplementation("androidx.room:room-testing:2.7.1")
-//     (match your room version from libs.versions.toml)
-//
-// Setup pattern: identical to GameDaoTest
-//   @Before: db  = Room.inMemoryDatabaseBuilder(context, Db::class.java)
-//                       .allowMainThreadQueries().build()
-//            dao = db.playerDao()   // verify the method name in Db.kt
-//   @After:  db.close()
-//
-// All DAO functions are suspend — wrap in runBlocking { } or runTest { }.
-//
-// Player entity fields:
-//   name: String, games: Int, winRatio: Int, description: String,
-//   selected: Boolean, id: String (PrimaryKey, default = UUID)
-
 package com.goskar.boardgame.data.db
 
+import android.content.Context
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.goskar.boardgame.data.models.Player
+import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.UUID
 
-// @RunWith(AndroidJUnit4::class)
+@RunWith(AndroidJUnit4::class)
 class PlayerDaoTest {
 
-    // private lateinit var db: Db
-    // private lateinit var dao: PlayerDao
+    private lateinit var db: Db
+    private lateinit var dao: PlayerDao
 
     @Before
     fun setUp() {
-        // val context = ApplicationProvider.getApplicationContext<Context>()
-        // db = Room.inMemoryDatabaseBuilder(context, Db::class.java)
-        //     .allowMainThreadQueries()
-        //     .build()
-        // dao = db.playerDao()
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        db = Room.inMemoryDatabaseBuilder(context, Db::class.java)
+            .allowMainThreadQueries()
+            .build()
+        dao = db.playerDao()
     }
 
     @After
     fun tearDown() {
-        // db.close()
+        db.close()
     }
 
     // -------------------------------------------------------------------------
     // Helper: factory for a minimal Player entity
-    //   fun player(id: String = UUID.randomUUID().toString(), name: String = "Alice",
-    //              games: Int = 0, winRatio: Int = 0, description: String = "",
-    //              selected: Boolean = false) = Player(...)
     // -------------------------------------------------------------------------
+    private fun player(
+        id: String = UUID.randomUUID().toString(),
+        name: String = "Alice",
+        games: Int = 10,
+        winRatio: Int = 8,
+        description: String = "",
+        selected: Boolean = false
+    ) = Player(
+        id = id,
+        name = name,
+        games = games,
+        winRatio = winRatio,
+        description = description,
+        selected = selected
+    )
 
     // -------------------------------------------------------------------------
     // insert() + getAll()
     // -------------------------------------------------------------------------
 
     @Test
-    fun insert_onePlayer_getAllReturnsThatPlayer() {
-        // Given: a single Player entity
-        // When:  dao.insert(player) is called
-        // Then:  dao.getAll() returns a list of size 1
-        //        the returned player matches on all fields (name, games, winRatio, etc.)
+    fun insert_onePlayer_getAllReturnsThatPlayer() = runTest {
+        val oskar = player(name = "Oskar", games = 10, winRatio = 5)
+
+        dao.insert(oskar)
+
+        val allPlayers = dao.getAll()
+        assertEquals(1, allPlayers.size)
+        val result = allPlayers[0]
+        assertEquals("Oskar", result.name)
+        assertEquals(10, result.games)
+        assertEquals(5, result.winRatio)
     }
 
     @Test
-    fun insert_onConflictReplace_duplicateIdOverwritesPreviousEntry() {
-        // Given: two Players with the SAME id but different names ("Alice" vs "Bob")
-        // When:  dao.insert(player1) then dao.insert(player2) are called (same id)
-        // Then:  dao.getAll() has size 1 with name "Bob" (second replaces first)
+    fun insert_onConflictReplace_duplicateIdOverwritesPreviousEntry() = runTest {
+        val id = "player-01"
+        val player1 = player(id = id, name = "Oskar")
+        dao.insert(player1)
+
+        val player2 = player(id = id, name = "Alice")
+        dao.insert(player2)
+
+        val allPlayers = dao.getAll()
+        assertEquals(1, allPlayers.size)
+        assertEquals("Alice", allPlayers[0].name)
     }
 
     @Test
-    fun getAll_emptyDatabase_returnsEmptyList() {
-        // Given: no players inserted
-        // When:  dao.getAll() is called
-        // Then:  result is an empty list (not null)
+    fun getAll_emptyDatabase_returnsEmptyList() = runTest {
+        val allPlayers = dao.getAll()
+        assertEquals(0, allPlayers.size)
     }
 
     // -------------------------------------------------------------------------
@@ -81,17 +96,21 @@ class PlayerDaoTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun insertAll_multiplePlayers_getAllReturnsAll() {
-        // Given: a list of 3 Player entities
-        // When:  dao.insertAll(list) is called
-        // Then:  dao.getAll() returns all 3 players
+    fun insertAll_multiplePlayers_getAllReturnsAll() = runTest {
+        val players = listOf(player(name = "Oskar"), player(name = "Alice"), player(name = "Nicole"))
+
+        dao.insertAll(players)
+
+        val allPlayers = dao.getAll()
+        assertEquals(3, allPlayers.size)
     }
 
     @Test
-    fun insertAll_emptyList_databaseRemainsEmpty() {
-        // Given: emptyList<Player>()
-        // When:  dao.insertAll(emptyList()) is called
-        // Then:  dao.getAll() is still empty (no crash)
+    fun insertAll_emptyList_databaseRemainsEmpty() = runTest {
+        dao.insertAll(emptyList())
+
+        val allPlayers = dao.getAll()
+        assertEquals(0, allPlayers.size)
     }
 
     // -------------------------------------------------------------------------
@@ -99,17 +118,27 @@ class PlayerDaoTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun delete_existingPlayer_removesItFromDatabase() {
-        // Given: a player is inserted
-        // When:  dao.delete(player) is called
-        // Then:  dao.getAll() is empty
+    fun delete_existingPlayer_removesItFromDatabase() = runTest {
+        val p1 = player(name = "Oskar")
+        dao.insert(p1)
+
+        dao.delete(p1)
+
+        val allPlayers = dao.getAll()
+        assertEquals(0, allPlayers.size)
     }
 
     @Test
-    fun delete_oneOfMultiplePlayers_onlyThatPlayerIsRemoved() {
-        // Given: 3 players inserted (alice, bob, carol)
-        // When:  dao.delete(bob) is called
-        // Then:  dao.getAll() contains alice and carol (size == 2)
+    fun delete_oneOfMultiplePlayers_onlyThatPlayerIsRemoved() = runTest {
+        val p1 = player(name = "Oskar")
+        val p2 = player(name = "Alice")
+        dao.insertAll(listOf(p1, p2))
+
+        dao.delete(p1)
+
+        val allPlayers = dao.getAll()
+        assertEquals(1, allPlayers.size)
+        assertEquals("Alice", allPlayers[0].name)
     }
 
     // -------------------------------------------------------------------------
@@ -117,33 +146,40 @@ class PlayerDaoTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun edit_updatesName() {
-        // Given: player inserted with name="Alice"
-        // When:  dao.edit(player.copy(name="Alicia")) is called
-        // Then:  dao.getAll()[0].name == "Alicia"
+    fun edit_updatesAllFields() = runTest {
+        val p1 = player(name = "Oskar", games = 0, winRatio = 0)
+        dao.insert(p1)
+
+        dao.edit(p1.copy(name = "Alice", games = 10, winRatio = 5))
+
+        val result = dao.getAll()[0]
+        assertEquals("Alice", result.name)
+        assertEquals(10, result.games)
+        assertEquals(5, result.winRatio)
     }
 
     @Test
-    fun edit_updatesGamesAndWinRatio() {
-        // Given: player inserted with games=0, winRatio=0
-        // When:  dao.edit(player.copy(games=10, winRatio=3)) is called
-        // Then:  dao.getAll()[0].games    == 10
-        //        dao.getAll()[0].winRatio == 3
+    fun edit_updatesSelectedFlag() = runTest {
+        val p1 = player(selected = false)
+        dao.insert(p1)
+
+        dao.edit(p1.copy(selected = true))
+
+        val result = dao.getAll()[0]
+        assertEquals(true, result.selected)
     }
 
     @Test
-    fun edit_updatesSelectedFlag() {
-        // Given: player inserted with selected=false
-        // When:  dao.edit(player.copy(selected=true)) is called
-        // Then:  dao.getAll()[0].selected == true
-        // Note:  this is a mutable var field — verify Room persists it correctly
-    }
+    fun edit_onlyTargetPlayerIsUpdated() = runTest {
+        val p1 = player(name = "Oskar")
+        val p2 = player(name = "Alice")
+        dao.insertAll(listOf(p1, p2))
 
-    @Test
-    fun edit_onlyTargetPlayerIsUpdated() {
-        // Given: 2 players inserted (alice, bob)
-        // When:  dao.edit(alice.copy(name="Alicia")) is called
-        // Then:  one player has name "Alicia", the other still has bob's original name
+        dao.edit(p1.copy(name = "Updated"))
+
+        val allPlayers = dao.getAll()
+        assertTrue(allPlayers.any { it.name == "Updated" })
+        assertTrue(allPlayers.any { it.name == "Alice" })
     }
 
     // -------------------------------------------------------------------------
@@ -151,16 +187,17 @@ class PlayerDaoTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun deleteAll_multiplePlayers_databaseIsEmpty() {
-        // Given: 3 players inserted
-        // When:  dao.deleteAll() is called
-        // Then:  dao.getAll() is empty
+    fun deleteAll_multiplePlayers_databaseIsEmpty() = runTest {
+        dao.insertAll(listOf(player(), player()))
+
+        dao.deleteAll()
+
+        assertEquals(0, dao.getAll().size)
     }
 
     @Test
-    fun deleteAll_emptyDatabase_doesNotCrash() {
-        // Given: no players inserted
-        // When:  dao.deleteAll() is called
-        // Then:  no exception is thrown, dao.getAll() is still empty
+    fun deleteAll_emptyDatabase_doesNotCrash() = runTest {
+        dao.deleteAll()
+        assertEquals(0, dao.getAll().size)
     }
 }
