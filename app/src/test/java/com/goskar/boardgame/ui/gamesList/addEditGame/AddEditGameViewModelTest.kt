@@ -1,0 +1,172 @@
+package com.goskar.boardgame.ui.gamesList.addEditGame
+
+import android.content.Context
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
+import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import io.mockk.slot
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class AddEditGameViewModelTest {
+
+    private lateinit var gameRepo: GameDbRepository
+    private lateinit var getAllGameUseCase: GetAllGameUseCase
+    private lateinit var testDispatcher: TestDispatcher
+    private lateinit var context: Context
+    private lateinit var viewModel: AddEditGameViewModel
+
+    private val baseGame = createGame(name = "Wingspan", id = "base-1", expansion = false)
+    private val expansionGame = createGame(name = "Wingspan: Europe", id = "exp-1", expansion = true)
+
+    private fun createGame(
+        name: String,
+        id: String,
+        expansion: Boolean,
+        games: Int = 0
+    ) = Game(
+        name = name,
+        expansion = expansion,
+        cooperate = false,
+        baseGame = "",
+        minPlayer = "1",
+        maxPlayer = "4",
+        games = games,
+        id = id
+    )
+
+    @Before
+    fun setUp() {
+        testDispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
+        gameRepo = mockk()
+        getAllGameUseCase = mockk()
+        // Context is only touched when uri is non-empty; tests keep uri empty.
+        context = mockk(relaxed = true)
+
+        coEvery { getAllGameUseCase.invoke() } returns listOf(baseGame, expansionGame)
+
+        viewModel = AddEditGameViewModel(gameRepo, getAllGameUseCase)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    // -------------------------------------------------------------------------
+    // init — base game list excludes expansions
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun init_allBaseGame_excludesExpansions() {
+        assertEquals(listOf(baseGame), viewModel.allBaseGame.value)
+    }
+
+    // -------------------------------------------------------------------------
+    // validateAddEitGame — insert vs edit branch (driven by id)
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun validateAddEitGame_nullId_insertsNewGameWithGeneratedId() = runTest(testDispatcher) {
+        val saved = slot<Game>()
+        coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
+
+        viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
+        viewModel.validateAddEitGame(context)
+
+        coVerify(exactly = 1) { gameRepo.insertGame(any()) }
+        coVerify(exactly = 0) { gameRepo.editGame(any()) }
+        assertEquals("Chess", saved.captured.name)
+        assertTrue(saved.captured.id.isNotBlank()) // UUID generated when id is null
+    }
+
+    @Test
+    fun validateAddEitGame_existingId_editsGameKeepingId() = runTest(testDispatcher) {
+        val saved = slot<Game>()
+        coEvery { gameRepo.editGame(capture(saved)) } returns RequestResult.Success(true)
+
+        viewModel.update(viewModel.state.value.copy(name = "Chess", id = "existing-id", uri = ""))
+        viewModel.validateAddEitGame(context)
+
+        coVerify(exactly = 1) { gameRepo.editGame(any()) }
+        coVerify(exactly = 0) { gameRepo.insertGame(any()) }
+        assertEquals("existing-id", saved.captured.id)
+    }
+
+    // -------------------------------------------------------------------------
+    // validateAddEitGame — expansion rule:
+    // expansion is only persisted as true when a base game is also set
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun validateAddEitGame_expansionWithBaseGame_persistsAsExpansion() = runTest(testDispatcher) {
+        val saved = slot<Game>()
+        coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
+
+        viewModel.update(
+            viewModel.state.value.copy(name = "Exp", expansion = true, baseGame = "Wingspan", id = null, uri = "")
+        )
+        viewModel.validateAddEitGame(context)
+
+        assertEquals(true, saved.captured.expansion)
+    }
+
+    @Test
+    fun validateAddEitGame_expansionWithoutBaseGame_persistsAsBaseGame() = runTest(testDispatcher) {
+        val saved = slot<Game>()
+        coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
+
+        viewModel.update(
+            viewModel.state.value.copy(name = "Exp", expansion = true, baseGame = null, id = null, uri = "")
+        )
+        viewModel.validateAddEitGame(context)
+
+        assertEquals(false, saved.captured.expansion)
+    }
+
+    // -------------------------------------------------------------------------
+    // validateAddEitGame — result handling
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun validateAddEitGame_success_setsSuccessFlagAndClearsProgress() = runTest(testDispatcher) {
+        coEvery { gameRepo.insertGame(any()) } returns RequestResult.Success(true)
+
+        viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
+        viewModel.validateAddEitGame(context)
+
+        val state = viewModel.state.value
+        assertEquals(true, state.successAddEditGame)
+        assertEquals(false, state.inProgress)
+        assertEquals(false, state.errorVisible)
+    }
+
+    @Test
+    fun validateAddEitGame_error_setsErrorAndClearsProgress() = runTest(testDispatcher) {
+        coEvery { gameRepo.insertGame(any()) } returns RequestResult.Error(Throwable("db error"))
+
+        viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
+        viewModel.validateAddEitGame(context)
+
+        val state = viewModel.state.value
+        assertEquals(false, state.successAddEditGame)
+        assertEquals(true, state.errorVisible)
+        assertEquals(false, state.inProgress)
+    }
+}
