@@ -1,22 +1,27 @@
 package com.goskar.boardgame.ui.gamesList.lists
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.utils.SortList
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+sealed interface GameListEvent {
+    data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GameListEvent
+}
 data class GameListState(
     val gameList: List<GameUiState>? = emptyList(),
     val gameListEdited: List<GameUiState> = emptyList(),
-    val successDeleteGame: Boolean = false,
-    val errorVisible: Boolean = false,
     val searchTxt: String = "",
     val sortOption: SortList = SortList.DEFAULT,
     val isLoading: Boolean = false,
@@ -38,12 +43,12 @@ class GameListViewModel(
     private val _state = MutableStateFlow(GameListState())
     val state = _state.asStateFlow()
 
+    private val _events = Channel<GameListEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
+
+
     fun update(state: GameListState) {
         _state.update { state }
-    }
-
-    init {
-        refresh()
     }
 
     fun refreshGameList() {
@@ -112,16 +117,13 @@ class GameListViewModel(
                     _state.update {
                         it.copy(
                             gameList = gameUiStates,
-                            errorVisible = false
                         )
                     }
                     refreshGameList()
                 }
 
                 is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(errorVisible = true)
-                    }
+                    _events.send(GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
             }
         }
@@ -136,18 +138,18 @@ class GameListViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            errorVisible = false
                         )
                     }
+                    _events.send(GameListEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS))
                 }
 
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            errorVisible = true
                         )
                     }
+                    _events.send(GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
             }
         }
