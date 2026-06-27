@@ -56,6 +56,7 @@ import com.goskar.boardgame.Constants.GLOBAL_TAG
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.components.other.CameraView
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
@@ -86,6 +87,30 @@ class AddEditGameScreen(private val editGame: Game?) : Screen {
 
         val navigator = LocalNavigator.current
 
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is AddEditEvent.ShowMessage -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                    }
+
+                    is AddEditEvent.SuccessAddEditGame -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                        navigator?.replace(GameListScreen())
+                    }
+                }
+            }
+        }
+
         LaunchedEffect(editGame) {
             if (editGame != null) {
                 viewModel.update(
@@ -103,11 +128,6 @@ class AddEditGameScreen(private val editGame: Game?) : Screen {
                         id = editGame.id
                     )
                 )
-            }
-        }
-        LaunchedEffect(state.successAddEditGame) {
-            if (state.successAddEditGame) {
-                navigator?.replace(GameListScreen())
             }
         }
         BoardGameScaffold(

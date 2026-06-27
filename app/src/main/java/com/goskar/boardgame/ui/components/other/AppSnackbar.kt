@@ -30,7 +30,9 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.onSnackbarColor
 import com.goskar.boardgame.ui.theme.snackbarErrorColor
 import com.goskar.boardgame.ui.theme.snackbarSuccessColor
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /** Visual variant of [AppSnackbar]. */
 enum class AppSnackBarType { SUCCESS, ERROR }
@@ -40,7 +42,16 @@ enum class AppSnackBarType { SUCCESS, ERROR }
  * `CompositionLocalProvider(LocalSnackbarHost provides …)` and read it on any
  * screen with `LocalSnackbarHost.current`.
  */
-val LocalSnackbarHost = staticCompositionLocalOf<SnackbarHostState> {
+class AppSnackbarController(
+    private val hostState: SnackbarHostState,
+    private val scope: CoroutineScope,
+) {
+    fun show(message: String, type: AppSnackBarType) {
+        scope.launch { hostState.showAppSnackbar(message, type) }
+    }
+}
+
+val LocalSnackbarHost = staticCompositionLocalOf<AppSnackbarController> {
     error("No SnackbarHostState provided")
 }
 
