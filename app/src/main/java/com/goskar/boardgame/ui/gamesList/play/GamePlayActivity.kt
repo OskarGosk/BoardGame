@@ -38,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -52,6 +51,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
@@ -81,6 +81,21 @@ class GamePlayActivityScreen(
         val navigator = LocalNavigator.current
         val topBarViewModel: TopBarViewModel = koinViewModel()
         val topBarState by topBarViewModel.state.collectAsState()
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is GamePlayEvent.ShowMessage -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                    }
+                }
+            }
+        }
 
 
         LaunchedEffect(Unit) {
@@ -127,8 +142,8 @@ fun GamePlayContent(
     selectedPlayer: (Player) -> Unit = {},
     addGamePlay: (Context) -> Unit = {},
     selectExpansion: (String) -> Unit = {},
-    paddingValues: PaddingValues
-) {
+    paddingValues: PaddingValues,
+    ) {
     val uriHandler = LocalUriHandler.current
     val calendarState = rememberSheetState()
     val scrollState = rememberScrollState()
@@ -410,7 +425,7 @@ fun GamePlayActivityPreview() {
                     game,
                     playerList = listOf(player, player, player2, player2, player, player, player2)
                 ),
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
             )
         }
     }
@@ -437,7 +452,7 @@ fun GamePlayActivityPreviewWithoutPlayer() {
             )
             GamePlayContent(
                 GamePlayState(game, playerList = emptyList()),
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.gamesList.play.components
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.gamesList.play.GamePlayState
 import com.goskar.boardgame.ui.playerList.PlayerListScreen
 import com.goskar.boardgame.ui.theme.Smooch16
@@ -42,6 +43,7 @@ fun PlayerListToSelect(
     state: GamePlayState,
     selectedPlayer: (Player) -> Unit = {}
 ) {
+    val snackbarHostState = LocalSnackbarHost.current
     val context = LocalContext.current
     val navigator = LocalNavigator.current
 
@@ -60,11 +62,10 @@ fun PlayerListToSelect(
                         if (state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || player.selected) {
                             selectedPlayer(player)
                         } else {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.history_max_player_selected),
-                                Toast.LENGTH_LONG
-                            ).show()
+                            snackbarHostState.show(
+                                message =context.getString(R.string.history_max_player_selected),
+                                type = AppSnackBarType.INFO,
+                            )
                         }
                     }
                     Row(

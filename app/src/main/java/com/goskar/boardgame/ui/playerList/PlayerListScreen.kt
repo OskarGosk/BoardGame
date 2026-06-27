@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
@@ -40,6 +42,21 @@ class PlayerListScreen : Screen {
 
         val topBarViewModel: TopBarViewModel = koinViewModel()
         val topBarState by topBarViewModel.state.collectAsState()
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is PlayerListEvent.ShowMessage -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                    }
+                }
+            }
+        }
 
         LaunchedEffect(Unit) {
             viewModel.getAllPlayer()

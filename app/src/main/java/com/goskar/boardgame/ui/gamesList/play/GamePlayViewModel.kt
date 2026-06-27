@@ -1,7 +1,7 @@
 package com.goskar.boardgame.ui.gamesList.play
 
 import android.content.Context
-import android.util.Log
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
@@ -14,14 +14,20 @@ import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepositor
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.utils.CooperatePlayers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.UUID
 
+sealed interface GamePlayEvent {
+    data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GamePlayEvent
+}
 data class GamePlayState(
     val game: Game? = null,
     val gameList: List<ExpansionGameUiState>? = emptyList(),
@@ -29,7 +35,6 @@ data class GamePlayState(
     val successAddPlayGame: Boolean = false,
     val successEditAllPlayer: Boolean = false,
     val successAddHistoryGame: Boolean = false,
-    val errorVisible: Boolean = false,
     val winner: String = "Who Win?",
     val gameVariant: Int = R.string.history_normal,
     val playDate: LocalDate = LocalDate.now(),
@@ -54,6 +59,9 @@ class GamePlayViewModel(
 
     private val _state = MutableStateFlow(GamePlayState())
     val state = _state.asStateFlow()
+
+    private val _events = Channel<GamePlayEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     fun update(state: GamePlayState) {
         _state.update { state }
@@ -95,14 +103,14 @@ class GamePlayViewModel(
 
     fun validateAllData(context: Context) {
         viewModelScope.launch {
-            validateAddHistoryGameData(context)
+            validateAddHistoryGameData()
             validateEditAllExpansion()
             validateEditGame()
             validateEditAllPlayer(context)
         }
     }
 
-    private suspend fun validateAddHistoryGameData(context: Context) {
+    private suspend fun validateAddHistoryGameData() {
         var listOfPlayer: List<String> = emptyList()
         state.value.playerList?.filter { it.selected }?.forEach { player ->
             listOfPlayer = listOfPlayer + player.name
@@ -126,10 +134,10 @@ class GamePlayViewModel(
             }
 
             is RequestResult.Error -> {
+                _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 _state.update {
                     it.copy(
                         successAddHistoryGame = false,
-                        errorVisible = true,
                     )
                 }
             }
@@ -163,10 +171,11 @@ class GamePlayViewModel(
             }
 
             is RequestResult.Error -> {
+                _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+
                 _state.update {
                     it.copy(
                         successAddHistoryGame = false,
-                        errorVisible = true,
                     )
                 }
             }
@@ -189,21 +198,17 @@ class GamePlayViewModel(
                 }
 
                 is RequestResult.Error -> {
+                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+
                     _state.update {
                         it.copy(
                             successAddPlayGame = false,
-                            errorVisible = true
                         )
                     }
                 }
             }
         } else {
-            _state.update {
-                it.copy(
-                    successAddPlayGame = false,
-                    errorVisible = true
-                )
-            }
+            _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
         }
     }
 
@@ -225,17 +230,12 @@ class GamePlayViewModel(
                     _state.update {
                         it.copy(
                             playerList = response.data,
-                            errorVisible = false
                         )
                     }
                 }
 
                 is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            errorVisible = true
-                        )
-                    }
+                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
             }
         }
@@ -275,19 +275,13 @@ class GamePlayViewModel(
                         _state.update {
                             it.copy(
                                 successEditAllPlayer = true,
-                                errorVisible = false
                             )
                         }
                     }
                 }
 
                 is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            successEditAllPlayer = false,
-                            errorVisible = true
-                        )
-                    }
+                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
             }
         }
@@ -309,12 +303,7 @@ class GamePlayViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            successAddPlayGame = false,
-                            errorVisible = true
-                        )
-                    }
+                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
             }
         }

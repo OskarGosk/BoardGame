@@ -221,6 +221,8 @@ val surfaceContainerHighestDarkHighContrast = Color(0xFF3C332D)
 // Snackbar status colors (success = green, error = red) + on-color for content.
 val snackbarSuccessColor = Color(0xFF2E7D32)
 val snackbarErrorColor = Color(0xFFC62828)
+val snackbarInfoColor = Color(0xFF534438)
+
 val onSnackbarColor = Color(0xFFFFFFFF)
 
 

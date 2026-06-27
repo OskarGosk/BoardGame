@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,13 +30,14 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.onSnackbarColor
 import com.goskar.boardgame.ui.theme.snackbarErrorColor
+import com.goskar.boardgame.ui.theme.snackbarInfoColor
 import com.goskar.boardgame.ui.theme.snackbarSuccessColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** Visual variant of [AppSnackbar]. */
-enum class AppSnackBarType { SUCCESS, ERROR }
+enum class AppSnackBarType { SUCCESS, ERROR, INFO }
 
 /**
  * Global snackbar host. Provide it once at the app root via
@@ -89,10 +91,12 @@ fun AppSnackbar(
     val backgroundColor = when (type) {
         AppSnackBarType.SUCCESS -> snackbarSuccessColor
         AppSnackBarType.ERROR -> snackbarErrorColor
+        AppSnackBarType.INFO -> snackbarInfoColor
     }
     val icon: ImageVector = when (type) {
         AppSnackBarType.SUCCESS -> Icons.Default.Check
         AppSnackBarType.ERROR -> Icons.Default.Warning
+        AppSnackBarType.INFO -> Icons.Default.Info
     }
 
     LaunchedEffect(snackbarData) {

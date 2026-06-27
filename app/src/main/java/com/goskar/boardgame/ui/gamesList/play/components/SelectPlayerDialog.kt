@@ -1,7 +1,6 @@
 package com.goskar.boardgame.ui.gamesList.play.components
 
 import android.view.KeyEvent
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
 import com.goskar.boardgame.ui.gamesList.play.GamePlayState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -52,7 +53,7 @@ fun SelectPlayerDialog(
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    var expanded by remember { mutableStateOf(false) }
+    val snackbarHostState = LocalSnackbarHost.current
 
     val newPlayerList: List<Player> = when (state.sortOption) {
         R.string.default_sort -> state.playerList ?: emptyList()
@@ -118,11 +119,10 @@ fun SelectPlayerDialog(
                         if (state.countSelectedPlayer != state.game?.maxPlayer?.toInt() || player.selected) {
                             selectedPlayer(player)
                         } else {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.history_max_player_selected),
-                                Toast.LENGTH_LONG
-                            ).show()
+                            snackbarHostState.show(
+                                message =context.getString(R.string.history_max_player_selected),
+                                type = AppSnackBarType.INFO
+                            )
                         }
                     }
                     Row(
