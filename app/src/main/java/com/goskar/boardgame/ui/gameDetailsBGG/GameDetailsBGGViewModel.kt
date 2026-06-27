@@ -2,22 +2,29 @@ package com.goskar.boardgame.ui.gameDetailsBGG
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+sealed interface GameDetailsEvent {
+    data class SuccessAddEditGame(val message: Int, val type: AppSnackBarType) : GameDetailsEvent
+}
+
 data class GameDetailsBGGState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
-    val successAddEditGame: Boolean = false,
     val gameName: String? = "",
     val gameId: String = "",
     val cooperate: Boolean = false,
@@ -35,6 +42,9 @@ class GameDetailsBGGViewModel(
 
     private val _state = MutableStateFlow(GameDetailsBGGState())
     val state = _state.asStateFlow()
+
+    private val _events = Channel<GameDetailsEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     private val _gameDetails = MutableStateFlow<BoardGamesDetails?>(null)
     val gameDetails = _gameDetails.asStateFlow()
@@ -106,23 +116,21 @@ class GameDetailsBGGViewModel(
 
             when (response) {
                 is RequestResult.Success -> {
-                    _state.update {
-                        it.copy(
-                            successAddEditGame = true,
-                            isLoading = false
-                        )
-                    }
+                    _events.send(GameDetailsEvent.SuccessAddEditGame(R.string.success_global, AppSnackBarType.SUCCESS))
                 }
 
                 is RequestResult.Error -> {
                     _state.update {
                         it.copy(
-                            successAddEditGame = false,
                             isError = true,
-                            isLoading = false
                         )
                     }
                 }
+            }
+            _state.update {
+                it.copy(
+                    isLoading = false
+                )
             }
         }
     }
