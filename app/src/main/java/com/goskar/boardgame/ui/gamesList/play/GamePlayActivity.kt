@@ -51,6 +51,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.Player
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -87,11 +88,17 @@ class GamePlayActivityScreen(
         LaunchedEffect(Unit) {
             viewModel.events.collect { event ->
                 when (event) {
-                    is GamePlayEvent.ShowMessage -> {
+                    is GamePlayEvent.ShowMessage -> snackbarHostState.show(
+                        message = context.getString(event.message),
+                        type = event.type
+                    )
+
+                    is GamePlayEvent.Saved -> {
                         snackbarHostState.show(
                             message = context.getString(event.message),
-                            type = event.type
+                            type = AppSnackBarType.SUCCESS
                         )
+                        navigator?.pop()
                     }
                 }
             }
@@ -107,12 +114,6 @@ class GamePlayActivityScreen(
             viewModel.getAllGame()
             viewModel.getAllPlayer()
             viewModel.setGameVariant()
-        }
-
-        LaunchedEffect(state.successEditAllPlayer) {
-            if (state.successEditAllPlayer && state.successAddPlayGame && state.successAddHistoryGame) {
-                navigator?.pop()
-            }
         }
 
         BoardGameScaffold(

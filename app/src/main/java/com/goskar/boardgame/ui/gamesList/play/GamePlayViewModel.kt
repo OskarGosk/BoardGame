@@ -27,14 +27,12 @@ import java.util.UUID
 
 sealed interface GamePlayEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GamePlayEvent
+    data class Saved(@StringRes val message: Int) : GamePlayEvent
 }
 data class GamePlayState(
     val game: Game? = null,
     val gameList: List<ExpansionGameUiState>? = emptyList(),
     val playerList: List<Player>? = emptyList(),
-    val successAddPlayGame: Boolean = false,
-    val successEditAllPlayer: Boolean = false,
-    val successAddHistoryGame: Boolean = false,
     val winner: String = "Who Win?",
     val gameVariant: Int = R.string.history_normal,
     val playDate: LocalDate = LocalDate.now(),
@@ -103,19 +101,21 @@ class GamePlayViewModel(
 
     fun validateAllData(context: Context) {
         viewModelScope.launch {
-            validateAddHistoryGameData()
-            validateEditAllExpansion()
-            validateEditGame()
-            validateEditAllPlayer(context)
+            val saved = validateAddHistoryGameData() &&
+                    validateEditAllExpansion() &&
+                    validateEditGame() &&
+                    validateEditAllPlayer(context)
+            if (saved) {
+                _events.send(GamePlayEvent.Saved(R.string.success_global))
+            }
         }
     }
 
-    private suspend fun validateAddHistoryGameData() {
+    private suspend fun validateAddHistoryGameData(): Boolean {
         var listOfPlayer: List<String> = emptyList()
         state.value.playerList?.filter { it.selected }?.forEach { player ->
             listOfPlayer = listOfPlayer + player.name
         }
-
 
         val historyGame = HistoryGame(
             gameData = state.value.playDate,
@@ -126,25 +126,16 @@ class GamePlayViewModel(
             id = state.value.id
         )
 
-        val response = gamesHistoryDbRepository.insertHistoryGame(historyGame = historyGame)
-
-        when (response) {
-            is RequestResult.Success -> {
-                validateAddHistoryGameExpansionData()
-            }
-
+        return when (gamesHistoryDbRepository.insertHistoryGame(historyGame = historyGame)) {
+            is RequestResult.Success -> validateAddHistoryGameExpansionData()
             is RequestResult.Error -> {
                 _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
-                _state.update {
-                    it.copy(
-                        successAddHistoryGame = false,
-                    )
-                }
+                false
             }
         }
     }
 
-    private suspend fun validateAddHistoryGameExpansionData() {
+    private suspend fun validateAddHistoryGameExpansionData(): Boolean {
         var expansionHistoryList : List<HistoryGameExpansion> = emptyList()
 
         state.value.gameList?.forEach {
@@ -159,56 +150,29 @@ class GamePlayViewModel(
             }
         }
 
-        val response = gamesHistoryDbRepository.insertAllHistoryGameExpansion(expansionHistoryList)
-
-        when (response) {
-            is RequestResult.Success -> {
-                _state.update {
-                    it.copy(
-                        successAddHistoryGame = true,
-                    )
-                }
-            }
-
+        return when (gamesHistoryDbRepository.insertAllHistoryGameExpansion(expansionHistoryList)) {
+            is RequestResult.Success -> true
             is RequestResult.Error -> {
                 _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
-
-                _state.update {
-                    it.copy(
-                        successAddHistoryGame = false,
-                    )
-                }
+                false
             }
         }
     }
 
-    private suspend fun validateEditGame() {
+    private suspend fun validateEditGame(): Boolean {
         val game = state.value.game?.copy(
             games = (state.value.game?.games ?: 0) + 1,
         )
-        if (game != null) {
-            val response = gameDbRepository.editGame(game)
-            when (response) {
-                is RequestResult.Success -> {
-                    _state.update {
-                        it.copy(
-                            successAddPlayGame = true
-                        )
-                    }
-                }
-
-                is RequestResult.Error -> {
-                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
-
-                    _state.update {
-                        it.copy(
-                            successAddPlayGame = false,
-                        )
-                    }
-                }
-            }
-        } else {
+        if (game == null) {
             _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+            return false
+        }
+        return when (gameDbRepository.editGame(game)) {
+            is RequestResult.Success -> true
+            is RequestResult.Error -> {
+                _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                false
+            }
         }
     }
 
@@ -253,60 +217,43 @@ class GamePlayViewModel(
         }
     }
 
-    private suspend fun validateEditAllPlayer(context: Context) {
-        var item = 0
-        state.value.playerList?.filter { it.selected }?.forEach { player ->
-
+    private suspend fun validateEditAllPlayer(context: Context): Boolean {
+        val selectedPlayers = state.value.playerList?.filter { it.selected } ?: emptyList()
+        for (player in selectedPlayers) {
             val playerGames = player.copy(
-                name = player.name,
                 games = player.games + 1,
                 winRatio = if (player.name == state.value.winner || state.value.winner == context.resources.getString(
                         CooperatePlayers.PLAYERS.value
                     )
                 ) player.winRatio + 1 else player.winRatio,
-                description = player.description,
                 selected = false
             )
-            val response = playerDbRepository.editPlayer(playerGames)
-            when (response) {
-                is RequestResult.Success -> {
-                    item++
-                    if (item == state.value.playerList?.filter { it.selected }?.size) {
-                        _state.update {
-                            it.copy(
-                                successEditAllPlayer = true,
-                            )
-                        }
-                    }
-                }
-
+            when (playerDbRepository.editPlayer(playerGames)) {
+                is RequestResult.Success -> Unit
                 is RequestResult.Error -> {
                     _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    return false
                 }
             }
         }
+        return true
     }
 
-    private suspend fun validateEditAllExpansion() {
-        state.value.gameList?.filter { it.isSelected }?.forEach { expansion ->
-
+    private suspend fun validateEditAllExpansion(): Boolean {
+        val selectedExpansions = state.value.gameList?.filter { it.isSelected } ?: emptyList()
+        for (expansion in selectedExpansions) {
             val game = expansion.game.copy(
                 games = (expansion.game.games ?: 0) + 1,
             )
-            when (val response = gameDbRepository.editGame(game)) {
-                is RequestResult.Success -> {
-                    _state.update {
-                        it.copy(
-//                            successAddPlayGame = true
-                        )
-                    }
-                }
-
+            when (gameDbRepository.editGame(game)) {
+                is RequestResult.Success -> Unit
                 is RequestResult.Error -> {
                     _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    return false
                 }
             }
         }
+        return true
     }
 
     fun getAllGame() {

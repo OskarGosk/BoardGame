@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.gamesList.play
 
 import app.cash.turbine.test
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
@@ -246,15 +247,18 @@ class GamePlayViewModelTest {
         viewModel.getAllPlayer()
 
         assertEquals(listOf(player1, player2), viewModel.state.value.playerList)
-        assertEquals(false, viewModel.state.value.errorVisible)
     }
 
     @Test
     fun getAllPlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { playerRepo.getAllPlayer() } returns RequestResult.Error(Throwable())
 
-        viewModel.getAllPlayer()
-
-        assertEquals(true, viewModel.state.value.errorVisible)
+        viewModel.events.test {
+            viewModel.getAllPlayer()
+            assertEquals(
+                GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
+        }
     }
 }

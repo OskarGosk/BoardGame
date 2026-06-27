@@ -109,7 +109,9 @@ class PlayerListViewModel(
                 is RequestResult.Error -> {
                     _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
-                else -> {}
+                else -> {
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                }
             }
         }
     }
