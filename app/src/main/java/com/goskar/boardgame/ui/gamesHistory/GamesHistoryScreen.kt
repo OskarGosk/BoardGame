@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,12 +19,15 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.other.SearchRowGlobal
+import com.goskar.boardgame.ui.components.other.showAppSnackbar
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gamesHistory.lists.HistoryGamesList
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
@@ -34,9 +39,25 @@ class HistoryGameListScreen : Screen {
 
         val topBarViewModel: TopBarViewModel = koinViewModel()
         val topBarState by topBarViewModel.state.collectAsState()
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
 
         LaunchedEffect(Unit) {
             viewModel.getAllHistoryGame()
+        }
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is GameHistoryEvent.ShowMessage -> scope.launch {
+                        snackbarHostState.showAppSnackbar(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                    }
+                }
+            }
         }
 
         BoardGameScaffold(

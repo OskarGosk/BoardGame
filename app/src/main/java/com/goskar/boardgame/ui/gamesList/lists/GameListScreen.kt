@@ -45,7 +45,7 @@ import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.AddItemsMenu
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
-class GameListScreen : Screen {
+class GameListScreen () : Screen {
     @Composable
     override fun Content() {
         val viewModel: GameListViewModel = koinViewModel()
