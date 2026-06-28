@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.gamesList.lists.components
 
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.theme.Smooch14
 import com.goskar.boardgame.ui.theme.SmoochBold26
 
@@ -37,6 +38,7 @@ fun SingleGameCard(
     onCardCLick: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val snackbarHostState = LocalSnackbarHost.current
     Card(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 10.dp),
         modifier = modifier
@@ -44,7 +46,10 @@ fun SingleGameCard(
             .padding(5.dp)
             .clickable {
                 if (game.uri.isNullOrEmpty() && game.uriFromBgg.isNullOrEmpty()) {
-                    Toast.makeText(context, R.string.board_without_cover, Toast.LENGTH_LONG).show()
+                    snackbarHostState.show(
+                        message =context.getString(R.string.board_without_cover),
+                        type = AppSnackBarType.INFO
+                    )
                 } else {
                     onCardCLick()
                 }

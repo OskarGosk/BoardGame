@@ -40,8 +40,8 @@ import com.goskar.boardgame.ui.theme.SmoochBold26
 
 @Composable
 fun SinglePlayerCard(
+    modifier: Modifier = Modifier,
     player: Player,
-    modifier: Modifier,
     deletePlayer: (Player) -> Unit = {},
     update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
@@ -156,7 +156,7 @@ fun SinglePlayerCardPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
-            SinglePlayerCard(player, modifier = Modifier, state = PlayerListState())
+            SinglePlayerCard(player = player, state = PlayerListState())
         }
     }
 }
@@ -177,7 +177,7 @@ fun SinglePlayerCardPreview2() {
         color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.padding(10.dp)) {
-            SinglePlayerCard(player, modifier = Modifier, state = PlayerListState())
+            SinglePlayerCard(player = player, state = PlayerListState())
         }
     }
 }

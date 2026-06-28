@@ -39,6 +39,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGameBGG
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.components.other.AppLoader
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gameDetailsBGG.components.AddGameDialog
@@ -61,9 +62,20 @@ class GameDetailsBGGScreen(private val gameID: String, val gameName: String) : S
         val topBarViewModel: TopBarViewModel = koinViewModel()
         val topBarState by topBarViewModel.state.collectAsState()
 
-        LaunchedEffect(state.successAddEditGame) {
-            if (state.successAddEditGame) {
-                navigator?.pop()
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is GameDetailsEvent.SuccessAddEditGame -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                        navigator?.pop()
+                    }
+                }
             }
         }
 

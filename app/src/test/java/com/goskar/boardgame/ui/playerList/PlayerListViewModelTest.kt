@@ -1,9 +1,11 @@
 package com.goskar.boardgame.ui.playerList
 
 import app.cash.turbine.test
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +59,7 @@ class PlayerListViewModelTest {
         }
 
     @Test
-    fun getAllPlayer_success_setsPlayerListAndClearsLoadingAndError() = runTest(testDispatcher) {
+    fun getAllPlayer_success_setsPlayerListAndClearsLoading() = runTest(testDispatcher) {
         coEvery { repo.getAllPlayer() } returns RequestResult.Success(listOf(player1, player2))
 
         viewModel.state.test {
@@ -65,7 +67,6 @@ class PlayerListViewModelTest {
             skipItems(2)
             val item = awaitItem()
             assertEquals(false, item.isLoading)
-            assertEquals(false, item.errorVisible)
             assertEquals(listOf(player1, player2), item.playerList)
             cancelAndIgnoreRemainingEvents()
         }
@@ -89,59 +90,53 @@ class PlayerListViewModelTest {
     fun getAllPlayer_error_showsErrorAndClearsLoading() = runTest(testDispatcher) {
         coEvery { repo.getAllPlayer() } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.state.test {
+        viewModel.events.test {
             viewModel.getAllPlayer()
-            skipItems(2)
-            val item = awaitItem()
-            assertEquals(false, item.isLoading)
-            assertEquals(true, item.errorVisible)
-            cancelAndIgnoreRemainingEvents()
+            assertEquals(
+                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
         }
+        assertEquals(false, viewModel.state.value.isLoading)
     }
 
     @Test
-    fun validateDeletePlayer_success_setsSuccessFlagAndRefreshesList() = runTest(testDispatcher) {
-        coEvery { repo.getAllPlayer() } returns
-                RequestResult.Success(listOf(player1, player2)) andThen
-                RequestResult.Success(listOf(player2))
+    fun validateDeletePlayer_success_emitsSuccessAndRefreshesList() = runTest(testDispatcher) {
         coEvery { repo.deletePlayer(player1) } returns RequestResult.Success(true)
+        coEvery { repo.getAllPlayer() } returns RequestResult.Success(listOf(player2))
 
-        viewModel.state.test {
-            viewModel.getAllPlayer()
-            skipItems(2)
-            assertEquals(listOf(player1, player2), awaitItem().playerList)
-
+        viewModel.events.test {
             viewModel.validateDeletePlayer(player1)
-
-            val loadingItem = awaitItem()
-            assertEquals(true, loadingItem.successDeletePlayer)
-            assertEquals(true, loadingItem.isLoading)
-
-            val finalItem = awaitItem()
-            assertEquals(false, finalItem.isLoading)
-            assertEquals(listOf(player2), finalItem.playerList)
-
-            cancelAndIgnoreRemainingEvents()
+            assertEquals(
+                PlayerListEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS),
+                awaitItem()
+            )
         }
+        assertEquals(listOf(player2), viewModel.state.value.playerList)
     }
 
     @Test
     fun validateDeletePlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { repo.deletePlayer(player1) } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.state.test {
+        viewModel.events.test {
             viewModel.validateDeletePlayer(player1)
-            skipItems(1)
-            val item = awaitItem()
-            assertEquals(true, item.errorVisible)
-            cancelAndIgnoreRemainingEvents()
+            assertEquals(
+                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
         }
     }
 
     @Test
-    fun validateAddEditPlayer_nullPlayer_setsErrorVisible() {
-        viewModel.validateAddEditPLayer(newPlayer = true)
-        assertEquals(true, viewModel.state.value.errorVisible)
+    fun validateAddEditPlayer_nullPlayer_showsError() = runTest(testDispatcher) {
+        viewModel.events.test {
+            viewModel.validateAddEditPLayer(newPlayer = true)
+            assertEquals(
+                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
+        }
     }
 
     @Test
@@ -181,15 +176,15 @@ class PlayerListViewModelTest {
     fun validateAddEditPlayer_newPlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { repo.insertPlayer(player2) } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.state.test {
-            viewModel.update(state = viewModel.state.value.copy(player = player2))
+        viewModel.update(state = viewModel.state.value.copy(player = player2))
+        viewModel.events.test {
             viewModel.validateAddEditPLayer(newPlayer = true)
-            skipItems(2)
-            val item = awaitItem()
-            assertEquals(true, item.errorVisible)
-            assertEquals(player2, item.player)
-            cancelAndIgnoreRemainingEvents()
+            assertEquals(
+                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
         }
+        assertEquals(player2, viewModel.state.value.player)
     }
 
     @Test
@@ -206,7 +201,6 @@ class PlayerListViewModelTest {
             assertEquals(true, awaitItem().isLoading)
             val item = awaitItem()
             assertEquals(false, item.isLoading)
-            assertEquals(false, item.errorVisible)
             assertEquals(listOf(player1, player2), item.playerList)
 
             viewModel.update(state = viewModel.state.value.copy(player = player1edited))
@@ -215,12 +209,10 @@ class PlayerListViewModelTest {
             skipItems(1)
             val item2 = awaitItem()
             assertEquals(null, item2.player)
-            assertEquals(false, item2.errorVisible)
             assertEquals(true, item2.isLoading)
 
             val finalItem = awaitItem()
             assertEquals(false, finalItem.isLoading)
-            assertEquals(false, finalItem.errorVisible)
             assertEquals(listOf(player1edited, player2), finalItem.playerList)
             cancelAndIgnoreRemainingEvents()
         }
@@ -230,15 +222,14 @@ class PlayerListViewModelTest {
     fun validateAddEditPlayer_editExistingPlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { repo.editPlayer(player1edited) } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.state.test {
-            viewModel.update(state = viewModel.state.value.copy(player = player1edited))
-            skipItems(1)
+        viewModel.update(state = viewModel.state.value.copy(player = player1edited))
+        viewModel.events.test {
             viewModel.validateAddEditPLayer(false)
-            skipItems(1)
-            val item = awaitItem()
-            assertEquals(true, item.errorVisible)
-            assertEquals(player1edited, item.player)
-            cancelAndIgnoreRemainingEvents()
+            assertEquals(
+                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
         }
+        assertEquals(player1edited, viewModel.state.value.player)
     }
 }

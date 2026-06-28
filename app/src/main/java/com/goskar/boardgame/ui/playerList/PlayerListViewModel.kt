@@ -1,20 +1,27 @@
 package com.goskar.boardgame.ui.playerList
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+
+sealed interface PlayerListEvent {
+    data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : PlayerListEvent
+}
+
 data class PlayerListState(
     val playerList: List<Player>? = mutableListOf(),
-    val successDeletePlayer: Boolean = false,
-    val errorVisible: Boolean = false,
     val visibleDialog: Boolean = false,
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
@@ -31,6 +38,9 @@ class PlayerListViewModel(
     private val _state = MutableStateFlow(PlayerListState())
     val state = _state.asStateFlow()
 
+    private val _events = Channel<PlayerListEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
+
     fun update(state: PlayerListState) {
         _state.update { state }
     }
@@ -44,16 +54,15 @@ class PlayerListViewModel(
                     _state.update {
                         it.copy(
                             playerList = response.data,
-                            errorVisible = false,
                             isLoading = false
                         )
                     }
                 }
 
                 is RequestResult.Error -> {
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                     _state.update {
                         it.copy(
-                            errorVisible = true,
                             isLoading = false
                         )
                     }
@@ -68,21 +77,12 @@ class PlayerListViewModel(
             val response = playerDbRepository.deletePlayer(player = player)
             when (response) {
                 is RequestResult.Success -> {
-                    _state.update {
-                        it.copy(
-                            successDeletePlayer = true,
-                            errorVisible = false,
-                        )
-                    }
+                    _events.send(PlayerListEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS))
                     getAllPlayer()
                 }
 
                 is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            errorVisible = true,
-                        )
-                    }
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
             }
         }
@@ -107,19 +107,10 @@ class PlayerListViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            errorVisible = true,
-                        )
-                    }
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
-
-                null -> {
-                    _state.update {
-                        it.copy(
-                            errorVisible = true,
-                        )
-                    }
+                else -> {
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
                 }
             }
         }

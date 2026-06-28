@@ -1,5 +1,7 @@
 package com.goskar.boardgame.ui.gameDetailsBGG
 
+import app.cash.turbine.test
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGameBGG
 import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.Game
@@ -7,6 +9,7 @@ import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.slot
@@ -155,13 +158,17 @@ class GameDetailsBGGViewModelTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun validateAddGame_success_setsSuccessFlagAndClearsLoading() = runTest(testDispatcher) {
+    fun validateAddGame_success_emitsSuccessAndClearsLoading() = runTest(testDispatcher) {
         coEvery { gameRepo.insertGame(any()) } returns RequestResult.Success(true)
 
         viewModel.update(viewModel.state.value.copy(gameName = "Chess"))
-        viewModel.validateAddGame()
-
-        assertEquals(true, viewModel.state.value.successAddEditGame)
+        viewModel.events.test {
+            viewModel.validateAddGame()
+            assertEquals(
+                GameDetailsEvent.SuccessAddEditGame(R.string.success_global, AppSnackBarType.SUCCESS),
+                awaitItem()
+            )
+        }
         assertEquals(false, viewModel.state.value.isLoading)
     }
 
@@ -172,7 +179,6 @@ class GameDetailsBGGViewModelTest {
         viewModel.update(viewModel.state.value.copy(gameName = "Chess"))
         viewModel.validateAddGame()
 
-        assertEquals(false, viewModel.state.value.successAddEditGame)
         assertEquals(true, viewModel.state.value.isError)
         assertEquals(false, viewModel.state.value.isLoading)
     }

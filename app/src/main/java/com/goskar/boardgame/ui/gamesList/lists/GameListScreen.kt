@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,6 +31,7 @@ import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.other.EmptyListWithButton
 import com.goskar.boardgame.ui.components.other.FloatingMenu
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.GameViewList
 import org.koin.androidx.compose.koinViewModel
@@ -40,16 +42,31 @@ import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.AddItemsMenu
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
 
-class GameListScreen : Screen {
+class GameListScreen() : Screen {
     @Composable
     override fun Content() {
         val viewModel: GameListViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
         val topBarViewModel: TopBarViewModel = koinViewModel()
         val topBarState by topBarViewModel.state.collectAsState()
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
 
         LaunchedEffect(Unit) {
             viewModel.refresh()
+        }
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is GameListEvent.ShowMessage -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                    }
+                }
+            }
         }
 
         BoardGameScaffold(

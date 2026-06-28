@@ -1,8 +1,10 @@
 package com.goskar.boardgame.ui.gamesList.lists
 
 import app.cash.turbine.test
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.utils.SortList
 import com.goskar.boardgame.data.rest.RequestResult
 import io.mockk.coEvery
@@ -103,7 +105,13 @@ class GameListViewModelTest {
     fun refreshGameList_nameAscending_sortsAlphabetically() = runTest(testDispatcher) {
         viewModel.update(
             state = viewModel.state.value.copy(
-                gameList = listOf(game1Chess, game2Azul, game3Wingspan, game4WingspanExpansion, game5AzulExpansion),
+                gameList = listOf(
+                    game1Chess,
+                    game2Azul,
+                    game3Wingspan,
+                    game4WingspanExpansion,
+                    game5AzulExpansion
+                ),
                 sortOption = SortList.A_Z
             )
         )
@@ -114,7 +122,13 @@ class GameListViewModelTest {
             val finalItems = awaitItem()
             // Azul, Azul And Dark Knight, Chess, Wingspan, Wingspan: European Expansion
             assertEquals(
-                listOf(game2Azul, game5AzulExpansion, game1Chess, game3Wingspan, game4WingspanExpansion),
+                listOf(
+                    game2Azul,
+                    game5AzulExpansion,
+                    game1Chess,
+                    game3Wingspan,
+                    game4WingspanExpansion
+                ),
                 finalItems.gameListEdited
             )
         }
@@ -123,11 +137,12 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_nameDescending_sortsReverseAlphabetically() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1) // skip initial state
 
             viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.Z_A))
             viewModel.refreshGameList()
-            
+
             val finalItems = expectMostRecentItem()
             assertEquals(SortList.Z_A, finalItems.sortOption)
             // Z-A: Wingspan: European Expansion, Wingspan, Chess, Azul And Dark Knight, Azul
@@ -146,6 +161,7 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_playedAscending_sortsByGamesCountLowToHigh() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.GAMES_MIN))
@@ -169,6 +185,7 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_playedDescending_sortsByGamesCountHighToLow() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.GAMES_MAX))
@@ -196,6 +213,7 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_searchTxtMatches_onlyMatchingGamesInResult() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(state = viewModel.state.value.copy(searchTxt = "az"))
@@ -209,6 +227,7 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_searchTxtMatchesNone_resultIsEmpty() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(state = viewModel.state.value.copy(searchTxt = "zzz"))
@@ -222,6 +241,7 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_searchTxtIsCaseInsensitive() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(state = viewModel.state.value.copy(searchTxt = "CHESS"))
@@ -235,6 +255,7 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_emptySearchTxt_allGamesPassFilter() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             // 1. Search for specific game
@@ -258,6 +279,7 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_onlyBaseCheckbox_onlyBaseGamesVisible() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(state = viewModel.state.value.copy(checkboxExpansionGame = false))
@@ -271,19 +293,24 @@ class GameListViewModelTest {
     @Test
     fun refreshGameList_onlyExpansionCheckbox_onlyExpansionsVisible() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(state = viewModel.state.value.copy(checkboxBaseGame = false))
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
-            assertEquals(listOf(game4WingspanExpansion, game5AzulExpansion), finalItems.gameListEdited)
+            assertEquals(
+                listOf(game4WingspanExpansion, game5AzulExpansion),
+                finalItems.gameListEdited
+            )
         }
     }
 
     @Test
     fun refreshGameList_bothCheckboxesFalse_resultIsEmpty() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.update(
@@ -306,6 +333,7 @@ class GameListViewModelTest {
     @Test
     fun updateExpandedGameCover_matchingGame_togglesIsExpanded() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.updateExpandedGameCover(azul)
@@ -318,6 +346,7 @@ class GameListViewModelTest {
     @Test
     fun updateExpandedGameCover_onlyTargetGameChanges() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.updateExpandedGameCover(azul)
@@ -332,6 +361,7 @@ class GameListViewModelTest {
     @Test
     fun changeAllExpendedGameCover_allExpanded_allBecomeFolded() = runTest(testDispatcher) {
         viewModel.state.test {
+            viewModel.refresh()
             skipItems(1)
 
             viewModel.changeAllExpendedGameCover()
@@ -343,6 +373,7 @@ class GameListViewModelTest {
 
     @Test
     fun changeAllExpendedGameCover_allFolded_allBecomeExpanded() = runTest(testDispatcher) {
+        viewModel.refresh()
         viewModel.changeAllExpendedGameCover() // First toggle to false
 
         viewModel.state.test {
@@ -371,7 +402,6 @@ class GameListViewModelTest {
 
             val finalState = expectMostRecentItem()
             assertEquals(false, finalState.isLoading)
-            assertEquals(false, finalState.errorVisible)
             assertEquals(2, finalState.gameList?.size)
         }
     }
@@ -380,15 +410,13 @@ class GameListViewModelTest {
     fun validateDeleteGame_error_showsError() = runTest(testDispatcher) {
         coEvery { gameRepo.deleteGame(any()) } returns RequestResult.Error(Exception("Failed"))
 
-        viewModel.state.test {
-            skipItems(1)
-
-            viewModel.validateDeleteGame(wingspan)
-
-            val finalState = expectMostRecentItem()
-            assertEquals(true, finalState.errorVisible)
-            assertEquals(false, finalState.isLoading)
-        }
+            viewModel.events.test {
+                viewModel.validateDeleteGame(wingspan)
+                assertEquals(
+                    GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                    awaitItem()
+                )
+            }
     }
 
     // -------------------------------------------------------------------------
@@ -399,8 +427,12 @@ class GameListViewModelTest {
     fun refresh_repositoryError_setsErrorVisible() = runTest(testDispatcher) {
         coEvery { gameRepo.getAllGame() } returns RequestResult.Error(Exception("db error"))
 
-        viewModel.refresh()
-
-        assertEquals(true, viewModel.state.value.errorVisible)
+        viewModel.events.test {
+            viewModel.refresh()
+            assertEquals(
+                GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
+        }
     }
 }

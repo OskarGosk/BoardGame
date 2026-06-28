@@ -3,25 +3,35 @@ package com.goskar.boardgame.ui.gamesList.addEditGame
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
+import androidx.annotation.StringRes
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.Constants.GLOBAL_TAG
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
 import java.util.concurrent.Executor
+
+sealed interface AddEditEvent {
+    data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : AddEditEvent
+    data class SuccessAddEditGame(@StringRes val message: Int, val type: AppSnackBarType) : AddEditEvent
+}
 
 data class AddEditGameState(
     val name: String? = null,
@@ -35,9 +45,6 @@ data class AddEditGameState(
     val uriFromBgg: String? = null,
     val id: String? = null,
     val cooperate: Boolean = false,
-
-    val successAddEditGame: Boolean = false,
-    val errorVisible: Boolean = false,
     val inProgress: Boolean = false
 )
 
@@ -54,6 +61,9 @@ class AddEditGameViewModel(
 
     private val _state = MutableStateFlow(AddEditGameState())
     val state = _state.asStateFlow()
+
+    private val _events = Channel<AddEditEvent>(Channel.BUFFERED)
+    val events = _events.receiveAsFlow()
 
     private val _allBaseGame = MutableStateFlow<List<Game>>(emptyList())
     val allBaseGame = _allBaseGame.asStateFlow()
@@ -122,19 +132,28 @@ class AddEditGameViewModel(
 
             when (response) {
                 is RequestResult.Success -> {
+                    _events.send(
+                        AddEditEvent.SuccessAddEditGame(
+                            R.string.success_global,
+                            AppSnackBarType.SUCCESS
+                        )
+                    )
                     _state.update {
                         it.copy(
-                            successAddEditGame = true,
                             inProgress = false
                         )
                     }
                 }
 
                 is RequestResult.Error -> {
+                    _events.send(
+                        AddEditEvent.ShowMessage(
+                            R.string.error_generic,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                     _state.update {
                         it.copy(
-                            successAddEditGame = false,
-                            errorVisible = true,
                             inProgress = false
                         )
                     }
@@ -164,7 +183,7 @@ class AddEditGameViewModel(
             executor,
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exception: ImageCaptureException) {
-                    Log.e(GLOBAL_TAG, "Take Photo error:", exception)
+                    Timber.tag(GLOBAL_TAG).e(exception, "Take Photo error:")
                     onError(exception)
                 }
 

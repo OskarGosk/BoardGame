@@ -39,9 +39,7 @@ fun BoardGameScaffold(
 
     Scaffold(
         contentWindowInsets = WindowInsets.safeGestures,
-        modifier = modifier.then(
-            Modifier
-        ),
+        modifier = modifier,
         floatingActionButton = floatingActionButton,
         topBar = { TopBar(titlePage, showSynchronizedIcon, topBarState, uploadDataToFirebase) },
         bottomBar = {
@@ -57,8 +55,7 @@ fun BoardGameScaffold(
                     color = Color.White
                 )
             }
-        }
-
+        },
     ) {
         content(it)
     }
@@ -70,6 +67,25 @@ fun BoardGameScaffoldPreview() {
     BoardGameTheme {
         BoardGameScaffold(
             titlePage = "BottomBarElements.HomeButton.title,",
+            selectedScreen = BottomBarElements.HomeButton.title,
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+            ) {
+                Text(text = "Hello")
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun BoardGameScaffoldSnackbarPreview() {
+    BoardGameTheme {
+        BoardGameScaffold(
+            titlePage = "Home",
             selectedScreen = BottomBarElements.HomeButton.title,
         ) { paddingValues ->
             Box(

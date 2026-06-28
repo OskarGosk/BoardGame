@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -43,6 +44,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.other.AppLoader
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.home.HomeScreen
 import com.goskar.boardgame.ui.theme.Smooch16
@@ -57,14 +59,29 @@ class LoginScreen : Screen {
         val viewModel: LoginViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.current
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
 
-        LaunchedEffect(state.successLogin) {
-            if (state.successLogin) {
-                navigator?.replaceAll(HomeScreen(state.login != "quest"))
-                ScreenLifecycleStore.remove(this@LoginScreen)
 
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is LoginEvent.ShowMessage -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                        navigator?.replaceAll(HomeScreen(state.login != "quest"))
+                        ScreenLifecycleStore . remove (this@LoginScreen)
+                    }
+                    is LoginEvent.loggedInOrGuest -> {
+                        navigator?.replaceAll(HomeScreen(state.login != "quest"))
+                        ScreenLifecycleStore . remove (this@LoginScreen)
+                    }
+                }
             }
         }
+
         LaunchedEffect(key1 = state.isLoggedIn) {
             viewModel.checkIfLoggedIn()
             if (state.isLoggedIn) {

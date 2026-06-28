@@ -1,10 +1,13 @@
 package com.goskar.boardgame.ui.gamesList.addEditGame
 
 import android.content.Context
+import app.cash.turbine.test
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -145,28 +148,32 @@ class AddEditGameViewModelTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun validateAddEitGame_success_setsSuccessFlagAndClearsProgress() = runTest(testDispatcher) {
+    fun validateAddEitGame_success_emitsSavedAndClearsProgress() = runTest(testDispatcher) {
         coEvery { gameRepo.insertGame(any()) } returns RequestResult.Success(true)
 
         viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
-        viewModel.validateAddEitGame(context)
-
-        val state = viewModel.state.value
-        assertEquals(true, state.successAddEditGame)
-        assertEquals(false, state.inProgress)
-        assertEquals(false, state.errorVisible)
+        viewModel.events.test {
+            viewModel.validateAddEitGame(context)
+            assertEquals(
+                AddEditEvent.SuccessAddEditGame(R.string.success_global, AppSnackBarType.SUCCESS),
+                awaitItem()
+            )
+        }
+        assertEquals(false, viewModel.state.value.inProgress)
     }
 
     @Test
-    fun validateAddEitGame_error_setsErrorAndClearsProgress() = runTest(testDispatcher) {
+    fun validateAddEitGame_error_showsErrorAndClearsProgress() = runTest(testDispatcher) {
         coEvery { gameRepo.insertGame(any()) } returns RequestResult.Error(Throwable("db error"))
 
         viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
-        viewModel.validateAddEitGame(context)
-
-        val state = viewModel.state.value
-        assertEquals(false, state.successAddEditGame)
-        assertEquals(true, state.errorVisible)
-        assertEquals(false, state.inProgress)
+        viewModel.events.test {
+            viewModel.validateAddEitGame(context)
+            assertEquals(
+                AddEditEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
+        }
+        assertEquals(false, viewModel.state.value.inProgress)
     }
 }

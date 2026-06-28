@@ -23,13 +23,13 @@ import com.goskar.boardgame.ui.theme.Smooch16
 @SuppressLint("DefaultLocale")
 @Composable
 fun WinLinearIndicator(
-    progress: Float,
     modifier: Modifier = Modifier,
+    progress: Float,
     colorPrimary: Color = Color.Red,
     colorBackground: Color = Color.Black,
     isExpanded: Boolean,
 ) {
-    Column {
+    Column(modifier = modifier) {
         LinearProgressIndicator(
             progress = {
                 progress
@@ -78,8 +78,7 @@ fun WinLinearIndicatorPreview() {
     Surface {
         Box(modifier = Modifier.padding(10.dp)) {
             WinLinearIndicator(
-                0.4f,
-                modifier = Modifier,
+                progress = 0.4f,
                 isExpanded = false
             )
         }
@@ -92,8 +91,7 @@ fun WinLinearIndicatorExpandedPreview() {
     Surface {
         Box(modifier = Modifier.padding(10.dp)) {
             WinLinearIndicator(
-                0.478f,
-                modifier = Modifier,
+                progress = 0.478f,
                 isExpanded = true
             )
         }

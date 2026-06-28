@@ -1,6 +1,5 @@
 package com.goskar.boardgame.ui.gameRaports.components
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.gameRaports.GameReportsState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.Smooch18
@@ -45,7 +46,7 @@ fun SelectMonthRow(
     selected: Boolean = true
     ) {
     var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val snackbarHostState = LocalSnackbarHost.current
 
     val enabledBackgroundColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
     val enabledTextColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
@@ -98,13 +99,11 @@ fun SelectMonthRow(
                                 )
                             },
                             onClick = {
-
                                 if (state.selectedYear == 0) {
-                                    Toast.makeText(
-                                        context,
-                                        "First select Year",
-                                        Toast.LENGTH_LONG
-                                    ).show()
+                                    snackbarHostState.show(
+                                        message = "First select Year",
+                                        type = AppSnackBarType.INFO
+                                    )
                                     expanded = false
                                 } else {
                                     update(
@@ -128,11 +127,10 @@ fun SelectMonthRow(
                         },
                         onClick = {
                             if (state.selectedYear == 0) {
-                                Toast.makeText(
-                                    context,
-                                    "First select Year",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                snackbarHostState.show(
+                                    message = "First select Year",
+                                    type = AppSnackBarType.INFO
+                                )
                                 expanded = false
                             } else {
                                 update(

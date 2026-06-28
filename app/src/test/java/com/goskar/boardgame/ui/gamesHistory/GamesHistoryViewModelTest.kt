@@ -1,11 +1,14 @@
 package com.goskar.boardgame.ui.gamesHistory
 
+import app.cash.turbine.test
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetHistoryWithExpansionUseCase
 import com.goskar.boardgame.data.useCase.HistoryGameWithExpansion
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -78,18 +81,20 @@ class GamesHistoryViewModelTest {
         val state = viewModel.state.value
         assertEquals(listOf(jan, feb, mar), state.historyList)
         assertEquals(false, state.loading)
-        assertEquals(false, state.errorVisible)
     }
 
     @Test
-    fun getAllHistoryGame_error_setsErrorVisibleAndClearsLoading() = runTest(testDispatcher) {
+    fun getAllHistoryGame_error_showsErrorAndClearsLoading() = runTest(testDispatcher) {
         coEvery { repo.getAllHistoryGame() } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.getAllHistoryGame()
-
-        val state = viewModel.state.value
-        assertEquals(true, state.errorVisible)
-        assertEquals(false, state.loading)
+        viewModel.events.test {
+            viewModel.getAllHistoryGame()
+            assertEquals(
+                GameHistoryEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
+        }
+        assertEquals(false, viewModel.state.value.loading)
     }
 
     // -------------------------------------------------------------------------
@@ -109,11 +114,16 @@ class GamesHistoryViewModelTest {
     }
 
     @Test
-    fun init_historyWithExpansionError_setsErrorVisible() = runTest(testDispatcher) {
+    fun init_historyWithExpansionError_showsError() = runTest(testDispatcher) {
         coEvery { useCase.invoke() } returns RequestResult.Error(Throwable("expansion error"))
 
         viewModel = GamesHistoryViewModel(repo, useCase)
 
-        assertEquals(true, viewModel.state.value.errorVisible)
+        viewModel.events.test {
+            assertEquals(
+                GameHistoryEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
+        }
     }
 }

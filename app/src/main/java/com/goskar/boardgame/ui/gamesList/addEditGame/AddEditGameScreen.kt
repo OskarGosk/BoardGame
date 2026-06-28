@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageCapture
@@ -55,7 +54,9 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.Constants.GLOBAL_TAG
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.CameraView
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import org.koin.androidx.compose.koinViewModel
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
@@ -86,6 +87,30 @@ class AddEditGameScreen(private val editGame: Game?) : Screen {
 
         val navigator = LocalNavigator.current
 
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is AddEditEvent.ShowMessage -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                    }
+
+                    is AddEditEvent.SuccessAddEditGame -> {
+                        snackbarHostState.show(
+                            message = context.getString(event.message),
+                            type = event.type
+                        )
+                        navigator?.replace(GameListScreen())
+                    }
+                }
+            }
+        }
+
         LaunchedEffect(editGame) {
             if (editGame != null) {
                 viewModel.update(
@@ -103,11 +128,6 @@ class AddEditGameScreen(private val editGame: Game?) : Screen {
                         id = editGame.id
                     )
                 )
-            }
-        }
-        LaunchedEffect(state.successAddEditGame) {
-            if (state.successAddEditGame) {
-                navigator?.replace(GameListScreen())
             }
         }
         BoardGameScaffold(
@@ -141,6 +161,7 @@ fun AddEditGameContent(
 ) {
 
     val context = LocalContext.current
+    val snackbarHostState = LocalSnackbarHost.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var shouldOpenCamera by remember { mutableStateOf(false) }
@@ -159,8 +180,10 @@ fun AddEditGameContent(
         if (isGranted) {
             shouldOpenCamera = true
         } else {
-            // Show dialog
-            Toast.makeText(context, R.string.camera_denied, Toast.LENGTH_LONG).show()
+            snackbarHostState.show(
+                message = context.getString(R.string.camera_denied),
+                type = AppSnackBarType.INFO
+            )
         }
     }
 

@@ -13,6 +13,9 @@
     <string name="password">Password</string>
     <string name="signOut">Sign Out</string>
     <string name="download">Download</string>
+    <string name="error_generic">ERROR</string>
+    <string name="success_global">SUCCESS</string>
+    <string name="snackbar_dismiss">Dismiss</string>
 
 
 
