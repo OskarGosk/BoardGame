@@ -36,7 +36,7 @@ fun ComposeApp() {
     BoardGameTheme {
         // Single, app-wide snackbar host rendered at the very top, overlaying the
         // whole app (does not push content). Any screen shows messages via
-        // LocalSnackbarHost.current.showAppSnackbar(...).
+        // LocalSnackbarHost.current.show(...).
         CompositionLocalProvider(LocalSnackbarHost provides controller) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Navigator(screen = LoginScreen())

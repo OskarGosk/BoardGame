@@ -54,7 +54,7 @@ class AppSnackbarController(
 }
 
 val LocalSnackbarHost = staticCompositionLocalOf<AppSnackbarController> {
-    error("No SnackbarHostState provided")
+    error("No AppSnackbarController provided")
 }
 
 private const val SNACKBAR_DURATION_MILLIS = 3000L
