@@ -1,4 +1,4 @@
-package com.goskar.boardgame.data.repository.bbg
+package com.goskar.boardgame.data.repository.bgg
 
 import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.SearchBGGList

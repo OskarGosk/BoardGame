@@ -6,7 +6,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGamesDetails
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
-import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
+import com.goskar.boardgame.data.repository.bgg.BoardGameApiRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.ui.components.other.AppSnackBarType

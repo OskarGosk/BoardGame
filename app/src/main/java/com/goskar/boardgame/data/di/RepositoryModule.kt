@@ -6,8 +6,8 @@ import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepositor
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepositoryImpl
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepositoryImpl
-import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
-import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepositoryImpl
+import com.goskar.boardgame.data.repository.bgg.BoardGameApiRepository
+import com.goskar.boardgame.data.repository.bgg.BoardGameApiRepositoryImpl
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepositoryImpl
 import com.goskar.boardgame.data.repository.user.UserRepository

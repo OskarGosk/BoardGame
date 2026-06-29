@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.SearchBGGList
 import com.goskar.boardgame.data.models.SearchBGGListElements
-import com.goskar.boardgame.data.repository.bbg.BoardGameApiRepository
+import com.goskar.boardgame.data.repository.bgg.BoardGameApiRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import io.mockk.coEvery
 import io.mockk.mockk
