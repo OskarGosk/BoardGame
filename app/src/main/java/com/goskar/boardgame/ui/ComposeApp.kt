@@ -18,6 +18,7 @@ import com.goskar.boardgame.ui.components.other.AppSnackbar
 import com.goskar.boardgame.ui.components.other.AppSnackbarController
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.login.LoginScreen
+import com.goskar.boardgame.ui.splash.SplashScreen
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Preview(
@@ -39,7 +40,7 @@ fun ComposeApp() {
         // LocalSnackbarHost.current.show(...).
         CompositionLocalProvider(LocalSnackbarHost provides controller) {
             Box(modifier = Modifier.fillMaxSize()) {
-                Navigator(screen = LoginScreen())
+                Navigator(screen = SplashScreen())
                 SnackbarHost(
                     hostState = snackbarHostState,
                     modifier = Modifier

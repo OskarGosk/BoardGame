@@ -28,10 +28,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.theme.onSnackbarColor
-import com.goskar.boardgame.ui.theme.snackbarErrorColor
-import com.goskar.boardgame.ui.theme.snackbarInfoColor
-import com.goskar.boardgame.ui.theme.snackbarSuccessColor
+import com.goskar.boardgame.ui.theme.SnackbarColor.onSnackbarColor
+import com.goskar.boardgame.ui.theme.SnackbarColor.snackbarErrorColor
+import com.goskar.boardgame.ui.theme.SnackbarColor.snackbarInfoColor
+import com.goskar.boardgame.ui.theme.SnackbarColor.snackbarSuccessColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

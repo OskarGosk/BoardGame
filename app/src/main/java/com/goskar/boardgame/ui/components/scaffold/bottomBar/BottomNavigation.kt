@@ -26,9 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.theme.BoardGameColors.Primary
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
-import com.goskar.boardgame.ui.theme.primaryLight
 
 
 @Composable
@@ -51,7 +51,7 @@ fun BottomNavigation(
                     modifier = Modifier
                         .width(72.dp)
                         .padding(bottom = 4.dp),
-                    color = if (selectedScreen == elements.title) primaryLight else White
+                    color = if (selectedScreen == elements.title) Primary else White
                 )
                 Box(
                     contentAlignment = Alignment.Center,
@@ -70,7 +70,7 @@ fun BottomNavigation(
                         Text(
                             text = stringResource(elements.title),
                             textAlign = TextAlign.Center,
-                            style = if (selectedScreen == elements.title) SmoochBold18.copy(color = primaryLight) else Smooch18,
+                            style = if (selectedScreen == elements.title) SmoochBold18.copy(color = Primary) else Smooch18,
                         )
                     }
                 }

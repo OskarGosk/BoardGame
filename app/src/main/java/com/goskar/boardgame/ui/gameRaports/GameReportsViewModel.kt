@@ -10,7 +10,8 @@ import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepositor
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
-import com.goskar.boardgame.ui.theme.secondaryLight
+import com.goskar.boardgame.ui.theme.BoardGameColors
+import com.goskar.boardgame.ui.theme.BoardGameColors.Secondary
 import com.goskar.boardgame.utils.Months
 import ir.ehsannarmani.compose_charts.models.Bars
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -104,7 +105,7 @@ class GameReportsViewModel(
                 values = listOf(
                     Bars.Data(
                         value = countRecord.size.toDouble(),
-                        color = SolidColor(secondaryLight)
+                        color = SolidColor(Secondary)
                     )
                 )
             )
@@ -132,7 +133,7 @@ class GameReportsViewModel(
                     values = listOf(
                         Bars.Data(
                             value = countRecord.size.toDouble(),
-                            color = SolidColor(secondaryLight)
+                            color = SolidColor(BoardGameColors.Secondary)
                         )
                     )
                 )
@@ -155,7 +156,7 @@ class GameReportsViewModel(
                     values = listOf(
                         Bars.Data(
                             value = countRecord.size.toDouble(),
-                            color = SolidColor(secondaryLight)
+                            color = SolidColor(BoardGameColors.Secondary)
                         )
                     )
                 )
@@ -185,7 +186,7 @@ class GameReportsViewModel(
                     values = listOf(
                         Bars.Data(
                             value = countRecord.size.toDouble(),
-                            color = SolidColor(secondaryLight)
+                            color = SolidColor(BoardGameColors.Secondary)
                         )
                     )
                 )

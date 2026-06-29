@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.theme.BoardGameColors.Primary
 import com.goskar.boardgame.ui.theme.SmoochBold18
-import com.goskar.boardgame.ui.theme.primaryLight
 
 
 @Composable
@@ -137,7 +137,7 @@ fun SinglePhotoPicker(
             Icon(
                 imageVector = Icons.Outlined.Delete,
                 contentDescription = null,
-                tint = primaryLight,
+                tint = Primary,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .clickable {

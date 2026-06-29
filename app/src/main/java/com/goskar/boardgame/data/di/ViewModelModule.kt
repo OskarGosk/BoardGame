@@ -11,6 +11,7 @@ import com.goskar.boardgame.ui.home.HomeScreenViewModel
 import com.goskar.boardgame.ui.playerList.PlayerListViewModel
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchViewModel
 import com.goskar.boardgame.ui.login.LoginViewModel
+import com.goskar.boardgame.ui.splash.SplashViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
@@ -26,5 +27,6 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { GameDetailsBGGViewModel(get(), get(), get()) }
     viewModel { GameReportsViewModel(get(), get()) }
     viewModel { LoginViewModel(get()) }
+    viewModel { SplashViewModel(get()) }
     viewModel { TopBarViewModel(get(), get(), get(), get(), get()) }
 }

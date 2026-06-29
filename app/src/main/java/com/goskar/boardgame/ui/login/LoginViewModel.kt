@@ -98,6 +98,14 @@ class LoginViewModel(
         _state.update { state }
     }
 
+    fun updateLogin(text: String) {
+        _state.update { it.copy(login = text) }
+    }
+
+    fun updatePassword(text: String) {
+        _state.update { it.copy(password = text) }
+    }
+
     fun signIn() {
         _state.update {
             it.copy(isLoading = true)
