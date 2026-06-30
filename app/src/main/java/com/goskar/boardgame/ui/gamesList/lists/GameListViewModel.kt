@@ -138,7 +138,7 @@ class GameListViewModel(
                 is RequestResult.Error -> {
                     _events.send(
                         GameListEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )
@@ -174,7 +174,7 @@ class GameListViewModel(
                     }
                     _events.send(
                         GameListEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )

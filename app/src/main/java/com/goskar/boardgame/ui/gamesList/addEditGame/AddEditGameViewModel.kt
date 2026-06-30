@@ -205,7 +205,7 @@ class AddEditGameViewModel(
                 is RequestResult.Error -> {
                     _events.send(
                         AddEditEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )

@@ -66,7 +66,7 @@ class GamesHistoryViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(GameHistoryEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(GameHistoryEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
                     _state.update {
                         it.copy(
                             loading = false
@@ -91,7 +91,7 @@ class GamesHistoryViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(GameHistoryEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(GameHistoryEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
                     _state.update {
                         it.copy(
                             loading = false

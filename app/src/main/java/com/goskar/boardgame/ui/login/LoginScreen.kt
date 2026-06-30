@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -45,6 +46,7 @@ import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleStore
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.home.HomeScreen
 import com.goskar.boardgame.ui.theme.BgListCard
@@ -86,9 +88,16 @@ class LoginScreen : Screen {
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 
-                    is LoginEvent.loggedInOrGuest -> {
+                    is LoginEvent.LoggedInOrGuest -> {
                         navigator?.replaceAll(HomeScreen(state.login != "quest"))
                         ScreenLifecycleStore.remove(this@LoginScreen)
+                    }
+
+                    is LoginEvent.ShowErrorMessage -> {
+                        snackbarHostState.show(
+                            message = event.message ?: context.getString(R.string.error_global),
+                            type = AppSnackBarType.ERROR
+                        )
                     }
                 }
             }
@@ -103,7 +112,6 @@ fun LoginScreenContent(
     updatePassword: (String) -> Unit = {},
     questLogIn: () -> Unit = {},
     logIn: () -> Unit = {},
-    paddingValues: PaddingValues,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -171,6 +179,8 @@ fun LoginScreenContent(
                     onValueChange = { updateLogin(it) },
                     label = "Email Address",
                     placeholder = "name@example.com",
+                    isError = state.loginError,
+                    supportingText = if (state.loginError) stringResource(R.string.field_required) else null,
                     leadingIcon = {
                         Icon(
                             Icons.Default.Email,
@@ -208,6 +218,8 @@ fun LoginScreenContent(
                         value = state.password,
                         onValueChange = { updatePassword(it) },
                         placeholder = "••••••••",
+                        isError = state.passwordError,
+                        supportingText = if (state.passwordError) stringResource(R.string.field_required) else null,
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Lock,
@@ -231,9 +243,6 @@ fun LoginScreenContent(
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     )
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 BgPrimaryButton(
                     text = "Login",
                     onClick = logIn,
@@ -273,7 +282,7 @@ fun LoginScreenContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row {
             Text(
@@ -303,12 +312,22 @@ fun LoginScreenPreview() {
     }
 }
 
-@Preview ()
+@Preview()
 @Composable
 fun LoginScreenDarkPreview() {
-    BoardGameTheme (darkTheme = true) {
+    BoardGameTheme(darkTheme = true) {
         LoginScreenContent(
             LoginState(login = "oskar@login.com", password = "Oskar"),
+        )
+    }
+}
+
+@Preview
+@Composable
+fun LoginScreenErrorPreview() {
+    BoardGameTheme {
+        LoginScreenContent(
+            LoginState(loginError = true, passwordError = true),
         )
     }
 }

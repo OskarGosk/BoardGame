@@ -74,7 +74,7 @@ class PlayerListViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
                     _state.update {
                         it.copy(
                             isLoading = false
@@ -96,7 +96,7 @@ class PlayerListViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
                 }
             }
         }
@@ -121,10 +121,10 @@ class PlayerListViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
                 }
                 else -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
                 }
             }
         }

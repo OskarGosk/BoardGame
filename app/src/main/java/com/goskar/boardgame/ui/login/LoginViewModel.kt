@@ -22,12 +22,15 @@ import kotlinx.coroutines.tasks.await
 
 sealed interface LoginEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : LoginEvent
-    object loggedInOrGuest : LoginEvent
+    data class ShowErrorMessage(val message: String?) : LoginEvent
+    object LoggedInOrGuest : LoginEvent
 }
 
 data class LoginState(
     val login: String = "",
     val password: String = "",
+    val loginError: Boolean = false,
+    val passwordError: Boolean = false,
     val keyValue: String? = null,
     val userUID: String? = null,
     val isLoggedIn: Boolean = false,
@@ -95,24 +98,21 @@ class LoginViewModel(
 
 
     fun updateLogin(value: String) {
-        _state.update { it.copy(login = value) }
+        _state.update { it.copy(login = value, loginError = false) }
     }
 
     fun updatePassword(value: String) {
-        _state.update { it.copy(password = value) }
+        _state.update { it.copy(password = value, passwordError = false) }
     }
-
-    fun updateLogin(text: String) {
-        _state.update { it.copy(login = text) }
-    }
-
-    fun updatePassword(text: String) {
-        _state.update { it.copy(password = text) }
-    }
-
     fun signIn() {
+        val loginBlank = _state.value.login.isBlank()
+        val passwordBlank = _state.value.password.isBlank()
+        if (loginBlank || passwordBlank) {
+            _state.update { it.copy(loginError = loginBlank, passwordError = passwordBlank) }
+            return
+        }
         _state.update {
-            it.copy(isLoading = true)
+            it.copy(isLoading = true, loginError = false, passwordError = false)
         }
         auth.signInWithEmailAndPassword(_state.value.login, _state.value.password)
             .addOnCompleteListener { task ->
@@ -137,11 +137,21 @@ class LoginViewModel(
                         ?.addOnFailureListener { exception ->
                             authError = exception.message
                             _state.update { it.copy(isLoading = false) }
+                            _events.trySend(
+                                LoginEvent.ShowErrorMessage(
+                                    authError
+                                )
+                            )
                         }
 
                 } else {
                     authError = task.exception?.message
                     _state.update { it.copy(isLoading = false) }
+                    _events.trySend(
+                        LoginEvent.ShowErrorMessage(
+                            authError
+                        )
+                    )
                 }
             }
     }
@@ -185,7 +195,7 @@ class LoginViewModel(
                 return@launch
             }
             _events.send(
-                LoginEvent.loggedInOrGuest
+                LoginEvent.LoggedInOrGuest
             )
         }
     }

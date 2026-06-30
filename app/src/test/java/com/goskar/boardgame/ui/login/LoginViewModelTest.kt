@@ -57,7 +57,7 @@ class LoginViewModelTest {
 
         viewModel.events.test {
             viewModel.questAccount()
-            assertEquals(LoginEvent.loggedInOrGuest, awaitItem())
+            assertEquals(LoginEvent.LoggedInOrGuest, awaitItem())
         }
 
         val state = viewModel.state.value

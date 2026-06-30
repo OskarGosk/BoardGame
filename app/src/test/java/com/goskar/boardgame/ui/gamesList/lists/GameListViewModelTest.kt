@@ -395,7 +395,7 @@ class GameListViewModelTest {
         viewModel.events.test {
             viewModel.validateDeleteGame(wingspan)
             assertEquals(
-                GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                GameListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -412,7 +412,7 @@ class GameListViewModelTest {
         viewModel.events.test {
             viewModel.refresh()
             assertEquals(
-                GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                GameListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }

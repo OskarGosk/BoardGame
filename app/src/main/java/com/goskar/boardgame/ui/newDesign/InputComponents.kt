@@ -55,6 +55,7 @@ fun BgTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     singleLine: Boolean = true,
     isError: Boolean = false,
+    supportingText: String? = null,
 ) {
     Column(modifier = modifier) {
         if (label != null) {
@@ -96,6 +97,10 @@ fun BgTextField(
                 focusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 unfocusedLeadingIconColor = MaterialTheme.colorScheme.outline,
             ),
+        )
+        Text(
+            supportingText ?: "", style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.error,
         )
     }
 }
@@ -211,6 +216,7 @@ fun BgDarkTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     singleLine: Boolean = true,
     isError: Boolean = false,
+    supportingText: String? = null,
 ) {
     Column(modifier = modifier) {
         if (label != null) {
@@ -239,6 +245,7 @@ fun BgDarkTextField(
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
             isError = isError,
+            supportingText = supportingText?.let { { Text(it) } },
             shape = BoardGameShapes.Medium,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = BoardGameDarkColors.Primary,
@@ -419,6 +426,22 @@ private fun InputsLightPreview() {
                 value = "", onValueChange = {}, label = "Session Notes",
                 placeholder = "How did the session go?", minLines = 3
             )
+
+            BgTextField(
+                value = "",
+                onValueChange = {},
+                label = "Player Nickname",
+                placeholder = "e.g. DungeonMaster99",
+                isError = true,
+                supportingText = "Field cannot be empty",
+                trailingIcon = {
+                    Icon(
+                        Icons.Default.Email,
+                        null,
+                        tint = BoardGameColors.Outline,
+                        modifier = Modifier.size(18.dp)
+                    )
+                })
         }
     }
 }
@@ -448,6 +471,21 @@ private fun InputsDarkPreview() {
                 value = "", onValueChange = {}, label = "Session Notes",
                 placeholder = "Briefly describe the highlights…", minLines = 3
             )
+            BgTextField(
+                value = "",
+                onValueChange = {},
+                label = "Player Nickname",
+                placeholder = "e.g. DungeonMaster99",
+                isError = true,
+                supportingText = "Field cannot be empty",
+                trailingIcon = {
+                    Icon(
+                        Icons.Default.Email,
+                        null,
+                        tint = BoardGameColors.Outline,
+                        modifier = Modifier.size(18.dp)
+                    )
+                })
         }
     }
 }

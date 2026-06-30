@@ -13,9 +13,10 @@
     <string name="password">Password</string>
     <string name="signOut">Sign Out</string>
     <string name="download">Download</string>
-    <string name="error_generic">ERROR</string>
+    <string name="error_global">Something goes wrong. Please try again</string>
     <string name="success_global">SUCCESS</string>
     <string name="snackbar_dismiss">Dismiss</string>
+    <string name="field_required">Field cannot be empty</string>
 
 
 

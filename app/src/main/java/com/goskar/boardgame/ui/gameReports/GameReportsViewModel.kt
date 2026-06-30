@@ -10,7 +10,6 @@ import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepositor
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.ui.gameReports.components.RowChartVariantsEnum
-import com.goskar.boardgame.ui.theme.secondaryLight
 import com.goskar.boardgame.ui.theme.BoardGameColors
 import com.goskar.boardgame.ui.theme.BoardGameColors.Secondary
 import com.goskar.boardgame.utils.Months

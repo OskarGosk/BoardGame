@@ -283,7 +283,7 @@ class GamePlayViewModelTest {
         viewModel.events.test {
             viewModel.getAllPlayer()
             assertEquals(
-                GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                GamePlayEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }

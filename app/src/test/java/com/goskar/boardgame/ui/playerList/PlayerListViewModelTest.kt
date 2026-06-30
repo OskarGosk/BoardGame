@@ -107,7 +107,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.getAllPlayer()
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -136,7 +136,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateDeletePlayer(player1)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -147,7 +147,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateAddEditPLayer(newPlayer = true)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -194,7 +194,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateAddEditPLayer(newPlayer = true)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -240,7 +240,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateAddEditPLayer(false)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }

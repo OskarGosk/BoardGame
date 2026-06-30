@@ -90,7 +90,7 @@ class GamesHistoryViewModelTest {
         viewModel.events.test {
             viewModel.getAllHistoryGame()
             assertEquals(
-                GameHistoryEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                GameHistoryEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -121,7 +121,7 @@ class GamesHistoryViewModelTest {
 
         viewModel.events.test {
             assertEquals(
-                GameHistoryEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                GameHistoryEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
