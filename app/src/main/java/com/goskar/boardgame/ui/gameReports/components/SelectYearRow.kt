@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports.components
+package com.goskar.boardgame.ui.gameReports.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,35 +23,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.goskar.boardgame.ui.components.other.AppSnackBarType
-import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.gameRaports.GameReportsState
+import com.goskar.boardgame.ui.gameReports.GameReportsState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
-import com.goskar.boardgame.utils.Months
-import com.goskar.boardgame.utils.Months.Companion.getMonthByNumber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectMonthRow(
+fun SelectYearRow(
     state: GameReportsState,
     modifier: Modifier,
     prepareChart: () -> Unit = {},
     useYearChart: () -> Unit = {},
-    useMonthlyChart: () -> Unit = {},
-    useMonthChart: (Int) -> Unit = {},
+    selectYear: (Int) -> Unit = {},
     selected: Boolean = true
-    ) {
-    var expanded by remember { mutableStateOf(false) }
-    val snackbarHostState = LocalSnackbarHost.current
 
-    val enabledBackgroundColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
-    val enabledTextColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val enabledBackgroundColor =
+        if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
+    val enabledTextColor =
+        if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+
 
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
 
@@ -65,7 +61,7 @@ fun SelectMonthRow(
             horizontalArrangement = Arrangement.End
         ) {
             Text(
-                text = "Month",
+                text = "Year",
                 textAlign = TextAlign.Start,
                 style = Smooch18,
                 color = enabledTextColor,
@@ -77,70 +73,37 @@ fun SelectMonthRow(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = when (state.selectedMonth) {
-                        -1 -> "X"
-                        0 -> "All"
-                        else -> "${getMonthByNumber(state.selectedMonth)}"
-                    },
+                    text = if (state.selectedYear != 0) "${state.selectedYear}" else "All",
                     style = SmoochBold18,
                     color = enabledTextColor,
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth(),
-                    )
+                )
 
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }) {
-                    Months.entries.forEach {
+                    (state.minYear..state.maxYear).forEach {
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     text = "$it",
-                                    style = if (state.selectedMonth == it.monthsNumber) SmoochBold18 else Smooch18
+                                    style = if (state.selectedYear == it) SmoochBold18 else Smooch18
                                 )
                             },
                             onClick = {
-                                if (state.selectedYear == 0) {
-                                    snackbarHostState.show(
-                                        message = "First select Year",
-                                        type = AppSnackBarType.INFO
-                                    )
-                                    expanded = false
-                                } else {
-                                    useMonthChart(it.monthsNumber)
-                                    expanded = false
-                                    prepareChart()
-                                }
+                                selectYear(it)
+                                expanded = false
+                                prepareChart()
                             })
 
                     }
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = "All months",
-                                style = if (state.selectedMonth == 0) SmoochBold18 else Smooch18
-                            )
-                        },
-                        onClick = {
-                            if (state.selectedYear == 0) {
-                                snackbarHostState.show(
-                                    message = "First select Year",
-                                    type = AppSnackBarType.INFO
-                                )
-                                expanded = false
-                            } else {
-                                useMonthlyChart()
-                                expanded = false
-                                prepareChart()
-                            }
-                        })
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = "X",
-                                style = if (state.selectedMonth == -1) SmoochBold18 else Smooch18
+                                text = "All Years",
+                                style = if (state.selectedYear == 0) SmoochBold18 else Smooch18
                             )
                         },
                         onClick = {
@@ -156,34 +119,13 @@ fun SelectMonthRow(
 
 @Preview
 @Composable
-fun SelectMonthRowPreview() {
+fun SelectYearRowPreview() {
     BoardGameTheme {
         Surface(
             color = MaterialTheme.colorScheme.background
         ) {
             Box() {
-                SelectMonthRow(
-                    state = GameReportsState(
-                        minYear = 2015,
-                        maxYear = 2025
-                    ),
-                    modifier = Modifier
-                )
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun SelectNoSelectedMonthRowPreview() {
-    BoardGameTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background
-        ) {
-            Box() {
-                SelectMonthRow(
-                    selected = false,
+                SelectYearRow(
                     state = GameReportsState(
                         minYear = 2015,
                         maxYear = 2025

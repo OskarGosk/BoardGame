@@ -47,11 +47,6 @@ class GameListViewModel(
     private val _events = Channel<GameListEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-
-    fun update(state: GameListState) {
-        _state.update { state }
-    }
-
     fun updateSearchTxt(value: String) {
         _state.update { it.copy(searchTxt = value) }
     }

@@ -32,7 +32,7 @@ import com.goskar.boardgame.ui.components.other.AppLoader
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.bottomBar.BottomBarElements
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
-import com.goskar.boardgame.ui.gameRaports.GameReportsScreen
+import com.goskar.boardgame.ui.gameReports.GameReportsScreen
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen

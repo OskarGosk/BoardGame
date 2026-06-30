@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports
+package com.goskar.boardgame.ui.gameReports
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -9,7 +9,7 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
-import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
+import com.goskar.boardgame.ui.gameReports.components.RowChartVariantsEnum
 import com.goskar.boardgame.ui.theme.secondaryLight
 import com.goskar.boardgame.utils.Months
 import ir.ehsannarmani.compose_charts.models.Bars

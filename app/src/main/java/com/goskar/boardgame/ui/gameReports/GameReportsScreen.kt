@@ -1,7 +1,5 @@
-package com.goskar.boardgame.ui.gameRaports
+package com.goskar.boardgame.ui.gameReports
 
-import android.provider.SyncStateContract.Helpers.update
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,10 +34,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
-import com.goskar.boardgame.ui.gameRaports.charts.ColumnChartGamesPlay
-import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
-import com.goskar.boardgame.ui.gameRaports.components.SelectMonthRow
-import com.goskar.boardgame.ui.gameRaports.components.SelectYearRow
+import com.goskar.boardgame.ui.gameReports.charts.ColumnChartGamesPlay
+import com.goskar.boardgame.ui.gameReports.components.RowChartVariantsEnum
+import com.goskar.boardgame.ui.gameReports.components.SelectMonthRow
+import com.goskar.boardgame.ui.gameReports.components.SelectYearRow
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
