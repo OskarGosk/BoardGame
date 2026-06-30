@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports
+package com.goskar.boardgame.ui.gameReports
 
 import app.cash.turbine.test
 import com.goskar.boardgame.data.models.Game
@@ -6,7 +6,7 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
-import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
+import com.goskar.boardgame.ui.gameReports.components.RowChartVariantsEnum
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
