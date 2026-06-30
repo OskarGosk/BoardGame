@@ -83,13 +83,10 @@ class GameListViewModelTest {
 
     @Test
     fun refreshGameList_defaultSort_preservesOriginalOrder() = runTest(testDispatcher) {
-        viewModel.update(
-            state = viewModel.state.value.copy(
-                gameList = listOf(game1Chess, game2Azul, game3Wingspan, game4WingspanExpansion),
-                sortOption = SortList.DEFAULT
-            )
+        coEvery { gameRepo.getAllGame() } returns RequestResult.Success(
+            listOf(chess, azul, wingspan, wingspanExpansion)
         )
-
+        viewModel.refresh()
         viewModel.refreshGameList()
 
         viewModel.state.test {
@@ -103,19 +100,8 @@ class GameListViewModelTest {
 
     @Test
     fun refreshGameList_nameAscending_sortsAlphabetically() = runTest(testDispatcher) {
-        viewModel.update(
-            state = viewModel.state.value.copy(
-                gameList = listOf(
-                    game1Chess,
-                    game2Azul,
-                    game3Wingspan,
-                    game4WingspanExpansion,
-                    game5AzulExpansion
-                ),
-                sortOption = SortList.A_Z
-            )
-        )
-
+        viewModel.refresh()
+        viewModel.updateSortOption(SortList.A_Z)
         viewModel.refreshGameList()
 
         viewModel.state.test {
@@ -140,7 +126,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1) // skip initial state
 
-            viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.Z_A))
+            viewModel.updateSortOption(SortList.Z_A)
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -164,7 +150,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.GAMES_MIN))
+            viewModel.updateSortOption(SortList.GAMES_MIN)
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -188,7 +174,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(state = viewModel.state.value.copy(sortOption = SortList.GAMES_MAX))
+            viewModel.updateSortOption(SortList.GAMES_MAX)
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -216,7 +202,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(state = viewModel.state.value.copy(searchTxt = "az"))
+            viewModel.updateSearchTxt("az")
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -230,7 +216,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(state = viewModel.state.value.copy(searchTxt = "zzz"))
+            viewModel.updateSearchTxt("zzz")
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -244,7 +230,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(state = viewModel.state.value.copy(searchTxt = "CHESS"))
+            viewModel.updateSearchTxt("CHESS")
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -259,12 +245,12 @@ class GameListViewModelTest {
             skipItems(1)
 
             // 1. Search for specific game
-            viewModel.update(state = viewModel.state.value.copy(searchTxt = "CHESS"))
+            viewModel.updateSearchTxt("CHESS")
             viewModel.refreshGameList()
             assertEquals(listOf(game1Chess), expectMostRecentItem().gameListEdited)
 
             // 2. Clear search
-            viewModel.update(state = viewModel.state.value.copy(searchTxt = ""))
+            viewModel.updateSearchTxt("")
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -282,7 +268,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(state = viewModel.state.value.copy(checkboxExpansionGame = false))
+            viewModel.updateCheckboxExpansionGame() // true -> false
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -296,7 +282,7 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(state = viewModel.state.value.copy(checkboxBaseGame = false))
+            viewModel.updateCheckboxBaseGame() // true -> false
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -313,12 +299,8 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.update(
-                state = viewModel.state.value.copy(
-                    checkboxBaseGame = false,
-                    checkboxExpansionGame = false
-                )
-            )
+            viewModel.updateCheckboxBaseGame()      // true -> false
+            viewModel.updateCheckboxExpansionGame() // true -> false
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
@@ -410,13 +392,13 @@ class GameListViewModelTest {
     fun validateDeleteGame_error_showsError() = runTest(testDispatcher) {
         coEvery { gameRepo.deleteGame(any()) } returns RequestResult.Error(Exception("Failed"))
 
-            viewModel.events.test {
-                viewModel.validateDeleteGame(wingspan)
-                assertEquals(
-                    GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
-                    awaitItem()
-                )
-            }
+        viewModel.events.test {
+            viewModel.validateDeleteGame(wingspan)
+            assertEquals(
+                GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                awaitItem()
+            )
+        }
     }
 
     // -------------------------------------------------------------------------

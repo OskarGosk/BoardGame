@@ -37,7 +37,7 @@ import com.goskar.boardgame.utils.CooperatePlayers
 @Composable
 fun WinnerRow(
     state: GamePlayState,
-    update: (GamePlayState) -> Unit = {},
+    updateWinner: (String) -> Unit = {},
     modifier: Modifier
 ) {
     val selectedPlayers = state.playerList?.filter { it.selected }
@@ -88,11 +88,7 @@ fun WinnerRow(
                                 )
                             },
                             onClick = {
-                                update(
-                                    state.copy(
-                                        winner = context.resources.getString(it.value)
-                                    )
-                                )
+                                updateWinner(context.resources.getString(it.value))
                                 expanded = false
                             })
                     }
@@ -106,11 +102,7 @@ fun WinnerRow(
                                 )
                             },
                             onClick = {
-                                update(
-                                    state.copy(
-                                        winner = player.name
-                                    )
-                                )
+                                updateWinner(player.name)
                                 expanded = false
                             })
                     }

@@ -39,7 +39,12 @@ class GamePlayViewModelTest {
     private val azul = createGame(name = "Azul", games = 2)
     private val wingspan = createGame(name = "Wingspan", games = 5)
     private val wingspanExpansion =
-        createGame(name = "Wingspan: European Expansion", expansion = true, games = 4, baseGameId = "Wingspan")
+        createGame(
+            name = "Wingspan: European Expansion",
+            expansion = true,
+            games = 4,
+            baseGameId = "Wingspan"
+        )
     private val azulExpansion =
         createGame(name = "Azul And Dark Knight", expansion = true, games = 1, baseGameId = "Azul")
 
@@ -114,7 +119,12 @@ class GamePlayViewModelTest {
 
     @Test
     fun selectedPlayer_unselectedPlayer_becomesSelected() = runTest(testDispatcher) {
-        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(listOf(player1, player2))
+        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(
+            listOf(
+                player1,
+                player2
+            )
+        )
 
         viewModel.state.test {
             skipItems(1)
@@ -132,7 +142,12 @@ class GamePlayViewModelTest {
     @Test
     fun selectedPlayer_selectedPlayer_becomesDeselected() = runTest(testDispatcher) {
         val player1selected = player1.copy(selected = true)
-        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(listOf(player1selected, player2))
+        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(
+            listOf(
+                player1selected,
+                player2
+            )
+        )
 
         viewModel.state.test {
             skipItems(1)
@@ -153,8 +168,11 @@ class GamePlayViewModelTest {
 
     @Test
     fun selectExpansion_unselectedExpansion_becomesSelected() = runTest(testDispatcher) {
-        val exp1 = ExpansionGameUiState(createGame(name = "Exp 1", id = "exp-1", expansion = true), isSelected = false)
-        viewModel.update(viewModel.state.value.copy(gameList = listOf(exp1)))
+        val exp1 = ExpansionGameUiState(
+            createGame(name = "Exp 1", id = "exp-1", expansion = true),
+            isSelected = false
+        )
+        viewModel.updateGameList(listOf(exp1))
 
         viewModel.state.test {
             assertEquals(false, awaitItem().gameList?.get(0)?.isSelected)
@@ -168,8 +186,11 @@ class GamePlayViewModelTest {
 
     @Test
     fun selectExpansion_selectedExpansion_becomesDeselected() = runTest(testDispatcher) {
-        val exp1 = ExpansionGameUiState(createGame(name = "Exp 1", id = "exp-1", expansion = true), isSelected = true)
-        viewModel.update(viewModel.state.value.copy(gameList = listOf(exp1)))
+        val exp1 = ExpansionGameUiState(
+            createGame(name = "Exp 1", id = "exp-1", expansion = true),
+            isSelected = true
+        )
+        viewModel.updateGameList(listOf(exp1))
 
         viewModel.state.test {
             assertEquals(true, awaitItem().gameList?.get(0)?.isSelected)
@@ -188,7 +209,7 @@ class GamePlayViewModelTest {
     @Test
     fun setGameVariant_cooperateGame_setsCoopVariant() = runTest(testDispatcher) {
         val coopGame = chess.copy(cooperate = true)
-        viewModel.update(viewModel.state.value.copy(game = coopGame))
+        viewModel.updateGame(coopGame)
 
         viewModel.setGameVariant()
 
@@ -198,7 +219,7 @@ class GamePlayViewModelTest {
     @Test
     fun setGameVariant_nonCooperateGame_setsNormalVariant() = runTest(testDispatcher) {
         val normalGame = chess.copy(cooperate = false)
-        viewModel.update(viewModel.state.value.copy(game = normalGame))
+        viewModel.updateGame(normalGame)
 
         viewModel.setGameVariant()
 
@@ -211,7 +232,7 @@ class GamePlayViewModelTest {
 
     @Test
     fun getAllGame_baseGame_gameListFilteredToDirectExpansions() = runTest(testDispatcher) {
-        viewModel.update(viewModel.state.value.copy(game = wingspan))
+        viewModel.updateGame(wingspan)
 
         viewModel.getAllGame()
 
@@ -222,19 +243,20 @@ class GamePlayViewModelTest {
     }
 
     @Test
-    fun getAllGame_expansionGame_resolvesToBaseAndAutoSelectsOriginalExpansion() = runTest(testDispatcher) {
-        // User starts with an expansion
-        viewModel.update(viewModel.state.value.copy(game = wingspanExpansion))
+    fun getAllGame_expansionGame_resolvesToBaseAndAutoSelectsOriginalExpansion() =
+        runTest(testDispatcher) {
+            // User starts with an expansion
+            viewModel.updateGame(wingspanExpansion)
 
-        viewModel.getAllGame()
+            viewModel.getAllGame()
 
-        val state = viewModel.state.value
-        assertEquals("Wingspan", state.game?.name) // Resolved to base
-        val list = state.gameList ?: emptyList()
-        assertEquals(1, list.size)
-        assertEquals("Wingspan: European Expansion", list[0].game.name)
-        assertEquals(true, list[0].isSelected) // Auto-selected original
-    }
+            val state = viewModel.state.value
+            assertEquals("Wingspan", state.game?.name) // Resolved to base
+            val list = state.gameList ?: emptyList()
+            assertEquals(1, list.size)
+            assertEquals("Wingspan: European Expansion", list[0].game.name)
+            assertEquals(true, list[0].isSelected) // Auto-selected original
+        }
 
     // -------------------------------------------------------------------------
     // getAllPlayer()
@@ -242,7 +264,12 @@ class GamePlayViewModelTest {
 
     @Test
     fun getAllPlayer_success_setsPlayerListAndClearsError() = runTest(testDispatcher) {
-        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(listOf(player1, player2))
+        coEvery { playerRepo.getAllPlayer() } returns RequestResult.Success(
+            listOf(
+                player1,
+                player2
+            )
+        )
 
         viewModel.getAllPlayer()
 

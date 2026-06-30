@@ -36,7 +36,8 @@ class GameDetailsBGGViewModelTest {
     private lateinit var viewModel: GameDetailsBGGViewModel
 
     private val baseGame = createGame(name = "Wingspan", id = "base-1", expansion = false)
-    private val expansionGame = createGame(name = "Wingspan: Europe", id = "exp-1", expansion = true)
+    private val expansionGame =
+        createGame(name = "Wingspan: Europe", id = "exp-1", expansion = true)
 
     private fun createGame(name: String, id: String, expansion: Boolean) = Game(
         name = name, expansion = expansion, cooperate = false, baseGame = "",
@@ -109,20 +110,15 @@ class GameDetailsBGGViewModelTest {
     @Test
     fun validateAddGame_mapsBggDetailsAndStateIntoGame() = runTest(testDispatcher) {
         coEvery { apiRepo.getGame(any()) } returns
-            RequestResult.Success(details(minPlayers = 2, maxPlayers = 5, image = "http://img"))
+                RequestResult.Success(details(minPlayers = 2, maxPlayers = 5, image = "http://img"))
         val saved = slot<Game>()
         coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
 
         viewModel.getGame() // populates gameDetails
-        viewModel.update(
-            viewModel.state.value.copy(
-                gameName = "Wingspan",
-                expansion = true,
-                cooperate = true,
-                baseGame = "Base",
-                baseGameId = "base-1"
-            )
-        )
+        viewModel.updateGameNameWithId("Wingspan", "")
+        viewModel.updateExpansion()              // expansion: false -> true
+        viewModel.updateGameType()               // cooperate: false -> true
+        viewModel.updateBaseBase("Base", "base-1")
         viewModel.validateAddGame()
 
         with(saved.captured) {
@@ -142,7 +138,7 @@ class GameDetailsBGGViewModelTest {
         val saved = slot<Game>()
         coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
 
-        viewModel.update(viewModel.state.value.copy(gameName = "Mystery"))
+        viewModel.updateGameNameWithId("Mystery", "")
         viewModel.validateAddGame()
 
         with(saved.captured) {
@@ -161,11 +157,14 @@ class GameDetailsBGGViewModelTest {
     fun validateAddGame_success_emitsSuccessAndClearsLoading() = runTest(testDispatcher) {
         coEvery { gameRepo.insertGame(any()) } returns RequestResult.Success(true)
 
-        viewModel.update(viewModel.state.value.copy(gameName = "Chess"))
+        viewModel.updateGameNameWithId("Chess", "")
         viewModel.events.test {
             viewModel.validateAddGame()
             assertEquals(
-                GameDetailsEvent.SuccessAddEditGame(R.string.success_global, AppSnackBarType.SUCCESS),
+                GameDetailsEvent.SuccessAddEditGame(
+                    R.string.success_global,
+                    AppSnackBarType.SUCCESS
+                ),
                 awaitItem()
             )
         }
@@ -176,7 +175,7 @@ class GameDetailsBGGViewModelTest {
     fun validateAddGame_error_setsIsErrorAndClearsLoading() = runTest(testDispatcher) {
         coEvery { gameRepo.insertGame(any()) } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.update(viewModel.state.value.copy(gameName = "Chess"))
+        viewModel.updateGameNameWithId("Chess", "")
         viewModel.validateAddGame()
 
         assertEquals(true, viewModel.state.value.isError)

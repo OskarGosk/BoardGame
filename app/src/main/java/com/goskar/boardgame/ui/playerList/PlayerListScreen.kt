@@ -67,11 +67,7 @@ class PlayerListScreen : Screen {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        viewModel.update(
-                            state.copy(
-                                showAddEditDialog = true
-                            )
-                        )
+                        viewModel.updateShowAddEditDialog(true)
                     },
                     modifier = Modifier
                         .size(50.dp)
@@ -88,8 +84,11 @@ class PlayerListScreen : Screen {
             PlayerListContent(
                 state = state,
                 deletePlayer = viewModel::validateDeletePlayer,
-                update = viewModel::update,
                 addPlayer = viewModel::validateAddEditPLayer,
+                updateSearchTxt = viewModel::updateSearchTxt,
+                updateSortOption = viewModel::updateSortOption,
+                updateShowAddEditDialog = viewModel::updateShowAddEditDialog,
+                updatePlayer = viewModel::updatePlayer,
                 paddingValues = paddingValues
             )
         }
@@ -100,8 +99,11 @@ class PlayerListScreen : Screen {
 fun PlayerListContent(
     state: PlayerListState,
     deletePlayer: (Player) -> Unit = {},
-    update: (PlayerListState) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
+    updateSearchTxt: (String) -> Unit = {},
+    updateSortOption: (Int) -> Unit = {},
+    updateShowAddEditDialog: (Boolean) -> Unit = {},
+    updatePlayer: (Player) -> Unit = {},
     paddingValues: PaddingValues
 ) {
     if (state.isLoading) AppLoader()
@@ -123,25 +125,13 @@ fun PlayerListContent(
                     searchTxt = state.searchTxt,
                     sortOption = state.sortOption,
                     updateTxt = {
-                        update(
-                            state.copy(
-                                searchTxt = it
-                            )
-                        )
+                        updateSearchTxt(it)
                     },
                     clearTxt = {
-                        update(
-                            state.copy(
-                                searchTxt = ""
-                            )
-                        )
+                        updateSearchTxt("")
                     },
                     updateSort = {
-                        update(
-                            state.copy(
-                                sortOption = it
-                            )
-                        )
+                        updateSortOption(it)
                     }
                 )
                 if (state.playerList.isNullOrEmpty()) {
@@ -150,19 +140,15 @@ fun PlayerListContent(
                         infoText = R.string.player_empty_list_add,
                         buttonText = R.string.player_add,
                         onClick = {
-                            update(
-                                state.copy(
-                                    showAddEditDialog = true
-                                )
-                            )
+                            updateShowAddEditDialog(true)
                         },
                     )
                 } else {
                     PlayerViewList(
                         deletePlayer = deletePlayer,
                         addPlayer = addPlayer,
-                        update = update,
-                        state = state
+                        state = state,
+                        updatePlayer = updatePlayer
                     )
                 }
             }
@@ -174,21 +160,13 @@ fun PlayerListContent(
             newPlayer = true,
             state = state,
             confirmButtonClick = {
-                update(
-                    state.copy(
-                        showAddEditDialog = false
-                    )
-                )
+                updateShowAddEditDialog(false)
                 addPlayer(true)
             },
             onDismiss = {
-                update(
-                    state.copy(
-                        showAddEditDialog = false
-                    )
-                )
+                updateShowAddEditDialog(false)
             },
-            update = update
+            updatePlayer = updatePlayer
         )
     }
 }

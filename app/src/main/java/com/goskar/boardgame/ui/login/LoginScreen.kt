@@ -103,6 +103,7 @@ fun LoginScreenContent(
     updatePassword: (String) -> Unit = {},
     questLogIn: () -> Unit = {},
     logIn: () -> Unit = {},
+    paddingValues: PaddingValues,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 

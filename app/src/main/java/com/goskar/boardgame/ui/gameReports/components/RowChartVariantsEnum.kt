@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports.components
+package com.goskar.boardgame.ui.gameReports.components
 
 enum class RowChartVariantsEnum {
     YEAR,

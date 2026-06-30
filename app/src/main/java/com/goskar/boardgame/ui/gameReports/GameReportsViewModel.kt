@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports
+package com.goskar.boardgame.ui.gameReports
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -9,7 +9,8 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
-import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
+import com.goskar.boardgame.ui.gameReports.components.RowChartVariantsEnum
+import com.goskar.boardgame.ui.theme.secondaryLight
 import com.goskar.boardgame.ui.theme.BoardGameColors
 import com.goskar.boardgame.ui.theme.BoardGameColors.Secondary
 import com.goskar.boardgame.utils.Months
@@ -82,9 +83,61 @@ class GameReportsViewModel(
         }
     }
 
-    fun update(state: GameReportsState) {
-        _state.update { state }
+    fun updateStartEndDate(startDate: LocalDate, endDate: LocalDate) {
+        _state.update {
+            it.copy(
+                startDate = startDate,
+                endDate = endDate
+            )
+        }
     }
+
+    fun useRowChartVariant(variant: RowChartVariantsEnum) {
+        _state.update {
+            it.copy(
+                selectedRowChartVariant = variant
+            )
+        }
+    }
+
+    fun useYearChart() {
+        _state.update {
+            it.copy(
+                selectedMonth = 0,
+                selectedYear = -1,
+                selectedRowChartVariant = RowChartVariantsEnum.YEAR
+            )
+        }
+    }
+
+    fun selectYear(year: Int) {
+        _state.update {
+            it.copy(
+                selectedYear = year,
+                selectedRowChartVariant = RowChartVariantsEnum.MONTHLY,
+                selectedMonth = 0
+            )
+        }
+    }
+
+    fun useMonthlyChart() {
+        _state.update {
+            it.copy(
+                selectedMonth = 0,
+                selectedRowChartVariant = RowChartVariantsEnum.MONTHLY
+            )
+        }
+    }
+
+    fun useMonthChart(monthsNumber: Int) {
+        _state.update {
+            it.copy(
+                selectedMonth = monthsNumber,
+                selectedRowChartVariant = RowChartVariantsEnum.MONTH
+            )
+        }
+    }
+
 
     fun prepareChart() {
         when (state.value.selectedRowChartVariant) {
@@ -180,7 +233,7 @@ class GameReportsViewModel(
                             it.gameData.monthValue == date.monthValue &&
                             it.gameData.dayOfMonth == date.dayOfMonth
                 }
-            if(countRecord.isNotEmpty()) {
+            if (countRecord.isNotEmpty()) {
                 val bars = Bars(
                     label = date.toString(),
                     values = listOf(

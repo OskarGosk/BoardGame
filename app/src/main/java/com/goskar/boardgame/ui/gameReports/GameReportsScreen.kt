@@ -1,6 +1,5 @@
-package com.goskar.boardgame.ui.gameRaports
+package com.goskar.boardgame.ui.gameReports
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,10 +34,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
 import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
-import com.goskar.boardgame.ui.gameRaports.charts.ColumnChartGamesPlay
-import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
-import com.goskar.boardgame.ui.gameRaports.components.SelectMonthRow
-import com.goskar.boardgame.ui.gameRaports.components.SelectYearRow
+import com.goskar.boardgame.ui.gameReports.charts.ColumnChartGamesPlay
+import com.goskar.boardgame.ui.gameReports.components.RowChartVariantsEnum
+import com.goskar.boardgame.ui.gameReports.components.SelectMonthRow
+import com.goskar.boardgame.ui.gameReports.components.SelectYearRow
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
@@ -47,6 +46,7 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import ir.ehsannarmani.compose_charts.models.Bars
 import org.koin.androidx.compose.koinViewModel
+import java.time.LocalDate
 
 class GameReportsScreen : Screen {
     @Composable
@@ -72,7 +72,12 @@ class GameReportsScreen : Screen {
                 chartData = chartData,
                 rowChartData = rowChartData,
                 prepareChart = viewModel::prepareChart,
-                update = viewModel::update,
+                updateStartEndDate = viewModel::updateStartEndDate,
+                useRowChartVariant = viewModel::useRowChartVariant,
+                useYearChart = viewModel::useYearChart,
+                useMonthlyChart = viewModel::useMonthlyChart,
+                useMonthChart = viewModel::useMonthChart,
+                selectYear = viewModel::selectYear,
                 paddingValues = paddingValues
             )
         }
@@ -86,7 +91,12 @@ fun GameReportsContent(
     chartData: List<Bars>,
     rowChartData: List<Bars>,
     prepareChart: () -> Unit = {},
-    update: (GameReportsState) -> Unit = {},
+    updateStartEndDate: (LocalDate, LocalDate) -> Unit = { _, _ -> },
+    useRowChartVariant: (RowChartVariantsEnum) -> Unit = {},
+    useYearChart: () -> Unit = {},
+    useMonthlyChart: () -> Unit = {},
+    useMonthChart: (Int) -> Unit = {},
+    selectYear: (Int) -> Unit = {},
     paddingValues: PaddingValues
 ) {
 
@@ -99,12 +109,7 @@ fun GameReportsContent(
             yearSelection = true,
         ),
         selection = CalendarSelection.Period { startDate, endDate ->
-            update(
-                state.copy(
-                    startDate = startDate,
-                    endDate = endDate
-                )
-            )
+            updateStartEndDate(startDate, endDate)
             prepareChart()
         })
 
@@ -126,9 +131,11 @@ fun GameReportsContent(
                     .height(150.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "No game history for the selected date.\nPlease select another date",
+                Text(
+                    text = "No game history for the selected date.\nPlease select another date",
                     style = SmoochBold18,
-                    textAlign = TextAlign.Center)
+                    textAlign = TextAlign.Center
+                )
             }
         }
 
@@ -137,7 +144,9 @@ fun GameReportsContent(
         Row {
             SelectMonthRow(
                 state = state,
-                update = update,
+                useYearChart = useYearChart,
+                useMonthlyChart = useMonthlyChart,
+                useMonthChart = useMonthChart,
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
@@ -149,7 +158,8 @@ fun GameReportsContent(
 
             SelectYearRow(
                 state = state,
-                update = update,
+                selectYear = selectYear,
+                useYearChart = useYearChart,
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
@@ -176,7 +186,7 @@ fun GameReportsContent(
                 ),
                 onClick = {
                     calendarState.show()
-                    update(state.copy(selectedRowChartVariant = RowChartVariantsEnum.PERIOD))
+                    useRowChartVariant(RowChartVariantsEnum.PERIOD)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -246,7 +256,7 @@ fun GameReportsContentPreview() {
 @Composable
 fun GameReportsContentEmptyPreview() {
 
-    val chartData : List<Bars> = emptyList()
+    val chartData: List<Bars> = emptyList()
     BoardGameScaffold(
         titlePage = stringResource(R.string.reports),
         selectedScreen = null
@@ -268,7 +278,8 @@ fun ColorPreview() {
                     .background(color)
             )
 
-            Button(onClick = {},
+            Button(
+                onClick = {},
                 modifier = Modifier
                     .size(100.dp),
                 shape = RoundedCornerShape(0)

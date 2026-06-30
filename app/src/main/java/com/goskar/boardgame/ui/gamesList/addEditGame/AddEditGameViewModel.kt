@@ -30,7 +30,8 @@ import java.util.concurrent.Executor
 
 sealed interface AddEditEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : AddEditEvent
-    data class SuccessAddEditGame(@StringRes val message: Int, val type: AppSnackBarType) : AddEditEvent
+    data class SuccessAddEditGame(@StringRes val message: Int, val type: AppSnackBarType) :
+        AddEditEvent
 }
 
 data class AddEditGameState(
@@ -75,8 +76,63 @@ class AddEditGameViewModel(
     }
 
 
-    fun update(state: AddEditGameState) {
-        _state.update { state }
+    fun updateName(value: String?) {
+        _state.update { it.copy(name = value) }
+    }
+
+    fun updateMinPlayer(value: String) {
+        _state.update { it.copy(minPlayer = value) }
+    }
+
+    fun updateMaxPLayer(value: String) {
+        _state.update { it.copy(maxPlayer = value) }
+    }
+
+    fun updateGameType() {
+        _state.update {
+            it.copy(
+                cooperate = !state.value.cooperate
+            )
+        }
+    }
+
+    fun updateExpansion() {
+        _state.update {
+            it.copy(
+                expansion = !state.value.expansion
+            )
+        }
+    }
+
+    fun updateBaseBase(name: String?, id: String?) {
+        _state.update {
+            it.copy(
+                baseGame = name,
+                baseGameId = id
+            )
+        }
+    }
+
+    fun updateCameraUri(value: String) {
+        _state.update { it.copy(uri = value) }
+    }
+
+    fun updateDataForEditGame(editGame: Game) {
+        _state.update {
+            it.copy(
+                name = editGame.name,
+                expansion = editGame.expansion,
+                cooperate = editGame.cooperate,
+                baseGame = editGame.baseGame,
+                baseGameId = editGame.baseGameId,
+                minPlayer = editGame.minPlayer,
+                maxPlayer = editGame.maxPlayer,
+                games = editGame.games,
+                uri = editGame.uri ?: "",
+                uriFromBgg = editGame.uriFromBgg,
+                id = editGame.id
+            )
+        }
     }
 
     fun validateAddEitGame(context: Context) {
@@ -96,7 +152,8 @@ class AddEditGameViewModel(
                 }
 
                 val newFile = File(picturesDir, "${state.value.name}$PNG")
-                val inputStream = context.contentResolver.openInputStream(state.value.uri.toUri())
+                val inputStream =
+                    context.contentResolver.openInputStream(state.value.uri.toUri())
 
                 inputStream?.use { input ->
                     val outputStream = FileOutputStream(newFile)

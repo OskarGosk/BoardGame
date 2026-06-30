@@ -90,7 +90,8 @@ class AddEditGameViewModelTest {
         val saved = slot<Game>()
         coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
 
-        viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
+        viewModel.updateName("Chess")
+        viewModel.updateCameraUri("")
         viewModel.validateAddEitGame(context)
 
         coVerify(exactly = 1) { gameRepo.insertGame(any()) }
@@ -104,7 +105,8 @@ class AddEditGameViewModelTest {
         val saved = slot<Game>()
         coEvery { gameRepo.editGame(capture(saved)) } returns RequestResult.Success(true)
 
-        viewModel.update(viewModel.state.value.copy(name = "Chess", id = "existing-id", uri = ""))
+        viewModel.updateDataForEditGame(createGame(name = "Chess", id = "existing-id", expansion = false))
+        viewModel.updateCameraUri("")
         viewModel.validateAddEitGame(context)
 
         coVerify(exactly = 1) { gameRepo.editGame(any()) }
@@ -122,9 +124,10 @@ class AddEditGameViewModelTest {
         val saved = slot<Game>()
         coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
 
-        viewModel.update(
-            viewModel.state.value.copy(name = "Exp", expansion = true, baseGame = "Wingspan", id = null, uri = "")
-        )
+        viewModel.updateName("Exp")
+        viewModel.updateExpansion()
+        viewModel.updateBaseBase("Wingspan", "base-1")
+        viewModel.updateCameraUri("")
         viewModel.validateAddEitGame(context)
 
         assertEquals(true, saved.captured.expansion)
@@ -135,9 +138,10 @@ class AddEditGameViewModelTest {
         val saved = slot<Game>()
         coEvery { gameRepo.insertGame(capture(saved)) } returns RequestResult.Success(true)
 
-        viewModel.update(
-            viewModel.state.value.copy(name = "Exp", expansion = true, baseGame = null, id = null, uri = "")
-        )
+        viewModel.updateName("Exp")
+        viewModel.updateExpansion()
+        viewModel.updateBaseBase(null, null)
+        viewModel.updateCameraUri("")
         viewModel.validateAddEitGame(context)
 
         assertEquals(false, saved.captured.expansion)
@@ -151,7 +155,8 @@ class AddEditGameViewModelTest {
     fun validateAddEitGame_success_emitsSavedAndClearsProgress() = runTest(testDispatcher) {
         coEvery { gameRepo.insertGame(any()) } returns RequestResult.Success(true)
 
-        viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
+        viewModel.updateName("Chess")
+        viewModel.updateCameraUri("")
         viewModel.events.test {
             viewModel.validateAddEitGame(context)
             assertEquals(
@@ -166,7 +171,8 @@ class AddEditGameViewModelTest {
     fun validateAddEitGame_error_showsErrorAndClearsProgress() = runTest(testDispatcher) {
         coEvery { gameRepo.insertGame(any()) } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.update(viewModel.state.value.copy(name = "Chess", id = null, uri = ""))
+        viewModel.updateName("Chess")
+        viewModel.updateCameraUri("")
         viewModel.events.test {
             viewModel.validateAddEitGame(context)
             assertEquals(

@@ -38,7 +38,7 @@ import com.goskar.boardgame.utils.CooperatePlayers
 @Composable
 fun CooperateRow(
     state: GamePlayState,
-    update: (GamePlayState) -> Unit = {},
+    updateGameVariantAndWinner: (Int, String) -> Unit = { _, _ -> },
     modifier: Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -81,15 +81,15 @@ fun CooperateRow(
                 GameVariantEnum.entries.forEach {
                     DropdownMenuItem(
                         text = {
-                            Text(text = stringResource(it.id),
-                                style = if(it.id == state.gameVariant) SmoochBold18 else Smooch18)
+                            Text(
+                                text = stringResource(it.id),
+                                style = if (it.id == state.gameVariant) SmoochBold18 else Smooch18
+                            )
                         },
                         onClick = {
-                            update(
-                                state.copy(
-                                    gameVariant = it.id,
-                                    winner = context.resources.getString(R.string.history_who_win)
-                                )
+                            updateGameVariantAndWinner(
+                                it.id,
+                                context.resources.getString(CooperatePlayers.PLAYERS.value)
                             )
                             expanded = false
                         })

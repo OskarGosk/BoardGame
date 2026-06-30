@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports
+package com.goskar.boardgame.ui.gameReports
 
 import app.cash.turbine.test
 import com.goskar.boardgame.data.models.Game
@@ -6,7 +6,7 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
-import com.goskar.boardgame.ui.gameRaports.components.RowChartVariantsEnum
+import com.goskar.boardgame.ui.gameReports.components.RowChartVariantsEnum
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -117,7 +117,7 @@ class GameReportsViewModelTest {
     fun prepareChart_monthlyMode_alwaysReturns12Bars() = runTest(testDispatcher) {
         viewModel.state.test {
             expectMostRecentItem()
-            viewModel.update(viewModel.state.value.copy(selectedYear = 2024, selectedRowChartVariant = RowChartVariantsEnum.MONTHLY))
+            viewModel.selectYear(2024)
             expectMostRecentItem()
             viewModel.prepareChart()
             assertEquals(12, viewModel.chartData.value.size)
@@ -132,7 +132,7 @@ class GameReportsViewModelTest {
 
         viewModel.state.test {
             expectMostRecentItem()
-            viewModel.update(viewModel.state.value.copy(selectedYear = 2024, selectedRowChartVariant = RowChartVariantsEnum.MONTHLY))
+            viewModel.selectYear(2024)
             expectMostRecentItem()
             viewModel.prepareChart()
             val data = viewModel.chartData.value
@@ -153,7 +153,8 @@ class GameReportsViewModelTest {
 
         viewModel.state.test {
             expectMostRecentItem()
-            viewModel.update(viewModel.state.value.copy(selectedYear = 2024, selectedMonth = 6, selectedRowChartVariant = RowChartVariantsEnum.MONTH))
+            viewModel.selectYear(2024)
+            viewModel.useMonthChart(6)
             expectMostRecentItem()
             viewModel.prepareChart()
             val data = viewModel.chartData.value
@@ -173,11 +174,11 @@ class GameReportsViewModelTest {
 
         viewModel.state.test {
             expectMostRecentItem()
-            viewModel.update(viewModel.state.value.copy(
+            viewModel.useRowChartVariant(RowChartVariantsEnum.PERIOD)
+            viewModel.updateStartEndDate(
                 startDate = LocalDate.of(2024, 6, 8),
-                endDate = LocalDate.of(2024, 6, 12),
-                selectedRowChartVariant = RowChartVariantsEnum.PERIOD
-            ))
+                endDate = LocalDate.of(2024, 6, 12)
+            )
             expectMostRecentItem()
             viewModel.prepareChart()
             assertEquals(1, viewModel.chartData.value.size)
@@ -192,11 +193,11 @@ class GameReportsViewModelTest {
 
         viewModel.state.test {
             expectMostRecentItem()
-            viewModel.update(viewModel.state.value.copy(
+            viewModel.useRowChartVariant(RowChartVariantsEnum.PERIOD)
+            viewModel.updateStartEndDate(
                 startDate = LocalDate.of(2024, 6, 5),
                 endDate = LocalDate.of(2024, 6, 15),
-                selectedRowChartVariant = RowChartVariantsEnum.PERIOD
-            ))
+            )
             expectMostRecentItem()
             viewModel.prepareChart()
             assertTrue(viewModel.chartData.value.isEmpty())

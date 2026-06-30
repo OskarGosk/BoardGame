@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports.components
+package com.goskar.boardgame.ui.gameReports.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,13 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.gameRaports.GameReportsState
+import com.goskar.boardgame.ui.gameReports.GameReportsState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
@@ -40,9 +39,11 @@ import com.goskar.boardgame.utils.Months.Companion.getMonthByNumber
 @Composable
 fun SelectMonthRow(
     state: GameReportsState,
-    update: (GameReportsState) -> Unit = {},
     modifier: Modifier,
     prepareChart: () -> Unit = {},
+    useYearChart: () -> Unit = {},
+    useMonthlyChart: () -> Unit = {},
+    useMonthChart: (Int) -> Unit = {},
     selected: Boolean = true
     ) {
     var expanded by remember { mutableStateOf(false) }
@@ -106,12 +107,7 @@ fun SelectMonthRow(
                                     )
                                     expanded = false
                                 } else {
-                                    update(
-                                        state.copy(
-                                            selectedMonth = it.monthsNumber,
-                                            selectedRowChartVariant = RowChartVariantsEnum.MONTH
-                                        )
-                                    )
+                                    useMonthChart(it.monthsNumber)
                                     expanded = false
                                     prepareChart()
                                 }
@@ -133,12 +129,7 @@ fun SelectMonthRow(
                                 )
                                 expanded = false
                             } else {
-                                update(
-                                    state.copy(
-                                        selectedMonth = 0,
-                                        selectedRowChartVariant = RowChartVariantsEnum.MONTHLY
-                                    )
-                                )
+                                useMonthlyChart()
                                 expanded = false
                                 prepareChart()
                             }
@@ -152,13 +143,7 @@ fun SelectMonthRow(
                             )
                         },
                         onClick = {
-                            update(
-                                state.copy(
-                                    selectedMonth = -1,
-                                    selectedYear = 0,
-                                    selectedRowChartVariant = RowChartVariantsEnum.YEAR
-                                )
-                            )
+                            useYearChart()
                             expanded = false
                             prepareChart()
                         })

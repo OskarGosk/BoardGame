@@ -51,8 +51,9 @@ import com.goskar.boardgame.utils.SortList
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun GameSearchRow(
-    update: (GameListState) -> Unit = {},
     state: GameListState,
+    updateSearchTxt: (String) -> Unit = {},
+    updateSortOption: (SortList) -> Unit = {},
     refreshGameList: () -> Unit = {},
     ) {
     val focusManager = LocalFocusManager.current
@@ -79,11 +80,7 @@ fun GameSearchRow(
                 shape = RoundedCornerShape(15),
                 value = state.searchTxt,
                 onValueChange = {
-                    update(
-                        state.copy(
-                            searchTxt = it
-                        )
-                    )
+                    updateSearchTxt(it)
                     refreshGameList()
                 },
                 modifier = Modifier
@@ -110,11 +107,7 @@ fun GameSearchRow(
                         modifier = Modifier
                             .size(25.dp)
                             .clickable {
-                                update(
-                                    state.copy(
-                                        searchTxt = ""
-                                    )
-                                )
+                                updateSearchTxt("")
                                 refreshGameList()
                                 focusManager.clearFocus()
                             })
@@ -146,11 +139,7 @@ fun GameSearchRow(
                                     Checkbox(
                                         checked = if (sort == state.sortOption) true else false,
                                         onCheckedChange = {
-                                            update(
-                                                state.copy(
-                                                    sortOption = sort
-                                                )
-                                            )
+                                            updateSortOption(sort)
                                             refreshGameList()
                                             expanded = false
                                         }
@@ -162,11 +151,7 @@ fun GameSearchRow(
                                 }
                             },
                             onClick = {
-                                update(
-                                    state.copy(
-                                        sortOption = sort
-                                    )
-                                )
+                                updateSortOption(sort)
                                 refreshGameList()
                                 expanded = false
                             })

@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gameRaports.components
+package com.goskar.boardgame.ui.gameReports.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.goskar.boardgame.ui.gameRaports.GameReportsState
+import com.goskar.boardgame.ui.gameReports.GameReportsState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
@@ -35,15 +35,18 @@ import com.goskar.boardgame.ui.theme.SmoochBold18
 @Composable
 fun SelectYearRow(
     state: GameReportsState,
-    update: (GameReportsState) -> Unit = {},
     modifier: Modifier,
     prepareChart: () -> Unit = {},
+    useYearChart: () -> Unit = {},
+    selectYear: (Int) -> Unit = {},
     selected: Boolean = true
 
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val enabledBackgroundColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
-    val enabledTextColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
+    val enabledBackgroundColor =
+        if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
+    val enabledTextColor =
+        if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
 
 
     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
@@ -87,16 +90,10 @@ fun SelectYearRow(
                                 Text(
                                     text = "$it",
                                     style = if (state.selectedYear == it) SmoochBold18 else Smooch18
-                                    )
+                                )
                             },
                             onClick = {
-                                update(
-                                    state.copy(
-                                        selectedYear = it,
-                                        selectedRowChartVariant = RowChartVariantsEnum.MONTHLY,
-                                        selectedMonth = 0
-                                    )
-                                )
+                                selectYear(it)
                                 expanded = false
                                 prepareChart()
                             })
@@ -107,16 +104,10 @@ fun SelectYearRow(
                             Text(
                                 text = "All Years",
                                 style = if (state.selectedYear == 0) SmoochBold18 else Smooch18
-                                )
+                            )
                         },
                         onClick = {
-                            update(
-                                state.copy(
-                                    selectedYear = 0,
-                                    selectedRowChartVariant = RowChartVariantsEnum.YEAR,
-                                    selectedMonth = -1
-                                )
-                            )
+                            useYearChart()
                             expanded = false
                             prepareChart()
                         })

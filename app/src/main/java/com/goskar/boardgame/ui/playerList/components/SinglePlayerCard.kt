@@ -44,9 +44,10 @@ fun SinglePlayerCard(
     player: Player,
     deletePlayer: (Player) -> Unit = {},
     update: (PlayerListState) -> Unit = {},
+    updatePlayer: (Player) -> Unit = {},
     addPlayer: (Boolean) -> Unit = {},
     state: PlayerListState,
-    ) {
+) {
     var isExpanded by remember { mutableStateOf(false) }
     var showAlertDialog by remember { mutableStateOf(false) }
     var showAddEditDialog by remember { mutableStateOf(false) }
@@ -99,9 +100,11 @@ fun SinglePlayerCard(
             )
             {
                 IconButton(onClick = {
-                    update (state.copy(
-                        player = player
-                    ))
+                    update(
+                        state.copy(
+                            player = player
+                        )
+                    )
                     showAddEditDialog = true
                 }) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Game")
@@ -122,7 +125,7 @@ fun SinglePlayerCard(
                 titleText = stringResource(R.string.delete, player.name),
                 contentText = R.string.player_delete_info,
                 modifierButton = Modifier.align(Alignment.CenterHorizontally),
-                onDismiss = {showAlertDialog = false},
+                onDismiss = { showAlertDialog = false },
                 confirmButtonClick = {
                     showAlertDialog = false
                     isExpanded = false
@@ -131,7 +134,7 @@ fun SinglePlayerCard(
             )
         }
 
-        if(showAddEditDialog) {
+        if (showAddEditDialog) {
             AddEditDialog(
                 newPlayer = false,
                 state = state,
@@ -139,8 +142,8 @@ fun SinglePlayerCard(
                     showAddEditDialog = false
                     addPlayer(false)
                 },
-                onDismiss = {showAddEditDialog = !showAddEditDialog},
-                update = update
+                onDismiss = { showAddEditDialog = !showAddEditDialog },
+                updatePlayer = updatePlayer
             )
         }
     }

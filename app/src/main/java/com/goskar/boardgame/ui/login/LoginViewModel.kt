@@ -94,8 +94,12 @@ class LoginViewModel(
     val events = _events.receiveAsFlow()
 
 
-    fun update(state: LoginState) {
-        _state.update { state }
+    fun updateLogin(value: String) {
+        _state.update { it.copy(login = value) }
+    }
+
+    fun updatePassword(value: String) {
+        _state.update { it.copy(password = value) }
     }
 
     fun updateLogin(text: String) {
