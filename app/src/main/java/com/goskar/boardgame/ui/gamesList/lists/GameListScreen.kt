@@ -41,6 +41,7 @@ import com.goskar.boardgame.ui.components.scaffold.topBar.TopBarViewModel
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchScreen
 import com.goskar.boardgame.ui.gamesList.lists.components.AddItemsMenu
 import com.goskar.boardgame.ui.gamesList.lists.components.GameSearchRow
+import com.goskar.boardgame.utils.SortList
 
 class GameListScreen() : Screen {
     @Composable
@@ -82,10 +83,13 @@ class GameListScreen() : Screen {
                 state = state,
                 deleteGame = viewModel::validateDeleteGame,
                 refresh = viewModel::refresh,
-                update = viewModel::update,
                 refreshGameList = viewModel::refreshGameList,
                 updateExpandedGameCover = viewModel::updateExpandedGameCover,
                 changeAllExpendedGameCover = viewModel::changeAllExpendedGameCover,
+                updateSearchTxt = viewModel::updateSearchTxt,
+                updateSortOption = viewModel::updateSortOption,
+                updateCheckboxExpansionGame = viewModel::updateCheckboxExpansionGame,
+                updateCheckboxBaseGame = viewModel::updateCheckboxBaseGame,
                 paddingValues = paddingValues
             )
         }
@@ -97,10 +101,13 @@ fun GameListContent(
     state: GameListState,
     deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {},
-    update: (GameListState) -> Unit = {},
     refreshGameList: () -> Unit = {},
     updateExpandedGameCover: (Game) -> Unit = {},
     changeAllExpendedGameCover: () -> Unit = {},
+    updateSearchTxt: (String) -> Unit = {},
+    updateSortOption: (SortList) -> Unit = {},
+    updateCheckboxExpansionGame: () -> Unit = {},
+    updateCheckboxBaseGame: () -> Unit = {},
     paddingValues: PaddingValues
 ) {
     val navigator = LocalNavigator.current
@@ -127,13 +134,18 @@ fun GameListContent(
                 }
             )
         } else {
-            GameSearchRow(update = update, state = state, refreshGameList = refreshGameList)
+            GameSearchRow(
+                updateSearchTxt = updateSearchTxt,
+                updateSortOption = updateSortOption,
+                state = state,
+                refreshGameList = refreshGameList
+            )
             GameViewList(
                 deleteGame = deleteGame,
                 refresh = refresh,
                 state = state,
-                update = update,
-                refreshGameList = refreshGameList,
+                updateCheckboxExpansionGame = updateCheckboxExpansionGame,
+                updateCheckboxBaseGame = updateCheckboxBaseGame, refreshGameList = refreshGameList,
                 updateExpandedGameCover = updateExpandedGameCover,
                 changeAllExpendedGameCover = changeAllExpendedGameCover
             )

@@ -44,8 +44,12 @@ class GamesHistoryViewModel(
         validateGetHistoryGameWithExpansion()
     }
 
-    fun update(state: GamesHistoryState) {
-        _state.update { state }
+    fun updateSearchTxt(value: String) {
+        _state.update { it.copy(searchTxt = value) }
+    }
+
+    fun updateSortOption(value: Int) {
+        _state.update { it.copy(sortOption = value) }
     }
 
     fun getAllHistoryGame() {

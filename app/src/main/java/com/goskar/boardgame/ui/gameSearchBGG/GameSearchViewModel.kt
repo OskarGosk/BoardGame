@@ -21,7 +21,7 @@ data class GameSearchState(
 
 class GameSearchViewModel(
     private val boardGameApiRepository: BoardGameApiRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val _gameList = MutableStateFlow<List<SearchBGGListElements>?>(null)
     val gameList = _gameList.asStateFlow()
@@ -32,11 +32,16 @@ class GameSearchViewModel(
     private val _state = MutableStateFlow(GameSearchState())
     val state = _state.asStateFlow()
 
-    fun update(state: GameSearchState) {
-        _state.update { state }
+    fun updateSearchTxt(value: String) {
+        _state.update { it.copy(searchTxt = value) }
     }
 
-    fun updateSortedList() {
+    fun updateSortedList(value: Int = R.string.default_sort) {
+        _state.update {
+            it.copy(
+                sortOption = value,
+            )
+        }
         _gameListSorted.value = when (_state.value.sortOption) {
             R.string.default_sort -> _gameList.value
             R.string.name_ascending -> _gameList.value?.sortedBy { it.name }
@@ -48,7 +53,7 @@ class GameSearchViewModel(
     }
 
 
-    fun  searchGame(name: String) {
+    fun searchGame(name: String) {
         _state.update {
             it.copy(
                 isLoading = true,
@@ -56,11 +61,12 @@ class GameSearchViewModel(
             )
         }
         viewModelScope.launch {
-            when(val response = boardGameApiRepository.searchGame(name)) {
+            when (val response = boardGameApiRepository.searchGame(name)) {
                 is RequestResult.Success -> {
                     _gameList.value = response.data.boardGames
                     updateSortedList()
                 }
+
                 is RequestResult.Error -> {
                     emptyList<Game>()
                     _state.update {

@@ -38,8 +38,8 @@ import com.goskar.boardgame.ui.theme.primaryLight
 @Composable
 fun SinglePhotoPicker(
     state: AddEditGameState,
-    update: (AddEditGameState) -> Unit = {},
     modifier: Modifier = Modifier,
+    updateCameraUri:(String) -> Unit = {},
     onClick: () -> Unit = {}
 ) {
 
@@ -47,7 +47,7 @@ fun SinglePhotoPicker(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri: Uri? ->
             uri?.let {
-                update(state.copy(uri = uri.toString()))
+                updateCameraUri(uri.toString())
             }
         }
     )
@@ -141,11 +141,7 @@ fun SinglePhotoPicker(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .clickable {
-                        update(
-                            state.copy(
-                                uri = ""
-                            )
-                        )
+                        updateCameraUri("")
                     }
             )
         }

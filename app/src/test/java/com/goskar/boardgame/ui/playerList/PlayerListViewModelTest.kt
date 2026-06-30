@@ -27,8 +27,22 @@ class PlayerListViewModelTest {
     private lateinit var repo: PlayerDbRepository
     private lateinit var viewModel: PlayerListViewModel
 
-    val player1 = Player(name = "Alice",   id = "id-1", games = 2, winRatio = 1, description = "Test", selected = false)
-    val player2 = Player(name = "Bob",     id = "id-2", games = 3, winRatio = 2, description = "Test", selected = true)
+    val player1 = Player(
+        name = "Alice",
+        id = "id-1",
+        games = 2,
+        winRatio = 1,
+        description = "Test",
+        selected = false
+    )
+    val player2 = Player(
+        name = "Bob",
+        id = "id-2",
+        games = 3,
+        winRatio = 2,
+        description = "Test",
+        selected = true
+    )
     val player1edited = player1.copy(name = "Bob")
 
     @Before
@@ -153,7 +167,7 @@ class PlayerListViewModelTest {
                 val item = awaitItem()
                 assertEquals(listOf(player1), item.playerList)
 
-                viewModel.update(state = viewModel.state.value.copy(player = player2))
+                viewModel.updatePlayer(player2)
                 viewModel.validateAddEditPLayer(newPlayer = true)
 
                 val loadingItem = awaitItem()
@@ -176,7 +190,7 @@ class PlayerListViewModelTest {
     fun validateAddEditPlayer_newPlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { repo.insertPlayer(player2) } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.update(state = viewModel.state.value.copy(player = player2))
+        viewModel.updatePlayer(player2)
         viewModel.events.test {
             viewModel.validateAddEditPLayer(newPlayer = true)
             assertEquals(
@@ -203,7 +217,7 @@ class PlayerListViewModelTest {
             assertEquals(false, item.isLoading)
             assertEquals(listOf(player1, player2), item.playerList)
 
-            viewModel.update(state = viewModel.state.value.copy(player = player1edited))
+            viewModel.updatePlayer(player1edited)
             viewModel.validateAddEditPLayer(newPlayer = false)
 
             skipItems(1)
@@ -222,7 +236,7 @@ class PlayerListViewModelTest {
     fun validateAddEditPlayer_editExistingPlayer_error_showsError() = runTest(testDispatcher) {
         coEvery { repo.editPlayer(player1edited) } returns RequestResult.Error(Throwable("db error"))
 
-        viewModel.update(state = viewModel.state.value.copy(player = player1edited))
+        viewModel.updatePlayer(player1edited)
         viewModel.events.test {
             viewModel.validateAddEditPLayer(false)
             assertEquals(

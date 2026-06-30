@@ -70,6 +70,8 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.Smooch14_line14
 import com.goskar.boardgame.ui.theme.Smooch18
 import com.goskar.boardgame.ui.theme.SmoochBold18
+import org.koin.androidx.compose.viewModel
+import java.time.LocalDate
 
 class GamePlayActivityScreen(
     val game: Game
@@ -106,11 +108,7 @@ class GamePlayActivityScreen(
 
 
         LaunchedEffect(Unit) {
-            viewModel.update(
-                state.copy(
-                    game = game
-                )
-            )
+            viewModel.updateGame(game)
             viewModel.getAllGame()
             viewModel.getAllPlayer()
             viewModel.setGameVariant()
@@ -124,10 +122,15 @@ class GamePlayActivityScreen(
         ) { paddingValues ->
             GamePlayContent(
                 state = state,
-                update = viewModel::update,
                 selectedPlayer = viewModel::selectedPlayer,
                 addGamePlay = viewModel::validateAllData,
                 selectExpansion = viewModel::selectExpansion,
+                updatePlayDate = viewModel::updatePlayDate,
+                updateDescription = viewModel::updateDescription,
+                updateWinner = viewModel::updateWinner,
+                updateGameVariantAndWinner = viewModel::updateGameVariantAndWinner,
+                updateSearchTxt = viewModel::updateSearchTxt,
+                updateSortOption = viewModel::updateSortOption,
                 paddingValues = paddingValues
             )
         }
@@ -139,12 +142,17 @@ class GamePlayActivityScreen(
 @Composable
 fun GamePlayContent(
     state: GamePlayState,
-    update: (GamePlayState) -> Unit = {},
     selectedPlayer: (Player) -> Unit = {},
     addGamePlay: (Context) -> Unit = {},
     selectExpansion: (String) -> Unit = {},
+    updatePlayDate: (LocalDate) -> Unit = {},
+    updateDescription: (String) -> Unit = {},
+    updateWinner: (String) -> Unit = {},
+    updateGameVariantAndWinner: (Int, String) -> Unit = { _, _ -> },
+    updateSearchTxt: (String) -> Unit = {},
+    updateSortOption: (Int) -> Unit = {},
     paddingValues: PaddingValues,
-    ) {
+) {
     val uriHandler = LocalUriHandler.current
     val calendarState = rememberSheetState()
     val scrollState = rememberScrollState()
@@ -159,11 +167,7 @@ fun GamePlayContent(
             yearSelection = true,
         ),
         selection = CalendarSelection.Date { date ->
-            update(
-                state.copy(
-                    playDate = date
-                )
-            )
+            updatePlayDate(date)
         })
 
 
@@ -257,7 +261,11 @@ fun GamePlayContent(
                 )
             }
             Column {
-                CooperateRow(state = state, update = update, Modifier.padding(start = 10.dp))
+                CooperateRow(
+                    state = state,
+                    updateGameVariantAndWinner = updateGameVariantAndWinner,
+                    Modifier.padding(start = 10.dp)
+                )
 
                 Row(
                     modifier = Modifier
@@ -295,7 +303,11 @@ fun GamePlayContent(
                         }
                     }
                 }
-                WinnerRow(state = state, update = update, Modifier.padding(start = 10.dp))
+                WinnerRow(
+                    state = state,
+                    updateWinner = updateWinner,
+                    Modifier.padding(start = 10.dp)
+                )
             }
         }
 
@@ -311,11 +323,7 @@ fun GamePlayContent(
             textStyle = Smooch18,
             value = state.descriptionGame,
             onValueChange = {
-                update(
-                    state.copy(
-                        descriptionGame = it
-                    )
-                )
+                updateDescription(it)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -379,7 +387,8 @@ fun GamePlayContent(
         SelectPlayerDialog(
             state = state,
             selectedPlayer = selectedPlayer,
-            update = update,
+            updateSearchTxt = updateSearchTxt,
+            updateSortOption = updateSortOption,
             onDismiss = { playerSelectDialog = false }
         )
     }

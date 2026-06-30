@@ -49,6 +49,7 @@ import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.SmoochBold18
 import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.compose.viewModel
 
 class GameDetailsBGGScreen(private val gameID: String, val gameName: String) : Screen {
 
@@ -80,12 +81,7 @@ class GameDetailsBGGScreen(private val gameID: String, val gameName: String) : S
         }
 
         LaunchedEffect(gameID) {
-            viewModel.update(
-                state.copy(
-                    gameName = gameName,
-                    gameId = gameID
-                )
-            )
+            viewModel.updateGameNameWithId(gameName, gameID)
             viewModel.getGame()
         }
         val gameDetails by viewModel.gameDetails.collectAsState()
@@ -101,9 +97,11 @@ class GameDetailsBGGScreen(private val gameID: String, val gameName: String) : S
                 allBaseGame = allBaseGame,
                 gameDetails = gameDetails?.boardGamesBGG?.firstOrNull(),
                 addGame = viewModel::validateAddGame,
-                update = viewModel::update,
                 errorReload = viewModel::getGame,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                updateGameType = viewModel::updateGameType,
+                updateExpansion = viewModel::updateExpansion,
+                updateBaseBase = viewModel::updateBaseBase
             )
         }
     }
@@ -115,8 +113,10 @@ fun GameDetailsBGGContent(
     allBaseGame: List<Game>,
     gameDetails: BoardGameBGG?,
     addGame: () -> Unit = {},
-    update: (GameDetailsBGGState) -> Unit = {},
     errorReload: () -> Unit = {},
+    updateGameType: () -> Unit,
+    updateExpansion: () -> Unit,
+    updateBaseBase: (String?, String?) -> Unit,
     paddingValues: PaddingValues
 ) {
 
@@ -178,7 +178,9 @@ fun GameDetailsBGGContent(
                 addGame()
             },
             onDismiss = { showAddEditDialog = !showAddEditDialog },
-            update = update
+            updateGameType = updateGameType,
+            updateExpansion = updateExpansion,
+            updateBaseBase = updateBaseBase,
         )
     }
 
@@ -244,7 +246,10 @@ fun GameDetailsBGGPreview() {
             ),
             allBaseGame = emptyList(),
             gameDetails = game,
-            paddingValues = paddingValues
+            paddingValues = paddingValues,
+            updateGameType = {},
+            updateExpansion = {},
+            updateBaseBase = { _, _ -> }
         )
     }
 }

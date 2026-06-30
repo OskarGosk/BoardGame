@@ -58,8 +58,38 @@ class GameDetailsBGGViewModel(
         }
     }
 
-    fun update(state: GameDetailsBGGState) {
-        _state.update { state }
+    fun updateGameNameWithId(name: String, id: String) {
+        _state.update {
+            it.copy(
+                gameName = name,
+                gameId = id
+            )
+        }
+    }
+
+    fun updateGameType() {
+        _state.update {
+            it.copy(
+                cooperate = !state.value.cooperate
+            )
+        }
+    }
+
+    fun updateExpansion() {
+        _state.update {
+            it.copy(
+                expansion = !state.value.expansion
+            )
+        }
+    }
+
+    fun updateBaseBase(name: String?, id: String?) {
+        _state.update {
+            it.copy(
+                baseGame = name,
+                baseGameId = id
+            )
+        }
     }
 
     fun getGame() {
@@ -116,7 +146,12 @@ class GameDetailsBGGViewModel(
 
             when (response) {
                 is RequestResult.Success -> {
-                    _events.send(GameDetailsEvent.SuccessAddEditGame(R.string.success_global, AppSnackBarType.SUCCESS))
+                    _events.send(
+                        GameDetailsEvent.SuccessAddEditGame(
+                            R.string.success_global,
+                            AppSnackBarType.SUCCESS
+                        )
+                    )
                 }
 
                 is RequestResult.Error -> {

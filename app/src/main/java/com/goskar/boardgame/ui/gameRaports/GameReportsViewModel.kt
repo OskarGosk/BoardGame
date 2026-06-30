@@ -81,9 +81,61 @@ class GameReportsViewModel(
         }
     }
 
-    fun update(state: GameReportsState) {
-        _state.update { state }
+    fun updateStartEndDate(startDate: LocalDate, endDate: LocalDate) {
+        _state.update {
+            it.copy(
+                startDate = startDate,
+                endDate = endDate
+            )
+        }
     }
+
+    fun useRowChartVariant(variant: RowChartVariantsEnum) {
+        _state.update {
+            it.copy(
+                selectedRowChartVariant = variant
+            )
+        }
+    }
+
+    fun useYearChart() {
+        _state.update {
+            it.copy(
+                selectedMonth = 0,
+                selectedYear = -1,
+                selectedRowChartVariant = RowChartVariantsEnum.YEAR
+            )
+        }
+    }
+
+    fun selectYear(year: Int) {
+        _state.update {
+            it.copy(
+                selectedYear = year,
+                selectedRowChartVariant = RowChartVariantsEnum.MONTHLY,
+                selectedMonth = 0
+            )
+        }
+    }
+
+    fun useMonthlyChart() {
+        _state.update {
+            it.copy(
+                selectedMonth = 0,
+                selectedRowChartVariant = RowChartVariantsEnum.MONTHLY
+            )
+        }
+    }
+
+    fun useMonthChart(monthsNumber: Int) {
+        _state.update {
+            it.copy(
+                selectedMonth = monthsNumber,
+                selectedRowChartVariant = RowChartVariantsEnum.MONTH
+            )
+        }
+    }
+
 
     fun prepareChart() {
         when (state.value.selectedRowChartVariant) {
@@ -179,7 +231,7 @@ class GameReportsViewModel(
                             it.gameData.monthValue == date.monthValue &&
                             it.gameData.dayOfMonth == date.dayOfMonth
                 }
-            if(countRecord.isNotEmpty()) {
+            if (countRecord.isNotEmpty()) {
                 val bars = Bars(
                     label = date.toString(),
                     values = listOf(

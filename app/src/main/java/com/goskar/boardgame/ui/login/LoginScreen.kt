@@ -72,11 +72,12 @@ class LoginScreen : Screen {
                             type = event.type
                         )
                         navigator?.replaceAll(HomeScreen(state.login != "quest"))
-                        ScreenLifecycleStore . remove (this@LoginScreen)
+                        ScreenLifecycleStore.remove(this@LoginScreen)
                     }
+
                     is LoginEvent.loggedInOrGuest -> {
                         navigator?.replaceAll(HomeScreen(state.login != "quest"))
-                        ScreenLifecycleStore . remove (this@LoginScreen)
+                        ScreenLifecycleStore.remove(this@LoginScreen)
                     }
                 }
             }
@@ -98,10 +99,11 @@ class LoginScreen : Screen {
         ) { paddingValues ->
             LoginContent(
                 state = state,
-                update = viewModel::update,
                 logIn = viewModel::signIn,
                 questLogIn = viewModel::questAccount,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                updateLogin = viewModel::updateLogin,
+                updatePassword = viewModel::updatePassword
             )
         }
     }
@@ -110,10 +112,11 @@ class LoginScreen : Screen {
 @Composable
 fun LoginContent(
     state: LoginState,
-    update: (LoginState) -> Unit = {},
     logIn: () -> Unit = {},
     questLogIn: () -> Unit = {},
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
+    updateLogin: (String) -> Unit = {},
+    updatePassword: (String) -> Unit = {}
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
     val isKeyboardOpen by keyboardAsState()
@@ -134,11 +137,7 @@ fun LoginContent(
                 .padding(bottom = 10.dp),
             value = state.login,
             onValueChange = {
-                update(
-                    state.copy(
-                        login = it
-                    )
-                )
+                updateLogin(it)
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Next,
@@ -158,11 +157,7 @@ fun LoginContent(
                 .padding(bottom = 25.dp),
             value = state.password,
             onValueChange = {
-                update(
-                    state.copy(
-                        password = it
-                    )
-                )
+                updatePassword(it)
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Password,

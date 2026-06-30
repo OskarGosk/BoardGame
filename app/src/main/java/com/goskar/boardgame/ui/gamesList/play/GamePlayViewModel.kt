@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.gamesList.play
 
 import android.content.Context
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
@@ -29,6 +30,7 @@ sealed interface GamePlayEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GamePlayEvent
     data class Saved(@StringRes val message: Int) : GamePlayEvent
 }
+
 data class GamePlayState(
     val game: Game? = null,
     val gameList: List<ExpansionGameUiState>? = emptyList(),
@@ -61,8 +63,59 @@ class GamePlayViewModel(
     private val _events = Channel<GamePlayEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    fun update(state: GamePlayState) {
-        _state.update { state }
+    fun updateGame(game: Game) {
+        _state.update {
+            it.copy(
+                game = game
+            )
+        }
+    }
+
+    /** Test seam: [gameList] is normally populated by [getAllGame]. */
+    @VisibleForTesting
+    fun updateGameList(list: List<ExpansionGameUiState>) {
+        _state.update { it.copy(gameList = list) }
+    }
+
+    fun updateSearchTxt(value: String) {
+        _state.update { it.copy(searchTxt = value) }
+    }
+
+    fun updateSortOption(value: Int) {
+        _state.update { it.copy(sortOption = value) }
+    }
+
+    fun updatePlayDate(date: LocalDate) {
+        _state.update {
+            it.copy(
+                playDate = date
+            )
+        }
+    }
+
+    fun updateWinner(winner: String) {
+        _state.update {
+            it.copy(
+                winner = winner
+            )
+        }
+    }
+
+    fun updateGameVariantAndWinner(gameVariant: Int, winner: String) {
+        _state.update {
+            it.copy(
+                gameVariant = gameVariant,
+                winner = winner
+            )
+        }
+    }
+
+    fun updateDescription(description: String) {
+        _state.update {
+            it.copy(
+                descriptionGame = description
+            )
+        }
     }
 
     private fun setGameData() {
@@ -129,14 +182,19 @@ class GamePlayViewModel(
         return when (gamesHistoryDbRepository.insertHistoryGame(historyGame = historyGame)) {
             is RequestResult.Success -> validateAddHistoryGameExpansionData()
             is RequestResult.Error -> {
-                _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                _events.send(
+                    GamePlayEvent.ShowMessage(
+                        R.string.error_generic,
+                        AppSnackBarType.ERROR
+                    )
+                )
                 false
             }
         }
     }
 
     private suspend fun validateAddHistoryGameExpansionData(): Boolean {
-        var expansionHistoryList : List<HistoryGameExpansion> = emptyList()
+        var expansionHistoryList: List<HistoryGameExpansion> = emptyList()
 
         state.value.gameList?.forEach {
             if (it.isSelected) {
@@ -153,7 +211,12 @@ class GamePlayViewModel(
         return when (gamesHistoryDbRepository.insertAllHistoryGameExpansion(expansionHistoryList)) {
             is RequestResult.Success -> true
             is RequestResult.Error -> {
-                _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                _events.send(
+                    GamePlayEvent.ShowMessage(
+                        R.string.error_generic,
+                        AppSnackBarType.ERROR
+                    )
+                )
                 false
             }
         }
@@ -170,7 +233,12 @@ class GamePlayViewModel(
         return when (gameDbRepository.editGame(game)) {
             is RequestResult.Success -> true
             is RequestResult.Error -> {
-                _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                _events.send(
+                    GamePlayEvent.ShowMessage(
+                        R.string.error_generic,
+                        AppSnackBarType.ERROR
+                    )
+                )
                 false
             }
         }
@@ -199,7 +267,12 @@ class GamePlayViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(
+                        GamePlayEvent.ShowMessage(
+                            R.string.error_generic,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                 }
             }
         }
@@ -231,7 +304,12 @@ class GamePlayViewModel(
             when (playerDbRepository.editPlayer(playerGames)) {
                 is RequestResult.Success -> Unit
                 is RequestResult.Error -> {
-                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(
+                        GamePlayEvent.ShowMessage(
+                            R.string.error_generic,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                     return false
                 }
             }
@@ -248,7 +326,12 @@ class GamePlayViewModel(
             when (gameDbRepository.editGame(game)) {
                 is RequestResult.Success -> Unit
                 is RequestResult.Error -> {
-                    _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(
+                        GamePlayEvent.ShowMessage(
+                            R.string.error_generic,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                     return false
                 }
             }

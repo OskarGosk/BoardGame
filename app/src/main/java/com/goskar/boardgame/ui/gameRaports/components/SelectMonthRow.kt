@@ -40,9 +40,11 @@ import com.goskar.boardgame.utils.Months.Companion.getMonthByNumber
 @Composable
 fun SelectMonthRow(
     state: GameReportsState,
-    update: (GameReportsState) -> Unit = {},
     modifier: Modifier,
     prepareChart: () -> Unit = {},
+    useYearChart: () -> Unit = {},
+    useMonthlyChart: () -> Unit = {},
+    useMonthChart: (Int) -> Unit = {},
     selected: Boolean = true
     ) {
     var expanded by remember { mutableStateOf(false) }
@@ -106,12 +108,7 @@ fun SelectMonthRow(
                                     )
                                     expanded = false
                                 } else {
-                                    update(
-                                        state.copy(
-                                            selectedMonth = it.monthsNumber,
-                                            selectedRowChartVariant = RowChartVariantsEnum.MONTH
-                                        )
-                                    )
+                                    useMonthChart(it.monthsNumber)
                                     expanded = false
                                     prepareChart()
                                 }
@@ -133,12 +130,7 @@ fun SelectMonthRow(
                                 )
                                 expanded = false
                             } else {
-                                update(
-                                    state.copy(
-                                        selectedMonth = 0,
-                                        selectedRowChartVariant = RowChartVariantsEnum.MONTHLY
-                                    )
-                                )
+                                useMonthlyChart()
                                 expanded = false
                                 prepareChart()
                             }
@@ -152,13 +144,7 @@ fun SelectMonthRow(
                             )
                         },
                         onClick = {
-                            update(
-                                state.copy(
-                                    selectedMonth = -1,
-                                    selectedYear = 0,
-                                    selectedRowChartVariant = RowChartVariantsEnum.YEAR
-                                )
-                            )
+                            useYearChart()
                             expanded = false
                             prepareChart()
                         })

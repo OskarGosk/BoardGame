@@ -41,9 +41,23 @@ class PlayerListViewModel(
     private val _events = Channel<PlayerListEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
-    fun update(state: PlayerListState) {
-        _state.update { state }
+    fun updateSearchTxt(value: String) {
+        _state.update { it.copy(searchTxt = value) }
     }
+
+    fun updateSortOption(value: Int) {
+        _state.update { it.copy(sortOption = value) }
+    }
+
+    fun updateShowAddEditDialog(value: Boolean) {
+        _state.update { it.copy(showAddEditDialog = value) }
+    }
+
+    fun updatePlayer(value :Player) {
+        _state.update { it.copy(player = value) }
+    }
+
+
 
     fun getAllPlayer() {
         _state.update { it.copy(isLoading = true) }
