@@ -23,6 +23,22 @@ A demo account is available on request, or you can try the app right away in **G
 <img width="360" height="400" alt="HomeScreen Dark" src="screenshots/home_screen_dark.png" /><br/>
 
 <br/><br/>
+## 🏗 Architecture & engineering notes
+
+**Stack:** Kotlin · Jetpack Compose · MVVM · Coroutines + Flow · Voyager (navigation) · Koin (DI) · Room · Retrofit (BGG XML API) · Firebase · Coil · JUnit + MockK + Turbine.
+
+**Structure:** `data` (Room DAOs, Retrofit/BGG, Firebase, repositories that wrap results in a `RequestResult` sealed type) → `ui` (feature-based Compose screens, one `ViewModel` per screen exposing an immutable `State` via `StateFlow`).
+
+**Recent refactor — user feedback & data flow:**
+- **One-off events, not boolean state** – success/error are emitted as `Channel` events and shown through a single themed snackbar host (`LocalSnackbarHost`), instead of `success*/errorVisible` flags lingering in UI state.
+- **Consistent feedback** – every action (add / edit / delete / login) surfaces a typed snackbar (success / error / info); legacy `Toast`s were removed for a consistent, Compose-native UX.
+- **Data before render** – screens load once on entry and show a loader until the data is ready, avoiding flashes of empty/placeholder state.
+- **Errors handled at the boundary** – repository calls share a single `safeDbCall` helper (`runCatching` → `RequestResult`), so exceptions don't leak into the UI layer.
+
+**Testing:** unit tests (JUnit + MockK + Turbine) cover ViewModels (state **and** emitted events), repositories/DAOs and use cases; CI runs them on every push (see the badge at the top).
+
+<br/>
+
 ## 👤 Player List<br/>
 
 Each player shows the total number of games played and wins.<br/>
