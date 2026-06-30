@@ -27,13 +27,13 @@ class GameSearchViewModelTest {
     private lateinit var repo: BoardGameApiRepository
     private lateinit var viewModel: GameSearchViewModel
 
-    val game1 = SearchBGGListElements(id = "1", name = "Azul",              yearPublished = 2015)
-    val game2 = SearchBGGListElements(id = "2", name = "Wingspan",           yearPublished = 2019)
-    val game3 = SearchBGGListElements(id = "3", name = "Catanalida",         yearPublished = 2022)
-    val game4 = SearchBGGListElements(id = "4", name = "Catan And Pirates",  yearPublished = null)
-    val game5 = SearchBGGListElements(id = "5", name = "Catan",              yearPublished = 2025)
-    val game6 = SearchBGGListElements(id = "6", name = "Catan Two",          yearPublished = 2026)
-    val game7 = SearchBGGListElements(id = "7", name = null,                 yearPublished = 2026)
+    val game1 = SearchBGGListElements(id = "1", name = "Azul", yearPublished = 2015)
+    val game2 = SearchBGGListElements(id = "2", name = "Wingspan", yearPublished = 2019)
+    val game3 = SearchBGGListElements(id = "3", name = "Catanalida", yearPublished = 2022)
+    val game4 = SearchBGGListElements(id = "4", name = "Catan And Pirates", yearPublished = null)
+    val game5 = SearchBGGListElements(id = "5", name = "Catan", yearPublished = 2025)
+    val game6 = SearchBGGListElements(id = "6", name = "Catan Two", yearPublished = 2026)
+    val game7 = SearchBGGListElements(id = "7", name = null, yearPublished = 2026)
 
     @Before
     fun setUp() {
@@ -148,7 +148,7 @@ class GameSearchViewModelTest {
     @Test
     fun updateSortedList_defaultSort_preservesApiOrder() = runTest(testDispatcher) {
         coEvery { repo.searchGame("catan") } returns
-            RequestResult.Success(SearchBGGList(boardGames = listOf(game1, game2, game3)))
+                RequestResult.Success(SearchBGGList(boardGames = listOf(game1, game2, game3)))
 
         viewModel.gameListSorted.test {
             skipItems(1)  // skip initial null
@@ -162,78 +162,124 @@ class GameSearchViewModelTest {
     @Test
     fun updateSortedList_nameAscending_sortsByNameAlphabetically() = runTest(testDispatcher) {
         coEvery { repo.searchGame("catan") } returns
-            RequestResult.Success(SearchBGGList(boardGames = listOf(game1, game2, game3, game4)))
+                RequestResult.Success(
+                    SearchBGGList(
+                        boardGames = listOf(
+                            game1,
+                            game2,
+                            game3,
+                            game4
+                        )
+                    )
+                )
 
         viewModel.gameListSorted.test {
             skipItems(1)  // skip initial null
             viewModel.searchGame("catan")
-            viewModel.update(viewModel.state.value.copy(sortOption = R.string.name_ascending))
             skipItems(1)
-            viewModel.updateSortedList()
+            viewModel.updateSortedList(R.string.name_ascending)
             assertEquals(listOf(game1, game4, game3, game2), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun updateSortedList_nameDescending_sortsByNameReverseAlphabetically() = runTest(testDispatcher) {
-        coEvery { repo.searchGame("catan") } returns
-            RequestResult.Success(SearchBGGList(boardGames = listOf(game1, game2, game3, game4)))
+    fun updateSortedList_nameDescending_sortsByNameReverseAlphabetically() =
+        runTest(testDispatcher) {
+            coEvery { repo.searchGame("catan") } returns
+                    RequestResult.Success(
+                        SearchBGGList(
+                            boardGames = listOf(
+                                game1,
+                                game2,
+                                game3,
+                                game4
+                            )
+                        )
+                    )
 
-        viewModel.gameListSorted.test {
-            skipItems(1)  // skip initial null
-            viewModel.searchGame("catan")
-            viewModel.update(viewModel.state.value.copy(sortOption = R.string.name_descending))
-            skipItems(1)
-            viewModel.updateSortedList()
-            assertEquals(listOf(game2, game3, game4, game1), awaitItem())
-            cancelAndIgnoreRemainingEvents()
+            viewModel.gameListSorted.test {
+                skipItems(1)  // skip initial null
+                viewModel.searchGame("catan")
+                skipItems(1)
+                viewModel.updateSortedList(R.string.name_descending)
+                assertEquals(listOf(game2, game3, game4, game1), awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun updateSortedList_playedAscending_sortsByYearPublishedAscending() = runTest(testDispatcher) {
         coEvery { repo.searchGame("catan") } returns
-            RequestResult.Success(SearchBGGList(boardGames = listOf(game1, game2, game3, game4, game5)))
+                RequestResult.Success(
+                    SearchBGGList(
+                        boardGames = listOf(
+                            game1,
+                            game2,
+                            game3,
+                            game4,
+                            game5
+                        )
+                    )
+                )
 
         viewModel.gameListSorted.test {
             skipItems(1)  // skip initial null
             viewModel.searchGame("catan")
-            viewModel.update(viewModel.state.value.copy(sortOption = R.string.played_ascending))
             skipItems(1)
-            viewModel.updateSortedList()
+            viewModel.updateSortedList(R.string.played_ascending)
             assertEquals(listOf(game4, game1, game2, game3, game5), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun updateSortedList_playedDescending_sortsByYearPublishedDescending() = runTest(testDispatcher) {
-        coEvery { repo.searchGame("catan") } returns
-            RequestResult.Success(SearchBGGList(boardGames = listOf(game1, game2, game3, game4, game5)))
+    fun updateSortedList_playedDescending_sortsByYearPublishedDescending() =
+        runTest(testDispatcher) {
+            coEvery { repo.searchGame("catan") } returns
+                    RequestResult.Success(
+                        SearchBGGList(
+                            boardGames = listOf(
+                                game1,
+                                game2,
+                                game3,
+                                game4,
+                                game5
+                            )
+                        )
+                    )
 
-        viewModel.gameListSorted.test {
-            skipItems(1)  // skip initial null
-            viewModel.searchGame("catan")
-            viewModel.update(viewModel.state.value.copy(sortOption = R.string.played_descending))
-            skipItems(1)
-            viewModel.updateSortedList()
-            assertEquals(listOf(game5, game3, game2, game1, game4), awaitItem())
-            cancelAndIgnoreRemainingEvents()
+            viewModel.gameListSorted.test {
+                skipItems(1)  // skip initial null
+                viewModel.searchGame("catan")
+                skipItems(1)
+                viewModel.updateSortedList(R.string.played_descending)
+                assertEquals(listOf(game5, game3, game2, game1, game4), awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun updateSortedList_withSearchTxt_filterAppliedAfterSort() = runTest(testDispatcher) {
         coEvery { repo.searchGame("catan") } returns
-            RequestResult.Success(SearchBGGList(boardGames = listOf(game1, game2, game3, game4, game5)))
+                RequestResult.Success(
+                    SearchBGGList(
+                        boardGames = listOf(
+                            game1,
+                            game2,
+                            game3,
+                            game4,
+                            game5
+                        )
+                    )
+                )
 
         viewModel.gameListSorted.test {
             skipItems(1)  // skip initial null
             viewModel.searchGame("catan")
-            viewModel.update(viewModel.state.value.copy(sortOption = R.string.name_ascending, searchTxt = "az"))
+            viewModel.updateSearchTxt("az")
             skipItems(1)
-            viewModel.updateSortedList()
+            viewModel.updateSortedList(R.string.name_ascending)
             assertEquals(listOf(game1), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
@@ -242,14 +288,13 @@ class GameSearchViewModelTest {
     @Test
     fun updateSortedList_elementWithNullName_isExcludedFromResults() = runTest(testDispatcher) {
         coEvery { repo.searchGame("catan") } returns
-            RequestResult.Success(SearchBGGList(boardGames = listOf(game2, game7, game1)))
+                RequestResult.Success(SearchBGGList(boardGames = listOf(game2, game7, game1)))
 
         viewModel.gameListSorted.test {
             skipItems(1)  // skip initial null
             viewModel.searchGame("catan")
-            viewModel.update(viewModel.state.value.copy(sortOption = R.string.name_ascending))
             skipItems(1)
-            viewModel.updateSortedList()
+            viewModel.updateSortedList(R.string.name_ascending)
             assertEquals(listOf(game1, game2), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }

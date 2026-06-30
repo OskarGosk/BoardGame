@@ -31,38 +31,38 @@ fun AddEditDialog(
     modifierButton: Modifier = Modifier,
     confirmButtonClick: () -> Unit = {},
     onDismiss: () -> Unit = {},
-    update: (PlayerListState) -> Unit = {},
+    updatePlayer: (Player) -> Unit = {}
+
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = {
             Text(
-                text = stringResource(if (newPlayer)R.string.player_new else R.string.player_edit,),
+                text = stringResource(if (newPlayer) R.string.player_new else R.string.player_edit),
                 style = SmoochBold22
             )
         },
         text = {
             OutlinedTextField(
                 textStyle = Smooch18,
-                value = state.player?.name?:"",
+                value = state.player?.name ?: "",
                 onValueChange = {
-                    update(
-                        state.copy(
-                            player = Player(
-                                name = it,
-                                games = state.player?.games?:0,
-                                winRatio = state.player?.winRatio?:0,
-                                description = "",
-                                selected = false,
-                                id = state.player?.id?: UUID.randomUUID().toString()
-                            )
+                    updatePlayer(
+                        Player(
+                            name = it,
+                            games = state.player?.games ?: 0,
+                            winRatio = state.player?.winRatio ?: 0,
+                            description = "",
+                            selected = false,
+                            id = state.player?.id ?: UUID.randomUUID().toString()
                         )
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
                 label = {
-                    Text(stringResource(id = R.string.player_name),
+                    Text(
+                        stringResource(id = R.string.player_name),
                         style = Smooch14
                     )
                 },
@@ -109,12 +109,15 @@ fun AddEditDialogPreview() {
             AddEditDialog(
                 newPlayer = false,
                 state = PlayerListState(
-                    player = Player( name = "Oskar",
-                    games = 3,
-                    winRatio = 12,
-                    description = "Testowy",
-                    selected = true,
-                    id = UUID.randomUUID().toString()))
+                    player = Player(
+                        name = "Oskar",
+                        games = 3,
+                        winRatio = 12,
+                        description = "Testowy",
+                        selected = true,
+                        id = UUID.randomUUID().toString()
+                    )
+                )
             )
 
         }

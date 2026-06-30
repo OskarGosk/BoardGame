@@ -54,10 +54,10 @@ class GameSearchScreen : Screen {
             GameSearchContent(
                 state = state,
                 gameList = gameList,
-                update = viewModel::update,
                 search = viewModel::searchGame,
                 updateSortedList = viewModel::updateSortedList,
-                paddingValues = paddingValues
+                paddingValues = paddingValues,
+                updateSearchTxt = viewModel::updateSearchTxt
             )
         }
     }
@@ -67,11 +67,10 @@ class GameSearchScreen : Screen {
 fun GameSearchContent(
     state: GameSearchState,
     gameList: List<SearchBGGListElements>?,
-    update: (GameSearchState) -> Unit = {},
     search: (String) -> Unit = {},
-    updateSortedList: () -> Unit = {},
-    paddingValues: PaddingValues
-
+    updateSortedList: (Int) -> Unit = {},
+    paddingValues: PaddingValues,
+    updateSearchTxt: (String) -> Unit = {}
 ) {
 
     Column(
@@ -90,26 +89,13 @@ fun GameSearchContent(
                 search(state.searchTxt)
             },
             updateTxt = {
-                update(
-                    state.copy(
-                        searchTxt = it
-                    )
-                )
+                updateSearchTxt(it)
             },
             clearTxt = {
-                update(
-                    state.copy(
-                        searchTxt = ""
-                    )
-                )
+                updateSearchTxt("")
             },
             updateSort = {
-                update(
-                    state.copy(
-                        sortOption = it
-                    )
-                )
-                updateSortedList()
+                updateSortedList(it)
             }
         )
         Column(

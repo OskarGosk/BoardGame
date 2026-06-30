@@ -48,7 +48,8 @@ import com.goskar.boardgame.ui.theme.Smooch16
 fun SelectPlayerDialog(
     state: GamePlayState,
     selectedPlayer: (Player) -> Unit = {},
-    update: (GamePlayState) -> Unit = {},
+    updateSearchTxt: (String) -> Unit = {},
+    updateSortOption: (Int) -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -90,25 +91,13 @@ fun SelectPlayerDialog(
                 searchTxt = state.searchTxt,
                 sortOption = state.sortOption,
                 updateTxt = {
-                    update(
-                        state.copy(
-                            searchTxt = it
-                        )
-                    )
+                    updateSearchTxt(it)
                 },
                 clearTxt = {
-                    update(
-                        state.copy(
-                            searchTxt = ""
-                        )
-                    )
+                    updateSearchTxt("")
                 },
                 updateSort = {
-                    update(
-                        state.copy(
-                            sortOption = it
-                        )
-                    )
+                    updateSortOption(it)
                 }
             )
             LazyVerticalGrid(
@@ -120,7 +109,7 @@ fun SelectPlayerDialog(
                             selectedPlayer(player)
                         } else {
                             snackbarHostState.show(
-                                message =context.getString(R.string.history_max_player_selected),
+                                message = context.getString(R.string.history_max_player_selected),
                                 type = AppSnackBarType.INFO
                             )
                         }

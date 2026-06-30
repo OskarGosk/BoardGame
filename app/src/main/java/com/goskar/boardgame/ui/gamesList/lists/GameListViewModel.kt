@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 sealed interface GameListEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GameListEvent
 }
+
 data class GameListState(
     val gameList: List<GameUiState>? = emptyList(),
     val gameListEdited: List<GameUiState> = emptyList(),
@@ -50,6 +51,23 @@ class GameListViewModel(
     fun update(state: GameListState) {
         _state.update { state }
     }
+
+    fun updateSearchTxt(value: String) {
+        _state.update { it.copy(searchTxt = value) }
+    }
+
+    fun updateSortOption(value: SortList) {
+        _state.update { it.copy(sortOption = value) }
+    }
+
+    fun updateCheckboxBaseGame() {
+        _state.update { it.copy(checkboxBaseGame = !it.checkboxBaseGame) }
+    }
+
+    fun updateCheckboxExpansionGame() {
+        _state.update { it.copy(checkboxExpansionGame = !it.checkboxExpansionGame) }
+    }
+
 
     fun refreshGameList() {
         val newGameList: List<GameUiState> = when (state.value.sortOption) {
@@ -123,7 +141,12 @@ class GameListViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(
+                        GameListEvent.ShowMessage(
+                            R.string.error_generic,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                 }
             }
         }
@@ -140,7 +163,12 @@ class GameListViewModel(
                             isLoading = false,
                         )
                     }
-                    _events.send(GameListEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS))
+                    _events.send(
+                        GameListEvent.ShowMessage(
+                            R.string.success_global,
+                            AppSnackBarType.SUCCESS
+                        )
+                    )
                 }
 
                 is RequestResult.Error -> {
@@ -149,7 +177,12 @@ class GameListViewModel(
                             isLoading = false,
                         )
                     }
-                    _events.send(GameListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+                    _events.send(
+                        GameListEvent.ShowMessage(
+                            R.string.error_generic,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                 }
             }
         }

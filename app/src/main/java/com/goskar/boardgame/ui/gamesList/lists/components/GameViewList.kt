@@ -37,9 +37,10 @@ fun GameViewList(
     deleteGame: (Game) -> Unit = {},
     refresh: () -> Unit = {},
     state: GameListState,
-    update: (GameListState) -> Unit = {},
     refreshGameList: () -> Unit = {},
     updateExpandedGameCover: (Game) -> Unit = {},
+    updateCheckboxExpansionGame: () -> Unit = {},
+    updateCheckboxBaseGame: () -> Unit = {},
     changeAllExpendedGameCover: () -> Unit = {}
 ) {
     var selectedList by remember { mutableStateOf(GameListFormatEnum.LIST) }
@@ -76,11 +77,7 @@ fun GameViewList(
                         checkboxText = stringResource(R.string.board_base),
                         checked = state.checkboxBaseGame,
                         onCheckedChange = {
-                            update(
-                                state.copy(
-                                    checkboxBaseGame = !state.checkboxBaseGame,
-                                )
-                            )
+                            updateCheckboxBaseGame()
                             refreshGameList()
 
                         }
@@ -90,11 +87,7 @@ fun GameViewList(
                         checkboxText = stringResource(R.string.board_expansion),
                         checked = state.checkboxExpansionGame,
                         onCheckedChange = {
-                            update(
-                                state.copy(
-                                    checkboxExpansionGame = !state.checkboxExpansionGame,
-                                )
-                            )
+                            updateCheckboxExpansionGame()
                             refreshGameList()
                         }
                     )

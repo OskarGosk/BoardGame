@@ -113,21 +113,7 @@ class AddEditGameScreen(private val editGame: Game?) : Screen {
 
         LaunchedEffect(editGame) {
             if (editGame != null) {
-                viewModel.update(
-                    state.copy(
-                        name = editGame.name,
-                        expansion = editGame.expansion,
-                        cooperate = editGame.cooperate,
-                        baseGame = editGame.baseGame,
-                        baseGameId = editGame.baseGameId,
-                        minPlayer = editGame.minPlayer,
-                        maxPlayer = editGame.maxPlayer,
-                        games = editGame.games,
-                        uri = editGame.uri ?: "",
-                        uriFromBgg = editGame.uriFromBgg,
-                        id = editGame.id
-                    )
-                )
+                viewModel.updateDataForEditGame(editGame)
             }
         }
         BoardGameScaffold(
@@ -139,9 +125,15 @@ class AddEditGameScreen(private val editGame: Game?) : Screen {
             AddEditGameContent(
                 state = state,
                 allBaseGame = allBaseGame,
-                update = viewModel::update,
                 addEditGame = viewModel::validateAddEitGame,
                 takePhoto = viewModel::takePhoto,
+                updateName = viewModel::updateName,
+                updateMinPlayer = viewModel::updateMinPlayer,
+                updateMaxPLayer = viewModel::updateMaxPLayer,
+                updateGameType = viewModel::updateGameType,
+                updateExpansion = viewModel::updateExpansion,
+                updateBaseBase = viewModel::updateBaseBase,
+                updateCameraUri = viewModel::updateCameraUri,
                 paddingValues = paddingValues
             )
         }
@@ -153,9 +145,15 @@ class AddEditGameScreen(private val editGame: Game?) : Screen {
 fun AddEditGameContent(
     state: AddEditGameState,
     allBaseGame: List<Game>,
-    update: (AddEditGameState) -> Unit = {},
     addEditGame: (Context) -> Unit = {},
     takePhoto: (String, ImageCapture, File, Executor, (Uri) -> Unit, (ImageCaptureException) -> Unit) -> Unit = { _, _, _, _, _, _ -> },
+    updateName: (String?) -> Unit = {},
+    updateMinPlayer: (String) -> Unit = {},
+    updateMaxPLayer: (String) -> Unit = {},
+    updateGameType: () -> Unit = {},
+    updateExpansion: () -> Unit = {},
+    updateBaseBase: (String?, String?) -> Unit = { _, _ -> },
+    updateCameraUri: (String) -> Unit = {},
     paddingValues: PaddingValues
 
 ) {
@@ -198,11 +196,7 @@ fun AddEditGameContent(
             textStyle = Smooch18,
             value = state.name ?: "",
             onValueChange = {
-                update(
-                    state.copy(
-                        name = it
-                    )
-                )
+                updateName(it)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -221,11 +215,7 @@ fun AddEditGameContent(
             value = state.minPlayer,
             onValueChange = {
                 if (it.isDigitsOnly()) {
-                    update(
-                        state.copy(
-                            minPlayer = it
-                        )
-                    )
+                    updateMinPlayer(it)
                 }
             },
             modifier = Modifier
@@ -245,11 +235,7 @@ fun AddEditGameContent(
             value = state.maxPlayer,
             onValueChange = {
                 if (it.isDigitsOnly()) {
-                    update(
-                        state.copy(
-                            maxPlayer = it
-                        )
-                    )
+                    updateMaxPLayer(it)
                 }
             },
             modifier = Modifier
@@ -271,11 +257,8 @@ fun AddEditGameContent(
             Checkbox(
                 checked = state.cooperate,
                 onCheckedChange = {
-                    update(
-                        state.copy(
-                            cooperate = !state.cooperate
-                        )
-                    )
+                    updateGameType()
+
                 },
             )
             Text(stringResource(id = R.string.board_is_cooperate), style = Smooch18)
@@ -288,11 +271,7 @@ fun AddEditGameContent(
             Checkbox(
                 checked = state.expansion,
                 onCheckedChange = {
-                    update(
-                        state.copy(
-                            expansion = !state.expansion
-                        )
-                    )
+                    updateExpansion()
                 },
             )
             Text(stringResource(id = R.string.board_is_expansion), style = Smooch18)
@@ -300,12 +279,8 @@ fun AddEditGameContent(
         if (state.expansion) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 DropdownBaseGame(allBaseGame, selectedName = state.baseGame, selectBaseGame = {
-                    update(
-                        state.copy(
-                            baseGame = it?.name,
-                            baseGameId = it?.id
-                        )
-                    )
+
+                    updateBaseBase(it?.name, it?.id)
                 })
             }
         }
@@ -313,7 +288,7 @@ fun AddEditGameContent(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
-            SinglePhotoPicker(state, update, onClick = {
+            SinglePhotoPicker(state, updateCameraUri = updateCameraUri, onClick = {
                 keyboardController?.hide()
                 focusManager.clearFocus()
                 checkAndRequestPermissionWithClick(
@@ -367,7 +342,7 @@ fun AddEditGameContent(
                 executor = cameraExecutor,
                 onImageCaptured = { uri ->
                     Timber.tag(GLOBAL_TAG).i("Captured image URI: $uri")
-                    update(state.copy(uri = uri.toString()))
+                    updateCameraUri(uri.toString())
                     shouldOpenCamera = false
                 },
                 onError = {

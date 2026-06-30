@@ -34,8 +34,10 @@ fun AddGameDialog(
     allBaseGame: List<Game>,
     modifierButton: Modifier = Modifier,
     confirmButtonClick: () -> Unit = {},
+    updateGameType: () -> Unit,
+    updateExpansion: () -> Unit,
+    updateBaseBase: (String?, String?) -> Unit,
     onDismiss: () -> Unit = {},
-    update: (GameDetailsBGGState) -> Unit = {},
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -57,11 +59,7 @@ fun AddGameDialog(
                     Checkbox(
                         checked = state.cooperate,
                         onCheckedChange = {
-                            update(
-                                state.copy(
-                                    cooperate = !state.cooperate
-                                )
-                            )
+                            updateGameType()
                         },
                     )
                     Text(stringResource(id = R.string.board_is_cooperate), style = Smooch18)
@@ -74,23 +72,19 @@ fun AddGameDialog(
                     Checkbox(
                         checked = state.expansion,
                         onCheckedChange = {
-                            update(
-                                state.copy(
-                                    expansion = !state.expansion
-                                )
-                            )
+                            updateExpansion()
                         },
                     )
                     Text(stringResource(id = R.string.board_is_expansion), style = Smooch18)
                 }
                 if (state.expansion) {
-                    Row (modifier = Modifier.fillMaxWidth()){
-                        DropdownBaseGame(allBaseGame, selectedName = state.baseGame, selectBaseGame = {
-                            update(state.copy(
-                                baseGame = it?.name,
-                                baseGameId = it?.id
-                            ))
-                        })
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        DropdownBaseGame(
+                            allBaseGame,
+                            selectedName = state.baseGame,
+                            selectBaseGame = {
+                                updateBaseBase(it?.name, it?.id)
+                            })
                     }
                 }
             }
@@ -136,8 +130,13 @@ fun AddEditDialogPreview() {
                 state = GameDetailsBGGState(
                     expansion = true
                 ),
-                allBaseGame = emptyList()
-            )
+                allBaseGame = emptyList(),
+                confirmButtonClick = {},
+                updateGameType = {},
+                updateExpansion = {},
+                updateBaseBase = { _, _ -> },
+
+                )
 
         }
     }

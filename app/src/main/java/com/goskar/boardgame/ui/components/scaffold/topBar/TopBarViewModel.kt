@@ -35,10 +35,6 @@ class TopBarViewModel(
     private val _state = MutableStateFlow(TopBarState())
     val state = _state.asStateFlow()
 
-    fun update(state: TopBarState) {
-        _state.update { state }
-    }
-
     fun uploadDataToFirebase() {
         viewModelScope.launch {
             _state.update {

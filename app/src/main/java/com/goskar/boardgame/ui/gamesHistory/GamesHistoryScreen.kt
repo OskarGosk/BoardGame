@@ -65,7 +65,8 @@ class HistoryGameListScreen : Screen {
 
             HistoryGameListContent(
                 state = state,
-                update = viewModel::update,
+                updateSearchTxt = viewModel::updateSearchTxt,
+                updateSortOption = viewModel::updateSortOption,
                 paddingValues = paddingValues
             )
         }
@@ -75,7 +76,8 @@ class HistoryGameListScreen : Screen {
 @Composable
 fun HistoryGameListContent(
     state: GamesHistoryState,
-    update: (GamesHistoryState) -> Unit = {},
+    updateSearchTxt: (String) -> Unit = {},
+    updateSortOption: (Int) -> Unit = {},
     paddingValues: PaddingValues
 ) {
     val navigator = LocalNavigator.current
@@ -100,25 +102,13 @@ fun HistoryGameListContent(
                 searchTxt = state.searchTxt,
                 sortOption = state.sortOption,
                 updateTxt = {
-                    update(
-                        state.copy(
-                            searchTxt = it
-                        )
-                    )
+                    updateSearchTxt(it)
                 },
                 clearTxt = {
-                    update(
-                        state.copy(
-                            searchTxt = ""
-                        )
-                    )
+                    updateSearchTxt("")
                 },
                 updateSort = {
-                    update(
-                        state.copy(
-                            sortOption = it
-                        )
-                    )
+                    updateSortOption(it)
                 }
             )
             HistoryGamesList(state)
