@@ -32,6 +32,7 @@ fun AppScaffold(
     onBack: (() -> Unit)? = null,
     showMenu: Boolean = false,
     onMenuClick: (() -> Unit)? = null,
+    leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -51,6 +52,7 @@ fun AppScaffold(
                 BgTopBar(
                     title = title,
                     onBack = onBack,
+                    leading = leading,
                     trailingIcon = trailing,
                 )
             }

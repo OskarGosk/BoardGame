@@ -121,14 +121,15 @@ fun BgBottomNavBar(
 }
 
 /**
- * Top app bar — back arrow + title + optional trailing icon.
- * Matches every light screen header.
+ * Top app bar — optional leading slot (e.g. avatar) OR back arrow + title + optional trailing icon.
+ * Matches every light screen header. When [leading] is provided it replaces the back arrow.
  */
 @Composable
 fun BgTopBar(
     title: String,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    leading: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     Row(
@@ -139,7 +140,10 @@ fun BgTopBar(
             .padding(horizontal = BoardGameSpacing.MarginMobile),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (onBack != null) {
+        if (leading != null) {
+            leading()
+            Spacer(Modifier.width(12.dp))
+        } else if (onBack != null) {
             IconButton(onClick = onBack) {
                 Icon(Icons.Default.ArrowBack, "Back", tint = BoardGameColors.Primary)
             }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -278,7 +280,9 @@ fun BgDarkPlayerRow(
     rank: String,
     modifier: Modifier = Modifier,
     isOnline: Boolean = false,
+    winRateColor: Color = BoardGameDarkColors.Tertiary,
     imageContent: (@Composable BoxScope.() -> Unit)? = null,
+    trailing: @Composable (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
     BgDarkListCard(modifier = modifier, shape = BoardGameShapes.Large, onClick = onClick) {
@@ -306,7 +310,7 @@ fun BgDarkPlayerRow(
         Spacer(Modifier.height(8.dp))
         HorizontalDivider(color = BoardGameDarkColors.Divider, thickness = 0.5.dp)
         Spacer(Modifier.height(8.dp))
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     "WIN RATE",
@@ -316,7 +320,7 @@ fun BgDarkPlayerRow(
                 Text(
                     winRate,
                     style = BoardGameDarkTypography.TitleLg,
-                    color = BoardGameDarkColors.Tertiary
+                    color = winRateColor
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
@@ -327,7 +331,7 @@ fun BgDarkPlayerRow(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.Notifications, null, tint = BoardGameDarkColors.Secondary,
+                        Icons.Default.MilitaryTech, null, tint = BoardGameDarkColors.Secondary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(Modifier.width(4.dp))
@@ -338,6 +342,7 @@ fun BgDarkPlayerRow(
                     )
                 }
             }
+            if (trailing != null) trailing()
         }
     }
 }
