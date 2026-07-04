@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,37 +35,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.playerList.newAddPlayer.AddPlayerNewScreen
 import com.goskar.boardgame.ui.playerList.newAddPlayer.EditPlayerData
-import com.goskar.boardgame.ui.theme.BgDarkAvatar
-import com.goskar.boardgame.ui.theme.BgDarkBottomNavBar
-import com.goskar.boardgame.ui.theme.BgDarkPlayerRow
-import com.goskar.boardgame.ui.theme.BgDarkSearchBar
-import com.goskar.boardgame.ui.theme.BgDarkSecondaryButton
-import com.goskar.boardgame.ui.theme.BgDarkStatCard
-import com.goskar.boardgame.ui.theme.BgDarkTopBar
-import com.goskar.boardgame.ui.theme.BgNavItem
-import com.goskar.boardgame.ui.theme.BoardGameDarkColors
-import com.goskar.boardgame.ui.theme.BoardGameDarkSpacing
-import com.goskar.boardgame.ui.theme.BoardGameDarkTypography
+import com.goskar.boardgame.ui.theme.AppAvatar
+import com.goskar.boardgame.ui.theme.AppBottomNavBar
+import com.goskar.boardgame.ui.theme.AppPlayerRow
+import com.goskar.boardgame.ui.theme.AppSearchBar
+import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.theme.AppSecondaryButton
+import com.goskar.boardgame.ui.theme.AppStatCard
+import com.goskar.boardgame.ui.theme.AppTopBar
 import com.goskar.boardgame.ui.theme.BoardGameShapes
+import com.goskar.boardgame.ui.theme.BoardGameSpacing
+import com.goskar.boardgame.ui.theme.BoardGameTheme
+import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
 
-private val darkNavItems = listOf(
-    BgNavItem("Home", Icons.Default.Home),
-    BgNavItem("Collection", Icons.AutoMirrored.Filled.List),
-    BgNavItem("Add Session", Icons.Default.Add),
-    BgNavItem("Players", Icons.Default.Person),
-)
-
 /**
- * New "Players Directory" screen (dark redesign). Backed by [PlayerListNewViewModel]
+ * New "Players Directory" screen (theme-aware). Backed by [PlayerListNewViewModel]
  * (placeholder state only).
  */
 class PlayerListNewScreen : Screen {
@@ -96,80 +87,73 @@ fun PlayerListNewScreenContent(
 ) {
     var selectedNav by remember { mutableStateOf(3) } // Players tab
 
-    Scaffold(
-        containerColor = BoardGameDarkColors.Background,
-        topBar = {
-            BgDarkTopBar(
-                title = "Tabletop Tracker",
-                showMenu = true,
-                onMenuClick = onMenu,
-                trailingContent = { BgDarkAvatar(initials = "AM", size = 36.dp) },
-            )
-        },
-        bottomBar = {
-            BgDarkBottomNavBar(darkNavItems, selectedNav, { selectedNav = it })
-        },
+    AppScaffold(
+        title = "Tabletop Tracker",
+        navItems = appNavItems,
+        selectedTab = selectedNav,
+        onTabSelected = { selectedNav = it },
+        trailing = { AppAvatar(initials = "AM", size = 36.dp) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(BoardGameDarkSpacing.MarginMobile),
+                .padding(BoardGameSpacing.MarginMobile),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             // Header
             Column {
                 Text(
                     "Players Directory",
-                    style = BoardGameDarkTypography.HeadlineLgMobile,
-                    color = BoardGameDarkColors.OnSurface,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     "Manage and track your gaming circle's statistics.",
-                    style = BoardGameDarkTypography.BodyMd,
-                    color = BoardGameDarkColors.OnSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
-            BgDarkSearchBar(
+            AppSearchBar(
                 value = state.query,
                 onValueChange = onQueryChange,
                 placeholder = "Search players by name or rank…",
             )
 
             // Stat cards
-            BgDarkStatCard(
+            AppStatCard(
                 label = "Total Players",
                 value = state.totalPlayers,
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { StatIcon(Icons.Default.Group) },
+                icon = { StatIcon(Icons.Default.Group) },
             )
-            BgDarkStatCard(
+            AppStatCard(
                 label = "Avg Win Rate",
                 value = state.avgWinRate,
                 modifier = Modifier.fillMaxWidth(),
-                valueColor = BoardGameDarkColors.Success,
-                leadingIcon = {
+                valueColor = appExt().success,
+                icon = {
                     StatIcon(
                         Icons.AutoMirrored.Filled.TrendingUp,
-                        bg = BoardGameDarkColors.Success.copy(alpha = 0.18f),
-                        tint = BoardGameDarkColors.Success,
+                        bg = appExt().success.copy(alpha = 0.18f),
+                        tint = appExt().success,
                     )
                 },
             )
-            BgDarkStatCard(
+            AppStatCard(
                 label = "Active This Week",
                 value = state.activeThisWeek,
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { StatIcon(Icons.Default.MilitaryTech) },
+                icon = { StatIcon(Icons.Default.MilitaryTech) },
             )
 
             Spacer(Modifier.height(4.dp))
 
             // Player rows
             state.players.forEach { player ->
-                BgDarkPlayerRow(
+                AppPlayerRow(
                     initials = player.initials,
                     name = player.name,
                     role = player.role,
@@ -181,7 +165,7 @@ fun PlayerListNewScreenContent(
                         Icon(
                             Icons.Default.MoreVert,
                             contentDescription = "More",
-                            tint = BoardGameDarkColors.OnSurfaceVariant,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier
                                 .clip(BoardGameShapes.Full)
                                 .clickable { onPlayerMenu(player) }
@@ -193,23 +177,24 @@ fun PlayerListNewScreenContent(
             }
 
             Spacer(Modifier.height(4.dp))
-            BgDarkSecondaryButton(text = "⌄ LOAD MORE PLAYERS", onClick = onLoadMore)
+            AppSecondaryButton(text = "⌄ LOAD MORE PLAYERS", onClick = onLoadMore)
             Spacer(Modifier.height(4.dp))
         }
     }
 }
 
+@Composable
 private fun winRateColor(rate: Double): Color = when {
-    rate >= 60.0 -> BoardGameDarkColors.Success
-    rate < 45.0 -> BoardGameDarkColors.Error
-    else -> BoardGameDarkColors.OnSurface
+    rate >= 60.0 -> appExt().success
+    rate < 45.0 -> MaterialTheme.colorScheme.error
+    else -> MaterialTheme.colorScheme.onSurface
 }
 
 @Composable
 private fun StatIcon(
     icon: ImageVector,
-    bg: Color = BoardGameDarkColors.SecondaryContainer,
-    tint: Color = BoardGameDarkColors.Primary,
+    bg: Color = MaterialTheme.colorScheme.secondaryContainer,
+    tint: Color = MaterialTheme.colorScheme.primary,
 ) {
     Box(
         modifier = Modifier
@@ -222,8 +207,14 @@ private fun StatIcon(
     }
 }
 
+@Preview(name = "Players Directory — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun PlayerListNewScreenLightPreview() {
+    BoardGameTheme(darkTheme = false) { PlayerListNewScreenContent(state = PlayerListNewState()) }
+}
+
 @Preview(name = "Players Directory — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun PlayerListNewScreenPreview() {
-    PlayerListNewScreenContent(state = PlayerListNewState())
+private fun PlayerListNewScreenDarkPreview() {
+    BoardGameTheme(darkTheme = true) { PlayerListNewScreenContent(state = PlayerListNewState()) }
 }

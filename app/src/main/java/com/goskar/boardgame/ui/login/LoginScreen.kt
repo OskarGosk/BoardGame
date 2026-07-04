@@ -48,7 +48,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.home.HomeScreen
+import com.goskar.boardgame.ui.home.newHome.HomeNewScreen
 import com.goskar.boardgame.ui.theme.BgListCard
 import com.goskar.boardgame.ui.theme.BgPrimaryButton
 import com.goskar.boardgame.ui.theme.BgSecondaryButton
@@ -84,12 +84,12 @@ class LoginScreen : Screen {
                             message = context.getString(event.message),
                             type = event.type
                         )
-                        navigator?.replaceAll(HomeScreen(state.login != "quest"))
+                        navigator?.replaceAll(HomeNewScreen())
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 
                     is LoginEvent.LoggedInOrGuest -> {
-                        navigator?.replaceAll(HomeScreen(state.login != "quest"))
+                        navigator?.replaceAll(HomeNewScreen())
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 

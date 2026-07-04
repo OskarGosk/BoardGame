@@ -22,13 +22,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Casino
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,20 +40,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Person
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.profile.newProfile.ProfileNewScreen
 import com.goskar.boardgame.ui.theme.AppAvatar
-import com.goskar.boardgame.ui.theme.AppBottomNavBar
 import com.goskar.boardgame.ui.theme.AppChip
 import com.goskar.boardgame.ui.theme.AppChipStyle
 import com.goskar.boardgame.ui.theme.AppFab
 import com.goskar.boardgame.ui.theme.AppListCard
 import com.goskar.boardgame.ui.theme.AppProgressBar
+import com.goskar.boardgame.ui.theme.AppScaffold
 import com.goskar.boardgame.ui.theme.AppSectionHeader
 import com.goskar.boardgame.ui.theme.AppStatCard
-import com.goskar.boardgame.ui.theme.AppTopBar
-import com.goskar.boardgame.ui.theme.BgNavItem
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
@@ -70,17 +67,12 @@ class HomeNewScreen : Screen {
     override fun Content() {
         val viewModel: HomeNewViewModel = koinViewModel()
         val state by viewModel.state.collectAsState()
-        HomeNewScreenContent(state = state)
+        val navigator = LocalNavigator.current
+        HomeNewScreenContent(state = state,
+            onSettingsClick = {navigator?.push(ProfileNewScreen())})
     }
 }
 
-/** Canonical bottom-nav destinations shared across the redesigned app. */
-val appNavItems = listOf(
-    BgNavItem("Home", Icons.Default.Home),
-    BgNavItem("Collection", Icons.AutoMirrored.Filled.List),
-    BgNavItem("Add Session", Icons.Default.Add),
-    BgNavItem("Players", Icons.Default.Person),
-)
 
 @Composable
 fun HomeNewScreenContent(
@@ -91,27 +83,22 @@ fun HomeNewScreenContent(
 ) {
     var selectedTab by remember { mutableStateOf(0) }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            AppTopBar(
-                title = "Tabletop Tracker",
-                trailing = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = onSettingsClick) {
-                            Icon(
-                                Icons.Default.Settings,
-                                contentDescription = "Settings",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        AppAvatar(initials = state.userName, size = 36.dp)
-                    }
-                },
-            )
-        },
-        bottomBar = {
-            AppBottomNavBar(appNavItems, selectedTab, { selectedTab = it })
+    AppScaffold(
+        title = "Tabletop Tracker",
+        navItems = appNavItems,
+        selectedTab = selectedTab,
+        onTabSelected = { selectedTab = it },
+        trailing = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onSettingsClick) {
+                    Icon(
+                        Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                AppAvatar(initials = state.userName, size = 36.dp)
+            }
         },
         floatingActionButton = {
             AppFab(onClick = onFabClick) {

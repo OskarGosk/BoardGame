@@ -27,6 +27,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,41 +46,29 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.goskar.boardgame.ui.newDesign.BgSectionHeader
-import com.goskar.boardgame.ui.theme.BgBottomNavBar
-import com.goskar.boardgame.ui.theme.BgChip
-import com.goskar.boardgame.ui.theme.BgChipStyle
-import com.goskar.boardgame.ui.theme.BgListCard
-import com.goskar.boardgame.ui.theme.BgNavItem
-import com.goskar.boardgame.ui.theme.BgPrimaryButton
-import com.goskar.boardgame.ui.theme.BgSearchBar
-import com.goskar.boardgame.ui.theme.BgSecondaryButton
-import com.goskar.boardgame.ui.theme.BgSegmentedControl
-import com.goskar.boardgame.ui.theme.BgTextField
-import com.goskar.boardgame.ui.theme.BgToggleRow
-import com.goskar.boardgame.ui.theme.BgTopBar
-import com.goskar.boardgame.ui.theme.BoardGameColors
+import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.theme.AppChip
+import com.goskar.boardgame.ui.theme.AppChipStyle
+import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.theme.AppBottomNavBar
+import com.goskar.boardgame.ui.theme.AppPrimaryButton
+import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.theme.AppSearchBar
+import com.goskar.boardgame.ui.theme.AppSecondaryButton
+import com.goskar.boardgame.ui.theme.AppSectionHeader
+import com.goskar.boardgame.ui.theme.AppSegmentedControl
+import com.goskar.boardgame.ui.theme.AppTextField
+import com.goskar.boardgame.ui.theme.AppToggleRow
+import com.goskar.boardgame.ui.theme.AppTopBar
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
-import com.goskar.boardgame.ui.theme.BoardGameTypography
 import org.koin.androidx.compose.koinViewModel
 
-private val gamesNavItems = listOf(
-    BgNavItem("Home", Icons.Default.Home),
-    BgNavItem("Players", Icons.Default.Person),
-    BgNavItem("Games", Icons.AutoMirrored.Filled.List),
-    BgNavItem("History", Icons.Default.DateRange),
-)
-
 /**
- * New "Add Game" screen (BGG search redesign) — lives alongside the existing game-search screens.
+ * New "Add Game" screen (theme-aware) with BGG Search + Manual Entry tabs.
  * Backed by [AddGameNewViewModel] (form state only).
  */
 class AddGameNewScreen : Screen {
@@ -121,27 +110,18 @@ fun AddGameNewScreenContent(
     onSelectBaseGame: (String) -> Unit = {},
     onSaveManual: () -> Unit = {},
 ) {
-    var selectedNav by remember { mutableStateOf(2) } // Games tab
+    var selectedNav by remember { mutableStateOf(1) } // Collection tab
 
-    Scaffold(
-        containerColor = BoardGameColors.Background,
-        topBar = {
-            BgTopBar(
-                title = "Add Game",
-                onBack = onBack,
-                trailingIcon = {
-                    IconButton(onClick = onHelp) {
-                        Icon(
-                            Icons.Default.HelpOutline,
-                            contentDescription = "Help",
-                            tint = BoardGameColors.Primary,
-                        )
-                    }
-                },
-            )
-        },
-        bottomBar = {
-            BgBottomNavBar(gamesNavItems, selectedNav, { selectedNav = it })
+    AppScaffold(
+        title = "Add Game",
+        navItems = appNavItems,
+        selectedTab = selectedNav,
+        onTabSelected = { selectedNav = it },
+        onBack = onBack,
+        trailing = {
+            IconButton(onClick = onHelp) {
+                Icon(Icons.Default.HelpOutline, contentDescription = "Help", tint = MaterialTheme.colorScheme.primary)
+            }
         },
     ) { innerPadding ->
         Column(
@@ -154,7 +134,7 @@ fun AddGameNewScreenContent(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            BgSegmentedControl(
+            AppSegmentedControl(
                 options = listOf("BGG Search", "Manual Entry"),
                 selected = state.selectedTab,
                 onSelect = onSelectTab,
@@ -162,12 +142,12 @@ fun AddGameNewScreenContent(
 
             if (state.selectedTab == 0) {
                 // --- BGG Search tab ---
-                BgSearchBar(
+                AppSearchBar(
                     value = state.query,
                     onValueChange = onQueryChange,
                     placeholder = "Search BGG database…",
                 )
-                BgSectionHeader(title = "Popular Matches")
+                AppSectionHeader(title = "Popular Matches")
                 state.popularMatches.forEach { match ->
                     PopularMatchCard(match = match, onAdd = { onAddGame(match) })
                 }
@@ -199,20 +179,17 @@ private fun ManualEntryForm(
     onSelectBaseGame: (String) -> Unit,
     onSave: () -> Unit,
 ) {
-    // Cover photo
     CoverPhotoPicker(hasCover = state.hasCover)
 
-    // Game name
-    BgTextField(
+    AppTextField(
         value = state.name,
         onValueChange = onNameChange,
         label = "Game Name",
         placeholder = "e.g. Terraforming Mars",
     )
 
-    // Min / Max players
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        BgTextField(
+        AppTextField(
             value = state.minPlayers,
             onValueChange = onMinChange,
             label = "Min Players",
@@ -220,7 +197,7 @@ private fun ManualEntryForm(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.weight(1f),
         )
-        BgTextField(
+        AppTextField(
             value = state.maxPlayers,
             onValueChange = onMaxChange,
             label = "Max Players",
@@ -230,15 +207,14 @@ private fun ManualEntryForm(
         )
     }
 
-    // Toggles
-    BgToggleRow(
+    AppToggleRow(
         icon = Icons.Default.Groups,
         title = "Cooperate Game?",
         description = "Players win or lose together",
         checked = state.cooperate,
         onToggle = onToggleCooperate,
     )
-    BgToggleRow(
+    AppToggleRow(
         icon = Icons.Default.Extension,
         title = "Is Expansion?",
         description = "Requires a base game to play",
@@ -246,7 +222,6 @@ private fun ManualEntryForm(
         onToggle = onToggleExpansion,
     )
 
-    // Base game selector — only relevant for expansions
     if (state.expansion) {
         ManualSelectField(
             label = "Base Game",
@@ -258,7 +233,7 @@ private fun ManualEntryForm(
     }
 
     Spacer(Modifier.height(4.dp))
-    BgPrimaryButton(
+    AppPrimaryButton(
         text = "Save Game",
         onClick = onSave,
         enabled = state.name.isNotBlank(),
@@ -268,7 +243,7 @@ private fun ManualEntryForm(
 
 @Composable
 private fun CoverPhotoPicker(hasCover: Boolean) {
-    val outline = BoardGameColors.OutlineVariant
+    val outline = MaterialTheme.colorScheme.outlineVariant
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Box(
             modifier = Modifier
@@ -285,35 +260,22 @@ private fun CoverPhotoPicker(hasCover: Boolean) {
                     )
                 }
                 .clip(BoardGameShapes.ExtraLarge)
-                .background(BoardGameColors.SurfaceContainerLowest),
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest),
             contentAlignment = Alignment.Center,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
-                    Icons.Default.AddAPhoto,
-                    contentDescription = null,
-                    tint = BoardGameColors.Primary,
-                    modifier = Modifier.size(32.dp),
-                )
+                Icon(Icons.Default.AddAPhoto, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
                 Spacer(Modifier.height(8.dp))
                 Text(
                     if (hasCover) "Cover added" else "Add a cover photo",
-                    style = BoardGameTypography.BodyLg,
-                    color = BoardGameColors.OnSurfaceVariant,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            BgSecondaryButton(
-                text = "Camera",
-                onClick = {},
-                modifier = Modifier.weight(1f),
-            )
-            BgSecondaryButton(
-                text = "Gallery",
-                onClick = {},
-                modifier = Modifier.weight(1f),
-            )
+            AppSecondaryButton(text = "Camera", onClick = {}, modifier = Modifier.weight(1f))
+            AppSecondaryButton(text = "Gallery", onClick = {}, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -330,8 +292,8 @@ private fun ManualSelectField(
     Column {
         Text(
             label.uppercase(),
-            style = BoardGameTypography.LabelCaps,
-            color = BoardGameColors.OnSurfaceVariant,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 6.dp),
         )
         Box {
@@ -340,8 +302,8 @@ private fun ManualSelectField(
                     .fillMaxWidth()
                     .height(56.dp)
                     .clip(BoardGameShapes.Medium)
-                    .background(BoardGameColors.SurfaceContainerLowest)
-                    .border(1.dp, BoardGameColors.OutlineVariant, BoardGameShapes.Medium)
+                    .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, BoardGameShapes.Medium)
                     .clickable { expanded = true }
                     .padding(horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -349,19 +311,12 @@ private fun ManualSelectField(
             ) {
                 Text(
                     value.ifBlank { placeholder },
-                    style = BoardGameTypography.BodyLg,
-                    color = if (value.isBlank()) BoardGameColors.Outline else BoardGameColors.OnSurface,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = if (value.isBlank()) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface,
                 )
-                Icon(
-                    Icons.Default.KeyboardArrowDown,
-                    contentDescription = null,
-                    tint = BoardGameColors.OnSurfaceVariant,
-                )
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 options.forEach { option ->
                     DropdownMenuItem(
                         text = { Text(option) },
@@ -378,33 +333,28 @@ private fun ManualSelectField(
 
 @Composable
 private fun PopularMatchCard(match: PopularMatch, onAdd: () -> Unit) {
-    BgListCard {
+    AppListCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // Thumbnail placeholder (rounded)
             Box(
                 modifier = Modifier
                     .size(64.dp)
                     .clip(BoardGameShapes.Medium)
-                    .background(BoardGameColors.SurfaceContainerHigh),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             )
             Spacer(Modifier.size(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    match.name,
-                    style = BoardGameTypography.TitleLg,
-                    color = BoardGameColors.OnSurface,
-                )
+                Text(match.name, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.height(6.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    BgChip(match.category, BgChipStyle.CATEGORY)
-                    BgChip(match.year, BgChipStyle.YEAR)
+                    AppChip(match.category, AppChipStyle.CATEGORY)
+                    AppChip(match.year, AppChipStyle.YEAR)
                 }
             }
             IconButton(onClick = onAdd) {
                 Icon(
                     Icons.Default.AddCircleOutline,
                     contentDescription = "Add ${match.name}",
-                    tint = BoardGameColors.Primary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp),
                 )
             }
@@ -414,8 +364,12 @@ private fun PopularMatchCard(match: PopularMatch, onAdd: () -> Unit) {
 
 @Preview(name = "Add Game — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun AddGameNewScreenPreview() {
-    BoardGameTheme {
-        AddGameNewScreenContent(state = AddGameNewState())
-    }
+private fun AddGameNewLightPreview() {
+    BoardGameTheme(darkTheme = false) { AddGameNewScreenContent(state = AddGameNewState()) }
+}
+
+@Preview(name = "Add Game — Dark", showBackground = true, backgroundColor = 0xFF131313)
+@Composable
+private fun AddGameNewDarkPreview() {
+    BoardGameTheme(darkTheme = true) { AddGameNewScreenContent(state = AddGameNewState()) }
 }

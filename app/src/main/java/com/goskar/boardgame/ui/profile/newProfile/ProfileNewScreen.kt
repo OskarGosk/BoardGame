@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.Group
@@ -31,6 +30,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,37 +45,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.goskar.boardgame.ui.theme.BgDarkAvatar
-import com.goskar.boardgame.ui.theme.BgDarkBottomNavBar
-import com.goskar.boardgame.ui.theme.BgDarkChip
-import com.goskar.boardgame.ui.theme.BgDarkChipStyle
-import com.goskar.boardgame.ui.theme.BgDarkListCard
-import com.goskar.boardgame.ui.theme.BgDarkSecondaryButton
-import com.goskar.boardgame.ui.theme.BgDarkSettingsRow
-import com.goskar.boardgame.ui.theme.BgDarkStatCard
-import com.goskar.boardgame.ui.theme.BgDarkTopBar
-import com.goskar.boardgame.ui.theme.BgNavItem
-import com.goskar.boardgame.ui.theme.BoardGameDarkColors
-import com.goskar.boardgame.ui.theme.BoardGameDarkSpacing
-import com.goskar.boardgame.ui.theme.BoardGameDarkTypography
+import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.theme.AppAvatar
+import com.goskar.boardgame.ui.theme.AppBottomNavBar
+import com.goskar.boardgame.ui.theme.AppChip
+import com.goskar.boardgame.ui.theme.AppChipStyle
+import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.theme.AppSecondaryButton
+import com.goskar.boardgame.ui.theme.AppSettingsRow
+import com.goskar.boardgame.ui.theme.AppStatCard
+import com.goskar.boardgame.ui.theme.AppTopBar
 import com.goskar.boardgame.ui.theme.BoardGameShapes
+import com.goskar.boardgame.ui.theme.BoardGameSpacing
+import com.goskar.boardgame.ui.theme.BoardGameTheme
+import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
 
-private val darkNavItems = listOf(
-    BgNavItem("Home", Icons.Default.Home),
-    BgNavItem("Collection", Icons.AutoMirrored.Filled.List),
-    BgNavItem("Add Session", Icons.Default.Add),
-    BgNavItem("Profile", Icons.Default.Person),
-)
-
 /**
- * New "Profile / Settings" screen (dark redesign). Backed by [ProfileNewViewModel]
- * (placeholder state only).
+ * New "Profile / Settings" screen (theme-aware). Backed by [ProfileNewViewModel]
+ * (placeholder state only). Reached via the avatar in top bars (off-tab destination).
  */
 class ProfileNewScreen : Screen {
 
@@ -95,34 +87,26 @@ class ProfileNewScreen : Screen {
 @Composable
 fun ProfileNewScreenContent(
     state: ProfileNewState,
-    onMenu: () -> Unit = {},
     onSetting: (String) -> Unit = {},
     onSignOut: () -> Unit = {},
     onForceSync: () -> Unit = {},
     onViewAchievements: () -> Unit = {},
 ) {
-    var selectedNav by remember { mutableStateOf(3) } // Profile tab
+    var selectedNav by remember { mutableStateOf(-1) } // off-tab (reached via avatar)
 
-    Scaffold(
-        containerColor = BoardGameDarkColors.Background,
-        topBar = {
-            BgDarkTopBar(
-                title = "Tabletop Tracker",
-                showMenu = true,
-                onMenuClick = onMenu,
-                trailingContent = { BgDarkAvatar(initials = state.initials, size = 36.dp) },
-            )
-        },
-        bottomBar = {
-            BgDarkBottomNavBar(darkNavItems, selectedNav, { selectedNav = it })
-        },
+    AppScaffold(
+        title = "Tabletop Tracker",
+        navItems = appNavItems,
+        selectedTab = selectedNav,
+        onTabSelected = { selectedNav = it },
+        trailing = { AppAvatar(initials = state.initials, size = 36.dp) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(BoardGameDarkSpacing.MarginMobile),
+                .padding(BoardGameSpacing.MarginMobile),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             ProfileHeaderCard(state)
@@ -138,33 +122,20 @@ fun ProfileNewScreenContent(
 
 @Composable
 private fun ProfileHeaderCard(state: ProfileNewState) {
-    BgDarkListCard {
+    AppListCard {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(8.dp))
-            BgDarkAvatar(
-                initials = state.initials,
-                size = 80.dp,
-                selected = true,
-                onlineStatus = true,
-            )
+            AppAvatar(initials = state.initials, size = 80.dp, selected = true, onlineStatus = true)
             Spacer(Modifier.height(12.dp))
-            Text(
-                state.name,
-                style = BoardGameDarkTypography.HeadlineMd,
-                color = BoardGameDarkColors.OnSurface,
-            )
-            Text(
-                state.subtitle,
-                style = BoardGameDarkTypography.BodyMd,
-                color = BoardGameDarkColors.OnSurfaceVariant,
-            )
+            Text(state.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(state.subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                BgDarkChip("Pro Strategist", BgDarkChipStyle.BASE_GAME)
-                BgDarkChip("Daily Player", BgDarkChipStyle.STATUS_WIN)
+                AppChip("Pro Strategist", AppChipStyle.BASE_GAME)
+                AppChip("Daily Player", AppChipStyle.STATUS_WIN)
             }
             Spacer(Modifier.height(4.dp))
         }
@@ -174,32 +145,22 @@ private fun ProfileHeaderCard(state: ProfileNewState) {
 @Composable
 private fun StatRow(state: ProfileNewState) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        BgDarkStatCard(
+        AppStatCard(
             label = "Games Logged",
             value = state.gamesLogged,
             modifier = Modifier.weight(1f),
-            valueColor = BoardGameDarkColors.OnSurface,
-            leadingIcon = {
-                Icon(
-                    Icons.Default.Casino,
-                    contentDescription = null,
-                    tint = BoardGameDarkColors.Primary,
-                    modifier = Modifier.size(24.dp),
-                )
+            valueColor = MaterialTheme.colorScheme.onSurface,
+            icon = {
+                Icon(Icons.Default.Casino, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
             },
         )
-        BgDarkStatCard(
+        AppStatCard(
             label = "Win Rate",
             value = state.winRate,
             modifier = Modifier.weight(1f),
-            valueColor = BoardGameDarkColors.Success,
-            leadingIcon = {
-                Icon(
-                    Icons.AutoMirrored.Filled.TrendingUp,
-                    contentDescription = null,
-                    tint = BoardGameDarkColors.Success,
-                    modifier = Modifier.size(24.dp),
-                )
+            valueColor = appExt().success,
+            icon = {
+                Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = appExt().success, modifier = Modifier.size(24.dp))
             },
         )
     }
@@ -207,24 +168,24 @@ private fun StatRow(state: ProfileNewState) {
 
 @Composable
 private fun AccountSettingsCard(state: ProfileNewState, onSetting: (String) -> Unit) {
-    BgDarkListCard {
+    AppListCard {
         CardHeading("Account Settings")
         Spacer(Modifier.height(4.dp))
-        BgDarkSettingsRow(
+        AppSettingsRow(
             icon = Icons.Default.Person,
             title = "Account Information",
             subtitle = "Email, Password, Personal Details",
             onClick = { onSetting("account") },
         )
         RowDivider()
-        BgDarkSettingsRow(
+        AppSettingsRow(
             icon = Icons.Default.Notifications,
             title = "Game Notifications",
             subtitle = "Turn alerts, Session reminders",
-            trailingContent = {
+            trailing = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (state.notificationsActive) {
-                        BgDarkChip("Active", BgDarkChipStyle.STATUS_WIN)
+                        AppChip("Active", AppChipStyle.STATUS_WIN)
                         Spacer(Modifier.width(8.dp))
                     }
                     Chevron()
@@ -233,14 +194,14 @@ private fun AccountSettingsCard(state: ProfileNewState, onSetting: (String) -> U
             onClick = { onSetting("notifications") },
         )
         RowDivider()
-        BgDarkSettingsRow(
+        AppSettingsRow(
             icon = Icons.Default.Security,
             title = "Privacy & Security",
             subtitle = "Manage visibility and 2FA",
             onClick = { onSetting("privacy") },
         )
         RowDivider()
-        BgDarkSettingsRow(
+        AppSettingsRow(
             icon = Icons.Default.Palette,
             title = "Appearance",
             subtitle = "Dark mode, Theme accents",
@@ -260,17 +221,12 @@ private fun SignOutButton(onSignOut: () -> Unit) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(
-            Icons.AutoMirrored.Filled.Logout,
-            contentDescription = null,
-            tint = BoardGameDarkColors.Error,
-            modifier = Modifier.size(18.dp),
-        )
+        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(8.dp))
         Text(
             "Sign Out of Session",
-            style = BoardGameDarkTypography.BodyLg.copy(fontWeight = FontWeight.SemiBold),
-            color = BoardGameDarkColors.Error,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+            color = MaterialTheme.colorScheme.error,
         )
     }
 }
@@ -282,14 +238,13 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .clip(BoardGameShapes.Large)
-            .background(BoardGameDarkColors.SurfaceContainer),
+            .background(MaterialTheme.colorScheme.surfaceContainer),
     ) {
-        // Green left accent
         Box(
             modifier = Modifier
                 .width(4.dp)
                 .fillMaxHeight()
-                .background(BoardGameDarkColors.Success),
+                .background(appExt().success),
         )
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -297,22 +252,14 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    "Cloud Sync",
-                    style = BoardGameDarkTypography.HeadlineMd,
-                    color = BoardGameDarkColors.OnSurface,
-                )
-                Icon(
-                    Icons.Default.CloudDone,
-                    contentDescription = null,
-                    tint = BoardGameDarkColors.Success,
-                )
+                Text("Cloud Sync", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+                Icon(Icons.Default.CloudDone, contentDescription = null, tint = appExt().success)
             }
             Spacer(Modifier.height(8.dp))
             Text(
                 "All session data is currently synchronized across your devices.",
-                style = BoardGameDarkTypography.BodyMd,
-                color = BoardGameDarkColors.OnSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.height(12.dp))
             Row(
@@ -320,11 +267,7 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    state.lastSynced,
-                    style = BoardGameDarkTypography.BodyMd,
-                    color = BoardGameDarkColors.OnSurfaceVariant,
-                )
+                Text(state.lastSynced, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 SmallPillButton("Force Sync", onForceSync)
             }
         }
@@ -333,47 +276,38 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
 
 @Composable
 private fun RecentMedalsCard(state: ProfileNewState, onViewAchievements: () -> Unit) {
-    BgDarkListCard {
+    AppListCard {
         CardHeading("Recent Medals")
         Spacer(Modifier.height(8.dp))
         state.medals.forEachIndexed { index, medal ->
-            BgDarkSettingsRow(
+            AppSettingsRow(
                 icon = if (index == 0) Icons.Default.MilitaryTech else Icons.Default.Group,
                 title = medal.title,
                 subtitle = medal.description,
-                trailingContent = {},
+                trailing = {},
             )
             if (index < state.medals.lastIndex) Spacer(Modifier.height(4.dp))
         }
         Spacer(Modifier.height(12.dp))
-        BgDarkSecondaryButton(text = "View All Achievements", onClick = onViewAchievements)
+        AppSecondaryButton(text = "View All Achievements", onClick = onViewAchievements)
     }
 }
 
 @Composable
 private fun CardHeading(text: String) {
-    Text(
-        text,
-        style = BoardGameDarkTypography.HeadlineMd,
-        color = BoardGameDarkColors.OnSurface,
-    )
+    Text(text, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
     Spacer(Modifier.height(8.dp))
-    HorizontalDivider(color = BoardGameDarkColors.CardBorder, thickness = 0.5.dp)
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
 }
 
 @Composable
 private fun RowDivider() {
-    HorizontalDivider(color = BoardGameDarkColors.Divider, thickness = 0.5.dp)
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
 }
 
 @Composable
 private fun Chevron() {
-    Icon(
-        Icons.Default.KeyboardArrowRight,
-        contentDescription = null,
-        tint = BoardGameDarkColors.Outline,
-        modifier = Modifier.size(20.dp),
-    )
+    Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(20.dp))
 }
 
 @Composable
@@ -381,21 +315,23 @@ private fun SmallPillButton(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .clip(BoardGameShapes.Full)
-            .background(BoardGameDarkColors.SurfaceContainerHigh)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text,
-            style = BoardGameDarkTypography.LabelLg,
-            color = BoardGameDarkColors.OnSurface,
-        )
+        Text(text, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurface)
     }
+}
+
+@Preview(name = "Profile — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun ProfileNewLightPreview() {
+    BoardGameTheme(darkTheme = false) { ProfileNewScreenContent(state = ProfileNewState()) }
 }
 
 @Preview(name = "Profile — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun ProfileNewScreenPreview() {
-    ProfileNewScreenContent(state = ProfileNewState())
+private fun ProfileNewDarkPreview() {
+    BoardGameTheme(darkTheme = true) { ProfileNewScreenContent(state = ProfileNewState()) }
 }

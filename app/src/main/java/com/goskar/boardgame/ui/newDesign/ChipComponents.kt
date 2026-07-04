@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,29 +24,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 // =============================================================================
-// CHIPS — Light
+// CHIPS — theme-aware (single MaterialTheme-based set)
 // =============================================================================
 
-enum class BgChipStyle { CATEGORY, STATUS_WIN, STATUS_PLACE, YEAR, EXPANSION, BASE_GAME }
-
 /**
- * Status / category chip — small pill, semi-transparent bg.
- * Matches "STRATEGY", "2018", "WON", "Base Game", "Expansion".
+ * Status / category chip — small pill. Colors resolve from [MaterialTheme] (+ [appExt] for green),
+ * so it adapts to light/dark automatically.
  */
 @Composable
 fun BgChip(
     text: String,
-    style: BgChipStyle = BgChipStyle.CATEGORY,
+    style: AppChipStyle = AppChipStyle.CATEGORY,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
+    val cs = MaterialTheme.colorScheme
+    val ext = appExt()
     val (bg, fg) = when (style) {
-        BgChipStyle.CATEGORY -> BoardGameColors.SecondaryContainer to BoardGameColors.OnSecondaryContainer
-        BgChipStyle.STATUS_WIN -> BoardGameColors.SuccessBg to BoardGameColors.Success
-        BgChipStyle.STATUS_PLACE -> BoardGameColors.SurfaceContainerHigh to BoardGameColors.OnSurfaceVariant
-        BgChipStyle.YEAR -> BoardGameColors.SurfaceContainerHigh to BoardGameColors.OnSurfaceVariant
-        BgChipStyle.EXPANSION -> BoardGameColors.PrimaryTint10 to BoardGameColors.Primary
-        BgChipStyle.BASE_GAME -> BoardGameColors.SecondaryContainer to BoardGameColors.Secondary
+        AppChipStyle.CATEGORY -> cs.secondaryContainer to cs.onSecondaryContainer
+        AppChipStyle.STATUS_WIN -> ext.successBg to ext.success
+        AppChipStyle.STATUS_PLACE -> cs.surfaceContainerHigh to cs.onSurfaceVariant
+        AppChipStyle.YEAR -> cs.surfaceContainerHigh to cs.onSurfaceVariant
+        AppChipStyle.EXPANSION -> cs.primary.copy(alpha = 0.12f) to cs.primary
+        AppChipStyle.BASE_GAME -> cs.secondaryContainer to cs.onSecondaryContainer
     }
     Box(
         modifier = modifier
@@ -55,12 +56,12 @@ fun BgChip(
             .padding(horizontal = 10.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text, style = BoardGameTypography.LabelCaps, color = fg)
+        Text(text, style = MaterialTheme.typography.labelSmall, color = fg)
     }
 }
 
 /**
- * Filter chip — toggleable, used in "All / Base Games / Expansions" bar.
+ * Filter chip — toggleable, used in "All / Base / Expansions" bars.
  */
 @Composable
 fun BgFilterChip(
@@ -69,13 +70,14 @@ fun BgFilterChip(
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cs = MaterialTheme.colorScheme
     Box(
         modifier = modifier
             .clip(BoardGameShapes.Full)
-            .background(if (selected) BoardGameColors.SurfaceContainerLowest else BoardGameColors.SurfaceContainerLow)
+            .background(if (selected) cs.surfaceContainerLowest else cs.surfaceContainerLow)
             .border(
                 1.dp,
-                if (selected) BoardGameColors.Primary else Color.Transparent,
+                if (selected) cs.primary else Color.Transparent,
                 BoardGameShapes.Full
             )
             .clickable { onToggle() }
@@ -84,14 +86,15 @@ fun BgFilterChip(
     ) {
         Text(
             text = text,
-            style = BoardGameTypography.BodySm.copy(fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal),
-            color = if (selected) BoardGameColors.Primary else BoardGameColors.OnSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal),
+            color = if (selected) cs.primary else cs.onSurfaceVariant,
         )
     }
 }
 
 /**
  * Variant chip — toggleable pill for session variants ("Epic Mode", "House Rules").
+ * Filled with primary when selected.
  */
 @Composable
 fun BgVariantChip(
@@ -100,151 +103,14 @@ fun BgVariantChip(
     onToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val cs = MaterialTheme.colorScheme
     Box(
         modifier = modifier
             .clip(BoardGameShapes.Full)
-            .background(if (selected) BoardGameColors.Primary else BoardGameColors.SurfaceContainerLow)
-            .clickable { onToggle() }
-            .padding(horizontal = 14.dp, vertical = 7.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = BoardGameTypography.BodySm,
-            color = if (selected) BoardGameColors.OnPrimary else BoardGameColors.OnSurfaceVariant,
-        )
-    }
-}
-
-// =============================================================================
-// CHIPS — Dark
-// =============================================================================
-
-enum class BgDarkChipStyle {
-    CATEGORY, STATUS_WIN, STATUS_PLACE, TRENDING, EXPANSION, BASE_GAME, TAG_INACTIVE
-}
-
-/**
- * Dark status / category chip — small, semi-transparent bg.
- * Matches "WINNER", "Trending #1", "Base Game", "Expansion" on dark screens.
- */
-@Composable
-fun BgDarkChip(
-    text: String,
-    style: BgDarkChipStyle = BgDarkChipStyle.CATEGORY,
-    modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null,
-) {
-    val (bg, fg, stroke) = when (style) {
-        BgDarkChipStyle.CATEGORY -> Triple(
-            BoardGameDarkColors.SurfaceContainerHigh,
-            BoardGameDarkColors.OnSurfaceVariant,
-            Color.Transparent
-        )
-
-        BgDarkChipStyle.STATUS_WIN -> Triple(
-            BoardGameDarkColors.SuccessBg,
-            BoardGameDarkColors.Success,
-            BoardGameDarkColors.Success.copy(alpha = 0.4f)
-        )
-
-        BgDarkChipStyle.STATUS_PLACE -> Triple(
-            BoardGameDarkColors.SurfaceContainerHigh,
-            BoardGameDarkColors.OnSurfaceVariant,
-            Color.Transparent
-        )
-
-        BgDarkChipStyle.TRENDING -> Triple(
-            BoardGameDarkColors.SuccessBg,
-            BoardGameDarkColors.Success,
-            BoardGameDarkColors.Success.copy(alpha = 0.5f)
-        )
-
-        BgDarkChipStyle.EXPANSION -> Triple(
-            BoardGameDarkColors.PrimaryTint10,
-            BoardGameDarkColors.Primary,
-            BoardGameDarkColors.OutlineVariant
-        )
-
-        BgDarkChipStyle.BASE_GAME -> Triple(
-            BoardGameDarkColors.SecondaryContainer,
-            BoardGameDarkColors.OnSecondaryContainer,
-            Color.Transparent
-        )
-
-        BgDarkChipStyle.TAG_INACTIVE -> Triple(
-            BoardGameDarkColors.SurfaceContainerHigh,
-            BoardGameDarkColors.OnSurfaceVariant,
-            BoardGameDarkColors.OutlineVariant
-        )
-    }
-    Box(
-        modifier = modifier
-            .clip(BoardGameShapes.Small)
-            .background(bg)
-            .then(
-                if (stroke != Color.Transparent) Modifier.border(
-                    1.dp,
-                    stroke,
-                    BoardGameShapes.Small
-                ) else Modifier
-            )
-            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
-            .padding(horizontal = 10.dp, vertical = 5.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text, style = BoardGameDarkTypography.LabelLg, color = fg)
-    }
-}
-
-/**
- * Dark filter chip — orange fill when active.
- */
-@Composable
-fun BgDarkFilterChip(
-    text: String,
-    selected: Boolean,
-    onToggle: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .clip(BoardGameShapes.Full)
-            .background(if (selected) BoardGameDarkColors.OrangeFill else BoardGameDarkColors.SurfaceContainerHigh)
+            .background(if (selected) cs.primary else cs.surfaceContainer)
             .border(
                 1.dp,
-                if (selected) Color.Transparent else BoardGameDarkColors.CardBorder,
-                BoardGameShapes.Full
-            )
-            .clickable { onToggle() }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = BoardGameDarkTypography.BodyMd.copy(fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal),
-            color = if (selected) BoardGameDarkColors.OnPrimary else BoardGameDarkColors.OnSurfaceVariant,
-        )
-    }
-}
-
-/**
- * Dark variant chip — "Rise of Ix Expansion", "Epic Mode" etc.
- */
-@Composable
-fun BgDarkVariantChip(
-    text: String,
-    selected: Boolean,
-    onToggle: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .clip(BoardGameShapes.Full)
-            .background(if (selected) BoardGameDarkColors.OrangeFill else BoardGameDarkColors.SurfaceContainer)
-            .border(
-                1.dp,
-                if (selected) Color.Transparent else BoardGameDarkColors.OutlineVariant,
+                if (selected) Color.Transparent else cs.outlineVariant,
                 BoardGameShapes.Full
             )
             .clickable { onToggle() }
@@ -253,8 +119,8 @@ fun BgDarkVariantChip(
     ) {
         Text(
             text = text,
-            style = BoardGameDarkTypography.BodyMd,
-            color = if (selected) BoardGameDarkColors.OnPrimary else BoardGameDarkColors.OnSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (selected) cs.onPrimary else cs.onSurfaceVariant,
         )
     }
 }
@@ -266,58 +132,38 @@ fun BgDarkVariantChip(
 @Preview(name = "Chips — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
 private fun ChipsLightPreview() {
-    BoardGameTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                BgChip("STRATEGY", BgChipStyle.CATEGORY)
-                BgChip("2018", BgChipStyle.YEAR)
-                BgChip("WON", BgChipStyle.STATUS_WIN)
-                BgChip("Base Game", BgChipStyle.BASE_GAME)
-                BgChip("Expansion", BgChipStyle.EXPANSION)
-            }
-            var filter by remember { mutableStateOf(0) }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("All", "Base Games", "Expansions").forEachIndexed { i, l ->
-                    BgFilterChip(l, filter == i, { filter = i })
-                }
-            }
-            var v by remember { mutableStateOf(true) }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                BgVariantChip("Rise of Ix", v, { v = !v })
-                BgVariantChip("Epic Mode", !v, { v = !v })
-            }
-        }
-    }
+    BoardGameTheme(darkTheme = false) { ChipsPreviewContent() }
 }
 
 @Preview(name = "Chips — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
 private fun ChipsDarkPreview() {
-    BoardGameDarkTheme {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                BgDarkChip("WINNER", BgDarkChipStyle.STATUS_WIN)
-                BgDarkChip("Trending #1", BgDarkChipStyle.TRENDING)
-                BgDarkChip("Base Game", BgDarkChipStyle.BASE_GAME)
-                BgDarkChip("Expansion", BgDarkChipStyle.EXPANSION)
+    BoardGameTheme(darkTheme = true) { ChipsPreviewContent() }
+}
+
+@Composable
+private fun ChipsPreviewContent() {
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            BgChip("STRATEGY", AppChipStyle.CATEGORY)
+            BgChip("2018", AppChipStyle.YEAR)
+            BgChip("WON", AppChipStyle.STATUS_WIN)
+            BgChip("Base Game", AppChipStyle.BASE_GAME)
+            BgChip("Expansion", AppChipStyle.EXPANSION)
+        }
+        var filter by remember { mutableStateOf(0) }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("All", "Base Games", "Expansions").forEachIndexed { i, l ->
+                BgFilterChip(l, filter == i, { filter = i })
             }
-            var filter by remember { mutableStateOf(0) }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("All", "Base Games", "Expansions").forEachIndexed { i, l ->
-                    BgDarkFilterChip(l, filter == i, { filter = i })
-                }
-            }
-            var v by remember { mutableStateOf(true) }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                BgDarkVariantChip("Rise of Ix", v, { v = !v })
-                BgDarkVariantChip("Epic Mode", !v, { v = !v })
-            }
+        }
+        var v by remember { mutableStateOf(true) }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            BgVariantChip("Rise of Ix", v, { v = !v })
+            BgVariantChip("Epic Mode", !v, { v = !v })
         }
     }
 }

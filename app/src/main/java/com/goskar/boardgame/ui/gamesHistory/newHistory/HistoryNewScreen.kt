@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,37 +40,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.gamesHistory.newSessionDetails.SessionDetailsNewScreen
-import com.goskar.boardgame.ui.theme.BgDarkAvatar
-import com.goskar.boardgame.ui.theme.BgDarkBottomNavBar
-import com.goskar.boardgame.ui.theme.BgDarkChip
-import com.goskar.boardgame.ui.theme.BgDarkFab
-import com.goskar.boardgame.ui.theme.BgDarkFilterChip
-import com.goskar.boardgame.ui.theme.BgDarkListCard
-import com.goskar.boardgame.ui.theme.BgDarkSearchBar
-import com.goskar.boardgame.ui.theme.BgDarkSecondaryButton
-import com.goskar.boardgame.ui.theme.BgDarkTopBar
-import com.goskar.boardgame.ui.theme.BgNavItem
-import com.goskar.boardgame.ui.theme.BoardGameDarkColors
-import com.goskar.boardgame.ui.theme.BoardGameDarkSpacing
-import com.goskar.boardgame.ui.theme.BoardGameDarkTypography
+import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.theme.AppAvatar
+import com.goskar.boardgame.ui.theme.AppBottomNavBar
+import com.goskar.boardgame.ui.theme.AppChip
+import com.goskar.boardgame.ui.theme.AppFab
+import com.goskar.boardgame.ui.theme.AppFilterChip
+import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.theme.AppSearchBar
+import com.goskar.boardgame.ui.theme.AppSecondaryButton
+import com.goskar.boardgame.ui.theme.AppTopBar
 import com.goskar.boardgame.ui.theme.BoardGameShapes
+import com.goskar.boardgame.ui.theme.BoardGameSpacing
+import com.goskar.boardgame.ui.theme.BoardGameTheme
+import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
 
-private val darkNavItems = listOf(
-    BgNavItem("Home", Icons.Default.Home),
-    BgNavItem("Collection", Icons.AutoMirrored.Filled.List),
-    BgNavItem("Add Session", Icons.Default.Add),
-    BgNavItem("Players", Icons.Default.Person),
-)
-
 /**
- * New "Gaming History" screen (dark redesign). Backed by [HistoryNewViewModel]
+ * New "Gaming History" screen (theme-aware). Backed by [HistoryNewViewModel]
  * (placeholder state only).
  */
 class HistoryNewScreen : Screen {
@@ -92,7 +84,6 @@ class HistoryNewScreen : Screen {
 @Composable
 fun HistoryNewScreenContent(
     state: HistoryNewState,
-    onMenu: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onSelectFilter: (Int) -> Unit = {},
     onSessionClick: (HistorySession) -> Unit = {},
@@ -101,21 +92,14 @@ fun HistoryNewScreenContent(
 ) {
     var selectedNav by remember { mutableStateOf(1) } // Collection tab
 
-    Scaffold(
-        containerColor = BoardGameDarkColors.Background,
-        topBar = {
-            BgDarkTopBar(
-                title = "Tabletop Tracker",
-                showMenu = true,
-                onMenuClick = onMenu,
-                trailingContent = { BgDarkAvatar(initials = "AM", size = 36.dp) },
-            )
-        },
-        bottomBar = {
-            BgDarkBottomNavBar(darkNavItems, selectedNav, { selectedNav = it })
-        },
+    AppScaffold(
+        title = "Tabletop Tracker",
+        navItems = appNavItems,
+        selectedTab = selectedNav,
+        onTabSelected = { selectedNav = it },
+        trailing = { AppAvatar(initials = "AM", size = 36.dp) },
         floatingActionButton = {
-            BgDarkFab(onClick = onAddSession) {
+            AppFab(onClick = onAddSession) {
                 Icon(Icons.Default.Add, contentDescription = "Add session")
             }
         },
@@ -125,17 +109,17 @@ fun HistoryNewScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = BoardGameDarkSpacing.MarginMobile),
+                .padding(horizontal = BoardGameSpacing.MarginMobile),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
                 "Gaming History",
-                style = BoardGameDarkTypography.HeadlineLgMobile,
-                color = BoardGameDarkColors.OnSurface,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
-            BgDarkSearchBar(
+            AppSearchBar(
                 value = state.query,
                 onValueChange = onQueryChange,
                 placeholder = "Search sessions…",
@@ -147,7 +131,7 @@ fun HistoryNewScreenContent(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 state.filters.forEachIndexed { index, filter ->
-                    BgDarkFilterChip(
+                    AppFilterChip(
                         text = filter,
                         selected = index == state.selectedFilter,
                         onToggle = { onSelectFilter(index) },
@@ -170,12 +154,12 @@ fun HistoryNewScreenContent(
             Spacer(Modifier.height(8.dp))
             Text(
                 state.showingLabel,
-                style = BoardGameDarkTypography.BodyMd,
-                color = BoardGameDarkColors.OnSurfaceVariant,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
-            BgDarkSecondaryButton(
+            AppSecondaryButton(
                 text = "Load More",
                 onClick = onLoadMore,
                 modifier = Modifier.padding(horizontal = 48.dp),
@@ -190,64 +174,62 @@ private fun GroupHeader(title: String, count: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             title.uppercase(),
-            style = BoardGameDarkTypography.LabelLg,
-            color = BoardGameDarkColors.Primary,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
         )
         Spacer(Modifier.width(12.dp))
         HorizontalDivider(
             modifier = Modifier.weight(1f),
-            color = BoardGameDarkColors.CardBorder,
+            color = MaterialTheme.colorScheme.outlineVariant,
             thickness = 0.5.dp,
         )
         Spacer(Modifier.width(12.dp))
         Text(
             count,
-            style = BoardGameDarkTypography.LabelMd,
-            color = BoardGameDarkColors.OnSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
 
 @Composable
 private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
-    BgDarkListCard(onClick = onClick) {
+    AppListCard(onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // Thumbnail
             Box(
                 modifier = Modifier
                     .size(64.dp)
                     .clip(BoardGameShapes.Medium)
-                    .background(BoardGameDarkColors.SurfaceContainerHigh),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             )
             Spacer(Modifier.width(12.dp))
 
-            // Title + meta
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         session.gameName,
-                        style = BoardGameDarkTypography.TitleLg,
-                        color = BoardGameDarkColors.OnSurface,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
                     )
                     Spacer(Modifier.width(8.dp))
-                    BgDarkChip(session.category, session.categoryStyle)
+                    AppChip(session.category, session.categoryStyle)
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.Schedule,
                         contentDescription = null,
-                        tint = BoardGameDarkColors.OnSurfaceVariant,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp),
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
                         "${session.durationMin}m",
-                        style = BoardGameDarkTypography.BodyMd,
-                        color = BoardGameDarkColors.OnSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.width(10.dp))
                     PlayerAvatars(session.avatars, session.extraPlayers)
@@ -256,17 +238,16 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
 
             Spacer(Modifier.width(8.dp))
 
-            // Winner
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "WINNER",
-                    style = BoardGameDarkTypography.LabelMd,
-                    color = BoardGameDarkColors.OnSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     session.winner,
-                    style = BoardGameDarkTypography.BodyLg.copy(fontWeight = FontWeight.SemiBold),
-                    color = if (session.winnerIsYou) BoardGameDarkColors.Primary else BoardGameDarkColors.Success,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+                    color = if (session.winnerIsYou) MaterialTheme.colorScheme.primary else appExt().success,
                     maxLines = 1,
                 )
             }
@@ -274,7 +255,7 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
             Icon(
                 Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
-                tint = BoardGameDarkColors.Outline,
+                tint = MaterialTheme.colorScheme.outline,
             )
         }
     }
@@ -284,7 +265,7 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
 private fun PlayerAvatars(avatars: List<String>, extra: Int) {
     Row {
         avatars.forEachIndexed { index, initials ->
-            BgDarkAvatar(
+            AppAvatar(
                 initials = initials,
                 size = 24.dp,
                 modifier = Modifier.offset(x = (index * -8).dp),
@@ -296,21 +277,27 @@ private fun PlayerAvatars(avatars: List<String>, extra: Int) {
                     .offset(x = (avatars.size * -8).dp)
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(BoardGameDarkColors.SurfaceContainerHigh),
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     "+$extra",
-                    style = BoardGameDarkTypography.LabelMd,
-                    color = BoardGameDarkColors.OnSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
     }
 }
 
+@Preview(name = "Gaming History — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun HistoryNewLightPreview() {
+    BoardGameTheme(darkTheme = false) { HistoryNewScreenContent(state = HistoryNewState()) }
+}
+
 @Preview(name = "Gaming History — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun HistoryNewScreenPreview() {
-    HistoryNewScreenContent(state = HistoryNewState())
+private fun HistoryNewDarkPreview() {
+    BoardGameTheme(darkTheme = true) { HistoryNewScreenContent(state = HistoryNewState()) }
 }

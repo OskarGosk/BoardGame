@@ -1,7 +1,7 @@
 package com.goskar.boardgame.ui.gamesHistory.newHistory
 
 import androidx.lifecycle.ViewModel
-import com.goskar.boardgame.ui.theme.BgDarkChipStyle
+import com.goskar.boardgame.ui.theme.AppChipStyle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.update
 data class HistorySession(
     val gameName: String,
     val category: String,
-    val categoryStyle: BgDarkChipStyle,
+    val categoryStyle: AppChipStyle,
     val durationMin: Int,
     val avatars: List<String>,
     val extraPlayers: Int,
@@ -34,7 +34,7 @@ data class HistoryNewState(
                 HistorySession(
                     gameName = "Dune: Imperium",
                     category = "Strategy",
-                    categoryStyle = BgDarkChipStyle.CATEGORY,
+                    categoryStyle = AppChipStyle.CATEGORY,
                     durationMin = 114,
                     avatars = listOf("JD", "AL"),
                     extraPlayers = 2,
@@ -48,7 +48,7 @@ data class HistoryNewState(
                 HistorySession(
                     gameName = "Terraforming Mars",
                     category = "Euro",
-                    categoryStyle = BgDarkChipStyle.EXPANSION,
+                    categoryStyle = AppChipStyle.EXPANSION,
                     durationMin = 185,
                     avatars = listOf("SK", "EL"),
                     extraPlayers = 0,
@@ -62,7 +62,7 @@ data class HistoryNewState(
                 HistorySession(
                     gameName = "Azul",
                     category = "Abstract",
-                    categoryStyle = BgDarkChipStyle.STATUS_WIN,
+                    categoryStyle = AppChipStyle.STATUS_WIN,
                     durationMin = 45,
                     avatars = listOf("ME", "YJ"),
                     extraPlayers = 0,
@@ -72,7 +72,7 @@ data class HistoryNewState(
                 HistorySession(
                     gameName = "Clank! Catacombs",
                     category = "Deck Builder",
-                    categoryStyle = BgDarkChipStyle.BASE_GAME,
+                    categoryStyle = AppChipStyle.BASE_GAME,
                     durationMin = 82,
                     avatars = listOf("JD", "AL"),
                     extraPlayers = 0,

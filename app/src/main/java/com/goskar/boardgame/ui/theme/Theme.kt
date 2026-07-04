@@ -132,11 +132,15 @@ fun BoardGameTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) BoardGameDarkColorScheme else BoardGameLightColorScheme,
-        typography  = if (darkTheme) BoardGameDarkTypographyScheme  else BoardGameLightTypographyScheme,
-        content     = content
-    )
+    androidx.compose.runtime.CompositionLocalProvider(
+        LocalBoardGameExtColors provides if (darkTheme) DarkExtColors else LightExtColors
+    ) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) BoardGameDarkColorScheme else BoardGameLightColorScheme,
+            typography = if (darkTheme) BoardGameDarkTypographyScheme else BoardGameLightTypographyScheme,
+            content = content
+        )
+    }
 }
 
 @Composable

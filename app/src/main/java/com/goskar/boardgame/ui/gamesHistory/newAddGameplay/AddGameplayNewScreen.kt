@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,44 +39,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.goskar.boardgame.ui.newDesign.BgDarkSectionHeader
-import com.goskar.boardgame.ui.theme.BgDarkVariantChip
-import com.goskar.boardgame.ui.theme.BgDarkAvatar
-import com.goskar.boardgame.ui.theme.BgDarkBottomNavBar
-import com.goskar.boardgame.ui.theme.BgDarkDropdownField
-import com.goskar.boardgame.ui.theme.BgDarkListCard
-import com.goskar.boardgame.ui.theme.BgDarkPrimaryButton
-import com.goskar.boardgame.ui.theme.BgDarkSecondaryButton
-import com.goskar.boardgame.ui.theme.BgDarkTextArea
-import com.goskar.boardgame.ui.theme.BgDarkTopBar
-import com.goskar.boardgame.ui.theme.BgNavItem
-import com.goskar.boardgame.ui.theme.BoardGameDarkColors
-import com.goskar.boardgame.ui.theme.BoardGameDarkSpacing
-import com.goskar.boardgame.ui.theme.BoardGameDarkTypography
+import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.theme.AppAvatar
+import com.goskar.boardgame.ui.theme.AppBottomNavBar
+import com.goskar.boardgame.ui.theme.AppDropdownField
+import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.theme.AppPrimaryButton
+import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.theme.AppSecondaryButton
+import com.goskar.boardgame.ui.theme.AppSectionHeader
+import com.goskar.boardgame.ui.theme.AppTextArea
+import com.goskar.boardgame.ui.theme.AppTopBar
+import com.goskar.boardgame.ui.theme.AppVariantChip
 import com.goskar.boardgame.ui.theme.BoardGameShapes
+import com.goskar.boardgame.ui.theme.BoardGameSpacing
+import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-private val darkNavItems = listOf(
-    BgNavItem("Home", Icons.Default.Home),
-    BgNavItem("Collection", Icons.AutoMirrored.Filled.List),
-    BgNavItem("Add Session", Icons.Default.Add),
-    BgNavItem("Players", Icons.Default.Person),
-)
-
 /**
- * New "Log Gameplay Session" screen (dark redesign). Backed by [AddGameplayNewViewModel]
- * (form state only). Composed from the dark design-system components.
+ * New "Log Gameplay Session" screen (theme-aware). Backed by [AddGameplayNewViewModel]
+ * (form state only).
  */
 class AddGameplayNewScreen : Screen {
 
@@ -100,7 +91,6 @@ class AddGameplayNewScreen : Screen {
 @Composable
 fun AddGameplayNewScreenContent(
     state: AddGameplayNewState,
-    onMenu: () -> Unit = {},
     onSelectGame: () -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onTogglePlayer: (Int) -> Unit = {},
@@ -112,64 +102,49 @@ fun AddGameplayNewScreenContent(
 ) {
     var selectedNav by remember { mutableStateOf(2) } // Add Session tab
 
-    Scaffold(
-        containerColor = BoardGameDarkColors.Background,
-        topBar = {
-            BgDarkTopBar(
-                title = "Tabletop Tracker",
-                showMenu = true,
-                onMenuClick = onMenu,
-                trailingContent = { BgDarkAvatar(initials = "AM", size = 36.dp) },
-            )
-        },
-        bottomBar = {
-            BgDarkBottomNavBar(darkNavItems, selectedNav, { selectedNav = it })
-        },
+    AppScaffold(
+        title = "Tabletop Tracker",
+        navItems = appNavItems,
+        selectedTab = selectedNav,
+        onTabSelected = { selectedNav = it },
+        trailing = { AppAvatar(initials = "AM", size = 36.dp) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .padding(BoardGameDarkSpacing.MarginMobile),
+                .padding(BoardGameSpacing.MarginMobile),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             // Header
             Column {
                 Text(
                     "Log Gameplay Session",
-                    style = BoardGameDarkTypography.HeadlineLgMobile,
-                    color = BoardGameDarkColors.OnSurface,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "Capture the details of your latest tabletop conquest.",
-                    style = BoardGameDarkTypography.BodyMd,
-                    color = BoardGameDarkColors.OnSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
             // Select game
-            BgDarkListCard {
-                BgDarkDropdownField(
-                    label = "Select Game",
-                    value = state.selectedGame,
-                    onClick = onSelectGame,
-                )
+            AppListCard {
+                AppDropdownField(label = "Select Game", value = state.selectedGame, onClick = onSelectGame)
             }
 
             // Date played
-            BgDarkListCard {
-                BgDarkDropdownField(
-                    label = "Date Played",
-                    value = state.datePlayed,
-                    onClick = {},
-                )
+            AppListCard {
+                AppDropdownField(label = "Date Played", value = state.datePlayed, onClick = {})
             }
 
             // Players
-            BgDarkListCard {
-                BgDarkSectionHeader(title = "Players", action = "+ Add New", onAction = onAddPlayer)
+            AppListCard {
+                AppSectionHeader(title = "Players", action = "+ Add New", onAction = onAddPlayer)
                 Spacer(Modifier.height(16.dp))
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -188,15 +163,15 @@ fun AddGameplayNewScreenContent(
             }
 
             // Session variants
-            BgDarkListCard {
-                BgDarkSectionHeader(title = "Session Variants")
+            AppListCard {
+                AppSectionHeader(title = "Session Variants")
                 Spacer(Modifier.height(16.dp))
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     state.variants.forEachIndexed { index, variant ->
-                        BgDarkVariantChip(
+                        AppVariantChip(
                             text = variant.name,
                             selected = variant.selected,
                             onToggle = { onToggleVariant(index) },
@@ -206,8 +181,8 @@ fun AddGameplayNewScreenContent(
             }
 
             // Select winner
-            BgDarkListCard {
-                BgDarkSectionHeader(title = "Select Winner")
+            AppListCard {
+                AppSectionHeader(title = "Select Winner")
                 Spacer(Modifier.height(16.dp))
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     state.players.chunked(2).forEachIndexed { rowIndex, rowPlayers ->
@@ -234,10 +209,10 @@ fun AddGameplayNewScreenContent(
             }
 
             // Session notes
-            BgDarkListCard {
-                BgDarkSectionHeader(title = "Session Notes")
+            AppListCard {
+                AppSectionHeader(title = "Session Notes")
                 Spacer(Modifier.height(12.dp))
-                BgDarkTextArea(
+                AppTextArea(
                     value = state.notes,
                     onValueChange = onNotesChange,
                     placeholder = "Briefly describe the highlights or key turning points…",
@@ -245,14 +220,14 @@ fun AddGameplayNewScreenContent(
             }
 
             // Actions
-            BgDarkPrimaryButton(
+            AppPrimaryButton(
                 text = "Log Session",
                 onClick = onLogSession,
                 leadingIcon = {
                     Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
                 },
             )
-            BgDarkSecondaryButton(text = "Cancel", onClick = onCancel)
+            AppSecondaryButton(text = "Cancel", onClick = onCancel)
 
             Spacer(Modifier.height(8.dp))
         }
@@ -269,31 +244,31 @@ private fun PlayerToggle(
     Row(
         modifier = Modifier
             .clip(BoardGameShapes.Full)
-            .background(if (selected) BoardGameDarkColors.OrangeFill else BoardGameDarkColors.SurfaceContainer)
+            .background(if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer)
             .border(
                 1.dp,
-                if (selected) androidx.compose.ui.graphics.Color.Transparent else BoardGameDarkColors.OutlineVariant,
+                if (selected) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
                 BoardGameShapes.Full,
             )
             .clickable { onClick() }
             .padding(start = 6.dp, end = 16.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        BgDarkAvatar(initials = initials, size = 32.dp)
+        AppAvatar(initials = initials, size = 32.dp)
         Spacer(Modifier.width(8.dp))
         Text(
             name,
-            style = BoardGameDarkTypography.BodyMd.copy(
+            style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             ),
-            color = if (selected) BoardGameDarkColors.OnPrimary else BoardGameDarkColors.OnSurface,
+            color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
         )
     }
 }
 
 @Composable
 private fun AddPlayerButton(onClick: () -> Unit) {
-    val outline = BoardGameDarkColors.Outline
+    val outline = MaterialTheme.colorScheme.outline
     Box(
         modifier = Modifier
             .size(44.dp)
@@ -313,7 +288,7 @@ private fun AddPlayerButton(onClick: () -> Unit) {
         Icon(
             Icons.Default.PersonAdd,
             contentDescription = "Add player",
-            tint = BoardGameDarkColors.OnSurfaceVariant,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
         )
     }
@@ -330,10 +305,10 @@ private fun WinnerTile(
     Box(
         modifier = modifier
             .clip(BoardGameShapes.Large)
-            .background(if (selected) BoardGameDarkColors.SecondaryContainer else BoardGameDarkColors.SurfaceContainer)
+            .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer)
             .border(
                 if (selected) 1.5.dp else 1.dp,
-                if (selected) BoardGameDarkColors.Primary else BoardGameDarkColors.CardBorder,
+                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
                 BoardGameShapes.Large,
             )
             .clickable { onClick() }
@@ -343,21 +318,21 @@ private fun WinnerTile(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            BgDarkAvatar(initials = initials, size = 56.dp)
+            AppAvatar(initials = initials, size = 56.dp)
             Spacer(Modifier.height(8.dp))
             Text(
                 name,
-                style = BoardGameDarkTypography.BodyLg.copy(
+                style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
                 ),
-                color = if (selected) BoardGameDarkColors.Primary else BoardGameDarkColors.OnSurface,
+                color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             )
         }
         if (selected) {
             Icon(
                 Icons.Default.EmojiEvents,
                 contentDescription = "Winner",
-                tint = BoardGameDarkColors.Primary,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .size(20.dp),
@@ -366,8 +341,14 @@ private fun WinnerTile(
     }
 }
 
+@Preview(name = "Log Gameplay — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun AddGameplayNewLightPreview() {
+    BoardGameTheme(darkTheme = false) { AddGameplayNewScreenContent(state = AddGameplayNewState()) }
+}
+
 @Preview(name = "Log Gameplay — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun AddGameplayNewScreenPreview() {
-    AddGameplayNewScreenContent(state = AddGameplayNewState())
+private fun AddGameplayNewDarkPreview() {
+    BoardGameTheme(darkTheme = true) { AddGameplayNewScreenContent(state = AddGameplayNewState()) }
 }

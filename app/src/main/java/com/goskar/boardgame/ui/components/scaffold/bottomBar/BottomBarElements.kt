@@ -6,6 +6,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.gamesHistory.HistoryGameListScreen
 import com.goskar.boardgame.ui.gamesList.lists.GameListScreen
 import com.goskar.boardgame.ui.home.HomeScreen
+import com.goskar.boardgame.ui.home.newHome.HomeNewScreen
 import com.goskar.boardgame.ui.playerList.PlayerListScreen
 
 enum class BottomBarElements (
@@ -15,5 +16,5 @@ enum class BottomBarElements (
     HomeButton(R.string.home, HomeScreen(false)),
     PlayerListButton(R.string.player_list, PlayerListScreen()),
     GameListButton(R.string.board_list, GameListScreen()),
-    HistoryListButton(R.string.history_game_screen, HistoryGameListScreen()),
+    HistoryListButton(R.string.history_game_screen, HomeNewScreen()),
 }

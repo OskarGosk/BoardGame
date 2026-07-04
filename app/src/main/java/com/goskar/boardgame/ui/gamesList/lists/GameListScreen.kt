@@ -145,7 +145,8 @@ fun GameListContent(
                 refresh = refresh,
                 state = state,
                 updateCheckboxExpansionGame = updateCheckboxExpansionGame,
-                updateCheckboxBaseGame = updateCheckboxBaseGame, refreshGameList = refreshGameList,
+                updateCheckboxBaseGame = updateCheckboxBaseGame,
+                refreshGameList = refreshGameList,
                 updateExpandedGameCover = updateExpandedGameCover,
                 changeAllExpendedGameCover = changeAllExpendedGameCover
             )

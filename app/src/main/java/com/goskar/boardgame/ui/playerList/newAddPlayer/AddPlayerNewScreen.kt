@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +18,7 @@ import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,30 +27,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.goskar.boardgame.ui.newDesign.BgDarkSectionHeader
-import com.goskar.boardgame.ui.theme.BgDarkOptionGrid
+import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.theme.AppAvatar
+import com.goskar.boardgame.ui.theme.AppBottomNavBar
+import com.goskar.boardgame.ui.theme.AppGhostButton
+import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.theme.AppOptionGrid
+import com.goskar.boardgame.ui.theme.AppPrimaryButton
+import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.theme.AppSectionHeader
+import com.goskar.boardgame.ui.theme.AppTextField
+import com.goskar.boardgame.ui.theme.AppTopBar
+import com.goskar.boardgame.ui.theme.BoardGameSpacing
+import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.SkillOption
-import com.goskar.boardgame.ui.theme.BgDarkAvatar
-import com.goskar.boardgame.ui.theme.BgDarkBottomNavBar
-import com.goskar.boardgame.ui.theme.BgDarkGhostButton
-import com.goskar.boardgame.ui.theme.BgDarkListCard
-import com.goskar.boardgame.ui.theme.BgDarkPrimaryButton
-import com.goskar.boardgame.ui.theme.BgDarkTextField
-import com.goskar.boardgame.ui.theme.BgDarkTopBar
-import com.goskar.boardgame.ui.theme.BgNavItem
-import com.goskar.boardgame.ui.theme.BoardGameDarkColors
-import com.goskar.boardgame.ui.theme.BoardGameDarkSpacing
-import com.goskar.boardgame.ui.theme.BoardGameDarkTheme
 
 private val skillOptions = listOf(
     SkillOption("Beginner", Icons.Default.School),
@@ -58,19 +53,10 @@ private val skillOptions = listOf(
     SkillOption("Master", Icons.Default.MilitaryTech),
 )
 
-private val darkNavItems = listOf(
-    BgNavItem("Home", Icons.Default.Home),
-    BgNavItem("Collection", Icons.AutoMirrored.Filled.List),
-    BgNavItem("Add Session", Icons.Default.Add),
-    BgNavItem("Players", Icons.Default.Person),
-)
-
 /**
- * New "Add Player" screen (dark redesign). Backed by [AddPlayerNewViewModel] (form state only).
+ * New "Add / Edit Player" screen (theme-aware). Backed by [AddPlayerNewViewModel] (form state only).
  *
- * Built as a full destination because the mock carries its own top bar (back arrow) AND the
- * bottom nav bar — chrome that a modal sheet wouldn't own. The form body lives in
- * [AddPlayerNewCard] so it can be dropped into a ModalBottomSheet later if we switch approach.
+ * The form body lives in [AddPlayerNewCard] so it can be dropped into a ModalBottomSheet later.
  */
 class AddPlayerNewScreen(
     private val editData: EditPlayerData? = null,
@@ -109,43 +95,33 @@ fun AddPlayerNewScreenContent(
 ) {
     var selectedTab by remember { mutableStateOf(3) } // Players tab
 
-    BoardGameDarkTheme {
-        Scaffold(
-            containerColor = BoardGameDarkColors.Background,
-            topBar = {
-                BgDarkTopBar(
-                    title = if (state.isEditMode) "Edit Player" else "Add New Player",
-                    onBack = onBack,
-                    trailingContent = { BgDarkAvatar(initials = "AM", size = 36.dp) },
-                )
-            },
-            bottomBar = {
-                BgDarkBottomNavBar(darkNavItems, selectedTab, { selectedTab = it })
-            },
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .verticalScroll(rememberScrollState())
-                    .padding(BoardGameDarkSpacing.MarginMobile),
-            ) {
-                AddPlayerNewCard(
-                    state = state,
-                    onSelectAvatar = onSelectAvatar,
-                    onNicknameChange = onNicknameChange,
-                    onSelectSkill = onSelectSkill,
-                    onSave = onSave,
-                    onDiscard = onDiscard,
-                )
-            }
+    AppScaffold(
+        title = if (state.isEditMode) "Edit Player" else "Add New Player",
+        navItems = appNavItems,
+        selectedTab = selectedTab,
+        onTabSelected = { selectedTab = it },
+        onBack = onBack,
+        trailing = { AppAvatar(initials = "AM", size = 36.dp) },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+                .padding(BoardGameSpacing.MarginMobile),
+        ) {
+            AddPlayerNewCard(
+                state = state,
+                onSelectAvatar = onSelectAvatar,
+                onNicknameChange = onNicknameChange,
+                onSelectSkill = onSelectSkill,
+                onSave = onSave,
+                onDiscard = onDiscard,
+            )
         }
     }
 }
 
-/**
- * The form card body — reusable in a full screen or a modal bottom sheet.
- */
 @Composable
 private fun AddPlayerNewCard(
     state: AddPlayerNewState,
@@ -155,13 +131,13 @@ private fun AddPlayerNewCard(
     onSave: () -> Unit,
     onDiscard: () -> Unit,
 ) {
-    BgDarkListCard {
+    AppListCard {
         // Choose Avatar
-        BgDarkSectionHeader(title = "Choose Avatar", action = "SELECT ONE")
+        AppSectionHeader(title = "Choose Avatar", action = "SELECT ONE")
         Spacer(Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
             state.avatars.forEachIndexed { index, initials ->
-                BgDarkAvatar(
+                AppAvatar(
                     initials = initials,
                     size = 72.dp,
                     selected = index == state.selectedAvatar,
@@ -173,7 +149,7 @@ private fun AddPlayerNewCard(
         Spacer(Modifier.height(24.dp))
 
         // Nickname
-        BgDarkTextField(
+        AppTextField(
             value = state.nickname,
             onValueChange = onNicknameChange,
             label = "Player Nickname",
@@ -182,7 +158,7 @@ private fun AddPlayerNewCard(
                 Icon(
                     Icons.Default.Person,
                     contentDescription = null,
-                    tint = BoardGameDarkColors.Outline,
+                    tint = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.size(20.dp),
                 )
             },
@@ -191,9 +167,9 @@ private fun AddPlayerNewCard(
         Spacer(Modifier.height(24.dp))
 
         // Skill level
-        BgDarkSectionHeader(title = "Skill Level")
+        AppSectionHeader(title = "Skill Level")
         Spacer(Modifier.height(12.dp))
-        BgDarkOptionGrid(
+        AppOptionGrid(
             options = skillOptions,
             selected = state.selectedSkill,
             onSelect = onSelectSkill,
@@ -201,7 +177,7 @@ private fun AddPlayerNewCard(
 
         Spacer(Modifier.height(28.dp))
 
-        BgDarkPrimaryButton(
+        AppPrimaryButton(
             text = if (state.isEditMode) "Save Changes" else "Save Player",
             onClick = onSave,
             leadingIcon = {
@@ -213,12 +189,18 @@ private fun AddPlayerNewCard(
             },
         )
         Spacer(Modifier.height(4.dp))
-        BgDarkGhostButton(text = "Discard Changes", onClick = onDiscard)
+        AppGhostButton(text = "Discard Changes", onClick = onDiscard)
     }
+}
+
+@Preview(name = "Add Player — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun AddPlayerNewScreenLightPreview() {
+    BoardGameTheme(darkTheme = false) { AddPlayerNewScreenContent(state = AddPlayerNewState()) }
 }
 
 @Preview(name = "Add Player — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun AddPlayerNewScreenPreview() {
-    AddPlayerNewScreenContent(state = AddPlayerNewState(nickname = ""))
+private fun AddPlayerNewScreenDarkPreview() {
+    BoardGameTheme(darkTheme = true) { AddPlayerNewScreenContent(state = AddPlayerNewState()) }
 }

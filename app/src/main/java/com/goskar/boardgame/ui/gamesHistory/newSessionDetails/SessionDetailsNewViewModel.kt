@@ -1,7 +1,7 @@
 package com.goskar.boardgame.ui.gamesHistory.newSessionDetails
 
 import androidx.lifecycle.ViewModel
-import com.goskar.boardgame.ui.theme.BgDarkChipStyle
+import com.goskar.boardgame.ui.theme.AppChipStyle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -15,7 +15,7 @@ data class SessionPlayerResult(
 data class SessionDetailsNewState(
     val gameName: String = "Dune: Imperium",
     val category: String = "Strategy",
-    val categoryStyle: BgDarkChipStyle = BgDarkChipStyle.CATEGORY,
+    val categoryStyle: AppChipStyle = AppChipStyle.CATEGORY,
     val dateLabel: String = "Oct 27, 2023",
     val duration: String = "114m",
     val playerCount: String = "4",
