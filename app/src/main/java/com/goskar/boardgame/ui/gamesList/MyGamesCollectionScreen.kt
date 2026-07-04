@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.theme.*
 import org.koin.androidx.compose.koinViewModel
 import androidx.core.net.toUri
+import com.goskar.boardgame.R
 
 /**
  * "My Collection" screen (theme-aware) — replaces the old game-list view.
@@ -79,7 +81,7 @@ fun MyGamesCollectionView(
     var selectedTab by remember { mutableStateOf(1) } // Collection
 
     AppScaffold(
-        title = "Tabletop Tracker",
+        title = stringResource(R.string.app_name_title),
         navItems = appNavItems,
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
