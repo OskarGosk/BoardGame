@@ -34,13 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-// =============================================================================
-// CARDS — theme-aware (single MaterialTheme-based set)
-// =============================================================================
 
-/**
- * Standard list card — surface bg, subtle border, large radius.
- */
 @Composable
 fun BgListCard(
     modifier: Modifier = Modifier,
@@ -60,9 +54,6 @@ fun BgListCard(
     }
 }
 
-/**
- * Hero / featured card — full-width image + text below.
- */
 @Composable
 fun BgHeroCard(
     title: String,
@@ -110,9 +101,6 @@ fun BgHeroCard(
     }
 }
 
-/**
- * Stat / metric card — label + large number, optional trailing content (icon).
- */
 @Composable
 fun BgStatCard(
     label: String,
@@ -145,9 +133,6 @@ fun BgStatCard(
     }
 }
 
-/**
- * Settings row — icon tile + title + subtitle + trailing (defaults to a chevron).
- */
 @Composable
 fun BgSettingsRow(
     icon: ImageVector,
@@ -197,9 +182,6 @@ fun BgSettingsRow(
     }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 @Preview(name = "Cards — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

@@ -25,13 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-// =============================================================================
-// BUTTONS — theme-aware (single MaterialTheme-based set)
-// =============================================================================
 
-/**
- * Primary filled button — primary bg, on-primary text.
- */
 @Composable
 fun BgPrimaryButton(
     text: String,
@@ -72,9 +66,6 @@ fun BgPrimaryButton(
     }
 }
 
-/**
- * Secondary outlined button — no fill, primary label, subtle border.
- */
 @Composable
 fun BgSecondaryButton(
     text: String,
@@ -100,9 +91,6 @@ fun BgSecondaryButton(
     }
 }
 
-/**
- * Ghost / text button — transparent, muted label.
- */
 @Composable
 fun BgGhostButton(
     text: String,
@@ -120,9 +108,6 @@ fun BgGhostButton(
     }
 }
 
-/**
- * FAB — circular, primary fill.
- */
 @Composable
 fun BgFab(
     onClick: () -> Unit,
@@ -139,9 +124,6 @@ fun BgFab(
     ) { icon() }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 @Preview(name = "Buttons — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

@@ -39,15 +39,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.navigation.BgNavItem
 import com.goskar.boardgame.ui.navigation.previewNavItems
 
-// =============================================================================
-// NAVIGATION — theme-aware (single MaterialTheme-based components)
-// =============================================================================
 
-/**
- * Bottom navigation bar — active tab gets a soft primary "pill" behind icon + label.
- * Colors come from [MaterialTheme.colorScheme], so it adapts to light/dark automatically.
- * Tapping a tab navigates to the item's [BgNavItem.navigationScreen].
- */
 @Composable
 fun BgBottomNavBar(
     items: List<BgNavItem>,
@@ -125,10 +117,6 @@ fun BgBottomNavBar(
     }
 }
 
-/**
- * Top app bar — optional leading slot (e.g. avatar) OR back arrow + title + optional trailing.
- * When [leading] is provided it replaces the back arrow. Theme-aware via [MaterialTheme].
- */
 @Composable
 fun BgTopBar(
     title: String,
@@ -164,9 +152,6 @@ fun BgTopBar(
     }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 @Preview(name = "Navigation — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

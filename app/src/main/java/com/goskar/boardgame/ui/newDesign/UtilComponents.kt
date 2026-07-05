@@ -20,13 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.ui.theme.*
 
-// =============================================================================
-// UTIL COMPONENTS — theme-aware (single MaterialTheme-based set)
-// =============================================================================
 
-/**
- * Section heading row — title (+ optional subtitle) + optional badge + optional "View All" action.
- */
 @Composable
 fun BgSectionHeader(
     title: String,
@@ -61,9 +55,6 @@ fun BgSectionHeader(
     }
 }
 
-/**
- * Empty state — icon + heading + optional body + optional CTA.
- */
 @Composable
 fun BgEmptyState(
     icon: ImageVector,
@@ -97,9 +88,6 @@ fun BgEmptyState(
     }
 }
 
-/**
- * Progress bar — primary fill on a subtle track.
- */
 @Composable
 fun BgProgressBar(
     progress: Float,
@@ -116,9 +104,6 @@ fun BgProgressBar(
     }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 @Preview(name = "Utils — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

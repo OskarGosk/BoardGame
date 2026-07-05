@@ -41,13 +41,7 @@ data class SkillOption(
     val icon: ImageVector,
 )
 
-// =============================================================================
-// SELECTION — theme-aware (single MaterialTheme-based set)
-// =============================================================================
 
-/**
- * Segmented control — sliding pill, N options.
- */
 @Composable
 fun BgSegmentedControl(
     options: List<String>,
@@ -88,9 +82,6 @@ fun BgSegmentedControl(
     }
 }
 
-/**
- * Skill level selector — icon + label tiles in a row. Active tile filled with primary.
- */
 @Composable
 fun BgSkillSelector(
     options: List<SkillOption>,
@@ -135,9 +126,6 @@ fun BgSkillSelector(
     }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 private val previewSkillOptions = listOf(
     SkillOption("Beginner", Icons.Default.School),

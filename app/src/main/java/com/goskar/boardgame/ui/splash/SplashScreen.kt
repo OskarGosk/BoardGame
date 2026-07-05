@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.goskar.boardgame.ui.home.HomeScreen
+import com.goskar.boardgame.ui.screens.home.HomeNewScreen
 import com.goskar.boardgame.ui.login.LoginScreen
 import com.goskar.boardgame.ui.theme.BoardGameColors
 import com.goskar.boardgame.ui.theme.BoardGameShapes
@@ -33,7 +33,7 @@ class SplashScreen : Screen {
         LaunchedEffect(Unit) {
             viewModel.events.collect { event ->
                 when (event) {
-                    SplashEvent.NavigateToHome -> navigator?.replace(HomeScreen(false))
+                    SplashEvent.NavigateToHome -> navigator?.replace(HomeNewScreen())
                     SplashEvent.NavigateToLogin -> navigator?.replace(LoginScreen())
                 }
             }

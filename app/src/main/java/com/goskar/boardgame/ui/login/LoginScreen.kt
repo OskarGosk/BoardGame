@@ -48,7 +48,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.home.newHome.HomeNewScreen
+import com.goskar.boardgame.ui.screens.home.HomeNewScreen
 import com.goskar.boardgame.ui.theme.BgListCard
 import com.goskar.boardgame.ui.theme.BgPrimaryButton
 import com.goskar.boardgame.ui.theme.BgSecondaryButton

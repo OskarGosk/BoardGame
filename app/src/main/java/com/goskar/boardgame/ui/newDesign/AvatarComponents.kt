@@ -36,13 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-// =============================================================================
-// AVATAR / TOGGLE — theme-aware (single MaterialTheme-based set)
-// =============================================================================
 
-/**
- * Circular player avatar — selection ring, optional online dot.
- */
 @Composable
 fun BgAvatar(
     modifier: Modifier = Modifier,
@@ -85,9 +79,6 @@ fun BgAvatar(
     }
 }
 
-/**
- * Toggle setting row — icon circle + label + description + switch.
- */
 @Composable
 fun BgToggleRow(
     icon: ImageVector,
@@ -144,9 +135,6 @@ fun BgToggleRow(
     }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 @Preview(name = "Avatar & Toggle — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

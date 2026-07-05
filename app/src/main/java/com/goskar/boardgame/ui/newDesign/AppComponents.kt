@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -37,26 +36,12 @@ import com.goskar.boardgame.ui.navigation.BgNavItem
 import com.goskar.boardgame.ui.newDesign.BgProgressBar
 import com.goskar.boardgame.ui.newDesign.BgSectionHeader
 
-// =============================================================================
-// APP-LEVEL COMPONENT API
-// -----------------------------------------------------------------------------
-// The design-system base components (`Bg*`) are single MaterialTheme-based
-// composables — they resolve light/dark automatically from the active theme,
-// with NO `isSystemInDarkTheme()` branching. These `App*` functions are thin,
-// stable aliases used by screens (plus a couple of composites that don't map to
-// a single base component: AppDropdownField, AppPlayerRow).
-// =============================================================================
 
-/** Chip styles shared across the app (maps directly onto [BgChip]). */
 enum class AppChipStyle { CATEGORY, STATUS_WIN, STATUS_PLACE, YEAR, EXPANSION, BASE_GAME }
 
-/** Extended semantic colors (e.g. success/green), read from the active theme. */
 @Composable
 fun appExt(): BoardGameExtColors = LocalBoardGameExtColors.current
 
-// -----------------------------------------------------------------------------
-// Aliases
-// -----------------------------------------------------------------------------
 
 @Composable
 fun AppChip(text: String, style: AppChipStyle = AppChipStyle.CATEGORY, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) =
@@ -166,11 +151,7 @@ fun AppHeroCard(
     imageContent: @Composable BoxScope.() -> Unit,
 ) = BgHeroCard(title = title, modifier = modifier, badge = badge, badgeStyle = badgeStyle, subtitle = subtitle, onClick = onClick, imageContent = imageContent)
 
-// -----------------------------------------------------------------------------
-// Composites (no single base component)
-// -----------------------------------------------------------------------------
 
-/** Theme-aware clickable select field (opens an external picker via [onClick]). */
 @Composable
 fun AppDropdownField(
     label: String,
@@ -208,7 +189,6 @@ fun AppDropdownField(
     }
 }
 
-/** Directory player row — avatar + name/role + win-rate + rank + optional trailing. */
 @Composable
 fun AppPlayerRow(
     initials: String,

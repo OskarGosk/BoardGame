@@ -24,13 +24,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-// =============================================================================
-// INPUTS — theme-aware (single MaterialTheme-based set)
-// =============================================================================
 
-/**
- * Standard text field — rounded, primary focus border, error support.
- */
 @Composable
 fun BgTextField(
     value: String,
@@ -88,9 +82,6 @@ fun BgTextField(
     }
 }
 
-/**
- * Search bar — pill shape, muted placeholder, leading search icon.
- */
 @Composable
 fun BgSearchBar(
     value: String,
@@ -123,9 +114,6 @@ fun BgSearchBar(
     )
 }
 
-/**
- * Multiline textarea — session notes.
- */
 @Composable
 fun BgTextArea(
     value: String,
@@ -167,9 +155,6 @@ fun BgTextArea(
     }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 @Preview(name = "Inputs — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

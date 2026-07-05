@@ -23,14 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-// =============================================================================
-// CHIPS — theme-aware (single MaterialTheme-based set)
-// =============================================================================
 
-/**
- * Status / category chip — small pill. Colors resolve from [MaterialTheme] (+ [appExt] for green),
- * so it adapts to light/dark automatically.
- */
 @Composable
 fun BgChip(
     text: String,
@@ -60,9 +53,6 @@ fun BgChip(
     }
 }
 
-/**
- * Filter chip — toggleable, used in "All / Base / Expansions" bars.
- */
 @Composable
 fun BgFilterChip(
     text: String,
@@ -92,10 +82,6 @@ fun BgFilterChip(
     }
 }
 
-/**
- * Variant chip — toggleable pill for session variants ("Epic Mode", "House Rules").
- * Filled with primary when selected.
- */
 @Composable
 fun BgVariantChip(
     text: String,
@@ -125,9 +111,6 @@ fun BgVariantChip(
     }
 }
 
-// =============================================================================
-// PREVIEWS
-// =============================================================================
 
 @Preview(name = "Chips — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

@@ -19,11 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.goskar.boardgame.ui.navigation.BgNavItem
 import com.goskar.boardgame.ui.navigation.previewNavItems
 
-/**
- * Theme-aware app scaffold — top bar + bottom nav around scrollable content.
- * Delegates to the [AppTopBar] / [AppBottomNavBar] facades, so light/dark is picked
- * from the system theme; there is no explicit `darkTheme` flag.
- */
 @Composable
 fun AppScaffold(
     modifier: Modifier = Modifier,
