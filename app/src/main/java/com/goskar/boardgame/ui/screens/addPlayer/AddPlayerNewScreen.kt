@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MilitaryTech
@@ -28,11 +29,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppGhostButton
 import com.goskar.boardgame.ui.theme.AppListCard
@@ -72,6 +75,7 @@ class AddPlayerNewScreen(
             onNicknameChange = viewModel::updateNickname,
             onSelectSkill = viewModel::selectSkill,
             onDiscard = { navigator?.pop() },
+            onProfileClick = { navigator?.push(ProfileNewScreen()) },
         )
     }
 }
@@ -85,6 +89,7 @@ fun AddPlayerNewScreenContent(
     onSelectSkill: (Int) -> Unit = {},
     onSave: () -> Unit = {},
     onDiscard: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
 ) {
     var selectedTab by remember { mutableStateOf(3) }
 
@@ -94,7 +99,13 @@ fun AddPlayerNewScreenContent(
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
         onBack = onBack,
-        trailing = { AppAvatar(initials = "AM", size = 36.dp) },
+        trailing = {
+            AppAvatar(
+                initials = "AM",
+                size = 36.dp,
+                modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
+            )
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier

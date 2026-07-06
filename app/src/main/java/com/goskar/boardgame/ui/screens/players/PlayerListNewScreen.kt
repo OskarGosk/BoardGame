@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -42,6 +43,7 @@ import com.goskar.boardgame.ui.playerList.PlayerListState
 import com.goskar.boardgame.ui.playerList.PlayerListViewModel
 import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
 import com.goskar.boardgame.ui.screens.addPlayer.viewmodel.EditPlayerData
+import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppPlayerRow
 import com.goskar.boardgame.ui.theme.AppSearchBar
@@ -87,6 +89,10 @@ class PlayerListNewScreen : Screen {
             onPlayerClick = { player ->
                 navigator?.push(AddPlayerNewScreen(EditPlayerData(name = player.name)))
             },
+            onAddPlayerClick = {
+                navigator?.push(AddPlayerNewScreen())
+            },
+            onProfileClick = { navigator?.push(ProfileNewScreen()) },
         )
     }
 }
@@ -128,7 +134,8 @@ fun PlayerListNewScreenContent(
     onQueryChange: (String) -> Unit = {},
     onPlayerClick: (DirectoryPlayer) -> Unit = {},
     onPlayerMenu: (DirectoryPlayer) -> Unit = {},
-    onLoadMore: () -> Unit = {},
+    onAddPlayerClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
 ) {
     var selectedNav by remember { mutableStateOf(3) }
 
@@ -137,7 +144,13 @@ fun PlayerListNewScreenContent(
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
-        trailing = { AppAvatar(initials = "AM", size = 36.dp) },
+        trailing = {
+            AppAvatar(
+                initials = "AM",
+                size = 36.dp,
+                modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
+            )
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -219,7 +232,7 @@ fun PlayerListNewScreenContent(
             }
 
             Spacer(Modifier.height(4.dp))
-            AppSecondaryButton(text = "⌄ LOAD MORE PLAYERS", onClick = onLoadMore)
+            AppSecondaryButton(text = "ADD PLAYERS", onClick = onAddPlayerClick)
             Spacer(Modifier.height(4.dp))
         }
     }

@@ -2,6 +2,7 @@ package com.goskar.boardgame.ui.screens.collection
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,6 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
@@ -49,6 +52,7 @@ class MyGamesCollectionScreen : Screen {
         val state by viewModel.state.collectAsState()
         val snackbarHostState = LocalSnackbarHost.current
         val context = LocalContext.current
+        val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) {
             viewModel.refresh()
@@ -59,7 +63,8 @@ class MyGamesCollectionScreen : Screen {
             updateSearchTxt = viewModel::updateSearchTxt,
             updateCheckboxExpansionGame = viewModel::updateCheckboxExpansionGame,
             updateCheckboxBaseGame = viewModel::updateCheckboxBaseGame,
-            useAllGameFilter = viewModel::useAllGameFilter
+            useAllGameFilter = viewModel::useAllGameFilter,
+            onProfileClick = { navigator?.push(ProfileNewScreen()) }
         )
     }
 }
@@ -71,7 +76,8 @@ fun MyGamesCollectionView(
     updateSearchTxt: (String) -> Unit = {},
     updateCheckboxExpansionGame: () -> Unit = {},
     updateCheckboxBaseGame: () -> Unit = {},
-    useAllGameFilter: () -> Unit = {}
+    useAllGameFilter: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
 ) {
     var selectedFilter by remember { mutableStateOf(0) }
     var selectedTab by remember { mutableStateOf(1) }
@@ -82,7 +88,11 @@ fun MyGamesCollectionView(
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
         trailing = {
-            AppAvatar(size = 36.dp, initials = "GK")
+            AppAvatar(
+                size = 36.dp,
+                initials = "GK",
+                modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
+            )
         }
     ) { paddingValues ->
         Box(
