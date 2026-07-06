@@ -14,7 +14,7 @@ import com.goskar.boardgame.data.models.User
 
 @Database(
     entities = [Player::class, Game::class, HistoryGame::class, User::class, HistoryGameExpansion::class],
-    version = 7,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 6, to = 7),
@@ -30,6 +30,12 @@ abstract class Db : RoomDatabase() {
     abstract fun historyGameExpansionDao(): HistoryGameExpansionDao
 
     companion object {
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE Player ADD COLUMN selectedSkill INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE Game ADD COLUMN uriFromBgg TEXT default(NULL)")
