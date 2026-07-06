@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.playerList
+package com.goskar.boardgame.ui.screens.players
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
@@ -26,6 +26,7 @@ data class PlayerListState(
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
     val player: Player? = null,
+    val playerToDelete: Player? = null,
     val isLoading: Boolean = false,
     val showAddEditDialog: Boolean = false
 )
@@ -55,6 +56,10 @@ class PlayerListViewModel(
 
     fun updatePlayer(value :Player) {
         _state.update { it.copy(player = value) }
+    }
+
+    fun setPlayerToDelete(player: Player?) {
+        _state.update { it.copy(playerToDelete = player) }
     }
 
 

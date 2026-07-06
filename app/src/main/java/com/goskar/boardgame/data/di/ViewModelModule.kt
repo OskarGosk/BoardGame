@@ -11,8 +11,8 @@ import com.goskar.boardgame.ui.gamesHistory.GamesHistoryViewModel
 import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.AddGameplayNewViewModel
 import com.goskar.boardgame.ui.screens.sessionDetails.viewmodel.SessionDetailsNewViewModel
 import com.goskar.boardgame.ui.screens.home.viewmodel.HomeNewViewModel
-import com.goskar.boardgame.ui.playerList.PlayerListViewModel
-import com.goskar.boardgame.ui.screens.addPlayer.viewmodel.AddPlayerNewViewModel
+import com.goskar.boardgame.ui.screens.players.PlayerListViewModel
+import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewViewModel
 import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewViewModel
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchViewModel
 import com.goskar.boardgame.ui.login.LoginViewModel
@@ -28,7 +28,7 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { GamePlayViewModel(get(), get(), get(), get()) }
     viewModel { GamesHistoryViewModel(get(), get()) }
     viewModel { HomeNewViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { AddPlayerNewViewModel() }
+    viewModel { AddPlayerNewViewModel(get()) }
     viewModel { AddGameNewViewModel() }
     viewModel { AddGameplayNewViewModel() }
     viewModel { ProfileNewViewModel(get(), get()) }

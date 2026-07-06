@@ -10,7 +10,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
 import com.goskar.boardgame.ui.screens.collection.MyGamesCollectionScreen
 import com.goskar.boardgame.ui.screens.home.HomeNewScreen
-import com.goskar.boardgame.ui.screens.players.PlayerListNewScreen
+import com.goskar.boardgame.ui.screens.players.PlayerListScreen
 
 data class BgNavItem(
     val label: String,
@@ -23,7 +23,7 @@ val appNavItems = listOf(
     BgNavItem("Home", Icons.Default.Home, navigationScreen = HomeNewScreen()),
     BgNavItem("Collection", Icons.AutoMirrored.Filled.List, navigationScreen = MyGamesCollectionScreen()),
     BgNavItem("Add Session", Icons.Default.AddCircle, navigationScreen = AddGameplayNewScreen()),
-    BgNavItem("Players", Icons.Default.Person, navigationScreen = PlayerListNewScreen()),
+    BgNavItem("Players", Icons.Default.Person, navigationScreen = PlayerListScreen()),
 )
 
 val previewNavItems = appNavItems

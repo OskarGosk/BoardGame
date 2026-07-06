@@ -16,9 +16,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.MilitaryTech
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,14 +34,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleStore
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
+import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
+import com.goskar.boardgame.ui.login.LoginEvent
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.playerList.PlayerListState
-import com.goskar.boardgame.ui.playerList.PlayerListViewModel
 import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
+import com.goskar.boardgame.ui.screens.addPlayer.EditPlayerData
+import com.goskar.boardgame.ui.screens.home.HomeNewScreen
 import com.goskar.boardgame.ui.screens.addPlayer.viewmodel.EditPlayerData
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.theme.AppAvatar
@@ -57,6 +65,7 @@ import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
 
 data class DirectoryPlayer(
+    val id: String,
     val name: String,
     val role: String,
     val initials: String,
@@ -73,7 +82,7 @@ data class PlayerListNewState(
     val players: List<DirectoryPlayer> = emptyList(),
 )
 
-class PlayerListNewScreen : Screen {
+class PlayerListScreen : Screen {
 
     @Composable
     override fun Content() {
@@ -86,14 +95,47 @@ class PlayerListNewScreen : Screen {
         PlayerListNewScreenContent(
             state = state.toDirectoryState(),
             onQueryChange = viewModel::updateSearchTxt,
-            onPlayerClick = { player ->
-                navigator?.push(AddPlayerNewScreen(EditPlayerData(name = player.name)))
+            onPlayerClick = { dirPlayer ->
+                val original = state.playerList?.find { it.id == dirPlayer.id }
+                if (original != null) {
+                    navigator?.push(
+                        AddPlayerNewScreen(
+                            EditPlayerData(
+                                id = original.id,
+                                name = original.name,
+                                games = original.games,
+                                winRatio = original.winRatio,
+                                description = original.description,
+                                selected = original.selected,
+                                skillIndex = original.selectedSkill
+                            )
+                        )
+                    )
+                }
             },
-            onAddPlayerClick = {
-                navigator?.push(AddPlayerNewScreen())
+            onAddPlayerCLick = { navigator?.push(AddPlayerNewScreen()) },
+            onDeletePlayer = { dirPlayer ->
+                val original = state.playerList?.find { it.id == dirPlayer.id }
+                if (original != null) {
+                    viewModel.setPlayerToDelete(original)
+                }
             },
             onProfileClick = { navigator?.push(ProfileNewScreen()) },
-        )
+            )
+
+        state.playerToDelete?.let { player ->
+            SimpleAlertDialog(
+                titleText = stringResource(R.string.delete, player.name),
+                contentText = R.string.player_delete_info,
+                onDismiss = { viewModel.setPlayerToDelete(null) },
+                confirmButtonClick = {
+                    viewModel.validateDeletePlayer(player)
+                    viewModel.setPlayerToDelete(null)
+                }
+            )
+        }
+
+
     }
 }
 
@@ -105,6 +147,7 @@ private fun PlayerListState.toDirectoryState(): PlayerListNewState {
 
     val players = visible.map { p ->
         DirectoryPlayer(
+            id = p.id,
             name = p.name,
             role = (p.description.ifBlank { "Player" }) + " · ${p.games} games",
             initials = playerInitials(p.name),
@@ -133,10 +176,10 @@ fun PlayerListNewScreenContent(
     onMenu: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onPlayerClick: (DirectoryPlayer) -> Unit = {},
-    onPlayerMenu: (DirectoryPlayer) -> Unit = {},
-    onAddPlayerClick: () -> Unit = {},
+    onDeletePlayer: (DirectoryPlayer) -> Unit = {},
+    onAddPlayerCLick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-) {
+    ) {
     var selectedNav by remember { mutableStateOf(3) }
 
     AppScaffold(
@@ -218,12 +261,12 @@ fun PlayerListNewScreenContent(
                     winRateColor = winRateColor(player.winRate),
                     trailing = {
                         Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = "More",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier
                                 .clip(BoardGameShapes.Full)
-                                .clickable { onPlayerMenu(player) }
+                                .clickable { onDeletePlayer(player) }
                                 .size(20.dp),
                         )
                     },
@@ -232,7 +275,7 @@ fun PlayerListNewScreenContent(
             }
 
             Spacer(Modifier.height(4.dp))
-            AppSecondaryButton(text = "ADD PLAYERS", onClick = onAddPlayerClick)
+            AppSecondaryButton(text = "ADD PLAYERS", onClick = onAddPlayerCLick)
             Spacer(Modifier.height(4.dp))
         }
     }
