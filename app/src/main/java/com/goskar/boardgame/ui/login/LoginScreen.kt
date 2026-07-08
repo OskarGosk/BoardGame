@@ -49,10 +49,10 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.screens.home.HomeNewScreen
-import com.goskar.boardgame.ui.theme.BgListCard
-import com.goskar.boardgame.ui.theme.BgPrimaryButton
-import com.goskar.boardgame.ui.theme.BgSecondaryButton
-import com.goskar.boardgame.ui.theme.BgTextField
+import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.theme.AppPrimaryButton
+import com.goskar.boardgame.ui.theme.AppSecondaryButton
+import com.goskar.boardgame.ui.theme.AppTextField
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -84,12 +84,12 @@ class LoginScreen : Screen {
                             message = context.getString(event.message),
                             type = event.type
                         )
-                        navigator?.replaceAll(HomeNewScreen())
+                        navigator?.replaceAll(HomeNewScreen(firstLogin = true))
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 
                     is LoginEvent.LoggedInOrGuest -> {
-                        navigator?.replaceAll(HomeNewScreen())
+                        navigator?.replaceAll(HomeNewScreen(firstLogin = false))
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 
@@ -169,12 +169,12 @@ fun LoginScreenContent(
         Spacer(modifier = Modifier.height(40.dp))
 
         // Login Card
-        BgListCard {
+        AppListCard {
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                BgTextField(
+                AppTextField(
                     value = state.login,
                     onValueChange = { updateLogin(it) },
                     label = "Email Address",
@@ -214,7 +214,7 @@ fun LoginScreenContent(
                                 .clickable { /* Handle forgot password */ }
                         )
                     }
-                    BgTextField(
+                    AppTextField(
                         value = state.password,
                         onValueChange = { updatePassword(it) },
                         placeholder = "••••••••",
@@ -243,7 +243,7 @@ fun LoginScreenContent(
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     )
                 }
-                BgPrimaryButton(
+                AppPrimaryButton(
                     text = "Login",
                     onClick = logIn,
                     loading = state.isLoading
@@ -274,7 +274,7 @@ fun LoginScreenContent(
                     }
                 }
 
-                BgSecondaryButton(
+                AppSecondaryButton(
                     text = "Continue as Guest",
                     onClick = questLogIn
                 )

@@ -10,6 +10,8 @@ import com.goskar.boardgame.ui.screens.addGame.viewmodel.AddGameNewViewModel
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryViewModel
 import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.AddGameplayNewViewModel
 import com.goskar.boardgame.ui.screens.sessionDetails.viewmodel.SessionDetailsNewViewModel
+import com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsNewViewModel
+import com.goskar.boardgame.ui.components.user.CurrentUserViewModel
 import com.goskar.boardgame.ui.screens.home.viewmodel.HomeNewViewModel
 import com.goskar.boardgame.ui.screens.players.PlayerListViewModel
 import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewViewModel
@@ -26,13 +28,15 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { GameListViewModel(get()) }
     viewModel { AddEditGameViewModel(get(), get()) }
     viewModel { GamePlayViewModel(get(), get(), get(), get()) }
-    viewModel { GamesHistoryViewModel(get(), get()) }
-    viewModel { HomeNewViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { GamesHistoryViewModel(get(), get(), get()) }
+    viewModel { HomeNewViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { AddPlayerNewViewModel(get()) }
-    viewModel { AddGameNewViewModel() }
-    viewModel { AddGameplayNewViewModel() }
-    viewModel { ProfileNewViewModel(get(), get()) }
-    viewModel { SessionDetailsNewViewModel() }
+    viewModel { AddGameNewViewModel(get(), get(), get()) }
+    viewModel { AddGameplayNewViewModel(get(), get(), get(), get()) }
+    viewModel { ProfileNewViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { SessionDetailsNewViewModel(get(), get()) }
+    viewModel { GameDetailsNewViewModel(get(), get()) }
+    viewModel { CurrentUserViewModel(get(), get(), get()) }
     viewModel { GameSearchViewModel(get()) }
     viewModel { GameDetailsBGGViewModel(get(), get(), get()) }
     viewModel { GameReportsViewModel(get(), get()) }

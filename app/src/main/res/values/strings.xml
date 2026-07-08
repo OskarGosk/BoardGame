@@ -117,4 +117,146 @@
     <string name="bgg_error_game_details">Some Error, please try again.</string>
 
 
+    <!-- NEW UI (redesign) — shared -->
+    <string name="app_tabletop_tracker">Tabletop Tracker</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="section_players">Players</string>
+    <string name="section_session_variants">Session Variants</string>
+    <string name="section_notes">Notes</string>
+
+    <!-- NEW UI — Home -->
+    <string name="home_total_games">Total Games</string>
+    <string name="home_most_played">Most Played</string>
+    <string name="home_win_ratio">WIN RATIO</string>
+    <string name="home_quick_actions">Quick Actions</string>
+    <string name="home_add_gameplay">Add Gameplay</string>
+    <string name="home_scan_bgg">Scan BGG</string>
+    <string name="home_quick_report">Quick Report</string>
+    <string name="home_recent_sessions">Recent Sessions</string>
+    <string name="home_view_all">VIEW ALL</string>
+
+    <!-- NEW UI — Collection -->
+    <string name="collection_title">My Collection</string>
+    <string name="collection_search_hint">Search…</string>
+    <string name="collection_add">Add</string>
+    <string name="collection_games_count">%1$d games</string>
+    <string name="collection_min_players">Min players</string>
+    <string name="collection_max_players">Max players</string>
+    <string name="collection_games_played">Games Played</string>
+
+    <!-- NEW UI — Players -->
+    <string name="players_title">Players Directory</string>
+    <string name="players_subtitle">Manage and track your gaming circle\'s statistics.</string>
+    <string name="players_search_hint">Search players by name or rank…</string>
+    <string name="players_total">Total Players</string>
+    <string name="players_avg_win_rate">Avg Win Rate</string>
+    <string name="players_active_week">Active This Week</string>
+    <string name="players_add_button">ADD PLAYERS</string>
+
+    <!-- NEW UI — Add / Edit Player -->
+    <string name="addplayer_title_new">Add New Player</string>
+    <string name="addplayer_title_edit">Edit Player</string>
+    <string name="addplayer_nickname_label">Player Nickname</string>
+    <string name="addplayer_nickname_hint">Enter name…</string>
+    <string name="addplayer_skill_level">Skill Level</string>
+    <string name="addplayer_save_new">Save Player</string>
+    <string name="addplayer_save_changes">Save Changes</string>
+    <string name="addplayer_discard">Discard Changes</string>
+
+    <!-- NEW UI — Log Gameplay -->
+    <string name="log_title_new">Log Gameplay Session</string>
+    <string name="log_title_edit">Edit Gameplay Session</string>
+    <string name="log_subtitle">Capture the details of your latest tabletop conquest.</string>
+    <string name="log_select_game">Select Game</string>
+    <string name="log_select_a_game">Select a game</string>
+    <string name="log_date_played">Date Played</string>
+    <string name="log_add_new">+ Add New</string>
+    <string name="log_select_winner">Select Winner</string>
+    <string name="log_session_notes">Session Notes</string>
+    <string name="log_notes_hint">Briefly describe the highlights or key turning points…</string>
+    <string name="log_button_new">Log Session</string>
+    <string name="log_button_update">Update Session</string>
+    <string name="log_duration_label">Duration (minutes)</string>
+    <string name="log_scores_title">Scores (optional)</string>
+    <string name="log_pick_winner">Pick who won</string>
+    <string name="log_coop_result">Result</string>
+    <string name="log_coop_players_won">Players won</string>
+    <string name="log_coop_computer_won">Game won</string>
+    <string name="log_select_players_first">Select players to pick a winner.</string>
+
+    <!-- NEW UI — Gaming History -->
+    <string name="history_search_hint">Search sessions…</string>
+    <string name="history_load_more">Load More</string>
+
+    <!-- NEW UI — Session Details -->
+    <string name="session_details_title">Session Details</string>
+    <string name="session_edit">Edit Session</string>
+    <string name="session_delete">Delete Session</string>
+    <string name="session_stat_date">DATE</string>
+    <string name="session_stat_duration">DURATION</string>
+    <string name="session_stat_players">PLAYERS</string>
+
+    <!-- NEW UI — Add Game -->
+    <string name="addgame_title">Add Game</string>
+    <string name="addgame_title_edit">Edit Game</string>
+    <string name="addgame_update">Update Game</string>
+    <string name="addgame_category_label">Category</string>
+    <string name="addgame_year_label">Year</string>
+    <string name="addgame_tab_bgg">BGG Search</string>
+    <string name="addgame_tab_manual">Manual Entry</string>
+    <string name="addgame_search_hint">Search BGG database…</string>
+    <string name="addgame_popular_matches">Popular Matches</string>
+    <string name="addgame_name_label">Game Name</string>
+    <string name="addgame_name_hint">e.g. Terraforming Mars</string>
+    <string name="addgame_min_players">Min Players</string>
+    <string name="addgame_max_players">Max Players</string>
+    <string name="addgame_coop_title">Cooperate Game?</string>
+    <string name="addgame_coop_desc">Players win or lose together</string>
+    <string name="addgame_exp_title">Is Expansion?</string>
+    <string name="addgame_exp_desc">Requires a base game to play</string>
+    <string name="addgame_base_hint">Select base game</string>
+    <string name="addgame_save">Save Game</string>
+    <string name="addgame_cover_added">Cover added</string>
+    <string name="addgame_cover_add">Add a cover photo</string>
+    <string name="addgame_camera">Camera</string>
+    <string name="addgame_gallery">Gallery</string>
+
+    <!-- NEW UI — Game Details (BGG) -->
+    <string name="game_details_title">Game Details</string>
+    <string name="gd_add">Add to My Games</string>
+    <string name="gd_categories">Categories</string>
+    <string name="gd_mechanics">Mechanics</string>
+    <string name="gd_designers">Designers</string>
+    <string name="gd_publisher">Publisher</string>
+    <string name="gd_description">Description</string>
+    <string name="gd_error">Couldn\'t load game details.</string>
+    <string name="gd_players">PLAYERS</string>
+    <string name="gd_time">TIME</string>
+    <string name="gd_age">AGE</string>
+    <string name="gd_rating">RATING</string>
+    <string name="gd_weight">WEIGHT</string>
+
+    <!-- NEW UI — Profile -->
+    <string name="profile_games_logged">Games Logged</string>
+    <string name="profile_win_rate">Win Rate</string>
+    <string name="profile_account_settings">Account Settings</string>
+    <string name="profile_account_info">Account Information</string>
+    <string name="profile_account_info_sub">Email, Password, Personal Details</string>
+    <string name="profile_notifications">Game Notifications</string>
+    <string name="profile_notifications_sub">Turn alerts, Session reminders</string>
+    <string name="profile_privacy">Privacy &amp; Security</string>
+    <string name="profile_privacy_sub">Manage visibility and 2FA</string>
+    <string name="profile_appearance">Appearance</string>
+    <string name="profile_appearance_sub">Dark mode, Theme accents</string>
+    <string name="profile_active">Active</string>
+    <string name="profile_sign_out">Sign Out of Session</string>
+    <string name="profile_cloud_sync">Cloud Sync</string>
+    <string name="profile_cloud_sync_desc">All session data is currently synchronized across your devices.</string>
+    <string name="profile_force_sync">Force Sync</string>
+    <string name="profile_syncing">Syncing…</string>
+    <string name="profile_not_synced">Not backed up yet</string>
+    <string name="profile_recent_medals">Recent Medals</string>
+    <string name="profile_view_achievements">View All Achievements</string>
+
 </resources>

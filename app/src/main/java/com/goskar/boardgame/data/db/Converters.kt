@@ -33,4 +33,16 @@ class Converters {
     fun fromLocalDateToString(date: LocalDate?): String? {
         return date?.toString()
     }
+
+    @TypeConverter
+    fun fromScoresString(value: String?): Map<String, Int>? {
+        if (value.isNullOrBlank()) return null
+        val mapType = object : TypeToken<Map<String, Int>>() {}.type
+        return Gson().fromJson(value, mapType)
+    }
+
+    @TypeConverter
+    fun fromScoresMap(map: Map<String, Int>?): String? {
+        return map?.let { Gson().toJson(it) }
+    }
 }

@@ -46,6 +46,8 @@ fun convertHistoryGameListToDto(oldList :List<HistoryGameFirebase>): List<Histor
             gameData = LocalDate.parse(historyGame.gameData), // LocalDate -> String
             listOfPlayer = historyGame.listOfPlayer,
             description = historyGame.description,
+            durationMin = historyGame.durationMin,
+            playerScores = historyGame.playerScores,
             id = historyGame.id
         )
     }
@@ -59,6 +61,8 @@ fun convertHistoryGameListToFirebase(oldList: List<HistoryGame>): List<HistoryGa
             gameData = historyGame.gameData.toString(), // LocalDate -> String
             listOfPlayer = historyGame.listOfPlayer,
             description = historyGame.description,
+            durationMin = historyGame.durationMin,
+            playerScores = historyGame.playerScores,
             id = historyGame.id
         )
     }

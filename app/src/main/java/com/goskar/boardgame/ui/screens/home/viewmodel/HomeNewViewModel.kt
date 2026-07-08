@@ -3,7 +3,9 @@ package com.goskar.boardgame.ui.screens.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
+import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
+import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
@@ -40,6 +42,8 @@ class HomeNewViewModel(
     private val getAllGameUseCase: GetAllGameUseCase,
     private val historyRepository: GamesHistoryDbRepository,
     private val userSession: UserRepository,
+    private val playerDbRepository: PlayerDbRepository,
+    private val mePlayerRepository: MePlayerRepository,
     private val api: BoardGameFirebaseDataRepository,
     private val addAllGameToDb: UpsertAllGameUseCase,
     private val addAllPlayerToDb: UpsertAllPlayerUseCase,
@@ -63,9 +67,17 @@ class HomeNewViewModel(
         val games = getAllGameUseCase()
         val history = (historyRepository.getAllHistoryGame() as? RequestResult.Success)?.data ?: emptyList()
         val user = userSession.getCurrentSession()
+        val uid = user?.userUID
+
+        // Personal stats come from the Player linked to this account (picked on the Profile screen).
+        val players = (playerDbRepository.getAllPlayer() as? RequestResult.Success)?.data ?: emptyList()
+        val me = if (uid != null && uid != "guest") {
+            players.firstOrNull { it.id == mePlayerRepository.getLinkedPlayerId(uid) }
+        } else null
 
         val name = when {
-            user?.userUID == "guest" -> "Guest"
+            me != null -> me.name
+            uid == "guest" -> "Guest"
             !user?.email.isNullOrBlank() -> user!!.email!!.substringBefore("@")
                 .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
             else -> "Player"
@@ -73,8 +85,9 @@ class HomeNewViewModel(
 
         val mostPlayed = games.maxByOrNull { it.games }?.name ?: "—"
 
-        val wins = history.count { it.winner.trim().equals(name, ignoreCase = true) }
-        val ratio = if (history.isNotEmpty()) wins.toFloat() / history.size else 0f
+        // winRatio on Player is a win count; games is the play count.
+        val ratio = if (me != null && me.games > 0) me.winRatio.toFloat() / me.games else 0f
+        val ratioText = if (me != null && me.games > 0) "${(ratio * 100).toInt()}%" else "—"
 
         val recent = history
             .sortedByDescending { it.gameData }
@@ -94,7 +107,7 @@ class HomeNewViewModel(
                 greeting = timeGreeting(),
                 totalGames = games.size.toString(),
                 mostPlayed = mostPlayed,
-                winRatio = "${(ratio * 100).toInt()}%",
+                winRatio = ratioText,
                 winRatioProgress = ratio,
                 recentSessions = recent,
             )

@@ -1,4 +1,6 @@
 package com.goskar.boardgame.ui.screens.home
+import com.goskar.boardgame.R
+import androidx.compose.ui.res.stringResource
 import com.goskar.boardgame.ui.screens.home.viewmodel.*
 
 import androidx.compose.foundation.background
@@ -29,7 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +49,7 @@ import com.goskar.boardgame.ui.screens.history.HistoryNewScreen
 import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppChip
 import com.goskar.boardgame.ui.theme.AppChipStyle
@@ -65,11 +68,12 @@ class HomeNewScreen(private val firstLogin: Boolean = false) : Screen {
     @Composable
     override fun Content() {
         val viewModel: HomeNewViewModel = koinViewModel()
-        val state by viewModel.state.collectAsState()
+        val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
         LaunchedEffect(firstLogin) { viewModel.load(firstLogin) }
         HomeNewScreenContent(
             state = state,
+            userInitials = rememberUserInitials(),
             onSettingsClick = { navigator?.push(ProfileNewScreen()) },
             onFabClick = { navigator?.push(AddGameplayNewScreen()) },
             onViewAllSessions = { navigator?.push(HistoryNewScreen()) },
@@ -83,6 +87,7 @@ class HomeNewScreen(private val firstLogin: Boolean = false) : Screen {
 @Composable
 fun HomeNewScreenContent(
     state: HomeNewState,
+    userInitials: String = "AM",
     onSettingsClick: () -> Unit = {},
     onFabClick: () -> Unit = {},
     onViewAllSessions: () -> Unit = {},
@@ -93,13 +98,13 @@ fun HomeNewScreenContent(
     var selectedTab by remember { mutableStateOf(0) }
 
     AppScaffold(
-        title = "Tabletop Tracker",
+        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
         trailing = {
             AppAvatar(
-                initials = state.userName,
+                initials = userInitials,
                 size = 36.dp,
                 modifier = Modifier
                     .clip(CircleShape)
@@ -136,7 +141,7 @@ fun HomeNewScreenContent(
             }
 
             AppStatCard(
-                label = "Total Games",
+                label = stringResource(R.string.home_total_games),
                 value = state.totalGames,
                 modifier = Modifier.fillMaxWidth(),
                 icon = {
@@ -154,7 +159,7 @@ fun HomeNewScreenContent(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 AppStatCard(
-                    label = "Most Played",
+                    label = stringResource(R.string.home_most_played),
                     value = state.mostPlayed,
                     modifier = Modifier
                         .weight(1f)
@@ -169,16 +174,16 @@ fun HomeNewScreenContent(
                 )
             }
 
-            AppSectionHeader(title = "Quick Actions")
+            AppSectionHeader(title = stringResource(R.string.home_quick_actions))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                QuickActionTile(Icons.Default.Add, "Add Gameplay", Modifier.weight(1f), onClick = onAddGameplay)
-                QuickActionTile(Icons.Default.QrCodeScanner, "Scan BGG", Modifier.weight(1f), onClick = onScanBgg)
-                QuickActionTile(Icons.Default.Assessment, "Quick Report", Modifier.weight(1f), onClick = onQuickReport)
+                QuickActionTile(Icons.Default.Add, stringResource(R.string.home_add_gameplay), Modifier.weight(1f), onClick = onAddGameplay)
+                QuickActionTile(Icons.Default.QrCodeScanner, stringResource(R.string.home_scan_bgg), Modifier.weight(1f), onClick = onScanBgg)
+                QuickActionTile(Icons.Default.Assessment, stringResource(R.string.home_quick_report), Modifier.weight(1f), onClick = onQuickReport)
             }
 
             AppSectionHeader(
-                title = "Recent Sessions",
-                action = "VIEW ALL",
+                title = stringResource(R.string.home_recent_sessions),
+                action = stringResource(R.string.home_view_all),
                 onAction = onViewAllSessions,
             )
             state.recentSessions.forEach { session ->
@@ -198,7 +203,7 @@ private fun WinRatioCard(
 ) {
     AppListCard(modifier = modifier) {
         Text(
-            "WIN RATIO",
+            stringResource(R.string.home_win_ratio),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
