@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.screens.addPlayer
 
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,7 @@ import com.goskar.boardgame.ui.login.LoginEvent
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.home.HomeNewScreen
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppGhostButton
 import com.goskar.boardgame.ui.theme.AppListCard
@@ -67,7 +69,7 @@ class AddPlayerNewScreen(
     @Composable
     override fun Content() {
         val viewModel: AddPlayerNewViewModel = org.koin.androidx.compose.koinViewModel()
-        val state by viewModel.state.collectAsState()
+        val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
         val context = LocalContext.current
@@ -78,6 +80,7 @@ class AddPlayerNewScreen(
 
         AddPlayerNewScreenContent(
             state = state,
+            userInitials = rememberUserInitials(),
             onBack = { navigator?.pop() },
             onSelectAvatar = viewModel::selectAvatar,
             onNicknameChange = viewModel::updateNickname,
@@ -113,6 +116,7 @@ class AddPlayerNewScreen(
 @Composable
 fun AddPlayerNewScreenContent(
     state: AddPlayerNewState,
+    userInitials: String = "AM",
     onBack: () -> Unit = {},
     onSelectAvatar: (Int) -> Unit = {},
     onNicknameChange: (String) -> Unit = {},
@@ -124,14 +128,14 @@ fun AddPlayerNewScreenContent(
     var selectedTab by remember { mutableStateOf(3) }
 
     AppScaffold(
-        title = if (state.isEditMode) "Edit Player" else "Add New Player",
+        title = if (state.isEditMode) stringResource(R.string.addplayer_title_edit) else stringResource(R.string.addplayer_title_new),
         navItems = appNavItems,
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
         onBack = onBack,
         trailing = {
             AppAvatar(
-                initials = "AM",
+                initials = userInitials,
                 size = 36.dp,
                 modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
             )
@@ -184,8 +188,8 @@ private fun AddPlayerNewCard(
         AppTextField(
             value = state.nickname,
             onValueChange = onNicknameChange,
-            label = "Player Nickname",
-            placeholder = "Enter name…",
+            label = stringResource(R.string.addplayer_nickname_label),
+            placeholder = stringResource(R.string.addplayer_nickname_hint),
             leadingIcon = {
                 Icon(
                     Icons.Default.Person,
@@ -198,7 +202,7 @@ private fun AddPlayerNewCard(
 
         Spacer(Modifier.height(24.dp))
 
-        AppSectionHeader(title = "Skill Level")
+        AppSectionHeader(title = stringResource(R.string.addplayer_skill_level))
         Spacer(Modifier.height(12.dp))
         AppOptionGrid(
             options = skillOptions,
@@ -209,7 +213,7 @@ private fun AddPlayerNewCard(
         Spacer(Modifier.height(28.dp))
 
         AppPrimaryButton(
-            text = if (state.isEditMode) "Save Changes" else "Save Player",
+            text = if (state.isEditMode) stringResource(R.string.addplayer_save_changes) else stringResource(R.string.addplayer_save_new),
             onClick = onSave,
             leadingIcon = {
                 Icon(
@@ -220,7 +224,7 @@ private fun AddPlayerNewCard(
             },
         )
         Spacer(Modifier.height(4.dp))
-        AppGhostButton(text = "Discard Changes", onClick = onDiscard)
+        AppGhostButton(text = stringResource(R.string.addplayer_discard), onClick = onDiscard)
     }
 }
 

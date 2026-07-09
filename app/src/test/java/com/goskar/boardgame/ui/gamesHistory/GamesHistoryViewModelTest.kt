@@ -6,6 +6,7 @@ import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GetHistoryWithExpansionUseCase
 import com.goskar.boardgame.data.useCase.HistoryGameWithExpansion
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
@@ -29,6 +30,7 @@ class GamesHistoryViewModelTest {
 
     private lateinit var repo: GamesHistoryDbRepository
     private lateinit var useCase: GetHistoryWithExpansionUseCase
+    private lateinit var gameUseCase: GetAllGameUseCase
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var viewModel: GamesHistoryViewModel
 
@@ -52,12 +54,14 @@ class GamesHistoryViewModelTest {
         Dispatchers.setMain(testDispatcher)
         repo = mockk()
         useCase = mockk()
+        gameUseCase = mockk()
 
-        // Defaults so the init{} block (which calls both loaders) succeeds quietly.
+        // Defaults so the init{} block (which calls all loaders) succeeds quietly.
         coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(emptyList())
         coEvery { useCase.invoke() } returns RequestResult.Success(emptyList())
+        coEvery { gameUseCase.invoke() } returns emptyList()
 
-        viewModel = GamesHistoryViewModel(repo, useCase)
+        viewModel = GamesHistoryViewModel(repo, useCase, gameUseCase)
     }
 
     @After
@@ -108,7 +112,7 @@ class GamesHistoryViewModelTest {
         val c = withExpansion("C", LocalDate.of(2024, 8, 1))
         coEvery { useCase.invoke() } returns RequestResult.Success(listOf(a, c, b))
 
-        viewModel = GamesHistoryViewModel(repo, useCase)
+        viewModel = GamesHistoryViewModel(repo, useCase, gameUseCase)
 
         assertEquals(listOf(b, a, c), viewModel.state.value.historyGameWithExpansion)
     }
@@ -117,7 +121,7 @@ class GamesHistoryViewModelTest {
     fun init_historyWithExpansionError_showsError() = runTest(testDispatcher) {
         coEvery { useCase.invoke() } returns RequestResult.Error(Throwable("expansion error"))
 
-        viewModel = GamesHistoryViewModel(repo, useCase)
+        viewModel = GamesHistoryViewModel(repo, useCase, gameUseCase)
 
         viewModel.events.test {
             assertEquals(

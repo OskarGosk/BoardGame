@@ -1,4 +1,6 @@
 package com.goskar.boardgame.ui.screens.logGameplay
+import com.goskar.boardgame.R
+import androidx.compose.ui.res.stringResource
 import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.*
 
 import androidx.compose.foundation.background
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -26,30 +29,45 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppDropdownField
 import com.goskar.boardgame.ui.theme.AppListCard
@@ -58,28 +76,57 @@ import com.goskar.boardgame.ui.theme.AppScaffold
 import com.goskar.boardgame.ui.theme.AppSecondaryButton
 import com.goskar.boardgame.ui.theme.AppSectionHeader
 import com.goskar.boardgame.ui.theme.AppTextArea
+import com.goskar.boardgame.ui.theme.AppTextField
 import com.goskar.boardgame.ui.theme.AppVariantChip
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class AddGameplayNewScreen : Screen {
+class AddGameplayNewScreen(
+    private val editSessionId: String? = null,
+    private val preselectedGameId: String? = null,
+) : Screen {
 
     @Composable
     override fun Content() {
         val viewModel: AddGameplayNewViewModel = koinViewModel()
-        val state by viewModel.state.collectAsState()
+        val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
+        val snackbarHostState = LocalSnackbarHost.current
+        val context = LocalContext.current
+
+        LaunchedEffect(Unit) { viewModel.load(editSessionId, preselectedGameId) }
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is AddGameplayEvent.Saved -> {
+                        snackbarHostState.show(context.getString(event.message), event.type)
+                        navigator?.pop()
+                    }
+
+                    is AddGameplayEvent.ShowMessage ->
+                        snackbarHostState.show(context.getString(event.message), event.type)
+                }
+            }
+        }
 
         AddGameplayNewScreenContent(
             state = state,
+            userInitials = rememberUserInitials(),
+            onSelectGame = viewModel::selectGame,
+            onDateSelected = viewModel::updatePlayDate,
             onCancel = { navigator?.pop() },
             onAddPlayer = { navigator?.push(AddPlayerNewScreen()) },
             onTogglePlayer = viewModel::togglePlayer,
             onToggleVariant = viewModel::toggleVariant,
             onSelectWinner = viewModel::selectWinner,
+            onSelectCoopWin = viewModel::selectCoopWin,
             onNotesChange = viewModel::updateNotes,
+            onDurationChange = viewModel::updateDuration,
+            onScoreChange = viewModel::updatePlayerScore,
+            onLogSession = viewModel::logSession,
             onProfileClick = { navigator?.push(ProfileNewScreen()) },
         )
     }
@@ -89,12 +136,17 @@ class AddGameplayNewScreen : Screen {
 @Composable
 fun AddGameplayNewScreenContent(
     state: AddGameplayNewState,
-    onSelectGame: () -> Unit = {},
+    userInitials: String = "AM",
+    onSelectGame: (String) -> Unit = {},
+    onDateSelected: (LocalDate) -> Unit = {},
     onAddPlayer: () -> Unit = {},
     onTogglePlayer: (Int) -> Unit = {},
     onToggleVariant: (Int) -> Unit = {},
     onSelectWinner: (Int) -> Unit = {},
+    onSelectCoopWin: (Boolean) -> Unit = {},
     onNotesChange: (String) -> Unit = {},
+    onDurationChange: (String) -> Unit = {},
+    onScoreChange: (Int, String) -> Unit = { _, _ -> },
     onLogSession: () -> Unit = {},
     onCancel: () -> Unit = {},
     onProfileClick: () -> Unit = {},
@@ -102,13 +154,13 @@ fun AddGameplayNewScreenContent(
     var selectedNav by remember { mutableStateOf(2) }
 
     AppScaffold(
-        title = "Tabletop Tracker",
+        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
         trailing = {
             AppAvatar(
-                initials = "AM",
+                initials = userInitials,
                 size = 36.dp,
                 modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
             )
@@ -124,28 +176,47 @@ fun AddGameplayNewScreenContent(
         ) {
             Column {
                 Text(
-                    "Log Gameplay Session",
+                    if (state.isEditMode) stringResource(R.string.log_title_edit) else stringResource(R.string.log_title_new),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Capture the details of your latest tabletop conquest.",
+                    stringResource(R.string.log_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
             AppListCard {
-                AppDropdownField(label = "Select Game", value = state.selectedGame, onClick = onSelectGame)
+                GamePickerField(
+                    label = stringResource(R.string.log_select_game),
+                    value = state.selectedGame,
+                    options = state.availableGames,
+                    onSelect = onSelectGame,
+                )
             }
 
             AppListCard {
-                AppDropdownField(label = "Date Played", value = state.datePlayed, onClick = {})
+                DatePlayedField(
+                    value = state.datePlayed,
+                    date = state.playDate,
+                    onDateSelected = onDateSelected,
+                )
             }
 
             AppListCard {
-                AppSectionHeader(title = "Players", action = "+ Add New", onAction = onAddPlayer)
+                AppTextField(
+                    value = state.durationMin,
+                    onValueChange = onDurationChange,
+                    label = stringResource(R.string.log_duration_label),
+                    placeholder = "e.g. 45",
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
+            }
+
+            AppListCard {
+                AppSectionHeader(title = stringResource(R.string.section_players), action = stringResource(R.string.log_add_new), onAction = onAddPlayer)
                 Spacer(Modifier.height(16.dp))
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -163,70 +234,197 @@ fun AddGameplayNewScreenContent(
                 }
             }
 
-            AppListCard {
-                AppSectionHeader(title = "Session Variants")
-                Spacer(Modifier.height(16.dp))
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    state.variants.forEachIndexed { index, variant ->
-                        AppVariantChip(
-                            text = variant.name,
-                            selected = variant.selected,
-                            onToggle = { onToggleVariant(index) },
-                        )
-                    }
-                }
-            }
-
-            AppListCard {
-                AppSectionHeader(title = "Select Winner")
-                Spacer(Modifier.height(16.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    state.players.chunked(2).forEachIndexed { rowIndex, rowPlayers ->
-                        Row(
-                            modifier = Modifier.height(IntrinsicSize.Min),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            rowPlayers.forEachIndexed { colIndex, player ->
-                                val absoluteIndex = rowIndex * 2 + colIndex
-                                WinnerTile(
-                                    name = player.name,
-                                    initials = player.initials,
-                                    selected = state.winnerIndex == absoluteIndex,
-                                    onClick = { onSelectWinner(absoluteIndex) },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight(),
-                                )
-                            }
-                            if (rowPlayers.size == 1) Spacer(Modifier.weight(1f))
+            if (state.variants.isNotEmpty()) {
+                AppListCard {
+                    AppSectionHeader(title = stringResource(R.string.section_session_variants))
+                    Spacer(Modifier.height(16.dp))
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        state.variants.forEachIndexed { index, variant ->
+                            AppVariantChip(
+                                text = variant.name,
+                                selected = variant.selected,
+                                onToggle = { onToggleVariant(index) },
+                            )
                         }
                     }
                 }
             }
 
             AppListCard {
-                AppSectionHeader(title = "Session Notes")
+                AppSectionHeader(
+                    title = if (state.cooperate) stringResource(R.string.log_coop_result)
+                    else stringResource(R.string.log_select_winner)
+                )
+                Spacer(Modifier.height(16.dp))
+                if (state.cooperate) {
+                    Row(
+                        modifier = Modifier.height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        CoopResultTile(
+                            label = stringResource(R.string.log_coop_players_won),
+                            selected = state.coopPlayersWon == true,
+                            onClick = { onSelectCoopWin(true) },
+                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                        )
+                        CoopResultTile(
+                            label = stringResource(R.string.log_coop_computer_won),
+                            selected = state.coopPlayersWon == false,
+                            onClick = { onSelectCoopWin(false) },
+                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                        )
+                    }
+                } else {
+                    val winnerCandidates = state.players.withIndex().filter { it.value.selected }
+                    if (winnerCandidates.isEmpty()) {
+                        Text(
+                            stringResource(R.string.log_select_players_first),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            winnerCandidates.chunked(2).forEach { rowPlayers ->
+                                Row(
+                                    modifier = Modifier.height(IntrinsicSize.Min),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                ) {
+                                    rowPlayers.forEach { (absoluteIndex, player) ->
+                                        WinnerTile(
+                                            name = player.name,
+                                            initials = player.initials,
+                                            selected = state.winnerIndex == absoluteIndex,
+                                            onClick = { onSelectWinner(absoluteIndex) },
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .fillMaxHeight(),
+                                        )
+                                    }
+                                    if (rowPlayers.size == 1) Spacer(Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            val scoredPlayers = state.players.withIndex().filter { it.value.selected }
+            if (scoredPlayers.isNotEmpty()) {
+                AppListCard {
+                    AppSectionHeader(title = stringResource(R.string.log_scores_title))
+                    Spacer(Modifier.height(12.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        scoredPlayers.forEach { (index, player) ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                AppAvatar(initials = player.initials, size = 36.dp)
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    player.name,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                AppTextField(
+                                    value = player.score,
+                                    onValueChange = { onScoreChange(index, it) },
+                                    placeholder = "0",
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    modifier = Modifier.width(88.dp),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            AppListCard {
+                AppSectionHeader(title = stringResource(R.string.log_session_notes))
                 Spacer(Modifier.height(12.dp))
                 AppTextArea(
                     value = state.notes,
                     onValueChange = onNotesChange,
-                    placeholder = "Briefly describe the highlights or key turning points…",
+                    placeholder = stringResource(R.string.log_notes_hint),
                 )
             }
 
             AppPrimaryButton(
-                text = "Log Session",
+                text = if (state.isEditMode) stringResource(R.string.log_button_update) else stringResource(R.string.log_button_new),
                 onClick = onLogSession,
                 leadingIcon = {
                     Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
                 },
             )
-            AppSecondaryButton(text = "Cancel", onClick = onCancel)
+            AppSecondaryButton(text = stringResource(R.string.cancel), onClick = onCancel)
 
             Spacer(Modifier.height(8.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DatePlayedField(
+    value: String,
+    date: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    AppDropdownField(label = stringResource(R.string.log_date_played), value = value, onClick = { showDialog = true })
+
+    if (showDialog) {
+        val initialMillis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
+        DatePickerDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val selected = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.systemDefault()).toLocalDate()
+                            onDateSelected(selected)
+                        }
+                        showDialog = false
+                    },
+                ) { Text(stringResource(R.string.ok)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+}
+
+@Composable
+private fun GamePickerField(
+    label: String,
+    value: String,
+    options: List<GameOption>,
+    onSelect: (String) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        AppDropdownField(
+            label = label,
+            value = value.ifBlank { stringResource(R.string.log_select_a_game) },
+            onClick = { if (options.isNotEmpty()) expanded = true },
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            options.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option.name) },
+                    onClick = {
+                        onSelect(option.id)
+                        expanded = false
+                    },
+                )
+            }
         }
     }
 }
@@ -287,6 +485,36 @@ private fun AddPlayerButton(onClick: () -> Unit) {
             contentDescription = "Add player",
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp),
+        )
+    }
+}
+
+@Composable
+private fun CoopResultTile(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .clip(BoardGameShapes.Large)
+            .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainer)
+            .border(
+                if (selected) 1.5.dp else 1.dp,
+                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                BoardGameShapes.Large,
+            )
+            .clickable { onClick() }
+            .padding(vertical = 20.dp, horizontal = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            ),
+            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
         )
     }
 }

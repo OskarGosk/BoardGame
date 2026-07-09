@@ -1,5 +1,7 @@
 package com.goskar.boardgame.ui.screens.history
 
+import com.goskar.boardgame.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -27,7 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +50,7 @@ import com.goskar.boardgame.ui.gamesHistory.GamesHistoryViewModel
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
 import com.goskar.boardgame.ui.screens.sessionDetails.SessionDetailsNewScreen
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppChip
@@ -66,6 +69,7 @@ import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
 
 data class HistorySession(
+    val id: String,
     val gameName: String,
     val category: String,
     val categoryStyle: AppChipStyle,
@@ -91,13 +95,14 @@ class HistoryNewScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel: GamesHistoryViewModel = koinViewModel()
-        val state by viewModel.state.collectAsState()
+        val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
 
         HistoryNewScreenContent(
             state = state.toHistoryNewState(),
+            userInitials = rememberUserInitials(),
             onQueryChange = viewModel::updateSearchTxt,
-            onSessionClick = { navigator?.push(SessionDetailsNewScreen()) },
+            onSessionClick = { session -> navigator?.push(SessionDetailsNewScreen(session.id)) },
             onAddSession = { navigator?.push(AddGameplayNewScreen()) },
             onProfileClick = { navigator?.push(ProfileNewScreen()) },
         )
@@ -109,10 +114,11 @@ private fun GamesHistoryState.toHistoryNewState(): HistoryNewState {
     val filtered = if (q.isBlank()) historyList
     else historyList.filter { it.gameName.contains(q, true) || it.winner.contains(q, true) }
     val sorted = filtered.sortedByDescending { it.gameData }
+    val categoryByName = games.associate { it.name to it.category }
     val today = LocalDate.now()
     val byBucket = sorted.groupBy { bucketLabel(it.gameData, today) }
     val groups = listOf("Today", "Yesterday", "This Week", "Earlier").mapNotNull { label ->
-        byBucket[label]?.let { HistoryGroup(label, it.map { g -> g.toSession() }) }
+        byBucket[label]?.let { HistoryGroup(label, it.map { g -> g.toSession(categoryByName[g.gameName]) }) }
     }
     return HistoryNewState(
         query = searchTxt,
@@ -128,11 +134,12 @@ private fun bucketLabel(date: LocalDate, today: LocalDate): String = when {
     else -> "Earlier"
 }
 
-private fun HistoryGame.toSession(): HistorySession = HistorySession(
+private fun HistoryGame.toSession(category: String?): HistorySession = HistorySession(
+    id = id,
     gameName = gameName,
-    category = "",
+    category = category ?: "",
     categoryStyle = AppChipStyle.CATEGORY,
-    durationMin = 0,
+    durationMin = durationMin ?: 0,
     avatars = listOfPlayer.map { historyInitials(it) }.take(3),
     extraPlayers = (listOfPlayer.size - 3).coerceAtLeast(0),
     winner = winner,
@@ -145,6 +152,7 @@ private fun historyInitials(name: String): String =
 @Composable
 fun HistoryNewScreenContent(
     state: HistoryNewState,
+    userInitials: String = "AM",
     onQueryChange: (String) -> Unit = {},
     onSelectFilter: (Int) -> Unit = {},
     onSessionClick: (HistorySession) -> Unit = {},
@@ -155,13 +163,13 @@ fun HistoryNewScreenContent(
     var selectedNav by remember { mutableStateOf(1) }
 
     AppScaffold(
-        title = "Tabletop Tracker",
+        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
         trailing = {
             AppAvatar(
-                initials = "AM",
+                initials = userInitials,
                 size = 36.dp,
                 modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
             )
@@ -182,7 +190,7 @@ fun HistoryNewScreenContent(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                "Gaming History",
+                stringResource(R.string.history_game_screen),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -190,7 +198,7 @@ fun HistoryNewScreenContent(
             AppSearchBar(
                 value = state.query,
                 onValueChange = onQueryChange,
-                placeholder = "Search sessions…",
+                placeholder = stringResource(R.string.history_search_hint),
             )
 
             Row(
@@ -226,7 +234,7 @@ fun HistoryNewScreenContent(
                 modifier = Modifier.fillMaxWidth(),
             )
             AppSecondaryButton(
-                text = "Load More",
+                text = stringResource(R.string.history_load_more),
                 onClick = onLoadMore,
                 modifier = Modifier.padding(horizontal = 48.dp),
             )

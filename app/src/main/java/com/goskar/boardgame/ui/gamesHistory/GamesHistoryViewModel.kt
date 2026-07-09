@@ -4,9 +4,11 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GetHistoryWithExpansionUseCase
 import com.goskar.boardgame.data.useCase.HistoryGameWithExpansion
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
@@ -23,6 +25,7 @@ sealed interface GameHistoryEvent {
 data class GamesHistoryState(
     val historyList: List<HistoryGame> = emptyList(),
     val historyGameWithExpansion: List<HistoryGameWithExpansion> = emptyList(),
+    val games: List<Game> = emptyList(),
     val searchTxt: String = "",
     val sortOption: Int = R.string.default_sort,
     val loading: Boolean = true
@@ -30,7 +33,8 @@ data class GamesHistoryState(
 
 class GamesHistoryViewModel(
     private val gamesHistoryDbRepository: GamesHistoryDbRepository,
-    private val getHistoryWithExpansionUseCase: GetHistoryWithExpansionUseCase
+    private val getHistoryWithExpansionUseCase: GetHistoryWithExpansionUseCase,
+    private val getAllGameUseCase: GetAllGameUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GamesHistoryState())
@@ -42,6 +46,13 @@ class GamesHistoryViewModel(
     init {
         getAllHistoryGame()
         validateGetHistoryGameWithExpansion()
+        loadGames()
+    }
+
+    private fun loadGames() {
+        viewModelScope.launch {
+            _state.update { it.copy(games = getAllGameUseCase()) }
+        }
     }
 
     fun updateSearchTxt(value: String) {

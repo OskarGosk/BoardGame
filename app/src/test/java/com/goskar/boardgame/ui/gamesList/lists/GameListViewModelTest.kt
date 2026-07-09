@@ -82,7 +82,8 @@ class GameListViewModelTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun refreshGameList_defaultSort_preservesOriginalOrder() = runTest(testDispatcher) {
+    fun refreshGameList_defaultSort_sortsByGamesCountHighToLow() = runTest(testDispatcher) {
+        // SortList.DEFAULT sorts by play count descending (most played first).
         coEvery { gameRepo.getAllGame() } returns RequestResult.Success(
             listOf(chess, azul, wingspan, wingspanExpansion)
         )
@@ -91,8 +92,9 @@ class GameListViewModelTest {
 
         viewModel.state.test {
             val finalItems = awaitItem()
+            // 8 (Chess), 5 (Wingspan), 4 (Wingspan Expansion), 2 (Azul)
             assertEquals(
-                listOf(game1Chess, game2Azul, game3Wingspan, game4WingspanExpansion),
+                listOf(game1Chess, game3Wingspan, game4WingspanExpansion, game2Azul),
                 finalItems.gameListEdited
             )
         }
@@ -268,11 +270,12 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.updateCheckboxExpansionGame() // true -> false
+            viewModel.updateCheckboxBaseGame() // show base games only
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
-            assertEquals(listOf(game1Chess, game2Azul, game3Wingspan), finalItems.gameListEdited)
+            // base games, default (play count desc): Chess 8, Wingspan 5, Azul 2
+            assertEquals(listOf(game1Chess, game3Wingspan, game2Azul), finalItems.gameListEdited)
         }
     }
 
@@ -282,10 +285,11 @@ class GameListViewModelTest {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.updateCheckboxBaseGame() // true -> false
+            viewModel.updateCheckboxExpansionGame() // show expansions only
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
+            // expansions, default (play count desc): Wingspan Expansion 4, Azul Expansion 1
             assertEquals(
                 listOf(game4WingspanExpansion, game5AzulExpansion),
                 finalItems.gameListEdited
@@ -294,17 +298,22 @@ class GameListViewModelTest {
     }
 
     @Test
-    fun refreshGameList_bothCheckboxesFalse_resultIsEmpty() = runTest(testDispatcher) {
+    fun refreshGameList_baseThenExpansion_filtersAreMutuallyExclusive() = runTest(testDispatcher) {
+        // Base / Expansions behave as a single-select radio, not independent toggles:
+        // selecting Expansions after Base leaves only expansions visible.
         viewModel.state.test {
             viewModel.refresh()
             skipItems(1)
 
-            viewModel.updateCheckboxBaseGame()      // true -> false
-            viewModel.updateCheckboxExpansionGame() // true -> false
+            viewModel.updateCheckboxBaseGame()
+            viewModel.updateCheckboxExpansionGame()
             viewModel.refreshGameList()
 
             val finalItems = expectMostRecentItem()
-            assertEquals(emptyList<GameUiState>(), finalItems.gameListEdited)
+            assertEquals(
+                listOf(game4WingspanExpansion, game5AzulExpansion),
+                finalItems.gameListEdited
+            )
         }
     }
 

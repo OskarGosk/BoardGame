@@ -21,7 +21,8 @@ class BoardGameApiRepositoryImpl(
     override suspend fun getGame(gameId: String): RequestResult<BoardGamesDetails> {
         return withContext(defaultDispatcher) {
             runCatching {
-                apiBoardGame.getBoardGameInfo(gameId)
+                // stats=1 also returns <statistics> (average rating, weight, rank)
+                apiBoardGame.getBoardGameInfo(gameId, stats = 1)
             }.onFailure {
                 Timber.tag(TAG).e("Error BGG API (game details): ${it.stackTraceToString()}")
             }

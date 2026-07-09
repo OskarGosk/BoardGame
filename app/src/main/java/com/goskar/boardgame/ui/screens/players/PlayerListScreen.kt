@@ -24,7 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,24 +34,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleStore
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.components.other.AppSnackBarType
-import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
-import com.goskar.boardgame.ui.login.LoginEvent
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
 import com.goskar.boardgame.ui.screens.addPlayer.EditPlayerData
-import com.goskar.boardgame.ui.screens.home.HomeNewScreen
-import com.goskar.boardgame.ui.screens.addPlayer.viewmodel.EditPlayerData
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppPlayerRow
 import com.goskar.boardgame.ui.theme.AppSearchBar
@@ -87,13 +81,14 @@ class PlayerListScreen : Screen {
     @Composable
     override fun Content() {
         val viewModel: PlayerListViewModel = koinViewModel()
-        val state by viewModel.state.collectAsState()
+        val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
 
         LaunchedEffect(Unit) { viewModel.getAllPlayer() }
 
         PlayerListNewScreenContent(
             state = state.toDirectoryState(),
+            userInitials = rememberUserInitials(),
             onQueryChange = viewModel::updateSearchTxt,
             onPlayerClick = { dirPlayer ->
                 val original = state.playerList?.find { it.id == dirPlayer.id }
@@ -173,6 +168,7 @@ private fun playerInitials(name: String): String =
 @Composable
 fun PlayerListNewScreenContent(
     state: PlayerListNewState,
+    userInitials: String = "AM",
     onMenu: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onPlayerClick: (DirectoryPlayer) -> Unit = {},
@@ -183,13 +179,13 @@ fun PlayerListNewScreenContent(
     var selectedNav by remember { mutableStateOf(3) }
 
     AppScaffold(
-        title = "Tabletop Tracker",
+        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
         trailing = {
             AppAvatar(
-                initials = "AM",
+                initials = userInitials,
                 size = 36.dp,
                 modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
             )
@@ -205,12 +201,12 @@ fun PlayerListNewScreenContent(
         ) {
             Column {
                 Text(
-                    "Players Directory",
+                    stringResource(R.string.players_title),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    "Manage and track your gaming circle's statistics.",
+                    stringResource(R.string.players_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -219,17 +215,17 @@ fun PlayerListNewScreenContent(
             AppSearchBar(
                 value = state.query,
                 onValueChange = onQueryChange,
-                placeholder = "Search players by name or rank…",
+                placeholder = stringResource(R.string.players_search_hint),
             )
 
             AppStatCard(
-                label = "Total Players",
+                label = stringResource(R.string.players_total),
                 value = state.totalPlayers,
                 modifier = Modifier.fillMaxWidth(),
                 icon = { StatIcon(Icons.Default.Group) },
             )
             AppStatCard(
-                label = "Avg Win Rate",
+                label = stringResource(R.string.players_avg_win_rate),
                 value = state.avgWinRate,
                 modifier = Modifier.fillMaxWidth(),
                 valueColor = appExt().success,
@@ -242,7 +238,7 @@ fun PlayerListNewScreenContent(
                 },
             )
             AppStatCard(
-                label = "Active This Week",
+                label = stringResource(R.string.players_active_week),
                 value = state.activeThisWeek,
                 modifier = Modifier.fillMaxWidth(),
                 icon = { StatIcon(Icons.Default.MilitaryTech) },
@@ -275,7 +271,7 @@ fun PlayerListNewScreenContent(
             }
 
             Spacer(Modifier.height(4.dp))
-            AppSecondaryButton(text = "ADD PLAYERS", onClick = onAddPlayerCLick)
+            AppSecondaryButton(text = stringResource(R.string.players_add_button), onClick = onAddPlayerCLick)
             Spacer(Modifier.height(4.dp))
         }
     }

@@ -12,6 +12,9 @@ import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataReposi
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepositoryImpl
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.repository.user.UserRepositoryImpl
+import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
+import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepositoryImpl
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
@@ -22,4 +25,5 @@ fun KoinApplication.repositoryModule() = module {
     single<BoardGameApiRepository> { BoardGameApiRepositoryImpl(get()) }
     single<BoardGameFirebaseDataRepository> { BoardGameFirebaseDataRepositoryImpl(get()) }
     single<UserRepository> {UserRepositoryImpl(get())}
+    single<MePlayerRepository> { MePlayerRepositoryImpl(androidContext()) }
 }

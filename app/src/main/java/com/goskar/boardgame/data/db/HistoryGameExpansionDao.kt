@@ -18,6 +18,9 @@ interface HistoryGameExpansionDao {
     @Query("DELETE FROM HistoryGameExpansion")
     suspend fun deleteAll()
 
+    @Query("DELETE FROM HistoryGameExpansion WHERE historyGameId = :historyGameId")
+    suspend fun deleteByHistoryGameId(historyGameId: String)
+
     @Query("SELECT * FROM historygameexpansion")
     suspend fun getAll(): List<HistoryGameExpansion>
 }

@@ -1,4 +1,6 @@
 package com.goskar.boardgame.ui.screens.sessionDetails
+import com.goskar.boardgame.R
+import androidx.compose.ui.res.stringResource
 import com.goskar.boardgame.ui.screens.sessionDetails.viewmodel.*
 
 import androidx.compose.foundation.background
@@ -26,7 +28,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
 import com.goskar.boardgame.ui.theme.AppAvatar
 import com.goskar.boardgame.ui.theme.AppChip
 import com.goskar.boardgame.ui.theme.AppChipStyle
@@ -50,17 +54,38 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
 
-class SessionDetailsNewScreen : Screen {
+class SessionDetailsNewScreen(
+    private val historyGameId: String? = null,
+) : Screen {
 
     @Composable
     override fun Content() {
         val viewModel: SessionDetailsNewViewModel = koinViewModel()
-        val state by viewModel.state.collectAsState()
+        val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
+
+        LaunchedEffect(navigator?.lastItem) {
+            if (historyGameId != null && navigator?.lastItem == this@SessionDetailsNewScreen) {
+                viewModel.load(historyGameId)
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is SessionDetailsEvent.Deleted -> navigator?.pop()
+                    is SessionDetailsEvent.ShowMessage -> Unit
+                }
+            }
+        }
 
         SessionDetailsNewScreenContent(
             state = state,
             onBack = { navigator?.pop() },
+            onEdit = {
+                state.sessionId?.let { id -> navigator?.push(AddGameplayNewScreen(editSessionId = id)) }
+            },
+            onDelete = viewModel::delete,
         )
     }
 }
@@ -74,7 +99,7 @@ fun SessionDetailsNewScreenContent(
     onDelete: () -> Unit = {},
 ) {
     AppScaffold(
-        title = "Session Details",
+        title = stringResource(R.string.session_details_title),
         navItems = null,
         onBack = onBack,
         trailing = {
@@ -108,8 +133,10 @@ fun SessionDetailsNewScreenContent(
                         )
                         Spacer(Modifier.height(6.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            AppChip(state.category, state.categoryStyle)
-                            Spacer(Modifier.width(8.dp))
+                            if (state.category.isNotBlank()) {
+                                AppChip(state.category, state.categoryStyle)
+                                Spacer(Modifier.width(8.dp))
+                            }
                             Text(
                                 state.dateLabel,
                                 style = MaterialTheme.typography.bodyMedium,
@@ -125,15 +152,15 @@ fun SessionDetailsNewScreenContent(
                     modifier = Modifier.height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    StatCell("DATE", state.dateLabel, Modifier.weight(1f))
+                    StatCell(stringResource(R.string.session_stat_date), state.dateLabel, Modifier.weight(1f))
                     CellDivider()
-                    StatCell("DURATION", state.duration, Modifier.weight(1f))
+                    StatCell(stringResource(R.string.session_stat_duration), state.duration, Modifier.weight(1f))
                     CellDivider()
-                    StatCell("PLAYERS", state.playerCount, Modifier.weight(1f))
+                    StatCell(stringResource(R.string.session_stat_players), state.playerCount, Modifier.weight(1f))
                 }
             }
 
-            AppSectionHeader(title = "Players")
+            AppSectionHeader(title = stringResource(R.string.section_players))
             AppListCard {
                 state.players.forEachIndexed { index, player ->
                     PlayerResultRow(player)
@@ -145,17 +172,19 @@ fun SessionDetailsNewScreenContent(
                 }
             }
 
-            AppSectionHeader(title = "Session Variants")
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                state.variants.forEach { variant ->
-                    AppChip(variant, AppChipStyle.EXPANSION)
+            if (state.variants.isNotEmpty()) {
+                AppSectionHeader(title = stringResource(R.string.section_session_variants))
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    state.variants.forEach { variant ->
+                        AppChip(variant, AppChipStyle.EXPANSION)
+                    }
                 }
             }
 
-            AppSectionHeader(title = "Notes")
+            AppSectionHeader(title = stringResource(R.string.section_notes))
             AppListCard {
                 Text(
                     state.notes,
@@ -166,13 +195,13 @@ fun SessionDetailsNewScreenContent(
 
             Spacer(Modifier.height(4.dp))
             AppPrimaryButton(
-                text = "Edit Session",
+                text = stringResource(R.string.session_edit),
                 onClick = onEdit,
                 leadingIcon = {
                     Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
                 },
             )
-            AppGhostButton(text = "Delete Session", onClick = onDelete)
+            AppGhostButton(text = stringResource(R.string.session_delete), onClick = onDelete)
             Spacer(Modifier.height(8.dp))
         }
     }
@@ -222,11 +251,13 @@ private fun PlayerResultRow(player: SessionPlayerResult) {
                 }
             }
         }
-        Text(
-            player.score,
-            style = MaterialTheme.typography.titleLarge,
-            color = if (player.isWinner) winColor else MaterialTheme.colorScheme.onSurface,
-        )
+        if (player.score.isNotBlank()) {
+            Text(
+                player.score,
+                style = MaterialTheme.typography.titleLarge,
+                color = if (player.isWinner) winColor else MaterialTheme.colorScheme.onSurface,
+            )
+        }
     }
 }
 
