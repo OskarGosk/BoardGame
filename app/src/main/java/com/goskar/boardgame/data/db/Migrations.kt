@@ -14,7 +14,7 @@ import com.goskar.boardgame.data.models.User
 
 @Database(
     entities = [Player::class, Game::class, HistoryGame::class, User::class, HistoryGameExpansion::class],
-    version = 11,
+    version = 12,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 6, to = 7),
@@ -30,6 +30,12 @@ abstract class Db : RoomDatabase() {
     abstract fun historyGameExpansionDao(): HistoryGameExpansionDao
 
     companion object {
+
+        val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE HistoryGame ADD COLUMN baseGameId TEXT")
+            }
+        }
         val MIGRATION_8_11 = object : Migration(8, 11) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // Game updates
@@ -53,25 +59,27 @@ abstract class Db : RoomDatabase() {
 
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE Game ADD COLUMN uriFromBgg TEXT default(NULL)")
+                db.execSQL("ALTER TABLE Game ADD COLUMN uriFromBgg TEXT")
             }
         }
 
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE Game ADD COLUMN baseGameId TEXT default(NULL)")
+                db.execSQL("ALTER TABLE Game ADD COLUMN baseGameId TEXT")
             }
         }
 
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("CREATE TABLE IF NOT EXISTS User (\n" +
-                        "                id INTEGER NOT NULL default (0),\n" +
-                        "                email TEXT default(NULL),\n" +
-                        "                token TEXT default(NULL),\n" +
-                        "                userUID TEXT default(NULL),\n" +
-                        "                PRIMARY KEY(id)\n" +
-                        "            )")
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS User (\n" +
+                            "                id INTEGER NOT NULL default (0),\n" +
+                            "                email TEXT,\n" +
+                            "                token TEXT,\n" +
+                            "                userUID TEXT,\n" +
+                            "                PRIMARY KEY(id)\n" +
+                            "            )"
+                )
             }
         }
     }

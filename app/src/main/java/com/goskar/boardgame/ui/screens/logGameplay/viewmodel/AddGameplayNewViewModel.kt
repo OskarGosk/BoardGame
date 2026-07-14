@@ -278,6 +278,7 @@ class AddGameplayNewViewModel(
                 durationMin = current.durationMin.toIntOrNull(),
                 playerScores = scoresOf(selectedPlayers),
                 id = historyId,
+                baseGameId = game.baseGameId,
             )
 
             val saved = insertHistory(historyGame) &&

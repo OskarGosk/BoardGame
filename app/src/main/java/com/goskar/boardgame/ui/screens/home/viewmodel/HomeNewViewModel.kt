@@ -25,6 +25,7 @@ data class RecentSession(
     val date: String,
     val playersInitials: List<String>,
     val winner: String,
+    val uri: String = "",
 )
 
 data class HomeNewState(
@@ -98,6 +99,7 @@ class HomeNewViewModel(
                     date = h.gameData.year.toString(),
                     playersInitials = h.listOfPlayer.map { initialsOf(it) },
                     winner = "Winner: ${h.winner}",
+                    uri = games.find { it.baseGameId == h.baseGameId }?.uriFromBgg?:""
                 )
             }
 

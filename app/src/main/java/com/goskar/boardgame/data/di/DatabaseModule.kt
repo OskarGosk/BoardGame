@@ -9,6 +9,7 @@ import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_4_5
 import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_5_6
 import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_7_8
 import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_8_11
+import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_11_12
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
@@ -17,12 +18,13 @@ fun KoinApplication.databaseModule() = module {
         Room.databaseBuilder(
             get(),
             Db::class.java, DATABASE_NAME
-        ).fallbackToDestructiveMigrationOnDowngrade()
+        ).fallbackToDestructiveMigrationOnDowngrade(false)
             .addMigrations(MIGRATION_3_4)
             .addMigrations(MIGRATION_4_5)
             .addMigrations(MIGRATION_5_6)
             .addMigrations(MIGRATION_7_8)
             .addMigrations(MIGRATION_8_11)
+            .addMigrations(MIGRATION_11_12)
             .build()
     }
     single { get<Db>().playerDao() }

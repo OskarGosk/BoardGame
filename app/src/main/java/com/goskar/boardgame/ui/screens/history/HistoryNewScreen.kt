@@ -37,58 +37,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.goskar.boardgame.data.models.HistoryGame
-import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryViewModel
+import com.goskar.boardgame.ui.gamesHistory.HistorySession
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
 import com.goskar.boardgame.ui.screens.sessionDetails.SessionDetailsNewScreen
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
+import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.theme.AppAvatar
-import com.goskar.boardgame.ui.theme.AppChip
-import com.goskar.boardgame.ui.theme.AppChipStyle
-import java.time.LocalDate
 import com.goskar.boardgame.ui.theme.AppFab
-import com.goskar.boardgame.ui.theme.AppFilterChip
 import com.goskar.boardgame.ui.theme.AppListCard
 import com.goskar.boardgame.ui.theme.AppScaffold
 import com.goskar.boardgame.ui.theme.AppSearchBar
 import com.goskar.boardgame.ui.theme.AppSecondaryButton
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
-import com.goskar.boardgame.ui.theme.BoardGameTheme
-import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
-
-data class HistorySession(
-    val id: String,
-    val gameName: String,
-    val category: String,
-    val categoryStyle: AppChipStyle,
-    val durationMin: Int,
-    val avatars: List<String>,
-    val extraPlayers: Int,
-    val winner: String,
-    val winnerIsYou: Boolean = false,
-)
-
-data class HistoryGroup(val title: String, val sessions: List<HistorySession>)
-
-data class HistoryNewState(
-    val query: String = "",
-    val filters: List<String> = listOf("All Games", "Wins Only", "Strategy", "Co-op"),
-    val selectedFilter: Int = 0,
-    val showingLabel: String = "",
-    val groups: List<HistoryGroup> = emptyList(),
-)
 
 class HistoryNewScreen : Screen {
 
@@ -99,7 +75,7 @@ class HistoryNewScreen : Screen {
         val navigator = LocalNavigator.current
 
         HistoryNewScreenContent(
-            state = state.toHistoryNewState(),
+            state = state,
             userInitials = rememberUserInitials(),
             onQueryChange = viewModel::updateSearchTxt,
             onSessionClick = { session -> navigator?.push(SessionDetailsNewScreen(session.id)) },
@@ -109,49 +85,10 @@ class HistoryNewScreen : Screen {
     }
 }
 
-private fun GamesHistoryState.toHistoryNewState(): HistoryNewState {
-    val q = searchTxt.trim()
-    val filtered = if (q.isBlank()) historyList
-    else historyList.filter { it.gameName.contains(q, true) || it.winner.contains(q, true) }
-    val sorted = filtered.sortedByDescending { it.gameData }
-    val categoryByName = games.associate { it.name to it.category }
-    val today = LocalDate.now()
-    val byBucket = sorted.groupBy { bucketLabel(it.gameData, today) }
-    val groups = listOf("Today", "Yesterday", "This Week", "Earlier").mapNotNull { label ->
-        byBucket[label]?.let { HistoryGroup(label, it.map { g -> g.toSession(categoryByName[g.gameName]) }) }
-    }
-    return HistoryNewState(
-        query = searchTxt,
-        showingLabel = "Showing ${filtered.size} session${if (filtered.size != 1) "s" else ""}",
-        groups = groups,
-    )
-}
-
-private fun bucketLabel(date: LocalDate, today: LocalDate): String = when {
-    date == today -> "Today"
-    date == today.minusDays(1) -> "Yesterday"
-    date.isAfter(today.minusDays(7)) -> "This Week"
-    else -> "Earlier"
-}
-
-private fun HistoryGame.toSession(category: String?): HistorySession = HistorySession(
-    id = id,
-    gameName = gameName,
-    category = category ?: "",
-    categoryStyle = AppChipStyle.CATEGORY,
-    durationMin = durationMin ?: 0,
-    avatars = listOfPlayer.map { historyInitials(it) }.take(3),
-    extraPlayers = (listOfPlayer.size - 3).coerceAtLeast(0),
-    winner = winner,
-)
-
-private fun historyInitials(name: String): String =
-    name.trim().split(Regex("\\s+")).mapNotNull { it.firstOrNull() }.take(2)
-        .joinToString("").ifBlank { name.take(2) }.uppercase()
-
 @Composable
 fun HistoryNewScreenContent(
-    state: HistoryNewState,
+    state:
+    GamesHistoryState,
     userInitials: String = "AM",
     onQueryChange: (String) -> Unit = {},
     onSelectFilter: (Int) -> Unit = {},
@@ -200,19 +137,6 @@ fun HistoryNewScreenContent(
                 onValueChange = onQueryChange,
                 placeholder = stringResource(R.string.history_search_hint),
             )
-
-            Row(
-                modifier = Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                state.filters.forEachIndexed { index, filter ->
-                    AppFilterChip(
-                        text = filter,
-                        selected = index == state.selectedFilter,
-                        onToggle = { onSelectFilter(index) },
-                    )
-                }
-            }
 
             state.groups.forEach { group ->
                 Spacer(Modifier.height(4.dp))
@@ -275,9 +199,15 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
                     .size(64.dp)
                     .clip(BoardGameShapes.Medium)
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-            )
-            Spacer(Modifier.width(12.dp))
-
+            ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current).data(session.uri.toUri()).build(),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp))
+            }
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -288,10 +218,6 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false),
                     )
-                    if (session.category.isNotBlank()) {
-                        Spacer(Modifier.width(8.dp))
-                        AppChip(session.category, session.categoryStyle)
-                    }
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -299,37 +225,56 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
                         Icon(
                             Icons.Default.Schedule,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(14.dp),
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        "${session.durationMin}m",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                        Spacer(Modifier.width(10.dp))
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            "${session.durationMin}m",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.width(16.dp))
                     }
-                    PlayerAvatars(session.avatars, session.extraPlayers)
+                    Row(
+                        modifier = Modifier.offset(x = 0.dp),
+                        horizontalArrangement = Arrangement.spacedBy((-8).dp),
+                    ) {
+                        session.avatars.forEach { initials ->
+                            AppAvatar(initials = initials, size = 24.dp)
+                        }
+                        if (session.extraPlayers > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    "+${session.extraPlayers}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    }
                 }
             }
-
-            Spacer(Modifier.width(8.dp))
-
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "WINNER",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
                 )
                 Text(
                     session.winner,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = if (session.winnerIsYou) MaterialTheme.colorScheme.primary else appExt().success,
-                    maxLines = 1,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
-            Spacer(Modifier.width(4.dp))
+            Spacer(Modifier.width(8.dp))
             Icon(
                 Icons.Default.KeyboardArrowRight,
                 contentDescription = null,
@@ -337,45 +282,4 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
             )
         }
     }
-}
-
-@Composable
-private fun PlayerAvatars(avatars: List<String>, extra: Int) {
-    Row {
-        avatars.forEachIndexed { index, initials ->
-            AppAvatar(
-                initials = initials,
-                size = 24.dp,
-                modifier = Modifier.offset(x = (index * -8).dp),
-            )
-        }
-        if (extra > 0) {
-            Box(
-                modifier = Modifier
-                    .offset(x = (avatars.size * -8).dp)
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    "+$extra",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    }
-}
-
-@Preview(name = "Gaming History — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
-@Composable
-private fun HistoryNewLightPreview() {
-    BoardGameTheme(darkTheme = false) { HistoryNewScreenContent(state = HistoryNewState()) }
-}
-
-@Preview(name = "Gaming History — Dark", showBackground = true, backgroundColor = 0xFF131313)
-@Composable
-private fun HistoryNewDarkPreview() {
-    BoardGameTheme(darkTheme = true) { HistoryNewScreenContent(state = HistoryNewState()) }
 }
