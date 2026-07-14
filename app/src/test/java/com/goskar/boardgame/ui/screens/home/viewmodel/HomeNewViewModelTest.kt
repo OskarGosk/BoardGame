@@ -15,6 +15,7 @@ import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
+import com.goskar.boardgame.ui.screens.home.HomeNewViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -58,8 +59,16 @@ class HomeNewViewModelTest {
         Player(name = name, games = games, winRatio = winRatio, description = "", selected = false, id = id)
 
     private fun buildViewModel() = HomeNewViewModel(
-        getAllGameUseCase, historyRepository, userSession, playerDbRepository, mePlayerRepository, api,
-        addAllGameToDb, addAllPlayerToDb, addAllHistoryToDb, addAllHistoryGameExpansionToDb,
+        getAllGameUseCase,
+        historyRepository,
+        userSession,
+        playerDbRepository,
+        mePlayerRepository,
+        api,
+        addAllGameToDb,
+        addAllPlayerToDb,
+        addAllHistoryToDb,
+        addAllHistoryGameExpansionToDb,
     )
 
     @Before

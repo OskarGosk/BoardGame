@@ -1,4 +1,5 @@
 package com.goskar.boardgame.ui.screens.profile
+
 import com.goskar.boardgame.R
 import androidx.compose.ui.res.stringResource
 import com.goskar.boardgame.ui.screens.profile.viewmodel.*
@@ -55,14 +56,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.login.LoginScreen
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.theme.AppAvatar
-import com.goskar.boardgame.ui.theme.AppChip
-import com.goskar.boardgame.ui.theme.AppChipStyle
-import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppChip
+import com.goskar.boardgame.ui.components.AppChipStyle
+import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.theme.AppScaffold
-import com.goskar.boardgame.ui.theme.AppSecondaryButton
-import com.goskar.boardgame.ui.theme.AppSettingsRow
-import com.goskar.boardgame.ui.theme.AppStatCard
+import com.goskar.boardgame.ui.components.AppSecondaryButton
+import com.goskar.boardgame.ui.components.AppSettingsRow
+import com.goskar.boardgame.ui.components.AppStatCard
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -97,7 +98,6 @@ class ProfileNewScreen : Screen {
         ProfileNewScreenContent(
             state = state,
             onSignOut = viewModel::signOut,
-            onSelectPlayer = viewModel::selectPlayer,
             onForceSync = viewModel::forceSync,
         )
     }
@@ -110,7 +110,6 @@ fun ProfileNewScreenContent(
     onSignOut: () -> Unit = {},
     onForceSync: () -> Unit = {},
     onViewAchievements: () -> Unit = {},
-    onSelectPlayer: (String) -> Unit = {},
 ) {
     var selectedNav by remember { mutableStateOf(-1) }
 
@@ -130,11 +129,7 @@ fun ProfileNewScreenContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             ProfileHeaderCard(state)
-            if (state.needsPlayerSelection) {
-                PlayerPickerCard(state, onSelectPlayer)
-            } else {
-                StatRow(state)
-            }
+            StatRow(state)
             AccountSettingsCard(state, onSetting)
             SignOutButton(onSignOut)
             if (!state.isGuest || state.lastSynced.isNotBlank()) CloudSyncCard(state, onForceSync)
@@ -144,47 +139,6 @@ fun ProfileNewScreenContent(
     }
 }
 
-@Composable
-private fun PlayerPickerCard(state: ProfileNewState, onSelectPlayer: (String) -> Unit) {
-    AppListCard {
-        CardHeading("Who are you?")
-        Spacer(Modifier.height(4.dp))
-        Text(
-            "Pick the player that represents you to see your stats.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(8.dp))
-        state.availablePlayers.forEachIndexed { index, player ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onSelectPlayer(player.id) }
-                    .padding(vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                AppAvatar(initials = player.initials, size = 40.dp)
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    player.name,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.weight(1f),
-                )
-                Chevron()
-            }
-            if (index < state.availablePlayers.lastIndex) RowDivider()
-        }
-        if (state.availablePlayers.isEmpty()) {
-            Spacer(Modifier.height(8.dp))
-            Text(
-                "No players yet. Add a player first.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
 
 @Composable
 private fun ProfileHeaderCard(state: ProfileNewState) {
@@ -196,8 +150,16 @@ private fun ProfileHeaderCard(state: ProfileNewState) {
             Spacer(Modifier.height(8.dp))
             AppAvatar(initials = state.initials, size = 80.dp, selected = true, onlineStatus = true)
             Spacer(Modifier.height(12.dp))
-            Text(state.name, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
-            Text(state.subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                state.name,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                state.subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Spacer(Modifier.height(4.dp))
         }
     }
@@ -212,7 +174,12 @@ private fun StatRow(state: ProfileNewState) {
             modifier = Modifier.weight(1f),
             valueColor = MaterialTheme.colorScheme.onSurface,
             icon = {
-                Icon(Icons.Default.Casino, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                Icon(
+                    Icons.Default.Casino,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
             },
         )
         AppStatCard(
@@ -221,7 +188,12 @@ private fun StatRow(state: ProfileNewState) {
             modifier = Modifier.weight(1f),
             valueColor = appExt().success,
             icon = {
-                Icon(Icons.AutoMirrored.Filled.TrendingUp, contentDescription = null, tint = appExt().success, modifier = Modifier.size(24.dp))
+                Icon(
+                    Icons.AutoMirrored.Filled.TrendingUp,
+                    contentDescription = null,
+                    tint = appExt().success,
+                    modifier = Modifier.size(24.dp)
+                )
             },
         )
     }
@@ -282,7 +254,12 @@ private fun SignOutButton(onSignOut: () -> Unit) {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.AutoMirrored.Filled.Logout,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(18.dp)
+        )
         Spacer(Modifier.width(8.dp))
         Text(
             stringResource(R.string.profile_sign_out),
@@ -313,7 +290,11 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(stringResource(R.string.profile_cloud_sync), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    stringResource(R.string.profile_cloud_sync),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
                 Icon(Icons.Default.CloudDone, contentDescription = null, tint = appExt().success)
             }
             Spacer(Modifier.height(8.dp))
@@ -358,13 +339,20 @@ private fun RecentMedalsCard(state: ProfileNewState, onViewAchievements: () -> U
             if (index < state.medals.lastIndex) Spacer(Modifier.height(4.dp))
         }
         Spacer(Modifier.height(12.dp))
-        AppSecondaryButton(text = stringResource(R.string.profile_view_achievements), onClick = onViewAchievements)
+        AppSecondaryButton(
+            text = stringResource(R.string.profile_view_achievements),
+            onClick = onViewAchievements
+        )
     }
 }
 
 @Composable
 private fun CardHeading(text: String) {
-    Text(text, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+    Text(
+        text,
+        style = MaterialTheme.typography.headlineMedium,
+        color = MaterialTheme.colorScheme.onSurface
+    )
     Spacer(Modifier.height(8.dp))
     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
 }
@@ -376,7 +364,12 @@ private fun RowDivider() {
 
 @Composable
 private fun Chevron() {
-    Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.outline, modifier = Modifier.size(20.dp))
+    Icon(
+        Icons.Default.KeyboardArrowRight,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.outline,
+        modifier = Modifier.size(20.dp)
+    )
 }
 
 @Composable
@@ -389,7 +382,11 @@ private fun SmallPillButton(text: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            text,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 

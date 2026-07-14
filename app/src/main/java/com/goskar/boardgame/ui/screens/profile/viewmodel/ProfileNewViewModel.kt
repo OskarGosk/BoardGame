@@ -35,8 +35,6 @@ data class PlayerPick(
 data class ProfileNewState(
     val isLoading: Boolean = false,
     val isGuest: Boolean = false,
-    val needsPlayerSelection: Boolean = false,
-    val availablePlayers: List<PlayerPick> = emptyList(),
     val name: String = "",
     val subtitle: String = "",
     val initials: String = "",
@@ -89,25 +87,12 @@ class ProfileNewViewModel(
         val linkedId = mePlayerRepository.getLinkedPlayerId(uid)
         val me = players.firstOrNull { it.id == linkedId }
 
-        if (me == null) {
-            _state.update {
-                it.copy(
-                    isGuest = false,
-                    needsPlayerSelection = true,
-                    availablePlayers = players.map { p -> PlayerPick(p.id, p.name, initialsOf(p.name)) },
-                    name = email?.substringBefore("@").orEmpty(),
-                    subtitle = email.orEmpty(),
-                    initials = initialsOf(email?.substringBefore("@").orEmpty()),
-                    winRate = "—",
-                )
-            }
-        } else {
+        if (me != null) {
             // winRatio on Player is a win count; games is the play count.
             val winRate = if (me.games > 0) "${me.winRatio * 100 / me.games}%" else "—"
             _state.update {
                 it.copy(
                     isGuest = false,
-                    needsPlayerSelection = false,
                     name = me.name,
                     subtitle = email.orEmpty(),
                     initials = initialsOf(me.name),
@@ -115,6 +100,8 @@ class ProfileNewViewModel(
                     winRate = winRate,
                 )
             }
+        } else {
+            loadGuest()
         }
     }
 
@@ -124,7 +111,6 @@ class ProfileNewViewModel(
         _state.update {
             it.copy(
                 isGuest = true,
-                needsPlayerSelection = false,
                 name = "Guest",
                 subtitle = "Guest session",
                 initials = "G",
@@ -134,14 +120,6 @@ class ProfileNewViewModel(
                 notificationsActive = false,
                 lastSynced = "$totalGames games in library",
             )
-        }
-    }
-
-    fun selectPlayer(playerId: String) {
-        viewModelScope.launch {
-            val uid = userSession.getCurrentSession()?.userUID ?: return@launch
-            mePlayerRepository.linkPlayer(uid, playerId)
-            load()
         }
     }
 

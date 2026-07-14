@@ -49,10 +49,10 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.screens.home.HomeNewScreen
-import com.goskar.boardgame.ui.theme.AppListCard
-import com.goskar.boardgame.ui.theme.AppPrimaryButton
-import com.goskar.boardgame.ui.theme.AppSecondaryButton
-import com.goskar.boardgame.ui.theme.AppTextField
+import com.goskar.boardgame.ui.components.AppListCard
+import com.goskar.boardgame.ui.components.AppPrimaryButton
+import com.goskar.boardgame.ui.components.AppSecondaryButton
+import com.goskar.boardgame.ui.components.AppTextField
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme

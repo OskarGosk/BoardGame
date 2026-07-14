@@ -8,7 +8,7 @@ import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepositor
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
-import com.goskar.boardgame.ui.theme.AppChipStyle
+import com.goskar.boardgame.ui.components.AppChipStyle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

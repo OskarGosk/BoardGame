@@ -46,12 +46,12 @@ import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
 import com.goskar.boardgame.ui.screens.addPlayer.EditPlayerData
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
-import com.goskar.boardgame.ui.theme.AppAvatar
-import com.goskar.boardgame.ui.theme.AppPlayerRow
-import com.goskar.boardgame.ui.theme.AppSearchBar
+import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppPlayerRow
+import com.goskar.boardgame.ui.components.AppSearchBar
 import com.goskar.boardgame.ui.theme.AppScaffold
-import com.goskar.boardgame.ui.theme.AppSecondaryButton
-import com.goskar.boardgame.ui.theme.AppStatCard
+import com.goskar.boardgame.ui.components.AppSecondaryButton
+import com.goskar.boardgame.ui.components.AppStatCard
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme

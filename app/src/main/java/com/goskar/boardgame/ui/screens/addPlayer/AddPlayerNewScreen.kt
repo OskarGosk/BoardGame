@@ -2,9 +2,7 @@ package com.goskar.boardgame.ui.screens.addPlayer
 
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -33,28 +31,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleStore
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.login.LoginEvent
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.screens.home.HomeNewScreen
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
-import com.goskar.boardgame.ui.theme.AppAvatar
-import com.goskar.boardgame.ui.theme.AppGhostButton
-import com.goskar.boardgame.ui.theme.AppListCard
-import com.goskar.boardgame.ui.theme.AppOptionGrid
-import com.goskar.boardgame.ui.theme.AppPrimaryButton
+import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppGhostButton
+import com.goskar.boardgame.ui.components.AppListCard
+import com.goskar.boardgame.ui.components.AppOptionGrid
+import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.theme.AppScaffold
-import com.goskar.boardgame.ui.theme.AppSectionHeader
-import com.goskar.boardgame.ui.theme.AppTextField
+import com.goskar.boardgame.ui.components.AppSectionHeader
+import com.goskar.boardgame.ui.components.AppTextField
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
-import com.goskar.boardgame.ui.theme.SkillOption
+import com.goskar.boardgame.ui.components.SkillOption
 
 private val skillOptions = listOf(
     SkillOption("Beginner", Icons.Default.School),

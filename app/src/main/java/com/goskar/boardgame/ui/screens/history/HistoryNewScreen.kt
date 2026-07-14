@@ -4,7 +4,6 @@ import com.goskar.boardgame.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,12 +55,12 @@ import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.theme.AppAvatar
-import com.goskar.boardgame.ui.theme.AppFab
-import com.goskar.boardgame.ui.theme.AppListCard
+import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppFab
+import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.theme.AppScaffold
-import com.goskar.boardgame.ui.theme.AppSearchBar
-import com.goskar.boardgame.ui.theme.AppSecondaryButton
+import com.goskar.boardgame.ui.components.AppSearchBar
+import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import org.koin.androidx.compose.koinViewModel

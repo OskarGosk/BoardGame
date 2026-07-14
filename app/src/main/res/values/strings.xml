@@ -135,6 +135,10 @@
     <string name="home_quick_report">Quick Report</string>
     <string name="home_recent_sessions">Recent Sessions</string>
     <string name="home_view_all">VIEW ALL</string>
+    <string name="home_greeting_welcome">WELCOME,</string>\
+    <string name="home_greeting_morning">GOOD MORNING,</string>
+    <string name="home_greeting_afternoon">GOOD AFTERNOON,</string>
+    <string name="home_greeting_evening">GOOD EVENING,</string>
 
     <!-- NEW UI — Collection -->
     <string name="collection_title">My Collection</string>

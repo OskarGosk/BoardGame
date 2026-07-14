@@ -16,6 +16,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.goskar.boardgame.ui.components.AppBottomNavBar
+import com.goskar.boardgame.ui.components.AppTopBar
 import com.goskar.boardgame.ui.navigation.BgNavItem
 import com.goskar.boardgame.ui.navigation.previewNavItems
 

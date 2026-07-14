@@ -1,7 +1,6 @@
 package com.goskar.boardgame.ui.screens.home
 import com.goskar.boardgame.R
 import androidx.compose.ui.res.stringResource
-import com.goskar.boardgame.ui.screens.home.viewmodel.*
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -55,15 +54,15 @@ import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
-import com.goskar.boardgame.ui.theme.AppAvatar
-import com.goskar.boardgame.ui.theme.AppChip
-import com.goskar.boardgame.ui.theme.AppChipStyle
-import com.goskar.boardgame.ui.theme.AppFab
-import com.goskar.boardgame.ui.theme.AppListCard
-import com.goskar.boardgame.ui.theme.AppProgressBar
+import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppChip
+import com.goskar.boardgame.ui.components.AppChipStyle
+import com.goskar.boardgame.ui.components.AppFab
+import com.goskar.boardgame.ui.components.AppListCard
+import com.goskar.boardgame.ui.components.AppProgressBar
 import com.goskar.boardgame.ui.theme.AppScaffold
-import com.goskar.boardgame.ui.theme.AppSectionHeader
-import com.goskar.boardgame.ui.theme.AppStatCard
+import com.goskar.boardgame.ui.components.AppSectionHeader
+import com.goskar.boardgame.ui.components.AppStatCard
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
@@ -84,7 +83,8 @@ class HomeNewScreen(private val firstLogin: Boolean = false) : Screen {
             onViewAllSessions = { navigator?.push(HistoryNewScreen()) },
             onAddGameplay = { navigator?.push(AddGameplayNewScreen()) },
             onScanBgg = { navigator?.push(AddGameNewScreen()) },
-        )
+            onSelectPlayer = viewModel::selectPlayer,
+            )
     }
 }
 
@@ -99,7 +99,8 @@ fun HomeNewScreenContent(
     onAddGameplay: () -> Unit = {},
     onScanBgg: () -> Unit = {},
     onQuickReport: () -> Unit = {},
-) {
+    onSelectPlayer: (String) -> Unit = {},
+    ) {
     var selectedTab by remember { mutableStateOf(0) }
 
     AppScaffold(
@@ -134,7 +135,7 @@ fun HomeNewScreenContent(
 
             Column {
                 Text(
-                    state.greeting,
+                    stringResource(state.greeting),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -145,38 +146,43 @@ fun HomeNewScreenContent(
                 )
             }
 
-            AppStatCard(
-                label = stringResource(R.string.home_total_games),
-                value = state.totalGames,
-                modifier = Modifier.fillMaxWidth(),
-                icon = {
-                    Icon(
-                        Icons.Default.Casino,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp),
-                    )
-                },
-            )
+            if (state.needsPlayerSelection) {
+                PlayerPickerCard(state.availablePlayers, onSelectPlayer)
+            } else {
 
-            Row(
-                modifier = Modifier.height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
                 AppStatCard(
-                    label = stringResource(R.string.home_most_played),
-                    value = state.mostPlayed,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
+                    label = stringResource(R.string.home_total_games),
+                    value = state.totalGames,
+                    modifier = Modifier.fillMaxWidth(),
+                    icon = {
+                        Icon(
+                            Icons.Default.Casino,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp),
+                        )
+                    },
                 )
-                WinRatioCard(
-                    value = state.winRatio,
-                    progress = state.winRatioProgress,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                )
+
+                Row(
+                    modifier = Modifier.height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    AppStatCard(
+                        label = stringResource(R.string.home_most_played),
+                        value = state.mostPlayed,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
+                    WinRatioCard(
+                        value = state.winRatio,
+                        progress = state.winRatioProgress,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight(),
+                    )
+                }
             }
 
             AppSectionHeader(title = stringResource(R.string.home_quick_actions))

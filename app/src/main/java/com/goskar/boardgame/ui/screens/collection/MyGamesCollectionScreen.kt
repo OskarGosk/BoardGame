@@ -54,6 +54,13 @@ import com.goskar.boardgame.utils.SortList
 import org.koin.androidx.compose.koinViewModel
 import androidx.core.net.toUri
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppChip
+import com.goskar.boardgame.ui.components.AppChipStyle
+import com.goskar.boardgame.ui.components.AppFab
+import com.goskar.boardgame.ui.components.AppFilterChip
+import com.goskar.boardgame.ui.components.AppPoweredByBgg
+import com.goskar.boardgame.ui.components.AppSearchBar
 
 class MyGamesCollectionScreen : Screen {
     @Composable
@@ -181,9 +188,9 @@ fun MyGamesCollectionView(
                                     selected = selectedFilter == index,
                                     onToggle = {
                                         selectedFilter = index
-                                        if(label == "Base") updateCheckboxBaseGame()
-                                        if(label == "Expansions") updateCheckboxExpansionGame()
-                                        if(label == "All") useAllGameFilter()
+                                        if (label == "Base") updateCheckboxBaseGame()
+                                        if (label == "Expansions") updateCheckboxExpansionGame()
+                                        if (label == "All") useAllGameFilter()
                                     }
                                 )
                             }
