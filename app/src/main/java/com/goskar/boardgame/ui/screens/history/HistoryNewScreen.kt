@@ -58,7 +58,7 @@ import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppFab
 import com.goskar.boardgame.ui.components.AppListCard
-import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSearchBar
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.theme.BoardGameShapes
@@ -86,8 +86,7 @@ class HistoryNewScreen : Screen {
 
 @Composable
 fun HistoryNewScreenContent(
-    state:
-    GamesHistoryState,
+    state: GamesHistoryState,
     userInitials: String = "AM",
     onQueryChange: (String) -> Unit = {},
     onSelectFilter: (Int) -> Unit = {},
@@ -99,7 +98,6 @@ fun HistoryNewScreenContent(
     var selectedNav by remember { mutableStateOf(1) }
 
     AppScaffold(
-        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
@@ -107,7 +105,9 @@ fun HistoryNewScreenContent(
             AppAvatar(
                 initials = userInitials,
                 size = 36.dp,
-                modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { onProfileClick() },
             )
         },
         floatingActionButton = {
@@ -199,13 +199,15 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
                     .clip(BoardGameShapes.Medium)
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh),
             ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(session.uri.toUri()).build(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp))
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).data(session.uri.toUri())
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp)
+                )
             }
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

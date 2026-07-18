@@ -49,7 +49,7 @@ import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppPlayerRow
 import com.goskar.boardgame.ui.components.AppSearchBar
-import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.AppStatCard
 import com.goskar.boardgame.ui.theme.BoardGameShapes
@@ -179,7 +179,6 @@ fun PlayerListNewScreenContent(
     var selectedNav by remember { mutableStateOf(3) }
 
     AppScaffold(
-        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },

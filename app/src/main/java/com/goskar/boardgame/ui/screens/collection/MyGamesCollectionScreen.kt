@@ -119,7 +119,7 @@ fun MyGamesCollectionView(
     var selectedTab by remember { mutableStateOf(1) }
     var gameToDelete by remember { mutableStateOf<GameUiState?>(null) }
 
-    AppScaffold(
+    _root_ide_package_.com.goskar.boardgame.ui.navigation.AppScaffold(
         title = stringResource(R.string.app_name_title),
         navItems = appNavItems,
         selectedTab = selectedTab,
@@ -158,7 +158,10 @@ fun MyGamesCollectionView(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = stringResource(R.string.collection_games_count, state.gameList?.size ?: 0),
+                            text = stringResource(
+                                R.string.collection_games_count,
+                                state.gameList?.size ?: 0
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

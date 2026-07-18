@@ -46,7 +46,7 @@ import com.goskar.boardgame.ui.components.AppChipStyle
 import com.goskar.boardgame.ui.components.AppGhostButton
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
-import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSectionHeader
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing

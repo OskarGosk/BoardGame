@@ -15,7 +15,7 @@ import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
-import com.goskar.boardgame.ui.screens.home.HomeNewViewModel
+import com.goskar.boardgame.ui.screens.home.HomeViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -33,7 +33,7 @@ import org.junit.Test
 import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class HomeNewViewModelTest {
+class HomeViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var getAllGameUseCase: GetAllGameUseCase
@@ -58,7 +58,7 @@ class HomeNewViewModelTest {
     private fun player(name: String, games: Int, winRatio: Int, id: String) =
         Player(name = name, games = games, winRatio = winRatio, description = "", selected = false, id = id)
 
-    private fun buildViewModel() = HomeNewViewModel(
+    private fun buildViewModel() = HomeViewModel(
         getAllGameUseCase,
         historyRepository,
         userSession,

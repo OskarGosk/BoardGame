@@ -30,7 +30,7 @@ data class RecentSession(
     val uri: String = "",
 )
 
-data class HomeNewState(
+data class HomeState(
     val isLoading: Boolean = false,
     val userName: String = "",
     val greeting: Int = R.string.home_greeting_morning,
@@ -41,9 +41,9 @@ data class HomeNewState(
     val recentSessions: List<RecentSession> = emptyList(),
     val needsPlayerSelection: Boolean = false,
     val availablePlayers: List<PlayerPick> = emptyList(),
-    )
+)
 
-class HomeNewViewModel(
+class HomeViewModel(
     private val getAllGameUseCase: GetAllGameUseCase,
     private val historyRepository: GamesHistoryDbRepository,
     private val userSession: UserRepository,
@@ -56,7 +56,7 @@ class HomeNewViewModel(
     private val addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(HomeNewState())
+    private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
     fun load(firstLogin: Boolean) {
@@ -81,12 +81,14 @@ class HomeNewViewModel(
 
     private suspend fun computeStats() {
         val games = getAllGameUseCase()
-        val history = (historyRepository.getAllHistoryGame() as? RequestResult.Success)?.data ?: emptyList()
+        val history =
+            (historyRepository.getAllHistoryGame() as? RequestResult.Success)?.data ?: emptyList()
         val user = userSession.getCurrentSession()
         val uid = user?.userUID
 
         // Personal stats come from the Player linked to this account (picked on the Profile screen).
-        val players = (playerDbRepository.getAllPlayer() as? RequestResult.Success)?.data ?: emptyList()
+        val players =
+            (playerDbRepository.getAllPlayer() as? RequestResult.Success)?.data ?: emptyList()
         val me = if (uid != null && uid != "guest") {
             players.firstOrNull { it.id == mePlayerRepository.getLinkedPlayerId(uid) }
         } else null
@@ -107,12 +109,15 @@ class HomeNewViewModel(
             .sortedByDescending { it.gameData }
             .take(3)
             .map { h ->
+
+                val game = games.firstOrNull { it.id == h.baseGameId }
+
                 RecentSession(
                     gameName = h.gameName,
                     date = h.gameData.year.toString(),
                     playersInitials = h.listOfPlayer.map { initialsOf(it) },
                     winner = "Winner: ${h.winner}",
-                    uri = games.find { it.baseGameId == h.baseGameId }?.uriFromBgg?:""
+                    uri = game?.uriFromBgg ?: game?.uri ?: ""
                 )
             }
 
@@ -131,7 +136,8 @@ class HomeNewViewModel(
     }
 
     private suspend fun selectUser() {
-        val players = (playerDbRepository.getAllPlayer() as? RequestResult.Success)?.data ?: emptyList()
+        val players =
+            (playerDbRepository.getAllPlayer() as? RequestResult.Success)?.data ?: emptyList()
         val user = userSession.getCurrentSession()
         val uid = user?.userUID ?: return
 
@@ -143,7 +149,13 @@ class HomeNewViewModel(
             _state.update {
                 it.copy(
                     needsPlayerSelection = true,
-                    availablePlayers = players.map { p -> PlayerPick(p.id, p.name, initialsOf(p.name)) },
+                    availablePlayers = players.map { p ->
+                        PlayerPick(
+                            p.id,
+                            p.name,
+                            initialsOf(p.name)
+                        )
+                    },
                 )
             }
         }
@@ -161,7 +173,15 @@ class HomeNewViewModel(
     private suspend fun downloadFromCloud() {
         (api.getAllGame() as? RequestResult.Success)?.let { addAllGameToDb.invoke(it.data) }
         (api.getAllPlayer() as? RequestResult.Success)?.let { addAllPlayerToDb.invoke(it.data) }
-        (api.getAllHistoryGame() as? RequestResult.Success)?.let { addAllHistoryToDb.invoke(convertHistoryGameListToDto(it.data)) }
-        (api.getAllHistoryGameExpansion() as? RequestResult.Success)?.let { addAllHistoryGameExpansionToDb.invoke(it.data) }
+        (api.getAllHistoryGame() as? RequestResult.Success)?.let {
+            addAllHistoryToDb.invoke(
+                convertHistoryGameListToDto(it.data)
+            )
+        }
+        (api.getAllHistoryGameExpansion() as? RequestResult.Success)?.let {
+            addAllHistoryGameExpansionToDb.invoke(
+                it.data
+            )
+        }
     }
 }

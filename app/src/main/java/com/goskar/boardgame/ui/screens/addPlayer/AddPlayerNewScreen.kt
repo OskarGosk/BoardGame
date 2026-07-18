@@ -43,7 +43,7 @@ import com.goskar.boardgame.ui.components.AppGhostButton
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppOptionGrid
 import com.goskar.boardgame.ui.components.AppPrimaryButton
-import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSectionHeader
 import com.goskar.boardgame.ui.components.AppTextField
 import com.goskar.boardgame.ui.theme.BoardGameSpacing

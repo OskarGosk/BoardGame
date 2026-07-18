@@ -118,7 +118,6 @@
 
 
     <!-- NEW UI (redesign) — shared -->
-    <string name="app_tabletop_tracker">Tabletop Tracker</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
     <string name="section_players">Players</string>
@@ -262,5 +261,9 @@
     <string name="profile_not_synced">Not backed up yet</string>
     <string name="profile_recent_medals">Recent Medals</string>
     <string name="profile_view_achievements">View All Achievements</string>
+
+    <string name="picker_heading">Who are you?</string>
+    <string name="picker_description">Pick the player that represents you to see your stats.</string>
+    <string name="picker_empty">No players yet. Add a player first.</string>
 
 </resources>

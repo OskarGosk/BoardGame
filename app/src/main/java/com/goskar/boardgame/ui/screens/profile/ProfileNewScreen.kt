@@ -60,7 +60,7 @@ import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppChip
 import com.goskar.boardgame.ui.components.AppChipStyle
 import com.goskar.boardgame.ui.components.AppListCard
-import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.AppSettingsRow
 import com.goskar.boardgame.ui.components.AppStatCard
@@ -114,7 +114,6 @@ fun ProfileNewScreenContent(
     var selectedNav by remember { mutableStateOf(-1) }
 
     AppScaffold(
-        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },

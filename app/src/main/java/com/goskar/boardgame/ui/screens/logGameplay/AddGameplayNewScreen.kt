@@ -72,7 +72,7 @@ import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppDropdownField
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
-import com.goskar.boardgame.ui.theme.AppScaffold
+import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.AppSectionHeader
 import com.goskar.boardgame.ui.components.AppTextArea
@@ -154,7 +154,6 @@ fun AddGameplayNewScreenContent(
     var selectedNav by remember { mutableStateOf(2) }
 
     AppScaffold(
-        title = stringResource(R.string.app_tabletop_tracker),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },

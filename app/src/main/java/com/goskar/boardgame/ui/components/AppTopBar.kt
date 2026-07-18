@@ -16,14 +16,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppTopBar(
-    title: String,
+    title: String? = stringResource(R.string.app_name_title),
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
@@ -47,7 +49,7 @@ fun AppTopBar(
             Spacer(Modifier.width(4.dp))
         }
         Text(
-            title,
+            title ?: stringResource(R.string.app_name_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f),
