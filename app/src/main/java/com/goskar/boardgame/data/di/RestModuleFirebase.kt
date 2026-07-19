@@ -6,6 +6,7 @@ import com.goskar.boardgame.Constants.FIREBASE_CLIENT
 import com.goskar.boardgame.Constants.FIREBASE_RETROFIT
 import com.goskar.boardgame.data.rest.ApiFirebaseData
 import com.goskar.boardgame.data.rest.AuthInterceptor
+import com.goskar.boardgame.data.rest.FirebaseAuthenticator
 import com.goskar.boardgame.data.rest.UIDInterceptor
 import okhttp3.OkHttpClient
 import org.koin.core.KoinApplication
@@ -18,6 +19,7 @@ fun KoinApplication.restModuleFirebase() = module {
         OkHttpClient.Builder()
             .addInterceptor(UIDInterceptor(get()))
             .addInterceptor(AuthInterceptor(get()))
+            .authenticator(FirebaseAuthenticator(get()))
             .build()
     }
     single {
