@@ -236,12 +236,6 @@ fun PlayerListNewScreenContent(
                     )
                 },
             )
-            AppStatCard(
-                label = stringResource(R.string.players_active_week),
-                value = state.activeThisWeek,
-                modifier = Modifier.fillMaxWidth(),
-                icon = { StatIcon(Icons.Default.MilitaryTech) },
-            )
 
             Spacer(Modifier.height(4.dp))
 

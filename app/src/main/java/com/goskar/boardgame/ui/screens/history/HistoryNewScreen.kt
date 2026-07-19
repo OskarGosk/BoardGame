@@ -156,11 +156,13 @@ fun HistoryNewScreenContent(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
-            AppSecondaryButton(
-                text = stringResource(R.string.history_load_more),
-                onClick = onLoadMore,
-                modifier = Modifier.padding(horizontal = 48.dp),
-            )
+            if (state.historyList.isEmpty() && !state.loading) {
+                AppSecondaryButton(
+                    text = stringResource(R.string.home_add_gameplay),
+                    onClick = onAddSession,
+                    modifier = Modifier.padding(horizontal = 48.dp),
+                )
+            }
             Spacer(Modifier.height(72.dp))
         }
     }
