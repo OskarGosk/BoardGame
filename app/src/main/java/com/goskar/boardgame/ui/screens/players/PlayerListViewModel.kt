@@ -21,20 +21,34 @@ sealed interface PlayerListEvent {
 }
 
 data class PlayerListState(
-    val playerList: List<Player>? = mutableListOf(),
+    val playerList: List<Player> = emptyList(),
     val visibleDialog: Boolean = false,
-    val searchTxt: String = "",
+    val query: String = "",
+    val totalPlayers: String = "0",
     val sortOption: Int = R.string.default_sort,
     val player: Player? = null,
     val playerToDelete: Player? = null,
     val isLoading: Boolean = false,
-    val showAddEditDialog: Boolean = false
+    val showAddEditDialog: Boolean = false,
+    val players: List<DirectoryPlayer> = emptyList(),
 )
+
+data class DirectoryPlayer(
+    val id: String,
+    val name: String,
+    val role: String,
+    val initials: String,
+    val winRate: Double,
+    val rank: String,
+)
+
+fun playerInitials(name: String): String =
+    name.trim().split(Regex("\\s+")).mapNotNull { it.firstOrNull() }.take(2)
+        .joinToString("").ifBlank { name.take(2) }.uppercase()
 
 class PlayerListViewModel(
     private val playerDbRepository: PlayerDbRepository,
 ) : ViewModel() {
-
 
     private val _state = MutableStateFlow(PlayerListState())
     val state = _state.asStateFlow()
@@ -43,7 +57,8 @@ class PlayerListViewModel(
     val events = _events.receiveAsFlow()
 
     fun updateSearchTxt(value: String) {
-        _state.update { it.copy(searchTxt = value) }
+        _state.update { it.copy(query = value) }
+        refreshDisplayList()
     }
 
     fun updateSortOption(value: Int) {
@@ -54,7 +69,7 @@ class PlayerListViewModel(
         _state.update { it.copy(showAddEditDialog = value) }
     }
 
-    fun updatePlayer(value :Player) {
+    fun updatePlayer(value: Player) {
         _state.update { it.copy(player = value) }
     }
 
@@ -62,7 +77,34 @@ class PlayerListViewModel(
         _state.update { it.copy(playerToDelete = player) }
     }
 
+    private fun refreshDisplayList() {
+        _state.update { currentState ->
+            val all = currentState.playerList
+            val ranked = all.sortedByDescending { it.winRatio }
 
+            val filtered = if (currentState.query.isBlank()) {
+                ranked
+            } else {
+                ranked.filter { it.name.contains(currentState.query, ignoreCase = true) }
+            }
+
+            val mappedPlayers = filtered.map { p ->
+                DirectoryPlayer(
+                    id = p.id,
+                    name = p.name,
+                    role = (p.description.ifBlank { "Gracz" }) + " · ${p.games} gier",
+                    initials = playerInitials(p.name),
+                    winRate = p.winRatio.toDouble(),
+                    rank = "#${ranked.indexOf(p) + 1}",
+                )
+            }
+
+            currentState.copy(
+                players = mappedPlayers ?: emptyList(),
+                totalPlayers = all.size.toString(),
+            )
+        }
+    }
 
     fun getAllPlayer() {
         _state.update { it.copy(isLoading = true) }
@@ -76,10 +118,16 @@ class PlayerListViewModel(
                             isLoading = false
                         )
                     }
+                    refreshDisplayList()
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
+                    _events.send(
+                        PlayerListEvent.ShowMessage(
+                            R.string.error_global,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                     _state.update {
                         it.copy(
                             isLoading = false
@@ -96,12 +144,22 @@ class PlayerListViewModel(
             val response = playerDbRepository.deletePlayer(player = player)
             when (response) {
                 is RequestResult.Success -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS))
+                    _events.send(
+                        PlayerListEvent.ShowMessage(
+                            R.string.success_global,
+                            AppSnackBarType.SUCCESS
+                        )
+                    )
                     getAllPlayer()
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
+                    _events.send(
+                        PlayerListEvent.ShowMessage(
+                            R.string.error_global,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                 }
             }
         }
@@ -126,10 +184,21 @@ class PlayerListViewModel(
                 }
 
                 is RequestResult.Error -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
+                    _events.send(
+                        PlayerListEvent.ShowMessage(
+                            R.string.error_global,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                 }
+
                 else -> {
-                    _events.send(PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
+                    _events.send(
+                        PlayerListEvent.ShowMessage(
+                            R.string.error_global,
+                            AppSnackBarType.ERROR
+                        )
+                    )
                 }
             }
         }

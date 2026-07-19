@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Schedule
@@ -98,6 +99,7 @@ fun HistoryNewScreenContent(
     var selectedNav by remember { mutableStateOf(1) }
 
     AppScaffold(
+        title = stringResource(R.string.history_game_screen),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
@@ -125,12 +127,6 @@ fun HistoryNewScreenContent(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Spacer(Modifier.height(4.dp))
-            Text(
-                stringResource(R.string.history_game_screen),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-
             AppSearchBar(
                 value = state.query,
                 onValueChange = onQueryChange,
@@ -279,7 +275,7 @@ private fun SessionCard(session: HistorySession, onClick: () -> Unit) {
             }
             Spacer(Modifier.width(8.dp))
             Icon(
-                Icons.Default.KeyboardArrowRight,
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.outline,
             )

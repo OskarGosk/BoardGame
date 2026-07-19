@@ -170,7 +170,7 @@
     <!-- NEW UI — Log Gameplay -->
     <string name="log_title_new">Log Gameplay Session</string>
     <string name="log_title_edit">Edit Gameplay Session</string>
-    <string name="log_subtitle">Capture the details of your latest tabletop conquest.</string>
+    <string name="log_subtitle">Capture the details of your latest game session.</string>
     <string name="log_select_game">Select Game</string>
     <string name="log_select_a_game">Select a game</string>
     <string name="log_date_played">Date Played</string>

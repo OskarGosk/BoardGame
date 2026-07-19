@@ -1,4 +1,5 @@
 package com.goskar.boardgame.ui.screens.logGameplay
+
 import com.goskar.boardgame.R
 import androidx.compose.ui.res.stringResource
 import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.*
@@ -154,6 +155,8 @@ fun AddGameplayNewScreenContent(
     var selectedNav by remember { mutableStateOf(2) }
 
     AppScaffold(
+        title = if (state.isEditMode) stringResource(R.string.log_title_edit) else stringResource(R.string.log_title_new),
+        subtitle = stringResource(R.string.log_subtitle),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
@@ -161,7 +164,9 @@ fun AddGameplayNewScreenContent(
             AppAvatar(
                 initials = userInitials,
                 size = 36.dp,
-                modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { onProfileClick() },
             )
         },
     ) { innerPadding ->
@@ -173,19 +178,6 @@ fun AddGameplayNewScreenContent(
                 .padding(BoardGameSpacing.MarginMobile),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Column {
-                Text(
-                    if (state.isEditMode) stringResource(R.string.log_title_edit) else stringResource(R.string.log_title_new),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    stringResource(R.string.log_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
 
             AppListCard {
                 GamePickerField(
@@ -215,7 +207,11 @@ fun AddGameplayNewScreenContent(
             }
 
             AppListCard {
-                AppSectionHeader(title = stringResource(R.string.section_players), action = stringResource(R.string.log_add_new), onAction = onAddPlayer)
+                AppSectionHeader(
+                    title = stringResource(R.string.section_players),
+                    action = stringResource(R.string.log_add_new),
+                    onAction = onAddPlayer
+                )
                 Spacer(Modifier.height(16.dp))
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -267,13 +263,17 @@ fun AddGameplayNewScreenContent(
                             label = stringResource(R.string.log_coop_players_won),
                             selected = state.coopPlayersWon == true,
                             onClick = { onSelectCoopWin(true) },
-                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                         )
                         CoopResultTile(
                             label = stringResource(R.string.log_coop_computer_won),
                             selected = state.coopPlayersWon == false,
                             onClick = { onSelectCoopWin(false) },
-                            modifier = Modifier.weight(1f).fillMaxHeight(),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                         )
                     }
                 } else {
@@ -350,10 +350,16 @@ fun AddGameplayNewScreenContent(
             }
 
             AppPrimaryButton(
-                text = if (state.isEditMode) stringResource(R.string.log_button_update) else stringResource(R.string.log_button_new),
+                text = if (state.isEditMode) stringResource(R.string.log_button_update) else stringResource(
+                    R.string.log_button_new
+                ),
                 onClick = onLogSession,
                 leadingIcon = {
-                    Icon(Icons.Default.Save, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Default.Save,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
                 },
             )
             AppSecondaryButton(text = stringResource(R.string.cancel), onClick = onCancel)
@@ -372,7 +378,10 @@ private fun DatePlayedField(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    AppDropdownField(label = stringResource(R.string.log_date_played), value = value, onClick = { showDialog = true })
+    AppDropdownField(
+        label = stringResource(R.string.log_date_played),
+        value = value,
+        onClick = { showDialog = true })
 
     if (showDialog) {
         val initialMillis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -392,7 +401,9 @@ private fun DatePlayedField(
                 ) { Text(stringResource(R.string.ok)) }
             },
             dismissButton = {
-                TextButton(onClick = { showDialog = false }) { Text(stringResource(R.string.cancel)) }
+                TextButton(onClick = {
+                    showDialog = false
+                }) { Text(stringResource(R.string.cancel)) }
             },
         ) {
             DatePicker(state = datePickerState)

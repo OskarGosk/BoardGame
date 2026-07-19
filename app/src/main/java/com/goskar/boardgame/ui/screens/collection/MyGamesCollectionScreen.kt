@@ -61,6 +61,7 @@ import com.goskar.boardgame.ui.components.AppFab
 import com.goskar.boardgame.ui.components.AppFilterChip
 import com.goskar.boardgame.ui.components.AppPoweredByBgg
 import com.goskar.boardgame.ui.components.AppSearchBar
+import com.goskar.boardgame.ui.navigation.AppScaffold
 
 class MyGamesCollectionScreen : Screen {
     @Composable
@@ -87,7 +88,14 @@ class MyGamesCollectionScreen : Screen {
             onProfileClick = { navigator?.push(ProfileNewScreen()) },
             onAddGame = { navigator?.push(AddGameNewScreen()) },
             onOpenGame = { game ->
-                game.game.bggId?.let { id -> navigator?.push(GameDetailsNewScreen(id, game.game.name)) }
+                game.game.bggId?.let { id ->
+                    navigator?.push(
+                        GameDetailsNewScreen(
+                            id,
+                            game.game.name
+                        )
+                    )
+                }
             },
             onAddSession = { game ->
                 navigator?.push(AddGameplayNewScreen(preselectedGameId = game.game.id))
@@ -119,8 +127,12 @@ fun MyGamesCollectionView(
     var selectedTab by remember { mutableStateOf(1) }
     var gameToDelete by remember { mutableStateOf<GameUiState?>(null) }
 
-    _root_ide_package_.com.goskar.boardgame.ui.navigation.AppScaffold(
-        title = stringResource(R.string.app_name_title),
+    AppScaffold(
+        title = stringResource(R.string.collection_title),
+        subtitle = stringResource(
+            R.string.collection_games_count,
+            state.gameList?.size ?: 0
+        ),
         navItems = appNavItems,
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
@@ -128,7 +140,9 @@ fun MyGamesCollectionView(
             AppAvatar(
                 size = 36.dp,
                 initials = userInitials,
-                modifier = Modifier.clip(CircleShape).clickable { onProfileClick() },
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { onProfileClick() },
             )
         },
         floatingActionButton = {
@@ -151,32 +165,12 @@ fun MyGamesCollectionView(
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 item {
-                    Column(modifier = Modifier.padding(top = 4.dp)) {
-                        Text(
-                            text = stringResource(R.string.collection_title),
-                            style = MaterialTheme.typography.displayMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = stringResource(
-                                R.string.collection_games_count,
-                                state.gameList?.size ?: 0
-                            ),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                item {
                     AppSearchBar(
                         value = state.searchTxt,
                         onValueChange = { updateSearchTxt(it) },
                         placeholder = stringResource(R.string.collection_search_hint)
                     )
                 }
-
-
 
                 item {
                     Row(
@@ -309,7 +303,10 @@ fun CollectionGridItem(
             if (rotation <= 90f) {
                 GameCoverFront(game)
             } else {
-                Box(modifier = Modifier.fillMaxSize().graphicsLayer { rotationY = 180f }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer { rotationY = 180f }) {
                     GameCoverBack(game, onInfo, onAddSession, onEdit, onDelete)
                 }
             }
@@ -401,10 +398,18 @@ private fun GameCoverFront(game: GameUiState) {
             val players = playersLabel(game)
             if (players.isNotBlank()) {
                 Spacer(Modifier.height(8.dp))
-                Text(players, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    players,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
             Spacer(Modifier.height(2.dp))
-            Text("${game.game.games} plays", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "${game.game.games} plays",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -432,12 +437,24 @@ private fun GameCoverBack(
             )
             Spacer(Modifier.height(6.dp))
         }
-        InfoLine(stringResource(R.string.collection_min_players), game.game.minPlayer.ifBlank { "—" })
-        InfoLine(stringResource(R.string.collection_max_players), game.game.maxPlayer.ifBlank { "—" })
+        InfoLine(
+            stringResource(R.string.collection_min_players),
+            game.game.minPlayer.ifBlank { "—" })
+        InfoLine(
+            stringResource(R.string.collection_max_players),
+            game.game.maxPlayer.ifBlank { "—" })
         InfoLine(stringResource(R.string.collection_games_played), game.game.games.toString())
         Spacer(Modifier.height(10.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-            BackIcon(Icons.Default.Add, "Add session", MaterialTheme.colorScheme.primary, onAddSession)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BackIcon(
+                Icons.Default.Add,
+                "Add session",
+                MaterialTheme.colorScheme.primary,
+                onAddSession
+            )
             BackIcon(Icons.Default.Edit, "Edit", MaterialTheme.colorScheme.onSurfaceVariant, onEdit)
             if (onInfo != null) {
                 BackIcon(Icons.Default.Info, "Info", MaterialTheme.colorScheme.primary, onInfo)
@@ -465,7 +482,12 @@ private fun InfoLine(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1
+        )
         Text(
             value,
             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),

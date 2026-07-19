@@ -27,6 +27,7 @@ import com.goskar.boardgame.ui.navigation.previewNavItems
 fun AppScaffold(
     modifier: Modifier = Modifier,
     title: String? = null,
+    subtitle: String? = null,
     selectedTab: Int = 0,
     onTabSelected: (Int) -> Unit = {},
     navItems: List<BgNavItem>? = null,
@@ -38,7 +39,7 @@ fun AppScaffold(
     Scaffold(
         modifier = modifier.systemBarsPadding(),
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = { AppTopBar(title = title, onBack = onBack, trailing = trailing) },
+        topBar = { AppTopBar(title = title, subtitle = subtitle, onBack = onBack, trailing = trailing) },
         bottomBar = {
             if (navItems != null) {
                 AppBottomNavBar(items = navItems, selected = selectedTab, onSelect = onTabSelected)

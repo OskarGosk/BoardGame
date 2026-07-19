@@ -30,14 +30,13 @@ fun AppPlayerRow(
     winRate: String,
     rank: String,
     modifier: Modifier = Modifier,
-    isOnline: Boolean = false,
     winRateColor: Color = MaterialTheme.colorScheme.tertiary,
     trailing: @Composable (() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
     AppListCard(modifier = modifier, onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            AppAvatar(size = 48.dp, initials = initials, onlineStatus = isOnline)
+            AppAvatar(size = 48.dp, initials = initials)
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(name, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold), color = MaterialTheme.colorScheme.onSurface)

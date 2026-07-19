@@ -15,10 +15,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.MilitaryTech
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -58,24 +56,6 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.appExt
 import org.koin.androidx.compose.koinViewModel
 
-data class DirectoryPlayer(
-    val id: String,
-    val name: String,
-    val role: String,
-    val initials: String,
-    val winRate: Double,
-    val rank: String,
-    val online: Boolean,
-)
-
-data class PlayerListNewState(
-    val query: String = "",
-    val totalPlayers: String = "0",
-    val avgWinRate: String = "0%",
-    val activeThisWeek: String = "—",
-    val players: List<DirectoryPlayer> = emptyList(),
-)
-
 class PlayerListScreen : Screen {
 
     @Composable
@@ -86,12 +66,12 @@ class PlayerListScreen : Screen {
 
         LaunchedEffect(Unit) { viewModel.getAllPlayer() }
 
-        PlayerListNewScreenContent(
-            state = state.toDirectoryState(),
+        PlayerListScreenContent(
+            state = state,
             userInitials = rememberUserInitials(),
             onQueryChange = viewModel::updateSearchTxt,
             onPlayerClick = { dirPlayer ->
-                val original = state.playerList?.find { it.id == dirPlayer.id }
+                val original = state.playerList.find { it.id == dirPlayer.id }
                 if (original != null) {
                     navigator?.push(
                         AddPlayerNewScreen(
@@ -134,42 +114,11 @@ class PlayerListScreen : Screen {
     }
 }
 
-private fun PlayerListState.toDirectoryState(): PlayerListNewState {
-    val all = playerList ?: emptyList()
-    val ranked = all.sortedByDescending { it.winRatio }
-    val visible = if (searchTxt.isBlank()) ranked
-    else ranked.filter { it.name.contains(searchTxt, ignoreCase = true) }
-
-    val players = visible.map { p ->
-        DirectoryPlayer(
-            id = p.id,
-            name = p.name,
-            role = (p.description.ifBlank { "Player" }) + " · ${p.games} games",
-            initials = playerInitials(p.name),
-            winRate = p.winRatio.toDouble(),
-            rank = "#${ranked.indexOf(p) + 1}",
-            online = false,
-        )
-    }
-    val avg = if (all.isNotEmpty()) all.sumOf { it.winRatio } / all.size else 0
-    return PlayerListNewState(
-        query = searchTxt,
-        totalPlayers = all.size.toString(),
-        avgWinRate = "$avg%",
-        activeThisWeek = "—",
-        players = players,
-    )
-}
-
-private fun playerInitials(name: String): String =
-    name.trim().split(Regex("\\s+")).mapNotNull { it.firstOrNull() }.take(2)
-        .joinToString("").ifBlank { name.take(2) }.uppercase()
 
 @Composable
-fun PlayerListNewScreenContent(
-    state: PlayerListNewState,
+fun PlayerListScreenContent(
+    state: PlayerListState,
     userInitials: String = "AM",
-    onMenu: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
     onPlayerClick: (DirectoryPlayer) -> Unit = {},
     onDeletePlayer: (DirectoryPlayer) -> Unit = {},
@@ -179,6 +128,8 @@ fun PlayerListNewScreenContent(
     var selectedNav by remember { mutableStateOf(3) }
 
     AppScaffold(
+        title = stringResource(R.string.players_title),
+        subtitle = stringResource(R.string.players_subtitle),
         navItems = appNavItems,
         selectedTab = selectedNav,
         onTabSelected = { selectedNav = it },
@@ -198,19 +149,6 @@ fun PlayerListNewScreenContent(
                 .padding(BoardGameSpacing.MarginMobile),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Column {
-                Text(
-                    stringResource(R.string.players_title),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    stringResource(R.string.players_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-
             AppSearchBar(
                 value = state.query,
                 onValueChange = onQueryChange,
@@ -223,19 +161,6 @@ fun PlayerListNewScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 icon = { StatIcon(Icons.Default.Group) },
             )
-            AppStatCard(
-                label = stringResource(R.string.players_avg_win_rate),
-                value = state.avgWinRate,
-                modifier = Modifier.fillMaxWidth(),
-                valueColor = appExt().success,
-                icon = {
-                    StatIcon(
-                        Icons.AutoMirrored.Filled.TrendingUp,
-                        bg = appExt().success.copy(alpha = 0.18f),
-                        tint = appExt().success,
-                    )
-                },
-            )
 
             Spacer(Modifier.height(4.dp))
 
@@ -246,7 +171,6 @@ fun PlayerListNewScreenContent(
                     role = player.role,
                     winRate = "%.1f%%".format(player.winRate),
                     rank = player.rank,
-                    isOnline = player.online,
                     winRateColor = winRateColor(player.winRate),
                     trailing = {
                         Icon(
@@ -296,12 +220,12 @@ private fun StatIcon(
 
 @Preview(name = "Players Directory — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun PlayerListNewScreenLightPreview() {
-    BoardGameTheme(darkTheme = false) { PlayerListNewScreenContent(state = PlayerListNewState()) }
+private fun PlayerListScreenLightPreview() {
+    BoardGameTheme(darkTheme = false) { PlayerListScreenContent(state = PlayerListState()) }
 }
 
 @Preview(name = "Players Directory — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun PlayerListNewScreenDarkPreview() {
-    BoardGameTheme(darkTheme = true) { PlayerListNewScreenContent(state = PlayerListNewState()) }
+private fun PlayerListScreenDarkPreview() {
+    BoardGameTheme(darkTheme = true) { PlayerListScreenContent(state = PlayerListState()) }
 }

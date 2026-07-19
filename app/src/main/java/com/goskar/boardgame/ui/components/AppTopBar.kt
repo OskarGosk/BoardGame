@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +27,7 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 @Composable
 fun AppTopBar(
     title: String? = stringResource(R.string.app_name_title),
+    subtitle: String? = null,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
@@ -44,23 +46,40 @@ fun AppTopBar(
             Spacer(Modifier.width(12.dp))
         } else if (onBack != null) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    "Back",
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
             Spacer(Modifier.width(4.dp))
         }
-        Text(
-            title ?: stringResource(R.string.app_name_title),
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.weight(1f),
-        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                title ?: stringResource(R.string.app_name_title),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            subtitle?.let {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            }
+        }
         trailing?.invoke()
     }
 }
 
 @Composable
 private fun AppTopBarPreviewContent() {
-    AppTopBar("Add Game", onBack = {})
+    AppTopBar(
+        stringResource(R.string.players_title),
+        stringResource(R.string.players_subtitle),
+        onBack = {})
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

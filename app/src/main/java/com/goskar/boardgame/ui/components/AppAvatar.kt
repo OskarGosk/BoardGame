@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import com.goskar.boardgame.ui.theme.BoardGameTheme
-import com.goskar.boardgame.ui.theme.appExt
 
 @Composable
 fun AppAvatar(
@@ -27,7 +26,6 @@ fun AppAvatar(
     size: Dp = 48.dp,
     initials: String? = null,
     selected: Boolean = false,
-    onlineStatus: Boolean? = null,
     imageContent: @Composable (BoxScope.() -> Unit)? = null,
 ) {
     val cs = MaterialTheme.colorScheme
@@ -50,23 +48,13 @@ fun AppAvatar(
                 )
             }
         }
-        if (onlineStatus != null) {
-            Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .align(Alignment.BottomEnd)
-                    .clip(CircleShape)
-                    .background(if (onlineStatus) appExt().success else cs.error)
-                    .border(2.dp, cs.surfaceContainerLowest, CircleShape),
-            )
-        }
     }
 }
 
 @Composable
 private fun AppAvatarPreviewContent() {
     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        AppAvatar(initials = "AM", selected = true, onlineStatus = true)
+        AppAvatar(initials = "AM", selected = true)
         AppAvatar(initials = "SK")
     }
 }

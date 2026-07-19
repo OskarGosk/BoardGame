@@ -147,7 +147,7 @@ private fun ProfileHeaderCard(state: ProfileNewState) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(8.dp))
-            AppAvatar(initials = state.initials, size = 80.dp, selected = true, onlineStatus = true)
+            AppAvatar(initials = state.initials, size = 80.dp, selected = true)
             Spacer(Modifier.height(12.dp))
             Text(
                 state.name,
