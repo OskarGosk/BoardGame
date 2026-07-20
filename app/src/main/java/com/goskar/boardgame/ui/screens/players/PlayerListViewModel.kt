@@ -7,6 +7,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
+import com.goskar.boardgame.ui.components.SkillOptionEnum.Companion.getLabelFromId
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,8 @@ data class PlayerListState(
 data class DirectoryPlayer(
     val id: String,
     val name: String,
-    val role: String,
+    val userSkill: Int,
+    val games: Int,
     val initials: String,
     val winRate: Double,
     val rank: String,
@@ -92,15 +94,16 @@ class PlayerListViewModel(
                 DirectoryPlayer(
                     id = p.id,
                     name = p.name,
-                    role = (p.description.ifBlank { "Gracz" }) + " · ${p.games} gier",
+                    userSkill = getLabelFromId(p.selectedSkill),
+                    games = p.games,
                     initials = playerInitials(p.name),
-                    winRate = p.winRatio.toDouble(),
+                    winRate = if (p.games == 0) 0.0 else (p.winRatio.toDouble()/p.games.toDouble())*100,
                     rank = "#${ranked.indexOf(p) + 1}",
                 )
             }
 
             currentState.copy(
-                players = mappedPlayers ?: emptyList(),
+                players = mappedPlayers ,
                 totalPlayers = all.size.toString(),
             )
         }

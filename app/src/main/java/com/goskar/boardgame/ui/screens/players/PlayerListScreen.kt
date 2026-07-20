@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
@@ -50,6 +51,7 @@ import com.goskar.boardgame.ui.components.AppSearchBar
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.AppStatCard
+import com.goskar.boardgame.ui.components.SkillOptionEnum
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -168,9 +170,10 @@ fun PlayerListScreenContent(
                 AppPlayerRow(
                     initials = player.initials,
                     name = player.name,
-                    role = player.role,
                     winRate = "%.1f%%".format(player.winRate),
                     rank = player.rank,
+                    userSkill = player.userSkill,
+                    games = player.games,
                     winRateColor = winRateColor(player.winRate),
                     trailing = {
                         Icon(
@@ -221,7 +224,29 @@ private fun StatIcon(
 @Preview(name = "Players Directory — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
 private fun PlayerListScreenLightPreview() {
-    BoardGameTheme(darkTheme = false) { PlayerListScreenContent(state = PlayerListState()) }
+
+    val player1 = DirectoryPlayer(
+        name = "Alice",
+        id = "id-1",
+        initials = "A",
+        winRate = 45.0,
+        rank = "#1",
+        userSkill = SkillOptionEnum.BEGINNER.id,
+        games = 28,
+    )
+    val player2 = DirectoryPlayer(
+        name = "Bob",
+        id = "id-2",
+        initials = "B",
+        winRate = 36.8,
+        rank = "#2",
+        userSkill = SkillOptionEnum.INTERMEDIATE.id,
+        games = 65
+    )
+
+    BoardGameTheme(darkTheme = false) { PlayerListScreenContent(state = PlayerListState(
+        players = listOf(player1,player2)
+    )) }
 }
 
 @Preview(name = "Players Directory — Dark", showBackground = true, backgroundColor = 0xFF131313)
