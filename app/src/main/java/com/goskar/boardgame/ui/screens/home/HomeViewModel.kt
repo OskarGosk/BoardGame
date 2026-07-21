@@ -10,6 +10,8 @@ import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
+import com.goskar.boardgame.data.useCase.RecentSession
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
@@ -22,13 +24,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class RecentSession(
-    val gameName: String,
-    val date: String,
-    val playersInitials: List<String>,
-    val winner: String,
-    val uri: String = "",
-)
+//data class RecentSession(
+//    val gameName: String,
+//    val date: String,
+//    val playersInitials: List<String>,
+//    val winner: String,
+//    val uri: String = "",
+//)
 
 data class HomeState(
     val isLoading: Boolean = false,
@@ -45,7 +47,7 @@ data class HomeState(
 
 class HomeViewModel(
     private val getAllGameUseCase: GetAllGameUseCase,
-    private val historyRepository: GamesHistoryDbRepository,
+    private val getThreeRecentSessionUseCase: GetThreeRecentSessionUseCase,
     private val userSession: UserRepository,
     private val playerDbRepository: PlayerDbRepository,
     private val mePlayerRepository: MePlayerRepository,
@@ -81,8 +83,7 @@ class HomeViewModel(
 
     private suspend fun computeStats() {
         val games = getAllGameUseCase()
-        val history =
-            (historyRepository.getAllHistoryGame() as? RequestResult.Success)?.data ?: emptyList()
+        val recent = getThreeRecentSessionUseCase.invoke()
         val user = userSession.getCurrentSession()
         val uid = user?.userUID
 
@@ -105,21 +106,6 @@ class HomeViewModel(
         val ratio = if (me != null && me.games > 0) me.winRatio.toFloat() / me.games else 0f
         val ratioText = if (me != null && me.games > 0) "${(ratio * 100).toInt()}%" else "—"
 
-        val recent = history
-            .sortedByDescending { it.gameData }
-            .take(3)
-            .map { h ->
-
-                val game = games.firstOrNull { it.id == h.baseGameId }
-
-                RecentSession(
-                    gameName = h.gameName,
-                    date = h.gameData.year.toString(),
-                    playersInitials = h.listOfPlayer.map { initialsOf(it) },
-                    winner = "Winner: ${h.winner}",
-                    uri = game?.uriFromBgg ?: game?.uri ?: ""
-                )
-            }
 
         _state.update {
             it.copy(

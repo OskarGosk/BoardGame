@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.goskar.boardgame.data.useCase.RecentSession
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppChip
 import com.goskar.boardgame.ui.components.AppChipStyle
 import com.goskar.boardgame.ui.components.AppListCard
-import com.goskar.boardgame.ui.screens.home.RecentSession
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 
@@ -40,14 +43,24 @@ fun RecentSessionCard(session: RecentSession) {
                     .size(56.dp)
                     .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                contentAlignment = Alignment.Center
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(session.uri.toUri()).build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp))
+                if (session.uri.isEmpty()) {
+                    Icon(
+                        imageVector = Icons.Default.Casino,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(40.dp)
+                    )
+                } else {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current).data(session.uri.toUri()).build(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(10.dp))
+                }
             }
 
             Spacer(Modifier.size(12.dp))

@@ -6,6 +6,7 @@ import com.goskar.boardgame.data.useCase.GetAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.GetAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.GetAllPlayerUseCase
 import com.goskar.boardgame.data.useCase.GetHistoryWithExpansionUseCase
+import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
@@ -26,4 +27,5 @@ fun KoinApplication.useCaseModule() = module {
     single { UpsertAllHistoryGameExpansionUseCase(get()) }
     single { GetHistoryWithExpansionUseCase(get()) }
     single { UploadToCloudUseCase(get(), get(), get(), get(), get()) }
+    single { GetThreeRecentSessionUseCase(get(), get()) }
 }

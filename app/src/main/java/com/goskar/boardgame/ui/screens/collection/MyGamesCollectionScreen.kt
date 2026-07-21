@@ -41,6 +41,7 @@ import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
 import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.ui.graphics.graphicsLayer
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -61,6 +62,7 @@ import com.goskar.boardgame.ui.components.AppFab
 import com.goskar.boardgame.ui.components.AppFilterChip
 import com.goskar.boardgame.ui.components.AppPoweredByBgg
 import com.goskar.boardgame.ui.components.AppSearchBar
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.navigation.AppScaffold
 
 class MyGamesCollectionScreen : Screen {
@@ -429,6 +431,7 @@ private fun GameCoverBack(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Spacer(Modifier.weight(1f))
         if (game.game.expansion) {
             Text(
                 stringResource(R.string.board_expansion),
@@ -440,24 +443,27 @@ private fun GameCoverBack(
         InfoLine(
             stringResource(R.string.collection_min_players),
             game.game.minPlayer.ifBlank { "—" })
+        Spacer(Modifier.height(6.dp))
         InfoLine(
             stringResource(R.string.collection_max_players),
             game.game.maxPlayer.ifBlank { "—" })
+        Spacer(Modifier.height(6.dp))
         InfoLine(stringResource(R.string.collection_games_played), game.game.games.toString())
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.weight(1f))
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             BackIcon(
                 Icons.Default.Add,
                 "Add session",
-                MaterialTheme.colorScheme.primary,
+                MaterialTheme.colorScheme.onSurfaceVariant,
                 onAddSession
             )
             BackIcon(Icons.Default.Edit, "Edit", MaterialTheme.colorScheme.onSurfaceVariant, onEdit)
             if (onInfo != null) {
-                BackIcon(Icons.Default.Info, "Info", MaterialTheme.colorScheme.primary, onInfo)
+                BackIcon(Icons.Default.Info, "Info", MaterialTheme.colorScheme.onSurfaceVariant, onInfo)
             }
             BackIcon(Icons.Default.Delete, "Delete", MaterialTheme.colorScheme.error, onDelete)
         }
@@ -510,8 +516,8 @@ private fun BackIcon(
         modifier = Modifier
             .clip(CircleShape)
             .clickable { onClick() }
-            .padding(4.dp)
-            .size(20.dp)
+            .padding(6.dp)
+            .size(24.dp)
     )
 }
 
@@ -552,35 +558,54 @@ fun AddGridItem(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
 }
 
 
-data class GameData(
-    val title: String,
-    val subtitle: String = "",
-    val badge: String = "",
-    val plays: Int = 0,
-    val color: Color = Color.Gray
-)
-
-private val featuredGamesDummy = listOf(
-    GameData(
-        "Ironwood Chronicles",
-        "12 plays this month",
-        "Most Played",
-        color = Color(0xFFD2B48C)
-    ),
-    GameData("Neon Protocol", "New expansion added", "Hot Right Now", color = Color(0xFFADD8E6)),
-    GameData(
-        "Mythos of the Deep",
-        "9.8/10 average score",
-        "Highest Rated",
-        color = Color(0xFFE6E6FA)
+@Preview(name = "My Collection — No Covers", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun MyGamesCollectionNoCoverPreview() {
+    val noCoverGame1 = GameUiState(
+        game = Game(
+            name = "Chess",
+            expansion = false,
+            cooperate = false,
+            baseGame = "",
+            minPlayer = "2",
+            maxPlayer = "2",
+            games = 5,
+            category = "Abstract",
+            yearPublished = 1475,
+            rating = 8.0,
+            bggId = "171",
+        )
     )
-)
+    val noCoverGame2 = GameUiState(
+        game = Game(
+            name = "Checkers",
+            expansion = false,
+            cooperate = false,
+            baseGame = "",
+            minPlayer = "2",
+            maxPlayer = "2",
+            games = 10,
+            category = "Abstract",
+            yearPublished = 1100,
+            rating = 7.0,
+        )
+    )
 
+    val state = GameListState(
+        gameList = listOf(noCoverGame1, noCoverGame2),
+        gameListEdited = listOf(noCoverGame1, noCoverGame2)
+    )
+
+    BoardGameTheme {
+        MyGamesCollectionView(state = state)
+    }
+}
 
 @Preview(name = "My Collection — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
 private fun MyGamesCollectionLightPreview() {
-    BoardGameTheme(darkTheme = false) { MyGamesCollectionView() }
+    BoardGameTheme(darkTheme = false) { MyGamesCollectionView(
+    ) }
 }
 
 @Preview(name = "My Collection — Dark", showBackground = true, backgroundColor = 0xFF131313)
