@@ -2,16 +2,16 @@ package com.goskar.boardgame.ui.screens.home.viewmodel
 
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.GuestBackupMeta
-import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.models.User
-import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
+import com.goskar.boardgame.data.useCase.RecentSession
 import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
 import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
 import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
@@ -38,14 +38,12 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var getAllGameUseCase: GetAllGameUseCase
-    private lateinit var historyRepository: GamesHistoryDbRepository
     private lateinit var userSession: UserRepository
     private lateinit var playerDbRepository: PlayerDbRepository
     private lateinit var mePlayerRepository: MePlayerRepository
@@ -57,21 +55,18 @@ class HomeViewModelTest {
     private lateinit var guestRestore: GuestRestoreUseCase
     private lateinit var markLocalDataSynced: MarkLocalDataSyncedUseCase
     private lateinit var uploadToCloud: UploadToCloudUseCase
+    private lateinit var getThreeRecentSession: GetThreeRecentSessionUseCase
 
     private fun game(name: String, plays: Int, id: String) = Game(
         name = name, expansion = false, cooperate = false, baseGame = "",
         minPlayer = "1", maxPlayer = "4", games = plays, id = id,
     )
 
-    private fun history(gameName: String, winner: String, date: LocalDate, players: List<String>) =
-        HistoryGame(gameName = gameName, winner = winner, gameData = date, listOfPlayer = players, description = "")
-
     private fun player(name: String, games: Int, winRatio: Int, id: String) =
         Player(name = name, games = games, winRatio = winRatio, description = "", selected = false, id = id)
 
     private fun buildViewModel() = HomeViewModel(
         getAllGameUseCase,
-        historyRepository,
         userSession,
         playerDbRepository,
         mePlayerRepository,
@@ -83,6 +78,7 @@ class HomeViewModelTest {
         guestRestore,
         markLocalDataSynced,
         uploadToCloud,
+        getThreeRecentSession,
     )
 
     @Before
@@ -90,7 +86,6 @@ class HomeViewModelTest {
         testDispatcher = UnconfinedTestDispatcher()
         Dispatchers.setMain(testDispatcher)
         getAllGameUseCase = mockk()
-        historyRepository = mockk()
         userSession = mockk()
         playerDbRepository = mockk()
         mePlayerRepository = mockk(relaxed = true)
@@ -103,6 +98,8 @@ class HomeViewModelTest {
         guestRestore = mockk(relaxed = true)
         markLocalDataSynced = mockk(relaxed = true)
         uploadToCloud = mockk(relaxed = true)
+        getThreeRecentSession = mockk()
+        coEvery { getThreeRecentSession() } returns emptyList()
         coEvery { guestRestore.findOffer() } returns null
     }
 
@@ -118,11 +115,9 @@ class HomeViewModelTest {
             game("Wingspan", plays = 5, id = "g1"),
             game("Root", plays = 2, id = "g2"),
         )
-        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(
-            listOf(
-                history("Wingspan", "Alex M.", LocalDate.of(2024, 1, 2), listOf("Alex M.", "Bob")),
-                history("Root", "Bob", LocalDate.of(2024, 1, 1), listOf("Alex M.", "Bob")),
-            )
+        coEvery { getThreeRecentSession() } returns listOf(
+            RecentSession("Wingspan", "2024", listOf("AM", "B"), "Winner: Alex M."),
+            RecentSession("Root", "2024", listOf("AM", "B"), "Winner: Bob"),
         )
         coEvery { userSession.getCurrentSession() } returns
             User(email = "alex@example.com", token = "t", userUID = "uid1")
@@ -147,7 +142,6 @@ class HomeViewModelTest {
     @Test
     fun load_noLinkedPlayer_winRatioIsDash() = runTest(testDispatcher) {
         coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
         coEvery { userSession.getCurrentSession() } returns
             User(email = "alex@example.com", token = "t", userUID = "uid1")
         coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
@@ -163,7 +157,6 @@ class HomeViewModelTest {
     @Test
     fun load_guestSession_userNameIsGuest() = runTest(testDispatcher) {
         coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
         coEvery { userSession.getCurrentSession() } returns User(email = null, token = null, userUID = "guest")
 
         val viewModel = buildViewModel()
@@ -178,7 +171,6 @@ class HomeViewModelTest {
     @Test
     fun load_firstLogin_syncsFromCloud() = runTest(testDispatcher) {
         coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
         coEvery { userSession.getCurrentSession() } returns null
         coEvery { api.getAllGame() } returns RequestResult.Error(Throwable("offline"))
 
@@ -191,7 +183,6 @@ class HomeViewModelTest {
     @Test
     fun load_notFirstLogin_doesNotSyncFromCloud() = runTest(testDispatcher) {
         coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
         coEvery { userSession.getCurrentSession() } returns null
 
         val viewModel = buildViewModel()
@@ -202,7 +193,6 @@ class HomeViewModelTest {
 
     private fun stubEmptyLibraryFor(uid: String?) {
         coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
         coEvery { userSession.getCurrentSession() } returns
             uid?.let { User(email = null, token = "t", userUID = it) }
     }

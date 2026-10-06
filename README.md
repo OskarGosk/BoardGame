@@ -1,16 +1,15 @@
 ![Android CI](https://github.com/OskarGosk/BoardGame/actions/workflows/android-ci.yml/badge.svg)
 
-
-# 🎲 BoardGame
+# 🎲 BoardGame Tracker
 
 The application is designed to **record and analyze board game sessions**.<br/><br/>
 
 With this app you can:<br/>
-- **Create a player list** – each player has their total number of games played and wins stored.<br/>
-- **Create a board game list** – games can be added manually (basic data: name, number of players, type, expansion/base game) or automatically imported from the **BoardGameGeek (BGG)** database.<br/>
-- **Add gameplays** – each session contains information about the game played (base/expansions), participating players, the winner, the date of the session, and an optional description.<br/>
-- **Browse game history** – see a list of past sessions with the date, game name, participants, and the winner.<br/>
-- **Analyze statistics** – e.g., how many players participated in sessions, which games are played most often, how many wins each player has, and reports in chart form.<br/><br/>
+- **Create a player list** – each player has their total number of games played, win rate and rank.<br/>
+- **Create a board game collection** – games can be added manually (name, number of players, category, year, co-op, cover photo) or imported from the **BoardGameGeek (BGG)** database.<br/>
+- **Log gameplay sessions** – game, date, duration, participating players, the winner and optional notes.<br/>
+- **Browse game history** – sessions grouped by time (this week / earlier) with search, plus a details screen for every session.<br/>
+- **Track your own stats** – pick "who you are" and see total games, most played game and win ratio on the home screen.<br/><br/>
 
 The application works in two modes:<br/>
 - **Guest** – data is stored locally.<br/>
@@ -18,9 +17,102 @@ The application works in two modes:<br/>
 <br/>
 A demo account is available on request, or you can try the app right away in **Guest** mode.<br/><br/>
 
-<img width="360" height="400" alt="Login Screen" src="screenshots/login_screen.png" /><br/>
-<img width="360" height="400" alt="HomeScreen Light" src="screenshots/home_screen_light.png" /><br/>
-<img width="360" height="400" alt="HomeScreen Dark" src="screenshots/home_screen_dark.png" /><br/>
+<img src="screenshots/redesign/01_login.png" alt="Login" width="300" />
+
+<br/>
+
+## ✨ New look (UI redesign)
+
+> 🤖 **The new look of the app was designed and implemented in collaboration with AI** ([Claude Code](https://claude.com/claude-code)).
+> The AI helped with the visual direction, the Compose components and the screen-by-screen refactor; all changes were reviewed, tested and shipped by the author.
+> All screenshots below were taken from a real emulator running the current build (test account).
+
+**Before → after.** The old app was a menu of text buttons that opened separate lists. The redesign turns it into a dashboard with bottom navigation:
+
+| Before (`master`) | After |
+|:---:|:---:|
+| <img src="screenshots/home_screen_light.png" alt="Old home" width="300" /> | <img src="screenshots/redesign/02_home_light.png" alt="New home" width="230" /> |
+
+**What changed:**
+- 🧭 **New navigation** – bottom bar (*Home · Collection · Add Session · Players*) instead of a button menu; a profile avatar in the top bar opens the profile screen.
+- 🏠 **Dashboard home screen** – greeting, "Who are you?" picker, total games / most played / win-ratio tiles, quick actions and recent sessions.
+- 🎨 **Design system** – new warm Material 3 colour palette, typography, cards, chips and shared components in a dedicated `components` / `theme` package.
+- 🌗 **Light and dark theme** across every screen.
+- 🖼 **Cover art everywhere** – collection grid, history and recent sessions use game covers.
+- 📝 **Redesigned forms** – log session, add game (BGG search / manual entry), add player.
+- 🔔 **One feedback mechanism** – themed snackbars instead of toasts (see the notes below).
+- ✅ **More tests** – new ViewModel and use-case tests for the redesigned screens (Home, Add Gameplay, Profile and others).
+
+**Still in progress:** the *Quick Report* tile on the home screen is not wired up yet, and the Reports screen has not been redesigned.
+
+<br/>
+
+## 🏠 Home
+
+Dashboard with your stats, quick actions and the three most recent sessions. Choose which player represents you on first launch.<br/><br/>
+
+<img src="screenshots/redesign/02a_home_who_are_you.png" alt="Who are you" width="270" />
+<img src="screenshots/redesign/02_home_light.png" alt="Home light" width="270" />
+<img src="screenshots/redesign/03_home_recent_sessions.png" alt="Recent sessions" width="270" />
+<img src="screenshots/redesign/15_home_dark.png" alt="Home dark" width="270" />
+
+<br/>
+
+## 🎲 Collection
+
+Games shown as a cover grid with a play counter. Filter by *All / Base / Expansions*, search by name and sort (default, name, number of plays). Tap a card to flip it – you get min/max players, total plays and quick actions: **log a session**, **edit** or **delete**.<br/><br/>
+
+<img src="screenshots/redesign/04_collection_grid.png" alt="Collection" width="270" />
+<img src="screenshots/redesign/06_collection_card_flip.png" alt="Card back" width="270" />
+<img src="screenshots/redesign/05_collection_sort_menu.png" alt="Sort menu" width="270" />
+<img src="screenshots/redesign/16_collection_dark.png" alt="Collection dark" width="270" />
+
+<br/>
+
+## ➕ Add Game
+
+Search the **BGG database** or add a game **manually** (cover from camera/gallery, players range, category, year, co-op switch).
+Games imported from BGG have a details screen with rating, weight, play time, categories, mechanics and designers.<br/><br/>
+
+<img src="screenshots/redesign/07_add_game_bgg_search.png" alt="BGG search" width="270" />
+<img src="screenshots/redesign/08_game_details_bgg.png" alt="Game details" width="270" />
+<img src="screenshots/redesign/09_add_game_manual.png" alt="Manual entry" width="270" />
+
+<br/>
+
+## 📝 Log a Gameplay Session
+
+Pick the game, date, duration and participants, choose the winner (or play co-op) and add notes. New players can be added on the fly.<br/><br/>
+
+<img src="screenshots/redesign/10_add_session.png" alt="Add session" width="270" />
+<img src="screenshots/redesign/11_add_session_bottom.png" alt="Add session - winner and notes" width="270" />
+<img src="screenshots/redesign/18_add_session_dark.png" alt="Add session dark" width="270" />
+
+<br/>
+
+## 📜 Gaming History
+
+Sessions grouped into *This week* / *Earlier*, searchable, with covers, participants and winners. Open a session to see the points of each player, notes, and to **edit** or **delete** it.<br/><br/>
+
+<img src="screenshots/redesign/13_history.png" alt="History" width="270" />
+<img src="screenshots/redesign/14_session_details.png" alt="Session details" width="270" />
+
+<br/>
+
+## 👤 Players
+
+Players directory with search, win rate and ranking. Each player shows the total number of games played.<br/><br/>
+
+<img src="screenshots/redesign/12_players_directory.png" alt="Players" width="270" />
+<img src="screenshots/redesign/17_players_dark.png" alt="Players dark" width="270" />
+
+<br/>
+
+## ⚙️ Profile
+
+Your games logged and win rate, account settings and sign-out.<br/><br/>
+
+<img src="screenshots/redesign/19_profile.png" alt="Profile" width="270" />
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes
@@ -38,57 +130,6 @@ A demo account is available on request, or you can try the app right away in **G
 **Testing:** unit tests (JUnit + MockK + Turbine) cover ViewModels (state **and** emitted events), repositories/DAOs and use cases; CI runs them on every push (see the badge at the top).
 
 <br/>
-
-## 👤 Player List<br/>
-
-Each player shows the total number of games played and wins.<br/>
-You can search for players by nickname and sort by name or number of games played.<br/><br/>
-
-
-<img width="720" height="400" alt="Player List Dark" src="screenshots/player_list_dark.png" /><br/>
-<img width="900" height="400" alt="Player list Light" src="screenshots/player_list_light.png" /><br/>
-
-<br/><br/>
-## 🎲 Board Game List<br/>
-
-Shows basic information about each game, including min/max players and total sessions.<br/>
-Games can be added, edited, or deleted.<br/>
-Search and sorting options are available to filter results.<br/><br/>
-
-<img width="720" height="400" alt="Game List Dark" src="screenshots/game_list_dark.png" /><br/>
-<img width="720" height="400" alt="Game List Light" src="screenshots/game_list_light.png" /><br/>
-<br/><br/>
-Games can be added manually or imported from the **BGG database**.<br/><br/>
-
-<img width="540" height="400" alt="AddGame manually" src="screenshots/add_game_manually.png" /><br/>
-<img width="720" height="400" alt="AddGame from BGG" src="screenshots/add_game_from_bgg.png" /><br/>
-
-<br/><br/>
-## ➕ Add Gameplay<br/>
-
-Clicking "+" on the game list allows you to add a new gameplay session.<br/>
-Select if you played only the base game or with expansions.<br/>
-Choose participating players, date, winner, and optionally add a description of the session.<br/>
-You can switch the game mode between normal (Player vs Player) or Co-Op.<br/><br/>
-
-<img width="900" height="400" alt="GamePlay Dark" src="screenshots/gameplay_dark.png" /><br/>
-<img width="540" height="400" alt="GamePlay Light" src="screenshots/gameplay_light.png" /><br/>
-
-
-## 📜 Game History<br/>
-
-View past game sessions, search by game or player name.<br/>
-Displays game name, date, players involved, and the winner.<br/><br/>
-
-<img width="720" height="400" alt="Games History" src="screenshots/games_history.png" /><br/>
-
-<br/><br/>
-## 📊 Reports<br/>
-
-Currently, one chart is available to show the number of gameplays based on selection.<br/>
-It can display sessions per year, month, or custom period.<br/>
-
-<img width="540" height="400" alt="Games Reports" src="screenshots/games_reports.png" /><br/>
 
 <br/><br/><br/>
 📄 Licenses

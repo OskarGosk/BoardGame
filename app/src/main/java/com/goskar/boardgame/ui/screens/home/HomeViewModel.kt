@@ -3,7 +3,6 @@ package com.goskar.boardgame.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
-import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
@@ -21,20 +20,11 @@ import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
 import com.goskar.boardgame.ui.screens.profile.viewmodel.PlayerPick
 import com.goskar.boardgame.utils.convertHistoryGameListToDto
-import com.goskar.boardgame.utils.coverUri
 import com.goskar.boardgame.utils.timeGreeting
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-data class RecentSession(
-    val gameName: String,
-    val date: String,
-    val playersInitials: List<String>,
-    val winner: String,
-    val uri: String = "",
-)
 
 data class GuestRestoreOffer(
     val updatedAt: Long,
@@ -71,6 +61,7 @@ class HomeViewModel(
     private val guestRestore: GuestRestoreUseCase,
     private val markLocalDataSynced: MarkLocalDataSyncedUseCase,
     private val uploadToCloud: UploadToCloudUseCase,
+    private val getThreeRecentSessionUseCase: GetThreeRecentSessionUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -158,21 +149,6 @@ class HomeViewModel(
         // winRatio on Player is a win count; games is the play count.
         val ratio = if (me != null && me.games > 0) me.winRatio.toFloat() / me.games else 0f
         val ratioText = if (me != null && me.games > 0) "${(ratio * 100).toInt()}%" else "—"
-
-        val recent = history
-            .sortedByDescending { it.gameData }
-            .take(3)
-            .map { h ->
-                val game = games.firstOrNull { it.name == h.gameName }
-
-                RecentSession(
-                    gameName = h.gameName,
-                    date = h.gameData.year.toString(),
-                    playersInitials = h.listOfPlayer.map { initialsOf(it) },
-                    winner = "Winner: ${h.winner}",
-                    uri = game?.coverUri() ?: ""
-                )
-            }
 
         _state.update {
             it.copy(

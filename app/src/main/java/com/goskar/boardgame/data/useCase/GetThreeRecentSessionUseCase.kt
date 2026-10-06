@@ -1,5 +1,7 @@
 package com.goskar.boardgame.data.useCase
 
+import com.goskar.boardgame.utils.coverUri
+
 
 class GetThreeRecentSessionUseCase(
     private val getAllGameUseCase: GetAllGameUseCase,
@@ -12,15 +14,15 @@ class GetThreeRecentSessionUseCase(
         val allHistory = getAllHistoryGameUseCase.invoke()
 
         val recent = allHistory.sortedByDescending { it.gameData }.take(3).map { historyGame ->
-            val game = allGames.firstOrNull { it.id == historyGame.baseGameId }
-
+            // HistoryGame.baseGameId points at the parent of an expansion (null for base games), so match by name.
+            val game = allGames.firstOrNull { it.name == historyGame.gameName }
 
             RecentSession(
                 gameName = historyGame.gameName,
                 date = historyGame.gameData.year.toString(),
                 playersInitials = historyGame.listOfPlayer.map { initialsOf(it) },
                 winner = "Winner: ${historyGame.winner}",
-                uri = game?.uriFromBgg ?: game?.uri ?: ""
+                uri = game?.coverUri() ?: ""
             )
         }
 

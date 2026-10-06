@@ -37,6 +37,5 @@ fun KoinApplication.useCaseModule() = module {
     single { MarkLocalDataSyncedUseCase(get(), get()) }
     single { BackupGuestUseCase(get(), get(), get()) }
     single { GuestRestoreUseCase(get(), get(), get(), get(), get(), get(), get()) }
-    single { UploadToCloudUseCase(get(), get(), get(), get(), get()) }
     single { GetThreeRecentSessionUseCase(get(), get()) }
 }
