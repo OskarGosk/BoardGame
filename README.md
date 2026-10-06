@@ -2,6 +2,11 @@
 
 # 🎲 BoardGame Tracker
 
+> 🚧 **Heads-up: this project has just gone through a big redesign and refactor and is still being cleaned up.**
+> The new UI (designed with Google Stitch, implemented with Claude Code) and the new screen/ViewModel structure are already in place.
+> What is still left: wiring up the **Reports** screen, removing a few **legacy ViewModels** and commented-out code, moving the **remaining hard-coded strings** to resources, and finishing a few **polish items** (details in [Remaining work](#remaining-work)).
+> If you spot something that looks unfinished – it most likely is on that list.
+
 The application is designed to **record and analyze board game sessions**.<br/><br/>
 
 With this app you can:<br/>
@@ -130,6 +135,33 @@ Your games logged and win rate, account settings and sign-out.<br/><br/>
 |:---:|
 | <img src="screenshots/redesign/19_profile.jpg" alt="After" width="150" /> |
 
+
+<br/><br/>
+## Remaining work
+
+The redesign itself is done; this is what I still plan to finish (roughly in priority order).
+
+**Features**
+- [ ] **Reports screen** – the *Quick Report* tile on Home is not wired up yet and the charts screen has not been redesigned (`GameReportsViewModel` is waiting for it).
+- [ ] **History filters** – the filter chips (*Wins Only*, *Strategy*, *Co-op*) are in the state but do not filter the list yet.
+- [ ] **Game details from the collection** – only available for games imported from BGG; manually added games have no details screen.
+- [ ] **Richer data model (Room migrations)** – game category / year / rating, per-player scores, session duration, player avatar and level, "active this week" and achievements are placeholders or hidden in the UI for now.
+
+**Code cleanup**
+- [ ] Remove **legacy ViewModels** that no screen uses any more (`AddEditGameViewModel`, `GamePlayViewModel`, `GameDetailsBGGViewModel`, `GameSearchViewModel`) together with their Koin registrations and tests.
+- [ ] Delete **commented-out code** (`AddPlayerNewScreen`, `Typography`, `CooperatePlayers`) and finish the font `TODO` in `Typography.kt`.
+- [ ] Remove **unused resources** reported by lint (≈ 86: old icons, colors, strings).
+- [ ] Move the remaining **hard-coded UI strings** (≈ 45, mostly the login screen, dialogs and navigation labels) to `strings.xml`.
+- [ ] Rename the temporary `*New*` classes (`HistoryNewScreen`, `ProfileNewViewModel`, `NewBottomBarElements`, …) now that the old UI is gone.
+- [ ] Follow the component conventions everywhere: `modifier` as the first parameter (3 lint warnings), one component per file, 4 dp spacing grid.
+- [ ] Update outdated Gradle dependencies flagged by lint.
+
+**UI polish**
+- [ ] In dark theme the system status / navigation bars stay light.
+- [ ] (Optional) Redesign the splash screen.
+
+**Tests**
+- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (187 tests) and runs in CI on every pull request.
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes
