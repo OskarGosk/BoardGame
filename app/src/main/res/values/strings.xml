@@ -52,6 +52,11 @@
     <string name="player_games_count">Games played: %s</string>
     <string name="player_empty_list">Empty player list.</string>
     <string name="player_empty_list_add">Please add player\nTo do this, please click button below.</string>
+    <string name="player_skill_beginner">Beginner</string>
+    <string name="player_skill_intermediate">Intermediate</string>
+    <string name="player_skill_master">Master</string>
+    <string name="player_games"> · %s gier</string>
+
 
 
     //BOARD GAME

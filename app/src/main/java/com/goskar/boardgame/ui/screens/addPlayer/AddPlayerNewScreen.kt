@@ -48,13 +48,6 @@ import com.goskar.boardgame.ui.components.AppSectionHeader
 import com.goskar.boardgame.ui.components.AppTextField
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
-import com.goskar.boardgame.ui.components.SkillOption
-
-private val skillOptions = listOf(
-    SkillOption("Beginner", Icons.Default.School),
-    SkillOption("Intermediate", Icons.Default.Star),
-    SkillOption("Master", Icons.Default.MilitaryTech),
-)
 
 class AddPlayerNewScreen(
     private val editData: EditPlayerData? = null,
@@ -199,7 +192,6 @@ private fun AddPlayerNewCard(
         AppSectionHeader(title = stringResource(R.string.addplayer_skill_level))
         Spacer(Modifier.height(12.dp))
         AppOptionGrid(
-            options = skillOptions,
             selected = state.selectedSkill,
             onSelect = onSelectSkill,
         )

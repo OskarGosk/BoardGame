@@ -13,6 +13,8 @@ import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
 import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
 import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
+import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
+import com.goskar.boardgame.data.useCase.RecentSession
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
@@ -58,7 +60,6 @@ data class HomeState(
 
 class HomeViewModel(
     private val getAllGameUseCase: GetAllGameUseCase,
-    private val historyRepository: GamesHistoryDbRepository,
     private val userSession: UserRepository,
     private val playerDbRepository: PlayerDbRepository,
     private val mePlayerRepository: MePlayerRepository,
@@ -136,8 +137,7 @@ class HomeViewModel(
 
     private suspend fun computeStats() {
         val games = getAllGameUseCase()
-        val history =
-            (historyRepository.getAllHistoryGame() as? RequestResult.Success)?.data ?: emptyList()
+        val recent = getThreeRecentSessionUseCase.invoke()
         val user = userSession.getCurrentSession()
         val uid = user?.userUID
 
