@@ -17,10 +17,9 @@ The application works in two modes:<br/>
 <br/>
 A demo account is available on request, or you can try the app right away in **Guest** mode.<br/><br/>
 
-**Before (`master`)**<br/>
-<img src="screenshots/login_screen.png" alt="Old UI" height="180" /><br/><br/>
-**After**<br/>
-<table><tr><td><img src="screenshots/redesign/01_login.jpg" alt="Login" width="150" /></td></tr></table>
+| Before | After |
+|:---:|:---:|
+| <img src="screenshots/login_screen.png" alt="Before" width="240" /> | <img src="screenshots/redesign/01_login.jpg" alt="After" width="150" /> |
 
 <br/>
 
@@ -32,7 +31,7 @@ A demo account is available on request, or you can try the app right away in **G
 
 **Before → after.** The old app was a menu of text buttons that opened separate lists. The redesign turns it into a dashboard with bottom navigation:
 
-| Before (`master`) | After |
+| Before | After |
 |:---:|:---:|
 | <img src="screenshots/home_screen_light.png" alt="Old home" width="240" /> | <img src="screenshots/redesign/02_home_light.jpg" alt="New home" width="150" /> |
 
@@ -54,7 +53,15 @@ A demo account is available on request, or you can try the app right away in **G
 
 Dashboard with your stats, quick actions and the three most recent sessions. Choose which player represents you on first launch.<br/><br/>
 
-<table><tr><td><img src="screenshots/redesign/02a_home_who_are_you.jpg" alt="Who are you" width="150" /></td><td><img src="screenshots/redesign/02_home_light.jpg" alt="Home light" width="150" /></td><td><img src="screenshots/redesign/03_home_recent_sessions.jpg" alt="Recent sessions" width="150" /></td><td><img src="screenshots/redesign/15_home_dark.jpg" alt="Home dark" width="150" /></td></tr></table>
+| Before | After |
+|:---:|:---:|
+| <img src="screenshots/home_screen_light.png" alt="Before" width="240" /><br/><img src="screenshots/home_screen_dark.png" alt="Before" width="240" /> | <img src="screenshots/redesign/02_home_light.jpg" alt="After" width="150" /> <img src="screenshots/redesign/03_home_recent_sessions.jpg" alt="After" width="150" /> <img src="screenshots/redesign/15_home_dark.jpg" alt="After" width="150" /> |
+
+"Who are you?" picker (new):<br/>
+
+| New |
+|:---:|
+| <img src="screenshots/redesign/02a_home_who_are_you.jpg" alt="After" width="150" /> |
 
 <br/>
 
@@ -62,11 +69,9 @@ Dashboard with your stats, quick actions and the three most recent sessions. Cho
 
 Games shown as a cover grid with a play counter. Filter by *All / Base / Expansions*, search by name and sort (default, name, number of plays). Tap a card to flip it – you get min/max players, total plays and quick actions: **log a session**, **edit** or **delete**.<br/><br/>
 
-**Before (`master`)**<br/>
-<img src="screenshots/game_list_light.png" alt="Old UI" height="180" />
-<img src="screenshots/game_list_dark.png" alt="Old UI" height="180" /><br/><br/>
-**After**<br/>
-<table><tr><td><img src="screenshots/redesign/04_collection_grid.jpg" alt="Collection" width="150" /></td><td><img src="screenshots/redesign/06_collection_card_flip.jpg" alt="Card back" width="150" /></td><td><img src="screenshots/redesign/05_collection_sort_menu.jpg" alt="Sort menu" width="150" /></td><td><img src="screenshots/redesign/16_collection_dark.jpg" alt="Collection dark" width="150" /></td></tr></table>
+| Before | After |
+|:---:|:---:|
+| <img src="screenshots/game_list_light.png" alt="Before" width="240" /><br/><img src="screenshots/game_list_dark.png" alt="Before" width="240" /> | <img src="screenshots/redesign/04_collection_grid.jpg" alt="After" width="150" /> <img src="screenshots/redesign/06_collection_card_flip.jpg" alt="After" width="150" /> <img src="screenshots/redesign/05_collection_sort_menu.jpg" alt="After" width="150" /> <img src="screenshots/redesign/16_collection_dark.jpg" alt="After" width="150" /> |
 
 <br/>
 
@@ -75,11 +80,9 @@ Games shown as a cover grid with a play counter. Filter by *All / Base / Expansi
 Search the **BGG database** or add a game **manually** (cover from camera/gallery, players range, category, year, co-op switch).
 Games imported from BGG have a details screen with rating, weight, play time, categories, mechanics and designers.<br/><br/>
 
-**Before (`master`)**<br/>
-<img src="screenshots/add_game_from_bgg.png" alt="Old UI" height="180" />
-<img src="screenshots/add_game_manually.png" alt="Old UI" height="180" /><br/><br/>
-**After**<br/>
-<table><tr><td><img src="screenshots/redesign/07_add_game_bgg_search.jpg" alt="BGG search" width="150" /></td><td><img src="screenshots/redesign/08_game_details_bgg.jpg" alt="Game details" width="150" /></td><td><img src="screenshots/redesign/09_add_game_manual.jpg" alt="Manual entry" width="150" /></td></tr></table>
+| Before | After |
+|:---:|:---:|
+| <img src="screenshots/add_game_from_bgg.png" alt="Before" width="240" /><br/><img src="screenshots/add_game_manually.png" alt="Before" width="240" /> | <img src="screenshots/redesign/07_add_game_bgg_search.jpg" alt="After" width="150" /> <img src="screenshots/redesign/08_game_details_bgg.jpg" alt="After" width="150" /> <img src="screenshots/redesign/09_add_game_manual.jpg" alt="After" width="150" /> |
 
 <br/>
 
@@ -87,11 +90,9 @@ Games imported from BGG have a details screen with rating, weight, play time, ca
 
 Pick the game, date, duration and participants, choose the winner (or play co-op) and add notes. New players can be added on the fly.<br/><br/>
 
-**Before (`master`)**<br/>
-<img src="screenshots/gameplay_light.png" alt="Old UI" height="180" />
-<img src="screenshots/gameplay_dark.png" alt="Old UI" height="180" /><br/><br/>
-**After**<br/>
-<table><tr><td><img src="screenshots/redesign/10_add_session.jpg" alt="Add session" width="150" /></td><td><img src="screenshots/redesign/11_add_session_bottom.jpg" alt="Add session - winner and notes" width="150" /></td><td><img src="screenshots/redesign/18_add_session_dark.jpg" alt="Add session dark" width="150" /></td></tr></table>
+| Before | After |
+|:---:|:---:|
+| <img src="screenshots/gameplay_light.png" alt="Before" width="240" /><br/><img src="screenshots/gameplay_dark.png" alt="Before" width="240" /> | <img src="screenshots/redesign/10_add_session.jpg" alt="After" width="150" /> <img src="screenshots/redesign/11_add_session_bottom.jpg" alt="After" width="150" /> <img src="screenshots/redesign/18_add_session_dark.jpg" alt="After" width="150" /> |
 
 <br/>
 
@@ -99,10 +100,15 @@ Pick the game, date, duration and participants, choose the winner (or play co-op
 
 Sessions grouped into *This week* / *Earlier*, searchable, with covers, participants and winners. Open a session to see the points of each player, notes, and to **edit** or **delete** it.<br/><br/>
 
-**Before (`master`)**<br/>
-<img src="screenshots/games_history.png" alt="Old UI" height="180" /><br/><br/>
-**After**<br/>
-<table><tr><td><img src="screenshots/redesign/13_history.jpg" alt="History" width="150" /></td><td><img src="screenshots/redesign/14_session_details.jpg" alt="Session details" width="150" /></td></tr></table>
+| Before | After |
+|:---:|:---:|
+| <img src="screenshots/games_history.png" alt="Before" width="240" /> | <img src="screenshots/redesign/13_history.jpg" alt="After" width="150" /> |
+
+Session details (new):<br/>
+
+| New |
+|:---:|
+| <img src="screenshots/redesign/14_session_details.jpg" alt="After" width="150" /> |
 
 <br/>
 
@@ -110,11 +116,9 @@ Sessions grouped into *This week* / *Earlier*, searchable, with covers, particip
 
 Players directory with search, win rate and ranking. Each player shows the total number of games played.<br/><br/>
 
-**Before (`master`)**<br/>
-<img src="screenshots/player_list_light.png" alt="Old UI" height="180" />
-<img src="screenshots/player_list_dark.png" alt="Old UI" height="180" /><br/><br/>
-**After**<br/>
-<table><tr><td><img src="screenshots/redesign/12_players_directory.jpg" alt="Players" width="150" /></td><td><img src="screenshots/redesign/17_players_dark.jpg" alt="Players dark" width="150" /></td></tr></table>
+| Before | After |
+|:---:|:---:|
+| <img src="screenshots/player_list_light.png" alt="Before" width="240" /><br/><img src="screenshots/player_list_dark.png" alt="Before" width="240" /> | <img src="screenshots/redesign/12_players_directory.jpg" alt="After" width="150" /> <img src="screenshots/redesign/17_players_dark.jpg" alt="After" width="150" /> |
 
 <br/>
 
@@ -122,7 +126,10 @@ Players directory with search, win rate and ranking. Each player shows the total
 
 Your games logged and win rate, account settings and sign-out.<br/><br/>
 
-<table><tr><td><img src="screenshots/redesign/19_profile.jpg" alt="Profile" width="150" /></td></tr></table>
+| New |
+|:---:|
+| <img src="screenshots/redesign/19_profile.jpg" alt="After" width="150" /> |
+
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes
