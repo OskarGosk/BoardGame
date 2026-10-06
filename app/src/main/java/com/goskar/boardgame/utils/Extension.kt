@@ -5,9 +5,14 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.HistoryGameFirebase
+import java.text.DateFormat
 import java.time.LocalDate
+import java.time.LocalTime
+import java.util.Date
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -46,7 +51,10 @@ fun convertHistoryGameListToDto(oldList :List<HistoryGameFirebase>): List<Histor
             gameData = LocalDate.parse(historyGame.gameData), // LocalDate -> String
             listOfPlayer = historyGame.listOfPlayer,
             description = historyGame.description,
-            id = historyGame.id
+            durationMin = historyGame.durationMin,
+            playerScores = historyGame.playerScores,
+            id = historyGame.id,
+            baseGameId = historyGame.baseGameId
         )
     }
 }
@@ -59,7 +67,22 @@ fun convertHistoryGameListToFirebase(oldList: List<HistoryGame>): List<HistoryGa
             gameData = historyGame.gameData.toString(), // LocalDate -> String
             listOfPlayer = historyGame.listOfPlayer,
             description = historyGame.description,
-            id = historyGame.id
+            durationMin = historyGame.durationMin,
+            playerScores = historyGame.playerScores,
+            id = historyGame.id,
+            baseGameId = historyGame.baseGameId
         )
     }
 }
+
+
+fun timeGreeting(): Int = when (LocalTime.now().hour) {
+    in 5..11 -> R.string.home_greeting_morning
+    in 12..17 -> R.string.home_greeting_afternoon
+    else -> R.string.home_greeting_evening
+}
+
+fun Game.coverUri(): String? = listOf(uriFromBgg, uri).firstOrNull { !it.isNullOrBlank() }
+
+fun Long.toLocalizedDateTime(): String =
+    DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(this))

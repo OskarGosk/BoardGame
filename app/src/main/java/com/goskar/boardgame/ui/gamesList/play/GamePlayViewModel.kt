@@ -184,7 +184,7 @@ class GamePlayViewModel(
             is RequestResult.Error -> {
                 _events.send(
                     GamePlayEvent.ShowMessage(
-                        R.string.error_generic,
+                        R.string.error_global,
                         AppSnackBarType.ERROR
                     )
                 )
@@ -213,7 +213,7 @@ class GamePlayViewModel(
             is RequestResult.Error -> {
                 _events.send(
                     GamePlayEvent.ShowMessage(
-                        R.string.error_generic,
+                        R.string.error_global,
                         AppSnackBarType.ERROR
                     )
                 )
@@ -227,7 +227,7 @@ class GamePlayViewModel(
             games = (state.value.game?.games ?: 0) + 1,
         )
         if (game == null) {
-            _events.send(GamePlayEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR))
+            _events.send(GamePlayEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
             return false
         }
         return when (gameDbRepository.editGame(game)) {
@@ -235,7 +235,7 @@ class GamePlayViewModel(
             is RequestResult.Error -> {
                 _events.send(
                     GamePlayEvent.ShowMessage(
-                        R.string.error_generic,
+                        R.string.error_global,
                         AppSnackBarType.ERROR
                     )
                 )
@@ -269,7 +269,7 @@ class GamePlayViewModel(
                 is RequestResult.Error -> {
                     _events.send(
                         GamePlayEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )
@@ -306,7 +306,7 @@ class GamePlayViewModel(
                 is RequestResult.Error -> {
                     _events.send(
                         GamePlayEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )
@@ -328,7 +328,7 @@ class GamePlayViewModel(
                 is RequestResult.Error -> {
                     _events.send(
                         GamePlayEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )

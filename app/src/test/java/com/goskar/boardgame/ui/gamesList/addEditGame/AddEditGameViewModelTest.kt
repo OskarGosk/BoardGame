@@ -176,7 +176,7 @@ class AddEditGameViewModelTest {
         viewModel.events.test {
             viewModel.validateAddEitGame(context)
             assertEquals(
-                AddEditEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                AddEditEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }

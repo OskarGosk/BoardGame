@@ -87,4 +87,11 @@ class GamesHistoryDbRepositoryImpl(
             true
         }
     }
+
+    override suspend fun deleteHistoryGameExpansionByHistoryId(historyGameId: String): RequestResult<Boolean> = withContext(defaultDispatcher) {
+        safeCall(TAG, "Can't delete expansion history for session") {
+            historyGameExpansionDao.deleteByHistoryGameId(historyGameId)
+            true
+        }
+    }
 }

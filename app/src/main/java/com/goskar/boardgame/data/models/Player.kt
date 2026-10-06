@@ -12,5 +12,6 @@ data class Player(
     val winRatio: Int,
     val description: String,
     var selected: Boolean,
+    val selectedSkill: Int = 0,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
 ) : Serializable

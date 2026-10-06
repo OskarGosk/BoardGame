@@ -12,4 +12,6 @@ interface UserRepository {
     suspend fun logout(): RequestResult<Boolean>
 
     suspend fun isLoggedIn(): Boolean
+
+    fun startTokenMonitoring()
 }

@@ -16,5 +16,6 @@ interface ApiBoardGame {
     @GET("boardgame/{id}")
     suspend fun getBoardGameInfo(
         @Path("id") gameID: String,
+        @Query("stats") stats: Int,
         ): BoardGamesDetails
 }

@@ -28,7 +28,6 @@ data class GameListState(
     val isLoading: Boolean = false,
     val checkboxBaseGame: Boolean = true,
     val checkboxExpansionGame: Boolean = true,
-    val checkboxAllGame: Boolean = true
 )
 
 data class GameUiState(
@@ -49,24 +48,50 @@ class GameListViewModel(
 
     fun updateSearchTxt(value: String) {
         _state.update { it.copy(searchTxt = value) }
+        refreshGameList()
     }
 
     fun updateSortOption(value: SortList) {
         _state.update { it.copy(sortOption = value) }
+        refreshGameList()
     }
 
     fun updateCheckboxBaseGame() {
-        _state.update { it.copy(checkboxBaseGame = !it.checkboxBaseGame) }
+        _state.update {
+            it.copy(
+                checkboxBaseGame = true,
+                checkboxExpansionGame = false
+            )
+        }
+        refreshGameList()
     }
 
     fun updateCheckboxExpansionGame() {
-        _state.update { it.copy(checkboxExpansionGame = !it.checkboxExpansionGame) }
+        _state.update {
+            it.copy(
+                checkboxExpansionGame = true,
+                checkboxBaseGame = false
+            )
+        }
+        refreshGameList()
+    }
+
+    fun useAllGameFilter() {
+        _state.update {
+            it.copy(
+                checkboxBaseGame = true,
+                checkboxExpansionGame = true
+            )
+        }
+        refreshGameList()
     }
 
 
     fun refreshGameList() {
         val newGameList: List<GameUiState> = when (state.value.sortOption) {
-            SortList.DEFAULT -> state.value.gameList ?: emptyList()
+            SortList.DEFAULT -> state.value.gameList?.sortedByDescending { it.game.games }
+                ?: emptyList()
+
             SortList.A_Z -> state.value.gameList?.sortedBy { it.game.name }
                 ?: emptyList()
 
@@ -138,7 +163,7 @@ class GameListViewModel(
                 is RequestResult.Error -> {
                     _events.send(
                         GameListEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )
@@ -174,7 +199,7 @@ class GameListViewModel(
                     }
                     _events.send(
                         GameListEvent.ShowMessage(
-                            R.string.error_generic,
+                            R.string.error_global,
                             AppSnackBarType.ERROR
                         )
                     )

@@ -18,8 +18,8 @@ android {
         applicationId = "com.goskar.boardgame"
         minSdk = 30
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.1.1"
+        versionCode = 2
+        versionName = "2.0.0"
 
         val localProperties  = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
@@ -77,12 +77,15 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.media3.common.ktx)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

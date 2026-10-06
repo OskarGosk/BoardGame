@@ -1,8 +1,10 @@
 package com.goskar.boardgame.ui.login
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,17 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,31 +29,38 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleStore
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.components.other.AppLoader
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.components.scaffold.BoardGameScaffold
-import com.goskar.boardgame.ui.home.HomeScreen
-import com.goskar.boardgame.ui.theme.Smooch16
-import com.goskar.boardgame.ui.theme.Smooch20
-import com.goskar.boardgame.utils.Keyboard
-import com.goskar.boardgame.utils.keyboardAsState
+import com.goskar.boardgame.ui.screens.home.HomeScreen
+import com.goskar.boardgame.ui.components.AppListCard
+import com.goskar.boardgame.ui.components.AppPrimaryButton
+import com.goskar.boardgame.ui.components.AppSecondaryButton
+import com.goskar.boardgame.ui.components.AppTextField
+import com.goskar.boardgame.ui.login.components.LocalDataDialog
+import com.goskar.boardgame.ui.theme.BoardGameShapes
+import com.goskar.boardgame.ui.theme.BoardGameSpacing
+import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
 class LoginScreen : Screen {
+
     @Composable
     override fun Content() {
         val viewModel: LoginViewModel = koinViewModel()
@@ -62,6 +69,16 @@ class LoginScreen : Screen {
         val snackbarHostState = LocalSnackbarHost.current
         val context = LocalContext.current
 
+        LoginScreenContent(
+            state = state,
+            updateLogin = viewModel::updateLogin,
+            updatePassword = viewModel::updatePassword,
+            questLogIn = viewModel::questAccount,
+            logIn = viewModel::signIn,
+            onMergeLocalData = viewModel::mergeLocalDataIntoAccount,
+            onDiscardLocalData = viewModel::discardLocalData,
+            onCancelLocalData = viewModel::cancelSignIn,
+        )
 
         LaunchedEffect(Unit) {
             viewModel.events.collect { event ->
@@ -71,174 +88,263 @@ class LoginScreen : Screen {
                             message = context.getString(event.message),
                             type = event.type
                         )
-                        navigator?.replaceAll(HomeScreen(state.login != "quest"))
+                        navigator?.replaceAll(HomeScreen(firstLogin = true, mergeLocalData = event.mergeLocalData))
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 
-                    is LoginEvent.loggedInOrGuest -> {
-                        navigator?.replaceAll(HomeScreen(state.login != "quest"))
+                    is LoginEvent.LoggedInOrGuest -> {
+                        navigator?.replaceAll(HomeScreen(firstLogin = false))
                         ScreenLifecycleStore.remove(this@LoginScreen)
+                    }
+
+                    is LoginEvent.ShowErrorMessage -> {
+                        snackbarHostState.show(
+                            message = event.message ?: context.getString(R.string.error_global),
+                            type = AppSnackBarType.ERROR
+                        )
                     }
                 }
             }
-        }
-
-        LaunchedEffect(key1 = state.isLoggedIn) {
-            viewModel.checkIfLoggedIn()
-            if (state.isLoggedIn) {
-                navigator?.replaceAll(HomeScreen(false))
-                ScreenLifecycleStore.remove(this@LoginScreen)
-
-            }
-        }
-        BoardGameScaffold(
-            titlePage = stringResource(R.string.login_screen),
-            selectedScreen = null,
-            showBottomBar = false,
-            showSynchronizedIcon = false
-        ) { paddingValues ->
-            LoginContent(
-                state = state,
-                logIn = viewModel::signIn,
-                questLogIn = viewModel::questAccount,
-                paddingValues = paddingValues,
-                updateLogin = viewModel::updateLogin,
-                updatePassword = viewModel::updatePassword
-            )
         }
     }
 }
 
 @Composable
-fun LoginContent(
+fun LoginScreenContent(
     state: LoginState,
-    logIn: () -> Unit = {},
-    questLogIn: () -> Unit = {},
-    paddingValues: PaddingValues,
     updateLogin: (String) -> Unit = {},
-    updatePassword: (String) -> Unit = {}
+    updatePassword: (String) -> Unit = {},
+    questLogIn: () -> Unit = {},
+    logIn: () -> Unit = {},
+    onMergeLocalData: () -> Unit = {},
+    onDiscardLocalData: () -> Unit = {},
+    onCancelLocalData: () -> Unit = {},
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
-    val isKeyboardOpen by keyboardAsState()
 
-    if (state.isLoading) AppLoader()
+    state.pendingLocalData?.let { summary ->
+        LocalDataDialog(
+            summary = summary,
+            onMerge = onMergeLocalData,
+            onDiscard = onDiscardLocalData,
+            onCancel = onCancelLocalData,
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 10.dp),
-        verticalArrangement = if (isKeyboardOpen == Keyboard.Opened) Arrangement.Top else Arrangement.Center
-    ) {
-        if (isKeyboardOpen == Keyboard.Opened) Spacer(modifier = Modifier.height(100.dp))
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
-            value = state.login,
-            onValueChange = {
-                updateLogin(it)
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Next,
-            ),
-            label = {
-                Text(
-                    text = stringResource(R.string.login),
-                    style = Smooch16
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.surfaceContainer
+                    )
                 )
-            },
-            textStyle = Smooch20
+            )
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = BoardGameSpacing.MarginMobile),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(60.dp))
+
+        // Logo Section
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .clip(BoardGameShapes.Large)
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Casino,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(48.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Tabletop Tracker",
+            style = MaterialTheme.typography.displayLarge,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 25.dp),
-            value = state.password,
-            onValueChange = {
-                updatePassword(it)
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done,
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                if (state.login.isNotEmpty() && state.password.isNotEmpty()) logIn()
-            }),
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        passwordVisible = !passwordVisible
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Manage your board game collection and session history in one premium space.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 32.dp)
+        )
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // Login Card
+        AppListCard {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                AppTextField(
+                    value = state.login,
+                    onValueChange = { updateLogin(it) },
+                    label = "Email Address",
+                    placeholder = "name@example.com",
+                    isError = state.loginError,
+                    supportingText = if (state.loginError) stringResource(R.string.field_required) else null,
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Email,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
-                ) {
-                    Icon(
-                        painter = painterResource(if (!passwordVisible) R.drawable.icons_visible else R.drawable.icons_invisible),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(20.dp)
+                )
+
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Password",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 6.dp)
+                        )
+                        Text(
+                            "Forgot?",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            modifier = Modifier
+                                .padding(bottom = 6.dp)
+                                .clickable { /* Handle forgot password */ }
+                        )
+                    }
+                    AppTextField(
+                        value = state.password,
+                        onValueChange = { updatePassword(it) },
+                        placeholder = "••••••••",
+                        isError = state.passwordError,
+                        supportingText = if (state.passwordError) stringResource(R.string.field_required) else null,
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(if (!passwordVisible) R.drawable.icons_visible else R.drawable.icons_invisible),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.outline,
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable {
+                                        passwordVisible = !passwordVisible
+                                    }
+                            )
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     )
                 }
-            },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            label = {
-                Text(
-                    text = stringResource(R.string.password),
-                    style = Smooch16
+                AppPrimaryButton(
+                    text = "Login",
+                    onClick = logIn,
+                    loading = state.isLoading
                 )
-            },
-            textStyle = Smooch20
-        )
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        HorizontalDivider(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+                        Text(
+                            text = " OR CONNECT WITH ",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                        )
+                    }
+                }
+
+                AppSecondaryButton(
+                    text = "Continue as Guest",
+                    onClick = questLogIn
+                )
+
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row {
-            Button(
-                shape = CutCornerShape(percent = 10),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(40.dp),
-                enabled = (state.login.isNotEmpty() && state.password.isNotEmpty()),
-                onClick = {
-                    logIn()
-                }) {
-                Text(
-                    stringResource(R.string.login)
-                )
-            }
-
-            Spacer(
-                modifier = Modifier.width(15.dp)
+            Text(
+                text = "New collector? ",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            if (state.password.isEmpty()) {
-                OutlinedButton(
-                    shape = CutCornerShape(percent = 10),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp),
-                    onClick = {
-                        questLogIn()
-                    }) {
-                    Text(
-                        stringResource(R.string.guest_account)
-                    )
-                }
-            }
-
+            Text(
+                text = "Create an account",
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable { /* Handle sign up */ }
+            )
         }
+
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
 @Preview
 @Composable
-fun LoginContentPreview() {
-    BoardGameScaffold(
-        titlePage = stringResource(R.string.login_screen),
-        selectedScreen = null,
-        showBottomBar = false,
-        showSynchronizedIcon = false
-    ) { paddingValues ->
-        LoginContent(
-            LoginState(login = "Oskar@login.pl", password = "Oskar"),
-            paddingValues = paddingValues
+fun LoginScreenPreview() {
+    BoardGameTheme {
+        LoginScreenContent(
+            LoginState(login = "oskar@login.com", password = "Oskar"),
         )
     }
 }
+
+@Preview()
+@Composable
+fun LoginScreenDarkPreview() {
+    BoardGameTheme(darkTheme = true) {
+        LoginScreenContent(
+            LoginState(login = "oskar@login.com", password = "Oskar"),
+        )
+    }
+}
+
+@Preview
+@Composable
+fun LoginScreenErrorPreview() {
+    BoardGameTheme {
+        LoginScreenContent(
+            LoginState(loginError = true, passwordError = true),
+        )
+    }
+}
+

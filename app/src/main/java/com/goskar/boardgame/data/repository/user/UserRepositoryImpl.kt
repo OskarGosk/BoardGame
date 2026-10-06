@@ -1,11 +1,15 @@
 package com.goskar.boardgame.data.repository.user
 
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.goskar.boardgame.data.db.UserSessionDao
 import com.goskar.boardgame.data.models.User
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepositoryImpl
 import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -55,5 +59,23 @@ class UserRepositoryImpl(
 
     override suspend fun isLoggedIn(): Boolean {
         return getCurrentSession() != null
+    }
+
+    override fun startTokenMonitoring() {
+        FirebaseAuth.getInstance().addIdTokenListener(FirebaseAuth.IdTokenListener { auth ->
+            val user: FirebaseUser? = auth.currentUser
+            user?.getIdToken(false)?.addOnSuccessListener { result ->
+                val newToken = result.token
+                if (newToken != null) {
+                    CoroutineScope(defaultDispatcher).launch {
+                        val currentUser = userSessionDao.current()
+                        if (currentUser != null) {
+                            userSessionDao.insert(currentUser.copy(token = newToken))
+                            Timber.tag(TAG).d("Token updated via IdTokenListener")
+                        }
+                    }
+                }
+            }
+        })
     }
 }

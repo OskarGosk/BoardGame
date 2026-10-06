@@ -25,4 +25,6 @@ interface GamesHistoryDbRepository {
 
     suspend fun deleteAllHistoryExpansion():RequestResult<Boolean>
 
+    suspend fun deleteHistoryGameExpansionByHistoryId(historyGameId: String): RequestResult<Boolean>
+
 }

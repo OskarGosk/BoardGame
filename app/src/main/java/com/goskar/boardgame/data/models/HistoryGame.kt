@@ -13,6 +13,9 @@ data class HistoryGame(
     val gameData: LocalDate,
     val listOfPlayer: List<String>,
     val description: String,
+    val durationMin: Int? = null,
+    val playerScores: Map<String, Int>? = null,
+    val baseGameId: String? = null,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
 ) : Serializable
 
@@ -22,5 +25,8 @@ data class HistoryGameFirebase(
     val gameData: String,
     val listOfPlayer: List<String>,
     val description: String,
+    val durationMin: Int? = null,
+    val playerScores: Map<String, Int>? = null,
+    val baseGameId: String? = null,
     @PrimaryKey val id: String = UUID.randomUUID().toString()
 ) : Serializable

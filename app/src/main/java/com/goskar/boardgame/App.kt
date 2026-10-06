@@ -3,6 +3,7 @@ package com.goskar.boardgame
 import android.app.Application
 import coil.Coil
 import com.goskar.boardgame.data.di.configureKoin
+import com.goskar.boardgame.data.repository.user.UserRepository
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import timber.log.Timber
@@ -14,5 +15,8 @@ class App : Application(), KoinComponent {
         configureKoin()
         Coil.setImageLoader(factory = get())
         Timber.plant(Timber.DebugTree())
+
+        // Start monitoring Firebase Token for proactive refresh
+        get<UserRepository>().startTokenMonitoring()
     }
 }

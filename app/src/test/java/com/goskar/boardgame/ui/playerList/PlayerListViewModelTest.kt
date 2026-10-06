@@ -6,6 +6,8 @@ import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import com.goskar.boardgame.ui.screens.players.PlayerListEvent
+import com.goskar.boardgame.ui.screens.players.PlayerListViewModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -107,7 +109,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.getAllPlayer()
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -136,7 +138,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateDeletePlayer(player1)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -147,7 +149,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateAddEditPLayer(newPlayer = true)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -194,7 +196,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateAddEditPLayer(newPlayer = true)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }
@@ -240,7 +242,7 @@ class PlayerListViewModelTest {
         viewModel.events.test {
             viewModel.validateAddEditPLayer(false)
             assertEquals(
-                PlayerListEvent.ShowMessage(R.string.error_generic, AppSnackBarType.ERROR),
+                PlayerListEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR),
                 awaitItem()
             )
         }

@@ -5,7 +5,9 @@ import com.goskar.boardgame.Constants.API_URL
 import com.goskar.boardgame.Constants.FIREBASE_CLIENT
 import com.goskar.boardgame.Constants.FIREBASE_RETROFIT
 import com.goskar.boardgame.data.rest.ApiFirebaseData
+import com.goskar.boardgame.data.rest.ApiGuestBackup
 import com.goskar.boardgame.data.rest.AuthInterceptor
+import com.goskar.boardgame.data.rest.FirebaseAuthenticator
 import com.goskar.boardgame.data.rest.UIDInterceptor
 import okhttp3.OkHttpClient
 import org.koin.core.KoinApplication
@@ -18,6 +20,7 @@ fun KoinApplication.restModuleFirebase() = module {
         OkHttpClient.Builder()
             .addInterceptor(UIDInterceptor(get()))
             .addInterceptor(AuthInterceptor(get()))
+            .authenticator(FirebaseAuthenticator(get()))
             .build()
     }
     single {
@@ -32,5 +35,13 @@ fun KoinApplication.restModuleFirebase() = module {
     }
     single<ApiFirebaseData> {
         get<Retrofit>(FIREBASE_RETROFIT).create(ApiFirebaseData::class.java)
+    }
+    single<ApiGuestBackup> {
+        Retrofit.Builder()
+            .client(OkHttpClient())
+            .baseUrl(API_URL)
+            .addConverterFactory(GsonConverterFactory.create(get()))
+            .build()
+            .create(ApiGuestBackup::class.java)
     }
 }
