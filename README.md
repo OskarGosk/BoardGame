@@ -4,7 +4,7 @@
 
 > 🚧 **Heads-up: this project has just gone through a big redesign and refactor and is still being cleaned up.**
 > The new UI (designed with Google Stitch, implemented with Claude Code) and the new screen/ViewModel structure are already in place.
-> What is still left: wiring up the **Reports** screen, removing a few **legacy ViewModels** and commented-out code, moving the **remaining hard-coded strings** to resources, and finishing a few **polish items** (details in [Remaining work](#remaining-work)).
+> What is still left: wiring up the **Reports** and **Settings** screens, **edge-to-edge** support, a few visual fixes, removing a few **legacy ViewModels** and commented-out code, moving the **remaining hard-coded strings** to resources, and finishing a few **polish items** (details in [Remaining work](#remaining-work)).
 > If you spot something that looks unfinished – it most likely is on that list.
 
 The application is designed to **record and analyze board game sessions**.<br/><br/>
@@ -143,6 +143,10 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 
 **Features**
 - [ ] **Reports screen** – the *Quick Report* tile on Home is not wired up yet and the charts screen has not been redesigned (`GameReportsViewModel` is waiting for it).
+- [ ] **Settings** – the settings rows on the Profile screen (account information, notifications, privacy, appearance) are not functional yet.
+- [ ] **Games with several modes** – a game should offer multiple play modes, and you should pick per session whether it is co-op or player vs player (today it is a single co-op flag on the game).
+- [ ] **Forgot password** – the login screen link does nothing yet.
+- [ ] **Create an account** – instead of a sign-up form it should show a message asking to contact me for an account.
 - [ ] **History filters** – the filter chips (*Wins Only*, *Strategy*, *Co-op*) are in the state but do not filter the list yet.
 - [ ] **Game details from the collection** – only available for games imported from BGG; manually added games have no details screen.
 - [ ] **Richer data model (Room migrations)** – game category / year / rating, per-player scores, session duration, player avatar and level, "active this week" and achievements are placeholders or hidden in the UI for now.
@@ -157,7 +161,9 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] Update outdated Gradle dependencies flagged by lint.
 
 **UI polish**
-- [ ] In dark theme the system status / navigation bars stay light.
+- [ ] **Edge-to-edge** support – in dark theme the system status / navigation bars currently stay light.
+- [ ] Visual fixes on the **My Collection** screen.
+- [ ] Visual fixes on the **session** screens (log session / session details).
 - [ ] (Optional) Redesign the splash screen.
 
 **Tests**
