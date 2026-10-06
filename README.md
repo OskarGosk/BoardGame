@@ -17,6 +17,9 @@ The application works in two modes:<br/>
 <br/>
 A demo account is available on request, or you can try the app right away in **Guest** mode.<br/><br/>
 
+**Before (`master`)**<br/>
+<img src="screenshots/login_screen.png" alt="Old UI" height="260" /><br/><br/>
+**After**<br/>
 <img src="screenshots/redesign/01_login.png" alt="Login" width="300" />
 
 <br/>
@@ -62,6 +65,10 @@ Dashboard with your stats, quick actions and the three most recent sessions. Cho
 
 Games shown as a cover grid with a play counter. Filter by *All / Base / Expansions*, search by name and sort (default, name, number of plays). Tap a card to flip it – you get min/max players, total plays and quick actions: **log a session**, **edit** or **delete**.<br/><br/>
 
+**Before (`master`)**<br/>
+<img src="screenshots/game_list_light.png" alt="Old UI" height="260" />
+<img src="screenshots/game_list_dark.png" alt="Old UI" height="260" /><br/><br/>
+**After**<br/>
 <img src="screenshots/redesign/04_collection_grid.png" alt="Collection" width="270" />
 <img src="screenshots/redesign/06_collection_card_flip.png" alt="Card back" width="270" />
 <img src="screenshots/redesign/05_collection_sort_menu.png" alt="Sort menu" width="270" />
@@ -74,6 +81,10 @@ Games shown as a cover grid with a play counter. Filter by *All / Base / Expansi
 Search the **BGG database** or add a game **manually** (cover from camera/gallery, players range, category, year, co-op switch).
 Games imported from BGG have a details screen with rating, weight, play time, categories, mechanics and designers.<br/><br/>
 
+**Before (`master`)**<br/>
+<img src="screenshots/add_game_from_bgg.png" alt="Old UI" height="260" />
+<img src="screenshots/add_game_manually.png" alt="Old UI" height="260" /><br/><br/>
+**After**<br/>
 <img src="screenshots/redesign/07_add_game_bgg_search.png" alt="BGG search" width="270" />
 <img src="screenshots/redesign/08_game_details_bgg.png" alt="Game details" width="270" />
 <img src="screenshots/redesign/09_add_game_manual.png" alt="Manual entry" width="270" />
@@ -84,6 +95,10 @@ Games imported from BGG have a details screen with rating, weight, play time, ca
 
 Pick the game, date, duration and participants, choose the winner (or play co-op) and add notes. New players can be added on the fly.<br/><br/>
 
+**Before (`master`)**<br/>
+<img src="screenshots/gameplay_light.png" alt="Old UI" height="260" />
+<img src="screenshots/gameplay_dark.png" alt="Old UI" height="260" /><br/><br/>
+**After**<br/>
 <img src="screenshots/redesign/10_add_session.png" alt="Add session" width="270" />
 <img src="screenshots/redesign/11_add_session_bottom.png" alt="Add session - winner and notes" width="270" />
 <img src="screenshots/redesign/18_add_session_dark.png" alt="Add session dark" width="270" />
@@ -94,6 +109,9 @@ Pick the game, date, duration and participants, choose the winner (or play co-op
 
 Sessions grouped into *This week* / *Earlier*, searchable, with covers, participants and winners. Open a session to see the points of each player, notes, and to **edit** or **delete** it.<br/><br/>
 
+**Before (`master`)**<br/>
+<img src="screenshots/games_history.png" alt="Old UI" height="260" /><br/><br/>
+**After**<br/>
 <img src="screenshots/redesign/13_history.png" alt="History" width="270" />
 <img src="screenshots/redesign/14_session_details.png" alt="Session details" width="270" />
 
@@ -103,6 +121,10 @@ Sessions grouped into *This week* / *Earlier*, searchable, with covers, particip
 
 Players directory with search, win rate and ranking. Each player shows the total number of games played.<br/><br/>
 
+**Before (`master`)**<br/>
+<img src="screenshots/player_list_light.png" alt="Old UI" height="260" />
+<img src="screenshots/player_list_dark.png" alt="Old UI" height="260" /><br/><br/>
+**After**<br/>
 <img src="screenshots/redesign/12_players_directory.png" alt="Players" width="270" />
 <img src="screenshots/redesign/17_players_dark.png" alt="Players dark" width="270" />
 
