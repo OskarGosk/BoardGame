@@ -18,23 +18,23 @@ The application works in two modes:<br/>
 A demo account is available on request, or you can try the app right away in **Guest** mode.<br/><br/>
 
 **Before (`master`)**<br/>
-<img src="screenshots/login_screen.png" alt="Old UI" height="260" /><br/><br/>
+<img src="screenshots/login_screen.png" alt="Old UI" height="180" /><br/><br/>
 **After**<br/>
-<img src="screenshots/redesign/01_login.png" alt="Login" width="300" />
+<table><tr><td><img src="screenshots/redesign/01_login.jpg" alt="Login" width="150" /></td></tr></table>
 
 <br/>
 
 ## ✨ New look (UI redesign)
 
-> 🤖 **The new look of the app was designed and implemented in collaboration with AI** ([Claude Code](https://claude.com/claude-code)).
-> The AI helped with the visual direction, the Compose components and the screen-by-screen refactor; all changes were reviewed, tested and shipped by the author.
+> 🤖 **The new look of the app was designed and implemented in collaboration with AI.**
+> The visual design (screens, layout and style) was created in [Google Stitch](https://stitch.withgoogle.com), and the implementation in Jetpack Compose – components and the screen-by-screen refactor – was done together with [Claude Code](https://claude.com/claude-code). All changes were reviewed, tested and shipped by the author.
 > All screenshots below were taken from a real emulator running the current build (test account).
 
 **Before → after.** The old app was a menu of text buttons that opened separate lists. The redesign turns it into a dashboard with bottom navigation:
 
 | Before (`master`) | After |
 |:---:|:---:|
-| <img src="screenshots/home_screen_light.png" alt="Old home" width="300" /> | <img src="screenshots/redesign/02_home_light.png" alt="New home" width="230" /> |
+| <img src="screenshots/home_screen_light.png" alt="Old home" width="240" /> | <img src="screenshots/redesign/02_home_light.jpg" alt="New home" width="150" /> |
 
 **What changed:**
 - 🧭 **New navigation** – bottom bar (*Home · Collection · Add Session · Players*) instead of a button menu; a profile avatar in the top bar opens the profile screen.
@@ -54,10 +54,7 @@ A demo account is available on request, or you can try the app right away in **G
 
 Dashboard with your stats, quick actions and the three most recent sessions. Choose which player represents you on first launch.<br/><br/>
 
-<img src="screenshots/redesign/02a_home_who_are_you.png" alt="Who are you" width="270" />
-<img src="screenshots/redesign/02_home_light.png" alt="Home light" width="270" />
-<img src="screenshots/redesign/03_home_recent_sessions.png" alt="Recent sessions" width="270" />
-<img src="screenshots/redesign/15_home_dark.png" alt="Home dark" width="270" />
+<table><tr><td><img src="screenshots/redesign/02a_home_who_are_you.jpg" alt="Who are you" width="150" /></td><td><img src="screenshots/redesign/02_home_light.jpg" alt="Home light" width="150" /></td><td><img src="screenshots/redesign/03_home_recent_sessions.jpg" alt="Recent sessions" width="150" /></td><td><img src="screenshots/redesign/15_home_dark.jpg" alt="Home dark" width="150" /></td></tr></table>
 
 <br/>
 
@@ -66,13 +63,10 @@ Dashboard with your stats, quick actions and the three most recent sessions. Cho
 Games shown as a cover grid with a play counter. Filter by *All / Base / Expansions*, search by name and sort (default, name, number of plays). Tap a card to flip it – you get min/max players, total plays and quick actions: **log a session**, **edit** or **delete**.<br/><br/>
 
 **Before (`master`)**<br/>
-<img src="screenshots/game_list_light.png" alt="Old UI" height="260" />
-<img src="screenshots/game_list_dark.png" alt="Old UI" height="260" /><br/><br/>
+<img src="screenshots/game_list_light.png" alt="Old UI" height="180" />
+<img src="screenshots/game_list_dark.png" alt="Old UI" height="180" /><br/><br/>
 **After**<br/>
-<img src="screenshots/redesign/04_collection_grid.png" alt="Collection" width="270" />
-<img src="screenshots/redesign/06_collection_card_flip.png" alt="Card back" width="270" />
-<img src="screenshots/redesign/05_collection_sort_menu.png" alt="Sort menu" width="270" />
-<img src="screenshots/redesign/16_collection_dark.png" alt="Collection dark" width="270" />
+<table><tr><td><img src="screenshots/redesign/04_collection_grid.jpg" alt="Collection" width="150" /></td><td><img src="screenshots/redesign/06_collection_card_flip.jpg" alt="Card back" width="150" /></td><td><img src="screenshots/redesign/05_collection_sort_menu.jpg" alt="Sort menu" width="150" /></td><td><img src="screenshots/redesign/16_collection_dark.jpg" alt="Collection dark" width="150" /></td></tr></table>
 
 <br/>
 
@@ -82,12 +76,10 @@ Search the **BGG database** or add a game **manually** (cover from camera/galler
 Games imported from BGG have a details screen with rating, weight, play time, categories, mechanics and designers.<br/><br/>
 
 **Before (`master`)**<br/>
-<img src="screenshots/add_game_from_bgg.png" alt="Old UI" height="260" />
-<img src="screenshots/add_game_manually.png" alt="Old UI" height="260" /><br/><br/>
+<img src="screenshots/add_game_from_bgg.png" alt="Old UI" height="180" />
+<img src="screenshots/add_game_manually.png" alt="Old UI" height="180" /><br/><br/>
 **After**<br/>
-<img src="screenshots/redesign/07_add_game_bgg_search.png" alt="BGG search" width="270" />
-<img src="screenshots/redesign/08_game_details_bgg.png" alt="Game details" width="270" />
-<img src="screenshots/redesign/09_add_game_manual.png" alt="Manual entry" width="270" />
+<table><tr><td><img src="screenshots/redesign/07_add_game_bgg_search.jpg" alt="BGG search" width="150" /></td><td><img src="screenshots/redesign/08_game_details_bgg.jpg" alt="Game details" width="150" /></td><td><img src="screenshots/redesign/09_add_game_manual.jpg" alt="Manual entry" width="150" /></td></tr></table>
 
 <br/>
 
@@ -96,12 +88,10 @@ Games imported from BGG have a details screen with rating, weight, play time, ca
 Pick the game, date, duration and participants, choose the winner (or play co-op) and add notes. New players can be added on the fly.<br/><br/>
 
 **Before (`master`)**<br/>
-<img src="screenshots/gameplay_light.png" alt="Old UI" height="260" />
-<img src="screenshots/gameplay_dark.png" alt="Old UI" height="260" /><br/><br/>
+<img src="screenshots/gameplay_light.png" alt="Old UI" height="180" />
+<img src="screenshots/gameplay_dark.png" alt="Old UI" height="180" /><br/><br/>
 **After**<br/>
-<img src="screenshots/redesign/10_add_session.png" alt="Add session" width="270" />
-<img src="screenshots/redesign/11_add_session_bottom.png" alt="Add session - winner and notes" width="270" />
-<img src="screenshots/redesign/18_add_session_dark.png" alt="Add session dark" width="270" />
+<table><tr><td><img src="screenshots/redesign/10_add_session.jpg" alt="Add session" width="150" /></td><td><img src="screenshots/redesign/11_add_session_bottom.jpg" alt="Add session - winner and notes" width="150" /></td><td><img src="screenshots/redesign/18_add_session_dark.jpg" alt="Add session dark" width="150" /></td></tr></table>
 
 <br/>
 
@@ -110,10 +100,9 @@ Pick the game, date, duration and participants, choose the winner (or play co-op
 Sessions grouped into *This week* / *Earlier*, searchable, with covers, participants and winners. Open a session to see the points of each player, notes, and to **edit** or **delete** it.<br/><br/>
 
 **Before (`master`)**<br/>
-<img src="screenshots/games_history.png" alt="Old UI" height="260" /><br/><br/>
+<img src="screenshots/games_history.png" alt="Old UI" height="180" /><br/><br/>
 **After**<br/>
-<img src="screenshots/redesign/13_history.png" alt="History" width="270" />
-<img src="screenshots/redesign/14_session_details.png" alt="Session details" width="270" />
+<table><tr><td><img src="screenshots/redesign/13_history.jpg" alt="History" width="150" /></td><td><img src="screenshots/redesign/14_session_details.jpg" alt="Session details" width="150" /></td></tr></table>
 
 <br/>
 
@@ -122,11 +111,10 @@ Sessions grouped into *This week* / *Earlier*, searchable, with covers, particip
 Players directory with search, win rate and ranking. Each player shows the total number of games played.<br/><br/>
 
 **Before (`master`)**<br/>
-<img src="screenshots/player_list_light.png" alt="Old UI" height="260" />
-<img src="screenshots/player_list_dark.png" alt="Old UI" height="260" /><br/><br/>
+<img src="screenshots/player_list_light.png" alt="Old UI" height="180" />
+<img src="screenshots/player_list_dark.png" alt="Old UI" height="180" /><br/><br/>
 **After**<br/>
-<img src="screenshots/redesign/12_players_directory.png" alt="Players" width="270" />
-<img src="screenshots/redesign/17_players_dark.png" alt="Players dark" width="270" />
+<table><tr><td><img src="screenshots/redesign/12_players_directory.jpg" alt="Players" width="150" /></td><td><img src="screenshots/redesign/17_players_dark.jpg" alt="Players dark" width="150" /></td></tr></table>
 
 <br/>
 
@@ -134,7 +122,7 @@ Players directory with search, win rate and ranking. Each player shows the total
 
 Your games logged and win rate, account settings and sign-out.<br/><br/>
 
-<img src="screenshots/redesign/19_profile.png" alt="Profile" width="270" />
+<table><tr><td><img src="screenshots/redesign/19_profile.jpg" alt="Profile" width="150" /></td></tr></table>
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes
