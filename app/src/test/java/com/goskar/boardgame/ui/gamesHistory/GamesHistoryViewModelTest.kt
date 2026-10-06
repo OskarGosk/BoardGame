@@ -14,7 +14,9 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -47,6 +49,11 @@ class GamesHistoryViewModelTest {
         history = historyGame(name, date),
         expansion = emptyList<HistoryGameExpansion>()
     )
+
+    // `state` is derived via stateIn(WhileSubscribed), so it only emits while collected.
+    private fun TestScope.collectState() {
+        backgroundScope.launch(testDispatcher) { viewModel.state.collect {} }
+    }
 
     @Before
     fun setUp() {
@@ -81,6 +88,7 @@ class GamesHistoryViewModelTest {
         coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(listOf(mar, jan, feb))
 
         viewModel.getAllHistoryGame()
+        collectState()
 
         val state = viewModel.state.value
         assertEquals(listOf(jan, feb, mar), state.historyList)
@@ -98,6 +106,7 @@ class GamesHistoryViewModelTest {
                 awaitItem()
             )
         }
+        collectState()
         assertEquals(false, viewModel.state.value.loading)
     }
 
@@ -113,6 +122,7 @@ class GamesHistoryViewModelTest {
         coEvery { useCase.invoke() } returns RequestResult.Success(listOf(a, c, b))
 
         viewModel = GamesHistoryViewModel(repo, useCase, gameUseCase)
+        collectState()
 
         assertEquals(listOf(b, a, c), viewModel.state.value.historyGameWithExpansion)
     }
@@ -129,5 +139,59 @@ class GamesHistoryViewModelTest {
                 awaitItem()
             )
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // derived state: groups / showingLabel / search
+    // -------------------------------------------------------------------------
+
+    @Test
+    fun groups_areBucketedByAgeAndOrderedNewestFirst() = runTest(testDispatcher) {
+        val today = LocalDate.now()
+        val sessions = listOf(
+            historyGame("Old", today.minusDays(30)),
+            historyGame("Today", today),
+            historyGame("Week", today.minusDays(3)),
+            historyGame("Yesterday", today.minusDays(1)),
+        )
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(sessions)
+
+        viewModel = GamesHistoryViewModel(repo, useCase, gameUseCase)
+        collectState()
+
+        val groups = viewModel.state.value.groups
+        assertEquals(listOf("Today", "Yesterday", "This Week", "Earlier"), groups.map { it.title })
+        assertEquals(
+            listOf("Today", "Yesterday", "Week", "Old"),
+            groups.flatMap { g -> g.sessions.map { it.gameName } }
+        )
+    }
+
+    @Test
+    fun groups_skipEmptyBuckets() = runTest(testDispatcher) {
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(
+            listOf(historyGame("Old", LocalDate.now().minusDays(60)))
+        )
+
+        viewModel = GamesHistoryViewModel(repo, useCase, gameUseCase)
+        collectState()
+
+        assertEquals(listOf("Earlier"), viewModel.state.value.groups.map { it.title })
+    }
+
+    @Test
+    fun showingLabel_pluralizesAndReflectsSearch() = runTest(testDispatcher) {
+        val today = LocalDate.now()
+        coEvery { repo.getAllHistoryGame() } returns RequestResult.Success(
+            listOf(historyGame("Wingspan", today), historyGame("Root", today))
+        )
+
+        viewModel = GamesHistoryViewModel(repo, useCase, gameUseCase)
+        collectState()
+        assertEquals("Showing 2 sessions", viewModel.state.value.showingLabel)
+
+        viewModel.updateSearchTxt("wing")
+        assertEquals("Showing 1 session", viewModel.state.value.showingLabel)
+        assertEquals(listOf("Wingspan"), viewModel.state.value.groups.flatMap { g -> g.sessions.map { it.gameName } })
     }
 }

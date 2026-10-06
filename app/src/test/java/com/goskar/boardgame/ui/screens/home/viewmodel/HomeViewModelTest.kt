@@ -140,7 +140,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun load_noLinkedPlayer_winRatioIsDash() = runTest(testDispatcher) {
+    fun load_noLinkedPlayer_userNameIsPlayerAndWinRatioIsDash() = runTest(testDispatcher) {
         coEvery { getAllGameUseCase.invoke() } returns emptyList()
         coEvery { userSession.getCurrentSession() } returns
             User(email = "alex@example.com", token = "t", userUID = "uid1")
@@ -150,7 +150,7 @@ class HomeViewModelTest {
         viewModel.load(firstLogin = false)
 
         val state = viewModel.state.value
-        assertEquals("Alex", state.userName)
+        assertEquals("Player", state.userName)
         assertEquals("—", state.winRatio)
     }
 
