@@ -53,6 +53,7 @@ import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.AppTextField
+import com.goskar.boardgame.ui.login.components.LocalDataDialog
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -73,7 +74,10 @@ class LoginScreen : Screen {
             updateLogin = viewModel::updateLogin,
             updatePassword = viewModel::updatePassword,
             questLogIn = viewModel::questAccount,
-            logIn = viewModel::signIn
+            logIn = viewModel::signIn,
+            onMergeLocalData = viewModel::mergeLocalDataIntoAccount,
+            onDiscardLocalData = viewModel::discardLocalData,
+            onCancelLocalData = viewModel::cancelSignIn,
         )
 
         LaunchedEffect(Unit) {
@@ -84,7 +88,7 @@ class LoginScreen : Screen {
                             message = context.getString(event.message),
                             type = event.type
                         )
-                        navigator?.replaceAll(HomeScreen(firstLogin = true))
+                        navigator?.replaceAll(HomeScreen(firstLogin = true, mergeLocalData = event.mergeLocalData))
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 
@@ -112,8 +116,20 @@ fun LoginScreenContent(
     updatePassword: (String) -> Unit = {},
     questLogIn: () -> Unit = {},
     logIn: () -> Unit = {},
+    onMergeLocalData: () -> Unit = {},
+    onDiscardLocalData: () -> Unit = {},
+    onCancelLocalData: () -> Unit = {},
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
+
+    state.pendingLocalData?.let { summary ->
+        LocalDataDialog(
+            summary = summary,
+            onMerge = onMergeLocalData,
+            onDiscard = onDiscardLocalData,
+            onCancel = onCancelLocalData,
+        )
+    }
 
     Column(
         modifier = Modifier

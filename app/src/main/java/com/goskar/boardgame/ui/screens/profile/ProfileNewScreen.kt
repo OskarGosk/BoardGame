@@ -56,7 +56,9 @@ import androidx.compose.ui.platform.LocalContext
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.login.LoginScreen
 import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.components.AppActionDialog
 import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.utils.toLocalizedDateTime
 import com.goskar.boardgame.ui.components.AppChip
 import com.goskar.boardgame.ui.components.AppChipStyle
 import com.goskar.boardgame.ui.components.AppListCard
@@ -97,8 +99,12 @@ class ProfileNewScreen : Screen {
 
         ProfileNewScreenContent(
             state = state,
-            onSignOut = viewModel::signOut,
+            onSignOut = viewModel::requestSignOut,
             onForceSync = viewModel::forceSync,
+            onSyncAndSignOut = viewModel::syncAndSignOut,
+            onSignOutWithoutSync = viewModel::signOutWithoutSync,
+            onDismissSignOutPrompt = viewModel::dismissSignOutPrompt,
+            onSignInToAccount = { navigator?.push(LoginScreen()) },
         )
     }
 }
@@ -110,8 +116,20 @@ fun ProfileNewScreenContent(
     onSignOut: () -> Unit = {},
     onForceSync: () -> Unit = {},
     onViewAchievements: () -> Unit = {},
+    onSyncAndSignOut: () -> Unit = {},
+    onSignOutWithoutSync: () -> Unit = {},
+    onDismissSignOutPrompt: () -> Unit = {},
+    onSignInToAccount: () -> Unit = {},
 ) {
     var selectedNav by remember { mutableStateOf(-1) }
+
+    SignOutPromptDialog(
+        prompt = state.signOutPrompt,
+        isGuest = state.isGuest,
+        onSyncAndSignOut = onSyncAndSignOut,
+        onSignOutWithoutSync = onSignOutWithoutSync,
+        onDismiss = onDismissSignOutPrompt,
+    )
 
     AppScaffold(
         navItems = appNavItems,
@@ -131,7 +149,8 @@ fun ProfileNewScreenContent(
             StatRow(state)
             AccountSettingsCard(state, onSetting)
             SignOutButton(onSignOut)
-            if (!state.isGuest || state.lastSynced.isNotBlank()) CloudSyncCard(state, onForceSync)
+            if (state.isGuest) SignInToAccountCard(onSignInToAccount)
+            CloudSyncCard(state, onForceSync)
             if (state.medals.isNotEmpty()) RecentMedalsCard(state, onViewAchievements)
             Spacer(Modifier.height(8.dp))
         }
@@ -290,7 +309,7 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    stringResource(R.string.profile_cloud_sync),
+                    stringResource(if (state.isGuest) R.string.profile_backup_title else R.string.profile_cloud_sync),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -298,7 +317,7 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
             }
             Spacer(Modifier.height(8.dp))
             Text(
-                stringResource(R.string.profile_cloud_sync_desc),
+                stringResource(if (state.isGuest) R.string.profile_backup_desc else R.string.profile_cloud_sync_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -309,17 +328,76 @@ private fun CloudSyncCard(state: ProfileNewState, onForceSync: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    state.lastSynced.ifBlank { stringResource(R.string.profile_not_synced) },
+                    syncStatusText(state),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f),
                 )
                 SmallPillButton(
-                    text = if (state.syncing) stringResource(R.string.profile_syncing)
-                    else stringResource(R.string.profile_force_sync),
+                    text = when {
+                        state.syncing -> stringResource(R.string.profile_syncing)
+                        state.isGuest -> stringResource(R.string.profile_backup_action)
+                        else -> stringResource(R.string.profile_force_sync)
+                    },
                     onClick = { if (!state.syncing) onForceSync() },
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SignInToAccountCard(onSignInToAccount: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        AppSecondaryButton(
+            text = stringResource(R.string.profile_sign_in_to_account),
+            onClick = onSignInToAccount,
+        )
+        Text(
+            stringResource(R.string.profile_sign_in_to_account_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun syncStatusText(state: ProfileNewState): String = when {
+    state.hasUnsyncedChanges -> stringResource(R.string.profile_unsynced_changes)
+    state.lastSyncedAt != null -> stringResource(R.string.profile_last_synced, state.lastSyncedAt.toLocalizedDateTime())
+    else -> state.lastSynced.ifBlank { stringResource(R.string.profile_not_synced) }
+}
+
+@Composable
+private fun SignOutPromptDialog(
+    prompt: SignOutPrompt,
+    isGuest: Boolean,
+    onSyncAndSignOut: () -> Unit,
+    onSignOutWithoutSync: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    when (prompt) {
+        SignOutPrompt.None -> Unit
+        SignOutPrompt.UnsyncedData -> AppActionDialog(
+            title = stringResource(R.string.sign_out_unsynced_title),
+            message = stringResource(
+                if (isGuest) R.string.sign_out_unsynced_message_guest else R.string.sign_out_unsynced_message_account
+            ),
+            primaryText = stringResource(R.string.sign_out_sync_and_sign_out),
+            onPrimary = onSyncAndSignOut,
+            secondaryText = stringResource(R.string.sign_out_anyway),
+            onSecondary = onSignOutWithoutSync,
+            onDismiss = onDismiss,
+        )
+        SignOutPrompt.SyncFailed -> AppActionDialog(
+            title = stringResource(R.string.sign_out_sync_failed_title),
+            message = stringResource(R.string.sign_out_sync_failed_message),
+            primaryText = stringResource(R.string.sign_out_sync_and_sign_out),
+            onPrimary = onSyncAndSignOut,
+            secondaryText = stringResource(R.string.sign_out_anyway),
+            onSecondary = onSignOutWithoutSync,
+            onDismiss = onDismiss,
+        )
     }
 }
 

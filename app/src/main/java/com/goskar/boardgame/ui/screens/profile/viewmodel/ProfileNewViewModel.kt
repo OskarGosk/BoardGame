@@ -8,10 +8,12 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
+import com.goskar.boardgame.data.repository.syncState.SyncStateRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
-import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.data.useCase.BackupGuestUseCase
 import com.goskar.boardgame.data.useCase.ClearDbUseCase
+import com.goskar.boardgame.data.useCase.GetSyncStatusUseCase
 import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import kotlinx.coroutines.channels.Channel
@@ -32,6 +34,8 @@ data class PlayerPick(
     val initials: String,
 )
 
+enum class SignOutPrompt { None, UnsyncedData, SyncFailed }
+
 data class ProfileNewState(
     val isLoading: Boolean = false,
     val isGuest: Boolean = false,
@@ -43,6 +47,9 @@ data class ProfileNewState(
     val notificationsActive: Boolean = true,
     val lastSynced: String = "",
     val syncing: Boolean = false,
+    val lastSyncedAt: Long? = null,
+    val hasUnsyncedChanges: Boolean = false,
+    val signOutPrompt: SignOutPrompt = SignOutPrompt.None,
     val medals: List<MedalItem> = emptyList(),
     val signedOut: Boolean = false,
 )
@@ -55,10 +62,12 @@ class ProfileNewViewModel(
     private val userSession: UserRepository,
     private val playerDbRepository: PlayerDbRepository,
     private val historyRepository: GamesHistoryDbRepository,
-    private val getAllGameUseCase: GetAllGameUseCase,
     private val mePlayerRepository: MePlayerRepository,
     private val clearDbUseCase: ClearDbUseCase,
     private val uploadToCloud: UploadToCloudUseCase,
+    private val backupGuest: BackupGuestUseCase,
+    private val getSyncStatus: GetSyncStatusUseCase,
+    private val syncState: SyncStateRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileNewState())
@@ -74,10 +83,11 @@ class ProfileNewViewModel(
             val uid = user?.userUID
 
             if (uid == null || uid == "guest") {
-                loadGuest()
+                loadGuest(isGuestAccount = true)
             } else {
                 loadForUser(uid, user.email)
             }
+            refreshSyncStatus()
             _state.update { it.copy(isLoading = false) }
         }
     }
@@ -101,24 +111,21 @@ class ProfileNewViewModel(
                 )
             }
         } else {
-            loadGuest()
+            loadGuest(isGuestAccount = false)
         }
     }
 
-    private suspend fun loadGuest() {
-        val totalGames = getAllGameUseCase().size
+    private suspend fun loadGuest(isGuestAccount: Boolean) {
         val sessions = (historyRepository.getAllHistoryGame() as? RequestResult.Success)?.data?.size ?: 0
         _state.update {
             it.copy(
-                isGuest = true,
+                isGuest = isGuestAccount,
                 name = "Guest",
                 subtitle = "Guest session",
                 initials = "G",
                 gamesLogged = sessions.toString(),
                 winRate = "—",
-                // guest sees library-wide aggregates instead of personal stats
                 notificationsActive = false,
-                lastSynced = "$totalGames games in library",
             )
         }
     }
@@ -127,13 +134,14 @@ class ProfileNewViewModel(
         if (state.value.syncing) return
         viewModelScope.launch {
             _state.update { it.copy(syncing = true) }
-            val ok = uploadToCloud()
+            val ok = runSync()
             _state.update {
                 it.copy(
                     syncing = false,
                     lastSynced = if (ok) "Synced just now" else it.lastSynced,
                 )
             }
+            if (ok) refreshSyncStatus()
             _events.send(
                 if (ok) ProfileEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS)
                 else ProfileEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR)
@@ -141,12 +149,50 @@ class ProfileNewViewModel(
         }
     }
 
-    fun signOut() {
+    fun requestSignOut() {
         viewModelScope.launch {
-            FirebaseAuth.getInstance().signOut()
-            userSession.logout()
-            clearDbUseCase.invoke()
-            _state.update { it.copy(signedOut = true) }
+            if (getSyncStatus().hasUnsyncedChanges) {
+                _state.update { it.copy(signOutPrompt = SignOutPrompt.UnsyncedData) }
+            } else {
+                signOut()
+            }
+        }
+    }
+
+    fun syncAndSignOut() {
+        if (state.value.syncing) return
+        viewModelScope.launch {
+            _state.update { it.copy(syncing = true, signOutPrompt = SignOutPrompt.None) }
+            val ok = runSync()
+            _state.update { it.copy(syncing = false) }
+            if (ok) signOut() else _state.update { it.copy(signOutPrompt = SignOutPrompt.SyncFailed) }
+        }
+    }
+
+    fun signOutWithoutSync() {
+        _state.update { it.copy(signOutPrompt = SignOutPrompt.None) }
+        viewModelScope.launch { signOut() }
+    }
+
+    fun dismissSignOutPrompt() {
+        _state.update { it.copy(signOutPrompt = SignOutPrompt.None) }
+    }
+
+    private suspend fun signOut() {
+        FirebaseAuth.getInstance().signOut()
+        userSession.logout()
+        clearDbUseCase.invoke()
+        syncState.clear()
+        _state.update { it.copy(signedOut = true) }
+    }
+
+    private suspend fun runSync(): Boolean =
+        if (state.value.isGuest) backupGuest() else uploadToCloud()
+
+    private suspend fun refreshSyncStatus() {
+        val status = getSyncStatus()
+        _state.update {
+            it.copy(hasUnsyncedChanges = status.hasUnsyncedChanges, lastSyncedAt = status.lastSyncedAt)
         }
     }
 

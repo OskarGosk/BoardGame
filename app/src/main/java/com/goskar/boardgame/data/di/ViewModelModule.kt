@@ -28,17 +28,17 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { AddEditGameViewModel(get(), get()) }
     viewModel { GamePlayViewModel(get(), get(), get(), get()) }
     viewModel { GamesHistoryViewModel(get(), get(), get()) }
-    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { AddPlayerNewViewModel(get()) }
     viewModel { AddGameNewViewModel(get(), get(), get()) }
     viewModel { AddGameplayNewViewModel(get(), get(), get(), get()) }
-    viewModel { ProfileNewViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { ProfileNewViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { SessionDetailsNewViewModel(get(), get()) }
     viewModel { GameDetailsNewViewModel(get(), get()) }
     viewModel { CurrentUserViewModel(get(), get(), get()) }
     viewModel { GameSearchViewModel(get()) }
     viewModel { GameDetailsBGGViewModel(get(), get(), get()) }
     viewModel { GameReportsViewModel(get(), get()) }
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(), get(), get(), get()) }
     viewModel { SplashViewModel(get()) }
 }

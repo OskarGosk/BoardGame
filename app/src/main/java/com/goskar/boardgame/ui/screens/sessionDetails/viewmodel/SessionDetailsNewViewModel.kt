@@ -9,6 +9,7 @@ import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.AppChipStyle
+import com.goskar.boardgame.utils.coverUri
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +28,7 @@ data class SessionPlayerResult(
 data class SessionDetailsNewState(
     val sessionId: String? = null,
     val gameName: String = "Dune: Imperium",
+    val coverUri: String = "",
     val category: String = "Strategy",
     val categoryStyle: AppChipStyle = AppChipStyle.CATEGORY,
     val dateLabel: String = "Oct 27, 2023",
@@ -67,13 +69,14 @@ class SessionDetailsNewViewModel(
                 ?.data?.firstOrNull { it.id == historyGameId } ?: return@launch
             val expansions = (gamesHistoryDbRepository.getAllHistoryGameExpansion() as? RequestResult.Success)
                 ?.data?.filter { it.historyGameId == historyGameId } ?: emptyList()
-            val category = getAllGameUseCase().firstOrNull { it.name == history.gameName }?.category
+            val game = getAllGameUseCase().firstOrNull { it.name == history.gameName }
 
             _state.update {
                 it.copy(
                     sessionId = history.id,
                     gameName = history.gameName,
-                    category = category ?: "",
+                    coverUri = game?.coverUri() ?: "",
+                    category = game?.category ?: "",
                     dateLabel = history.gameData.format(DateTimeFormatter.ofPattern("MMM d, yyyy")),
                     duration = history.durationMin?.let { "${it}m" } ?: "—",
                     playerCount = history.listOfPlayer.size.toString(),

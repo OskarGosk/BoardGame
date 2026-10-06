@@ -1,33 +1,28 @@
 package com.goskar.boardgame.data.useCase
 
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
+import com.goskar.boardgame.data.repository.syncState.SyncStateRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.utils.convertHistoryGameListToFirebase
 
-/**
- * Pushes the full local database (games, players, history, history expansions) to Firebase.
- * Runs the four uploads sequentially and stops on the first failure.
- */
 class UploadToCloudUseCase(
     private val api: BoardGameFirebaseDataRepository,
-    private val getAllGame: GetAllGameUseCase,
-    private val getAllPlayer: GetAllPlayerUseCase,
-    private val getAllHistory: GetAllHistoryGameUseCase,
-    private val getAllHistoryExpansion: GetAllHistoryGameExpansionUseCase,
+    private val getSnapshot: GetLocalSnapshotUseCase,
+    private val syncState: SyncStateRepository,
 ) {
     suspend operator fun invoke(): Boolean {
-        val games = getAllGame().associateBy { it.id }
-        if (api.addAllGame(games) !is RequestResult.Success) return false
+        val snapshot = getSnapshot()
 
-        val players = getAllPlayer().associateBy { it.id }
-        if (api.addPlayer(players) !is RequestResult.Success) return false
+        if (api.addAllGame(snapshot.games.associateBy { it.id }) !is RequestResult.Success) return false
+        if (api.addPlayer(snapshot.players.associateBy { it.id }) !is RequestResult.Success) return false
 
-        val history = convertHistoryGameListToFirebase(getAllHistory()).associateBy { it.id }
+        val history = convertHistoryGameListToFirebase(snapshot.history).associateBy { it.id }
         if (api.addHistoryGame(history) !is RequestResult.Success) return false
 
-        val expansions = getAllHistoryExpansion().associateBy { it.id }
+        val expansions = snapshot.historyExpansions.associateBy { it.id }
         if (api.addHistoryGameExpansion(expansions) !is RequestResult.Success) return false
 
+        syncState.markSynced(snapshot.fingerprint())
         return true
     }
 }

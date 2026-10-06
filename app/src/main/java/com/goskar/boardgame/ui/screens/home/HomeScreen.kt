@@ -49,6 +49,7 @@ import com.goskar.boardgame.ui.components.AppFab
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSectionHeader
 import com.goskar.boardgame.ui.components.AppStatCard
+import com.goskar.boardgame.ui.screens.home.components.GuestRestoreDialog
 import com.goskar.boardgame.ui.screens.home.components.PlayerPickerCard
 import com.goskar.boardgame.ui.screens.home.components.QuickActionTile
 import com.goskar.boardgame.ui.screens.home.components.RecentSessionCard
@@ -57,14 +58,17 @@ import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class HomeScreen(private val firstLogin: Boolean = false) : Screen {
+class HomeScreen(
+    private val firstLogin: Boolean = false,
+    private val mergeLocalData: Boolean = false,
+) : Screen {
 
     @Composable
     override fun Content() {
         val viewModel: HomeViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
-        LaunchedEffect(firstLogin) { viewModel.load(firstLogin) }
+        LaunchedEffect(firstLogin) { viewModel.load(firstLogin, mergeLocalData) }
         HomeScreenContent(
             state = state,
             userInitials = rememberUserInitials(),
@@ -74,7 +78,9 @@ class HomeScreen(private val firstLogin: Boolean = false) : Screen {
             onAddGameplay = { navigator?.push(AddGameplayNewScreen()) },
             onScanBgg = { navigator?.push(AddGameNewScreen()) },
             onSelectPlayer = viewModel::selectPlayer,
-            )
+            onRestoreGuestBackup = viewModel::restoreGuestBackup,
+            onDeclineGuestRestore = viewModel::declineGuestRestore,
+        )
     }
 }
 
@@ -90,8 +96,18 @@ fun HomeScreenContent(
     onScanBgg: () -> Unit = {},
     onQuickReport: () -> Unit = {},
     onSelectPlayer: (String) -> Unit = {},
+    onRestoreGuestBackup: () -> Unit = {},
+    onDeclineGuestRestore: () -> Unit = {},
     ) {
     var selectedTab by remember { mutableStateOf(0) }
+
+    state.guestRestoreOffer?.let { offer ->
+        GuestRestoreDialog(
+            offer = offer,
+            onRestore = onRestoreGuestBackup,
+            onDecline = onDeclineGuestRestore,
+        )
+    }
 
     AppScaffold(
         navItems = appNavItems,

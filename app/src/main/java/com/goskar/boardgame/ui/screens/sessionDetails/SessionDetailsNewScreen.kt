@@ -33,7 +33,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,12 +42,12 @@ import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppChip
 import com.goskar.boardgame.ui.components.AppChipStyle
+import com.goskar.boardgame.ui.components.AppGameCover
 import com.goskar.boardgame.ui.components.AppGhostButton
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.components.AppSectionHeader
-import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.appExt
@@ -118,12 +117,7 @@ fun SessionDetailsNewScreenContent(
         ) {
             AppListCard {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(72.dp)
-                            .clip(BoardGameShapes.Medium)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                    )
+                    AppGameCover(uri = state.coverUri, size = 72.dp)
                     Spacer(Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(

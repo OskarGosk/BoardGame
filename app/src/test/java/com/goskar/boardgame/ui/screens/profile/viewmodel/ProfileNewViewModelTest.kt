@@ -7,6 +7,7 @@ import com.goskar.boardgame.data.models.User
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
 import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
+import com.goskar.boardgame.data.repository.syncState.SyncStateRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import app.cash.turbine.test
 import com.goskar.boardgame.R
@@ -14,10 +15,17 @@ import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.ClearDbUseCase
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.data.useCase.BackupGuestUseCase
+import com.goskar.boardgame.data.useCase.GetSyncStatusUseCase
+import com.goskar.boardgame.data.useCase.SyncStatus
 import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
+import com.google.firebase.auth.FirebaseAuth
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
@@ -44,6 +52,9 @@ class ProfileNewViewModelTest {
     private lateinit var mePlayerRepository: MePlayerRepository
     private lateinit var clearDbUseCase: ClearDbUseCase
     private lateinit var uploadToCloud: UploadToCloudUseCase
+    private lateinit var backupGuest: BackupGuestUseCase
+    private lateinit var getSyncStatus: GetSyncStatusUseCase
+    private lateinit var syncState: SyncStateRepository
 
     private fun player(name: String, games: Int, winRatio: Int, id: String) =
         Player(name = name, games = games, winRatio = winRatio, description = "", selected = false, id = id)
@@ -57,7 +68,8 @@ class ProfileNewViewModelTest {
         HistoryGame(gameName = "g", winner = "w", gameData = LocalDate.now(), listOfPlayer = emptyList(), description = "", id = id)
 
     private fun buildViewModel() = ProfileNewViewModel(
-        userSession, playerDbRepository, historyRepository, getAllGameUseCase, mePlayerRepository, clearDbUseCase, uploadToCloud,
+        userSession, playerDbRepository, historyRepository, mePlayerRepository, clearDbUseCase, uploadToCloud,
+        backupGuest, getSyncStatus, syncState,
     )
 
     @Before
@@ -71,11 +83,34 @@ class ProfileNewViewModelTest {
         mePlayerRepository = mockk(relaxed = true)
         clearDbUseCase = mockk(relaxed = true)
         uploadToCloud = mockk(relaxed = true)
+        backupGuest = mockk(relaxed = true)
+        syncState = mockk(relaxed = true)
+        getSyncStatus = mockk()
+        coEvery { getSyncStatus() } returns SyncStatus(hasUnsyncedChanges = false, lastSyncedAt = null)
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        unmockkStatic(FirebaseAuth::class)
+    }
+
+    private fun mockFirebaseAuth() {
+        mockkStatic(FirebaseAuth::class)
+        every { FirebaseAuth.getInstance() } returns mockk(relaxed = true)
+        coEvery { userSession.logout() } returns RequestResult.Success(true)
+    }
+
+    private fun stubAccountSession() {
+        coEvery { userSession.getCurrentSession() } returns
+            User(email = "a@b.com", token = "t", userUID = "uid1")
+        coEvery { playerDbRepository.getAllPlayer() } returns RequestResult.Success(emptyList())
+        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
+    }
+
+    private fun stubGuestSession() {
+        coEvery { userSession.getCurrentSession() } returns User(email = null, token = "t", userUID = "guest")
+        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
     }
 
     @Test
@@ -91,34 +126,11 @@ class ProfileNewViewModelTest {
         viewModel.load()
 
         val state = viewModel.state.value
-        assertFalse(state.needsPlayerSelection)
         assertFalse(state.isGuest)
         assertEquals("Alex M.", state.name)
         assertEquals("alex@example.com", state.subtitle)
         assertEquals("4", state.gamesLogged)
         assertEquals("75%", state.winRate)
-    }
-
-    @Test
-    fun load_notLinked_showsPicker() = runTest(testDispatcher) {
-        coEvery { userSession.getCurrentSession() } returns
-            User(email = "alex@example.com", token = "t", userUID = "uid1")
-        coEvery { playerDbRepository.getAllPlayer() } returns RequestResult.Success(
-            listOf(
-                player("Alex M.", games = 4, winRatio = 3, id = "p1"),
-                player("Bob", games = 2, winRatio = 1, id = "p2"),
-            )
-        )
-        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
-
-        val viewModel = buildViewModel()
-        viewModel.load()
-
-        val state = viewModel.state.value
-        assertTrue(state.needsPlayerSelection)
-        assertEquals(2, state.availablePlayers.size)
-        assertEquals("alex", state.name)
-        assertEquals("—", state.winRate)
     }
 
     @Test
@@ -135,7 +147,6 @@ class ProfileNewViewModelTest {
 
         val state = viewModel.state.value
         assertTrue(state.isGuest)
-        assertFalse(state.needsPlayerSelection)
         assertEquals("Guest", state.name)
         assertEquals("2", state.gamesLogged)
         assertEquals("—", state.winRate)
@@ -178,20 +189,121 @@ class ProfileNewViewModelTest {
     }
 
     @Test
-    fun selectPlayer_linksAndReloadsAsLinked() = runTest(testDispatcher) {
-        coEvery { userSession.getCurrentSession() } returns
-            User(email = "alex@example.com", token = "t", userUID = "uid1")
-        coEvery { playerDbRepository.getAllPlayer() } returns RequestResult.Success(
-            listOf(player("Alex M.", games = 4, winRatio = 3, id = "p1"))
-        )
-        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns "p1"
+    fun load_exposesSyncStatus() = runTest(testDispatcher) {
+        stubAccountSession()
+        coEvery { getSyncStatus() } returns SyncStatus(hasUnsyncedChanges = true, lastSyncedAt = 1234L)
 
         val viewModel = buildViewModel()
-        viewModel.selectPlayer("p1")
+        viewModel.load()
 
-        coVerify(exactly = 1) { mePlayerRepository.linkPlayer("uid1", "p1") }
-        val state = viewModel.state.value
-        assertFalse(state.needsPlayerSelection)
-        assertEquals("Alex M.", state.name)
+        assertTrue(viewModel.state.value.hasUnsyncedChanges)
+        assertEquals(1234L, viewModel.state.value.lastSyncedAt)
+    }
+
+    @Test
+    fun forceSync_guest_backsUpInsteadOfUploadingToAccount() = runTest(testDispatcher) {
+        stubGuestSession()
+        coEvery { backupGuest() } returns true
+
+        val viewModel = buildViewModel()
+        viewModel.load()
+        viewModel.forceSync()
+
+        coVerify(exactly = 1) { backupGuest() }
+        coVerify(exactly = 0) { uploadToCloud() }
+    }
+
+    @Test
+    fun load_guest_isGuestButUnlinkedAccountIsNot() = runTest(testDispatcher) {
+        stubGuestSession()
+        val guest = buildViewModel().apply { load() }
+        assertTrue(guest.state.value.isGuest)
+
+        stubAccountSession()
+        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
+        val unlinked = buildViewModel().apply { load() }
+        assertFalse(unlinked.state.value.isGuest)
+    }
+
+    @Test
+    fun requestSignOut_unsyncedData_asksFirstAndKeepsData() = runTest(testDispatcher) {
+        stubAccountSession()
+        coEvery { getSyncStatus() } returns SyncStatus(hasUnsyncedChanges = true, lastSyncedAt = null)
+
+        val viewModel = buildViewModel()
+        viewModel.requestSignOut()
+
+        assertEquals(SignOutPrompt.UnsyncedData, viewModel.state.value.signOutPrompt)
+        assertFalse(viewModel.state.value.signedOut)
+        coVerify(exactly = 0) { clearDbUseCase.invoke() }
+    }
+
+    @Test
+    fun requestSignOut_allSynced_signsOutAndClearsLocalState() = runTest(testDispatcher) {
+        mockFirebaseAuth()
+        stubAccountSession()
+
+        val viewModel = buildViewModel()
+        viewModel.requestSignOut()
+
+        assertTrue(viewModel.state.value.signedOut)
+        coVerify(exactly = 1) { clearDbUseCase.invoke() }
+        coVerify(exactly = 1) { syncState.clear() }
+    }
+
+    @Test
+    fun syncAndSignOut_syncSucceeds_signsOut() = runTest(testDispatcher) {
+        mockFirebaseAuth()
+        stubAccountSession()
+        coEvery { uploadToCloud() } returns true
+
+        val viewModel = buildViewModel()
+        viewModel.load()
+        viewModel.syncAndSignOut()
+
+        assertTrue(viewModel.state.value.signedOut)
+        assertEquals(SignOutPrompt.None, viewModel.state.value.signOutPrompt)
+    }
+
+    @Test
+    fun syncAndSignOut_syncFails_staysSignedInAndWarns() = runTest(testDispatcher) {
+        stubAccountSession()
+        coEvery { uploadToCloud() } returns false
+
+        val viewModel = buildViewModel()
+        viewModel.load()
+        viewModel.syncAndSignOut()
+
+        assertFalse(viewModel.state.value.signedOut)
+        assertEquals(SignOutPrompt.SyncFailed, viewModel.state.value.signOutPrompt)
+        coVerify(exactly = 0) { clearDbUseCase.invoke() }
+    }
+
+    @Test
+    fun signOutWithoutSync_signsOutEvenWithUnsyncedData() = runTest(testDispatcher) {
+        mockFirebaseAuth()
+        stubAccountSession()
+        coEvery { getSyncStatus() } returns SyncStatus(hasUnsyncedChanges = true, lastSyncedAt = null)
+
+        val viewModel = buildViewModel()
+        viewModel.requestSignOut()
+        viewModel.signOutWithoutSync()
+
+        assertTrue(viewModel.state.value.signedOut)
+        assertEquals(SignOutPrompt.None, viewModel.state.value.signOutPrompt)
+        coVerify(exactly = 1) { clearDbUseCase.invoke() }
+    }
+
+    @Test
+    fun dismissSignOutPrompt_keepsSessionAndData() = runTest(testDispatcher) {
+        stubAccountSession()
+        coEvery { getSyncStatus() } returns SyncStatus(hasUnsyncedChanges = true, lastSyncedAt = null)
+
+        val viewModel = buildViewModel()
+        viewModel.requestSignOut()
+        viewModel.dismissSignOutPrompt()
+
+        assertEquals(SignOutPrompt.None, viewModel.state.value.signOutPrompt)
+        assertFalse(viewModel.state.value.signedOut)
     }
 }

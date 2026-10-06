@@ -266,4 +266,30 @@
     <string name="picker_description">Pick the player that represents you to see your stats.</string>
     <string name="picker_empty">No players yet. Add a player first.</string>
 
+    <!-- Sync, backup and sign out -->
+    <string name="profile_backup_title">Device Backup</string>
+    <string name="profile_backup_desc">Back up your games and sessions to the cloud so you can restore them after reinstalling the app. Cover photos from your device are not included.</string>
+    <string name="profile_backup_action">Back Up Now</string>
+    <string name="profile_last_synced">Last synced: %1$s</string>
+    <string name="profile_unsynced_changes">Changes not synced yet</string>
+    <string name="sign_out_unsynced_title">Unsynced data</string>
+    <string name="sign_out_unsynced_message_account">Some of your data has not been synced to the cloud. Signing out removes it from this device.</string>
+    <string name="sign_out_unsynced_message_guest">Some of your data has not been backed up. Signing out removes it from this device.</string>
+    <string name="sign_out_sync_failed_title">Sync failed</string>
+    <string name="sign_out_sync_failed_message">Your data could not be synced, possibly because you are offline. If you sign out now, the unsynced data is lost.</string>
+    <string name="sign_out_sync_and_sign_out">Sync and sign out</string>
+    <string name="sign_out_anyway">Sign out anyway</string>
+    <string name="guest_restore_title">Backup found</string>
+    <string name="guest_restore_message">A backup of this device from %1$s was found. Games: %2$d, sessions: %3$d. Do you want to restore it?</string>
+    <string name="guest_restore_error">Restoring failed. Check your connection and try again.</string>
+    <string name="guest_restore_action">Restore</string>
+    <string name="guest_restore_in_progress">Restoring…</string>
+    <string name="guest_restore_decline">Start fresh</string>
+    <string name="login_local_data_title">Data found on this device</string>
+    <string name="login_local_data_message">This device has data that is not part of this account. Games: %1$d, players: %2$d, sessions: %3$d. Add it to your account, or discard it?</string>
+    <string name="login_local_data_merge">Add to my account</string>
+    <string name="login_local_data_discard">Discard local data</string>
+    <string name="profile_sign_in_to_account">Sign in to an account</string>
+    <string name="profile_sign_in_to_account_hint">Your data stays on this device. After signing in you choose whether to add it to the account or discard it.</string>
+
 </resources>

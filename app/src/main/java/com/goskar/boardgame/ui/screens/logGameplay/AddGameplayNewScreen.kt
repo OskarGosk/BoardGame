@@ -7,6 +7,8 @@ import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -455,7 +457,7 @@ private fun PlayerToggle(
                 if (selected) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
                 BoardGameShapes.Full,
             )
-            .clickable { onClick() }
+            .toggleable(value = selected, role = Role.Checkbox, onValueChange = { onClick() })
             .padding(start = 6.dp, end = 16.dp, top = 6.dp, bottom = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -463,9 +465,7 @@ private fun PlayerToggle(
         Spacer(Modifier.width(8.dp))
         Text(
             name,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            ),
+            style = MaterialTheme.typography.bodyMedium,
             color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
         )
     }

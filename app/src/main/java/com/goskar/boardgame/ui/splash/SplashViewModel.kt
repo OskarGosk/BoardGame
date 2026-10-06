@@ -30,7 +30,7 @@ class SplashViewModel(
             // Optional delay to show the splash icon for a moment
             delay(1000)
             
-            val firebaseUser = FirebaseAuth.getInstance().currentUser
+            val firebaseUser = FirebaseAuth.getInstance().currentUser?.takeUnless { it.isAnonymous }
             val isLogged = userRepository.isLoggedIn()
             
             if (firebaseUser != null || isLogged) {

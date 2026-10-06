@@ -1,6 +1,7 @@
 package com.goskar.boardgame.ui.screens.home.viewmodel
 
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.GuestBackupMeta
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.models.User
@@ -11,6 +12,9 @@ import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
+import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
+import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
@@ -28,6 +32,10 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
@@ -46,6 +54,9 @@ class HomeViewModelTest {
     private lateinit var addAllPlayerToDb: UpsertAllPlayerUseCase
     private lateinit var addAllHistoryToDb: UpsertAllHistoryGameUseCase
     private lateinit var addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase
+    private lateinit var guestRestore: GuestRestoreUseCase
+    private lateinit var markLocalDataSynced: MarkLocalDataSyncedUseCase
+    private lateinit var uploadToCloud: UploadToCloudUseCase
 
     private fun game(name: String, plays: Int, id: String) = Game(
         name = name, expansion = false, cooperate = false, baseGame = "",
@@ -69,6 +80,9 @@ class HomeViewModelTest {
         addAllPlayerToDb,
         addAllHistoryToDb,
         addAllHistoryGameExpansionToDb,
+        guestRestore,
+        markLocalDataSynced,
+        uploadToCloud,
     )
 
     @Before
@@ -86,6 +100,10 @@ class HomeViewModelTest {
         addAllPlayerToDb = mockk(relaxed = true)
         addAllHistoryToDb = mockk(relaxed = true)
         addAllHistoryGameExpansionToDb = mockk(relaxed = true)
+        guestRestore = mockk(relaxed = true)
+        markLocalDataSynced = mockk(relaxed = true)
+        uploadToCloud = mockk(relaxed = true)
+        coEvery { guestRestore.findOffer() } returns null
     }
 
     @After
@@ -180,5 +198,126 @@ class HomeViewModelTest {
         viewModel.load(firstLogin = false)
 
         coVerify(exactly = 0) { api.getAllGame() }
+    }
+
+    private fun stubEmptyLibraryFor(uid: String?) {
+        coEvery { getAllGameUseCase.invoke() } returns emptyList()
+        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
+        coEvery { userSession.getCurrentSession() } returns
+            uid?.let { User(email = null, token = "t", userUID = it) }
+    }
+
+    @Test
+    fun load_guestWithBackup_offersRestore() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("guest")
+        coEvery { guestRestore.findOffer() } returns
+            GuestBackupMeta(updatedAt = 1L, gameCount = 3, playerCount = 2, sessionCount = 5)
+
+        val viewModel = buildViewModel()
+        viewModel.load(firstLogin = false)
+
+        val offer = viewModel.state.value.guestRestoreOffer
+        assertNotNull(offer)
+        assertEquals(3, offer!!.gameCount)
+        assertEquals(5, offer.sessionCount)
+    }
+
+    @Test
+    fun load_accountUser_neverChecksGuestBackup() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("uid1")
+        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
+
+        val viewModel = buildViewModel()
+        viewModel.load(firstLogin = false)
+
+        coVerify(exactly = 0) { guestRestore.findOffer() }
+        assertNull(viewModel.state.value.guestRestoreOffer)
+    }
+
+    @Test
+    fun restoreGuestBackup_success_clearsOffer() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("guest")
+        coEvery { guestRestore.findOffer() } returns GuestBackupMeta(updatedAt = 1L, gameCount = 1, sessionCount = 1)
+        coEvery { guestRestore.restore() } returns true
+
+        val viewModel = buildViewModel()
+        viewModel.load(firstLogin = false)
+        viewModel.restoreGuestBackup()
+
+        assertNull(viewModel.state.value.guestRestoreOffer)
+        coVerify(exactly = 1) { guestRestore.restore() }
+    }
+
+    @Test
+    fun restoreGuestBackup_failure_keepsOfferAndMarksFailed() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("guest")
+        coEvery { guestRestore.findOffer() } returns GuestBackupMeta(updatedAt = 1L, gameCount = 1, sessionCount = 1)
+        coEvery { guestRestore.restore() } returns false
+
+        val viewModel = buildViewModel()
+        viewModel.load(firstLogin = false)
+        viewModel.restoreGuestBackup()
+
+        val offer = viewModel.state.value.guestRestoreOffer
+        assertNotNull(offer)
+        assertTrue(offer!!.failed)
+        assertFalse(offer.inProgress)
+    }
+
+    @Test
+    fun declineGuestRestore_clearsOfferAndRemembersChoice() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("guest")
+        coEvery { guestRestore.findOffer() } returns GuestBackupMeta(updatedAt = 1L, gameCount = 1, sessionCount = 1)
+
+        val viewModel = buildViewModel()
+        viewModel.load(firstLogin = false)
+        viewModel.declineGuestRestore()
+
+        assertNull(viewModel.state.value.guestRestoreOffer)
+        coVerify(exactly = 1) { guestRestore.decline() }
+    }
+
+    private fun stubSuccessfulCloudDownload() {
+        coEvery { api.getAllGame() } returns RequestResult.Success(emptyList())
+        coEvery { api.getAllPlayer() } returns RequestResult.Success(emptyList())
+        coEvery { api.getAllHistoryGame() } returns RequestResult.Success(emptyList())
+        coEvery { api.getAllHistoryGameExpansion() } returns RequestResult.Success(emptyList())
+        coEvery { addAllGameToDb.invoke(any()) } returns true
+        coEvery { addAllPlayerToDb.invoke(any()) } returns true
+        coEvery { addAllHistoryToDb.invoke(any()) } returns true
+        coEvery { addAllHistoryGameExpansionToDb.invoke(any()) } returns true
+    }
+
+    @Test
+    fun load_firstLogin_downloadSucceeds_marksDataSynced() = runTest(testDispatcher) {
+        stubEmptyLibraryFor(null)
+        stubSuccessfulCloudDownload()
+
+        buildViewModel().load(firstLogin = true)
+
+        coVerify(exactly = 1) { markLocalDataSynced() }
+        coVerify(exactly = 0) { uploadToCloud() }
+    }
+
+    @Test
+    fun load_firstLoginWithMergedLocalData_uploadsMergedDataAfterDownload() = runTest(testDispatcher) {
+        stubEmptyLibraryFor(null)
+        stubSuccessfulCloudDownload()
+
+        buildViewModel().load(firstLogin = true, mergeLocalData = true)
+
+        coVerify(exactly = 1) { uploadToCloud() }
+        coVerify(exactly = 0) { markLocalDataSynced() }
+    }
+
+    @Test
+    fun load_firstLoginWithMergedLocalData_downloadFails_neverOverwritesCloud() = runTest(testDispatcher) {
+        stubEmptyLibraryFor(null)
+        coEvery { api.getAllGame() } returns RequestResult.Error(Throwable("offline"))
+
+        buildViewModel().load(firstLogin = true, mergeLocalData = true)
+
+        coVerify(exactly = 0) { uploadToCloud() }
+        coVerify(exactly = 0) { markLocalDataSynced() }
     }
 }

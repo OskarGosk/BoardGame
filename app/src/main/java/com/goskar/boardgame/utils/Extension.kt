@@ -6,10 +6,13 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.HistoryGameFirebase
+import java.text.DateFormat
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Date
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -78,3 +81,8 @@ fun timeGreeting(): Int = when (LocalTime.now().hour) {
     in 12..17 -> R.string.home_greeting_afternoon
     else -> R.string.home_greeting_evening
 }
+
+fun Game.coverUri(): String? = listOf(uriFromBgg, uri).firstOrNull { !it.isNullOrBlank() }
+
+fun Long.toLocalizedDateTime(): String =
+    DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(this))

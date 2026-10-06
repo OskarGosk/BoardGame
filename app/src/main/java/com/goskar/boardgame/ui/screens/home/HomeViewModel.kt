@@ -10,12 +10,16 @@ import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
+import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
+import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
+import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
 import com.goskar.boardgame.ui.screens.profile.viewmodel.PlayerPick
 import com.goskar.boardgame.utils.convertHistoryGameListToDto
+import com.goskar.boardgame.utils.coverUri
 import com.goskar.boardgame.utils.timeGreeting
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +34,14 @@ data class RecentSession(
     val uri: String = "",
 )
 
+data class GuestRestoreOffer(
+    val updatedAt: Long,
+    val gameCount: Int,
+    val sessionCount: Int,
+    val inProgress: Boolean = false,
+    val failed: Boolean = false,
+)
+
 data class HomeState(
     val isLoading: Boolean = false,
     val userName: String = "",
@@ -41,6 +53,7 @@ data class HomeState(
     val recentSessions: List<RecentSession> = emptyList(),
     val needsPlayerSelection: Boolean = false,
     val availablePlayers: List<PlayerPick> = emptyList(),
+    val guestRestoreOffer: GuestRestoreOffer? = null,
 )
 
 class HomeViewModel(
@@ -54,20 +67,62 @@ class HomeViewModel(
     private val addAllPlayerToDb: UpsertAllPlayerUseCase,
     private val addAllHistoryToDb: UpsertAllHistoryGameUseCase,
     private val addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase,
+    private val guestRestore: GuestRestoreUseCase,
+    private val markLocalDataSynced: MarkLocalDataSyncedUseCase,
+    private val uploadToCloud: UploadToCloudUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
-    fun load(firstLogin: Boolean) {
+    fun load(firstLogin: Boolean, mergeLocalData: Boolean = false) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             if (firstLogin) {
-                downloadFromCloud()
+                if (downloadFromCloud()) {
+                    if (mergeLocalData) uploadToCloud() else markLocalDataSynced()
+                }
                 selectUser()
             }
             computeStats()
             _state.update { it.copy(isLoading = false) }
+            offerGuestRestore()
+        }
+    }
+
+    fun restoreGuestBackup() {
+        val offer = _state.value.guestRestoreOffer ?: return
+        if (offer.inProgress) return
+        viewModelScope.launch {
+            _state.update { it.copy(guestRestoreOffer = offer.copy(inProgress = true, failed = false)) }
+            if (guestRestore.restore()) {
+                _state.update { it.copy(guestRestoreOffer = null) }
+                computeStats()
+            } else {
+                _state.update { it.copy(guestRestoreOffer = offer.copy(inProgress = false, failed = true)) }
+            }
+        }
+    }
+
+    fun declineGuestRestore() {
+        viewModelScope.launch {
+            guestRestore.decline()
+            _state.update { it.copy(guestRestoreOffer = null) }
+        }
+    }
+
+    private suspend fun offerGuestRestore() {
+        if (_state.value.guestRestoreOffer != null) return
+        if (userSession.getCurrentSession()?.userUID != "guest") return
+        val meta = guestRestore.findOffer() ?: return
+        _state.update {
+            it.copy(
+                guestRestoreOffer = GuestRestoreOffer(
+                    updatedAt = meta.updatedAt,
+                    gameCount = meta.gameCount,
+                    sessionCount = meta.sessionCount,
+                ),
+            )
         }
     }
 
@@ -86,7 +141,6 @@ class HomeViewModel(
         val user = userSession.getCurrentSession()
         val uid = user?.userUID
 
-        // Personal stats come from the Player linked to this account (picked on the Profile screen).
         val players =
             (playerDbRepository.getAllPlayer() as? RequestResult.Success)?.data ?: emptyList()
         val me = if (uid != null && uid != "guest") {
@@ -109,15 +163,14 @@ class HomeViewModel(
             .sortedByDescending { it.gameData }
             .take(3)
             .map { h ->
-
-                val game = games.firstOrNull { it.id == h.baseGameId }
+                val game = games.firstOrNull { it.name == h.gameName }
 
                 RecentSession(
                     gameName = h.gameName,
                     date = h.gameData.year.toString(),
                     playersInitials = h.listOfPlayer.map { initialsOf(it) },
                     winner = "Winner: ${h.winner}",
-                    uri = game?.uriFromBgg ?: game?.uri ?: ""
+                    uri = game?.coverUri() ?: ""
                 )
             }
 
@@ -170,18 +223,16 @@ class HomeViewModel(
             .uppercase()
 
 
-    private suspend fun downloadFromCloud() {
-        (api.getAllGame() as? RequestResult.Success)?.let { addAllGameToDb.invoke(it.data) }
-        (api.getAllPlayer() as? RequestResult.Success)?.let { addAllPlayerToDb.invoke(it.data) }
-        (api.getAllHistoryGame() as? RequestResult.Success)?.let {
-            addAllHistoryToDb.invoke(
-                convertHistoryGameListToDto(it.data)
-            )
-        }
-        (api.getAllHistoryGameExpansion() as? RequestResult.Success)?.let {
-            addAllHistoryGameExpansionToDb.invoke(
-                it.data
-            )
-        }
+    private suspend fun downloadFromCloud(): Boolean {
+        val games = api.getAllGame() as? RequestResult.Success
+        val players = api.getAllPlayer() as? RequestResult.Success
+        val history = api.getAllHistoryGame() as? RequestResult.Success
+        val expansions = api.getAllHistoryGameExpansion() as? RequestResult.Success
+
+        val savedGames = games?.let { addAllGameToDb.invoke(it.data) } ?: false
+        val savedPlayers = players?.let { addAllPlayerToDb.invoke(it.data) } ?: false
+        val savedHistory = history?.let { addAllHistoryToDb.invoke(convertHistoryGameListToDto(it.data)) } ?: false
+        val savedExpansions = expansions?.let { addAllHistoryGameExpansionToDb.invoke(it.data) } ?: false
+        return savedGames && savedPlayers && savedHistory && savedExpansions
     }
 }
