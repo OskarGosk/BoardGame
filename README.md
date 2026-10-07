@@ -2,10 +2,8 @@
 
 # 🎲 BoardGame Tracker
 
-> 🚧 **Heads-up: this project has just gone through a big redesign and refactor and is still being cleaned up.**
-> The new UI (designed with Google Stitch, implemented with Claude Code) and the new screen/ViewModel structure are already in place.
-> What is still left: wiring up the **Reports** and **Settings** screens, **edge-to-edge** support, a few visual fixes, removing a few **legacy ViewModels** and commented-out code, moving the **remaining hard-coded strings** to resources, and finishing a few **polish items** (details in [Remaining work](#remaining-work)).
-> If you spot something that looks unfinished – it most likely is on that list.
+> 🚧 **Work in progress:** the project has just been through a major UI redesign and refactor (new UI designed with Google Stitch, implemented with Claude Code).
+> A few screens and cleanup items are still open – see [Remaining work](#remaining-work).
 
 The application is designed to **record and analyze board game sessions**.<br/><br/>
 
