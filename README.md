@@ -18,6 +18,7 @@ The application works in two modes:<br/>
 - **Guest** – data is stored locally.<br/>
 - **Logged-in user** – data is synchronized with the **Firebase Database**, allowing saving and retrieving across devices.<br/>
 <br/>
+
 A demo account is available on request, or you can try the app right away in **Guest** mode.<br/><br/>
 
 | Before | After |
