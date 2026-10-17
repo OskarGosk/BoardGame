@@ -24,9 +24,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppStatCard(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
-    modifier: Modifier = Modifier,
     valueColor: Color = MaterialTheme.colorScheme.primary,
     icon: @Composable (() -> Unit)? = null,
 ) {
@@ -35,7 +35,7 @@ fun AppStatCard(
         shape = BoardGameShapes.Large,
         elevation = CardDefaults.cardElevation(BoardGameElevation.Level1),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
     ) {
         Row(
             modifier = Modifier
@@ -57,7 +57,7 @@ fun AppStatCard(
 @Composable
 private fun AppStatCardPreviewContent() {
     Column(Modifier.padding(16.dp)) {
-        AppStatCard("Total Games", "142")
+        AppStatCard(label = "Total Games", value = "142")
     }
 }
 

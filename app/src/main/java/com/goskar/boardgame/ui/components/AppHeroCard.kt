@@ -24,8 +24,8 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppHeroCard(
-    title: String,
     modifier: Modifier = Modifier,
+    title: String,
     badge: String? = null,
     badgeStyle: AppChipStyle = AppChipStyle.BASE_GAME,
     subtitle: String? = null,
@@ -50,8 +50,8 @@ fun AppHeroCard(
                 imageContent()
                 if (badge != null) {
                     AppChip(
-                        badge,
-                        badgeStyle,
+                        text = badge,
+                        style = badgeStyle,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(12.dp),

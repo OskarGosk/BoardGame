@@ -33,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +67,7 @@ class LoginScreen : Screen {
         val state by viewModel.state.collectAsState()
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
-        val context = LocalContext.current
+        val resources = LocalResources.current
 
         LoginScreenContent(
             state = state,
@@ -85,7 +85,7 @@ class LoginScreen : Screen {
                 when (event) {
                     is LoginEvent.ShowMessage -> {
                         snackbarHostState.show(
-                            message = context.getString(event.message),
+                            message = resources.getString(event.message),
                             type = event.type
                         )
                         navigator?.replaceAll(HomeScreen(firstLogin = true, mergeLocalData = event.mergeLocalData))
@@ -99,7 +99,7 @@ class LoginScreen : Screen {
 
                     is LoginEvent.ShowErrorMessage -> {
                         snackbarHostState.show(
-                            message = event.message ?: context.getString(R.string.error_global),
+                            message = event.message ?: resources.getString(R.string.error_global),
                             type = AppSnackBarType.ERROR
                         )
                     }
@@ -167,7 +167,7 @@ fun LoginScreenContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Tabletop Tracker",
+            text = stringResource(R.string.login_title),
             style = MaterialTheme.typography.displayLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -175,7 +175,7 @@ fun LoginScreenContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Manage your board game collection and session history in one premium space.",
+            text = stringResource(R.string.login_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -193,8 +193,8 @@ fun LoginScreenContent(
                 AppTextField(
                     value = state.login,
                     onValueChange = { updateLogin(it) },
-                    label = "Email Address",
-                    placeholder = "name@example.com",
+                    label = stringResource(R.string.login_email_label),
+                    placeholder = stringResource(R.string.login_email_hint),
                     isError = state.loginError,
                     supportingText = if (state.loginError) stringResource(R.string.field_required) else null,
                     leadingIcon = {
@@ -214,19 +214,19 @@ fun LoginScreenContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "Password",
+                            stringResource(R.string.login_password_label),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 6.dp)
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
                         Text(
-                            "Forgot?",
+                            stringResource(R.string.login_forgot_password),
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             ),
                             modifier = Modifier
-                                .padding(bottom = 6.dp)
+                                .padding(bottom = 8.dp)
                                 .clickable { /* Handle forgot password */ }
                         )
                     }
@@ -260,7 +260,7 @@ fun LoginScreenContent(
                     )
                 }
                 AppPrimaryButton(
-                    text = "Login",
+                    text = stringResource(R.string.login_action),
                     onClick = logIn,
                     loading = state.isLoading
                 )
@@ -278,7 +278,7 @@ fun LoginScreenContent(
                             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
                         Text(
-                            text = " OR CONNECT WITH ",
+                            text = stringResource(R.string.login_or_connect_with),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 8.dp)
@@ -291,7 +291,7 @@ fun LoginScreenContent(
                 }
 
                 AppSecondaryButton(
-                    text = "Continue as Guest",
+                    text = stringResource(R.string.login_continue_as_guest),
                     onClick = questLogIn
                 )
 
@@ -302,12 +302,12 @@ fun LoginScreenContent(
 
         Row {
             Text(
-                text = "New collector? ",
+                text = stringResource(R.string.login_new_collector),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = "Create an account",
+                text = stringResource(R.string.login_create_account),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable { /* Handle sign up */ }
@@ -320,7 +320,7 @@ fun LoginScreenContent(
 
 @Preview
 @Composable
-fun LoginScreenPreview() {
+private fun LoginScreenPreview() {
     BoardGameTheme {
         LoginScreenContent(
             LoginState(login = "oskar@login.com", password = "Oskar"),
@@ -330,7 +330,7 @@ fun LoginScreenPreview() {
 
 @Preview()
 @Composable
-fun LoginScreenDarkPreview() {
+private fun LoginScreenDarkPreview() {
     BoardGameTheme(darkTheme = true) {
         LoginScreenContent(
             LoginState(login = "oskar@login.com", password = "Oskar"),
@@ -340,7 +340,7 @@ fun LoginScreenDarkPreview() {
 
 @Preview
 @Composable
-fun LoginScreenErrorPreview() {
+private fun LoginScreenErrorPreview() {
     BoardGameTheme {
         LoginScreenContent(
             LoginState(loginError = true, passwordError = true),

@@ -15,9 +15,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppGhostButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     TextButton(
         onClick = onClick,
@@ -32,7 +32,7 @@ fun AppGhostButton(
 
 @Composable
 private fun AppGhostButtonPreviewContent() {
-    AppGhostButton("Discard Changes", onClick = {}, modifier = Modifier.padding(16.dp))
+    AppGhostButton(text = "Discard Changes", onClick = {}, modifier = Modifier.padding(16.dp))
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

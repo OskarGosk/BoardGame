@@ -26,9 +26,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppTopBar(
+    modifier: Modifier = Modifier,
     title: String? = stringResource(R.string.app_name_title),
     subtitle: String? = null,
-    modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
     leading: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
@@ -48,7 +48,7 @@ fun AppTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    "Back",
+                    stringResource(R.string.cd_back),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -77,8 +77,8 @@ fun AppTopBar(
 @Composable
 private fun AppTopBarPreviewContent() {
     AppTopBar(
-        stringResource(R.string.players_title),
-        stringResource(R.string.players_subtitle),
+        title = stringResource(R.string.players_title),
+        subtitle = stringResource(R.string.players_subtitle),
         onBack = {})
 }
 

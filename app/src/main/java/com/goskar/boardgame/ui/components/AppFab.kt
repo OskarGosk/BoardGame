@@ -17,8 +17,8 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppFab(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit,
     icon: @Composable () -> Unit,
 ) {
     FloatingActionButton(
@@ -27,7 +27,7 @@ fun AppFab(
         shape = CircleShape,
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
-        elevation = FloatingActionButtonDefaults.elevation(6.dp),
+        elevation = FloatingActionButtonDefaults.elevation(8.dp),
     ) { icon() }
 }
 

@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,15 +24,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppSearchBar(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    placeholder: String = "Search…",
+    placeholder: String = stringResource(R.string.search_hint),
     trailingIcon: @Composable (() -> Unit)? = null,
     onSearch: (() -> Unit)? = null,
 ) {
@@ -79,7 +81,7 @@ fun AppSearchBar(
 @Composable
 private fun AppSearchBarPreviewContent() {
     var text by remember { mutableStateOf("") }
-    AppSearchBar(text, { text = it }, Modifier.padding(16.dp), onSearch = {})
+    AppSearchBar(value = text, onValueChange = { text = it }, modifier = Modifier.padding(16.dp), onSearch = {})
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

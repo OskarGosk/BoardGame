@@ -22,9 +22,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppPrimaryButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     loading: Boolean = false,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -42,7 +42,7 @@ fun AppPrimaryButton(
             disabledContainerColor = MaterialTheme.colorScheme.outlineVariant,
             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 2.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 4.dp),
         contentPadding = PaddingValues(horizontal = 24.dp),
     ) {
         if (loading) {
@@ -62,7 +62,7 @@ fun AppPrimaryButton(
 
 @Composable
 private fun AppPrimaryButtonPreviewContent() {
-    AppPrimaryButton("Save Player", onClick = {}, modifier = Modifier.padding(16.dp))
+    AppPrimaryButton(text = "Save Player", onClick = {}, modifier = Modifier.padding(16.dp))
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

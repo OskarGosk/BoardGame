@@ -36,7 +36,7 @@ fun AppAvatar(
                 .align(Alignment.Center)
                 .clip(CircleShape)
                 .background(cs.secondaryContainer)
-                .then(if (selected) Modifier.border(3.dp, cs.primary, CircleShape) else Modifier),
+                .then(if (selected) Modifier.border(4.dp, cs.primary, CircleShape) else Modifier),
             contentAlignment = Alignment.Center,
         ) {
             if (imageContent != null) imageContent()

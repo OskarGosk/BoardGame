@@ -90,7 +90,7 @@ fun SearchRowGlobal(
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 10.dp),
+                    .padding(end = 12.dp),
                 label = {
                     Text(
                         stringResource(id = searchHelp),
@@ -111,7 +111,7 @@ fun SearchRowGlobal(
                             Icon(imageVector = Icons.Default.Search,
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(25.dp)
+                                    .size(24.dp)
                                     .clickable {
                                         searchFun()
                                         focusManager.clearFocus()
@@ -120,7 +120,7 @@ fun SearchRowGlobal(
                             imageVector = Icons.Default.Close,
                             contentDescription = null,
                             modifier = Modifier
-                                .size(25.dp)
+                                .size(24.dp)
                                 .clickable {
                                     clearTxt()
                                     focusManager.clearFocus()
@@ -137,14 +137,14 @@ fun SearchRowGlobal(
                     imageVector = Icons.Outlined.Menu,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(35.dp)
+                        .size(36.dp)
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                     )
                 ExposedDropdownMenu(
                     expanded = expanded,
                     modifier = Modifier
                         .weight(1f)
-                        .width(250.dp),
+                        .width(252.dp),
                     onDismissRequest = { expanded = false }) {
                     SortList.entries.forEach { sort ->
                         DropdownMenuItem(
@@ -180,11 +180,11 @@ fun SearchRowGlobal(
 
 @Preview
 @Composable
-fun SearchRowPreview() {
+private fun SearchRowPreview() {
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
-        Box(modifier = Modifier.padding(10.dp)) {
+        Box(modifier = Modifier.padding(12.dp)) {
             SearchRowGlobal(
                 searchHelp = R.string.player_name,
                 searchTxt = "Test",

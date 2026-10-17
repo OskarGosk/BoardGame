@@ -20,7 +20,7 @@ import com.goskar.boardgame.ui.theme.SmoochBold22
 
 @Composable
 fun SimpleAlertDialog(
-    modifierButton: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     titleText: String,
     contentText: Int,
     confirmButtonClick: () -> Unit = {},
@@ -45,8 +45,8 @@ fun SimpleAlertDialog(
                 onClick = {
                     confirmButtonClick()
                 },
-                modifier = modifierButton
-                    .padding(top = 10.dp)
+                modifier = modifier
+                    .padding(top = 12.dp)
             ) {
                 Text(
                     stringResource(R.string.confirm),
@@ -58,8 +58,8 @@ fun SimpleAlertDialog(
             Button(
                 shape = CutCornerShape(percent = 10),
                 onClick = { onDismiss() },
-                modifier = modifierButton
-                    .padding(top = 10.dp)
+                modifier = modifier
+                    .padding(top = 12.dp)
             ) {
                 Text(
                     stringResource(R.string.back_to_list),
@@ -72,11 +72,11 @@ fun SimpleAlertDialog(
 
 @Preview
 @Composable
-fun SimpleAlertDialogPreview() {
+private fun SimpleAlertDialogPreview() {
     Surface(
         color = MaterialTheme.colorScheme.background
     ) {
-        Box(modifier = Modifier.padding(10.dp)) {
+        Box(modifier = Modifier.padding(12.dp)) {
             SimpleAlertDialog(
                 titleText = stringResource(R.string.delete, "Oskar"),
                 contentText = R.string.board_delete_info

@@ -20,9 +20,9 @@ import com.goskar.boardgame.ui.theme.appExt
 
 @Composable
 fun AppChip(
+    modifier: Modifier = Modifier,
     text: String,
     style: AppChipStyle = AppChipStyle.CATEGORY,
-    modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
     val cs = MaterialTheme.colorScheme
@@ -40,7 +40,7 @@ fun AppChip(
             .clip(BoardGameShapes.Full)
             .background(bg)
             .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
-            .padding(horizontal = 10.dp, vertical = 4.dp),
+            .padding(horizontal = 12.dp, vertical = 4.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(text, style = MaterialTheme.typography.labelSmall, color = fg)
@@ -50,9 +50,9 @@ fun AppChip(
 @Composable
 private fun AppChipPreviewContent() {
     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        AppChip("STRATEGY", AppChipStyle.CATEGORY)
-        AppChip("WON", AppChipStyle.STATUS_WIN)
-        AppChip("2018", AppChipStyle.YEAR)
+        AppChip(text = "STRATEGY", style = AppChipStyle.CATEGORY)
+        AppChip(text = "WON", style = AppChipStyle.STATUS_WIN)
+        AppChip(text = "2018", style = AppChipStyle.YEAR)
     }
 }
 

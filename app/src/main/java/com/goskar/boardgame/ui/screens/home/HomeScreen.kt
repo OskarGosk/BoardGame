@@ -124,7 +124,7 @@ fun HomeScreenContent(
         },
         floatingActionButton = {
             AppFab(onClick = onFabClick) {
-                Icon(Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.onPrimary)
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.collection_add), tint = MaterialTheme.colorScheme.onPrimary)
             }
         },
     ) { innerPadding ->
@@ -192,9 +192,9 @@ fun HomeScreenContent(
 
             AppSectionHeader(title = stringResource(R.string.home_quick_actions))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                QuickActionTile(Icons.Default.Add, stringResource(R.string.home_add_gameplay), Modifier.weight(1f), onClick = onAddGameplay)
-                QuickActionTile(Icons.Default.QrCodeScanner, stringResource(R.string.home_scan_bgg), Modifier.weight(1f), onClick = onScanBgg)
-                QuickActionTile(Icons.Default.Assessment, stringResource(R.string.home_quick_report), Modifier.weight(1f), onClick = onQuickReport)
+                QuickActionTile(icon = Icons.Default.Add, label = stringResource(R.string.home_add_gameplay), modifier = Modifier.weight(1f), onClick = onAddGameplay)
+                QuickActionTile(icon = Icons.Default.QrCodeScanner, label = stringResource(R.string.home_scan_bgg), modifier = Modifier.weight(1f), onClick = onScanBgg)
+                QuickActionTile(icon = Icons.Default.Assessment, label = stringResource(R.string.home_quick_report), modifier = Modifier.weight(1f), onClick = onQuickReport)
             }
 
             AppSectionHeader(
