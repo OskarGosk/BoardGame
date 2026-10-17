@@ -16,7 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
-/** Mała statystyka: etykieta nad wartością, wyśrodkowana (np. czas, wiek, data, liczba graczy). */
 @Composable
 fun AppStatCell(
     modifier: Modifier = Modifier,

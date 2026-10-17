@@ -24,10 +24,8 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
-/** OUTLINED: zaznaczony ma ramkę (filtry). FILLED: zaznaczony jest wypełniony kolorem głównym (wybór wariantów). */
 enum class AppSelectChipStyle { OUTLINED, FILLED }
 
-/** Chip, który można zaznaczać i odznaczać. */
 @Composable
 fun AppSelectChip(
     modifier: Modifier = Modifier,

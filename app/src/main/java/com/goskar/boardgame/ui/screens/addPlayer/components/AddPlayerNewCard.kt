@@ -40,21 +40,6 @@ fun AddPlayerNewCard(
     onDiscard: () -> Unit,
 ) {
     AppListCard(modifier = modifier) {
-//        AppSectionHeader(title = "Choose Avatar", action = "SELECT ONE")
-//        Spacer(Modifier.height(16.dp))
-//        Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-//            state.avatars.forEachIndexed { index, initials ->
-//                AppAvatar(
-//                    initials = initials,
-//                    size = 72.dp,
-//                    selected = index == state.selectedAvatar,
-//                    modifier = Modifier.clickable { onSelectAvatar(index) },
-//                )
-//            }
-//        }
-//
-//        Spacer(Modifier.height(24.dp))
-
         AppTextField(
             value = state.nickname,
             onValueChange = onNicknameChange,

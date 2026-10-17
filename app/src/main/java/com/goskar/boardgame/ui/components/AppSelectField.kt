@@ -19,10 +19,8 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
-/** Pozycja listy w [AppSelectField]: [id] trafia do callbacku, [label] jest wyświetlany. */
 data class AppSelectOption(val id: String, val label: String)
 
-/** Pole z listą rozwijaną (etykieta, aktualna wartość lub placeholder, menu z opcjami). */
 @Composable
 fun AppSelectField(
     modifier: Modifier = Modifier,
