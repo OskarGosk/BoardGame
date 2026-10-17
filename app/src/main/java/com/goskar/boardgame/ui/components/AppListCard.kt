@@ -30,7 +30,7 @@ fun AppListCard(
         enabled = onClick != null,
         elevation = CardDefaults.cardElevation(defaultElevation = BoardGameElevation.Level1),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLowest),
-        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
     ) {
         Column(modifier = Modifier.padding(16.dp), content = content)
     }

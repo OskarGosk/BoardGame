@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.navigation.BgNavItem
@@ -38,20 +39,20 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppBottomNavBar(
+    modifier: Modifier = Modifier,
     items: List<BgNavItem>,
     selected: Int,
     onSelect: (Int) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val navigator = LocalNavigator.current
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 3.dp,
+        shadowElevation = 4.dp,
         tonalElevation = 0.dp,
     ) {
         Column {
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,13 +96,13 @@ fun AppBottomNavBar(
                         ) {
                             Icon(
                                 imageVector = if (isActive) item.selectedIcon else item.icon,
-                                contentDescription = item.label,
+                                contentDescription = stringResource(item.labelRes),
                                 tint = if (isActive) activeColor else inactiveColor,
-                                modifier = Modifier.size(22.dp),
+                                modifier = Modifier.size(24.dp),
                             )
-                            Spacer(Modifier.height(3.dp))
+                            Spacer(Modifier.height(4.dp))
                             Text(
-                                text = item.label,
+                                text = stringResource(item.labelRes),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = if (isActive) activeColor else inactiveColor,
                             )
@@ -116,7 +117,7 @@ fun AppBottomNavBar(
 @Composable
 private fun AppBottomNavBarPreviewContent() {
     var sel by remember { mutableStateOf(0) }
-    AppBottomNavBar(previewNavItems, sel, { sel = it })
+    AppBottomNavBar(items = previewNavItems, selected = sel, onSelect = { sel = it })
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

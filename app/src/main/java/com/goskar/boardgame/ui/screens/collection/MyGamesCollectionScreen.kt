@@ -1,69 +1,52 @@
 package com.goskar.boardgame.ui.screens.collection
 
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
-import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen
-import com.goskar.boardgame.ui.screens.gameDetails.GameDetailsNewScreen
-import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
-import com.goskar.boardgame.ui.components.user.rememberUserInitials
-import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
-import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.ui.graphics.graphicsLayer
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppFab
+import com.goskar.boardgame.ui.components.AppPoweredByBgg
+import com.goskar.boardgame.ui.components.AppSearchBar
+import com.goskar.boardgame.ui.components.AppSelectChip
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
+import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
+import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.gamesList.lists.GameListState
 import com.goskar.boardgame.ui.gamesList.lists.GameListViewModel
 import com.goskar.boardgame.ui.gamesList.lists.GameUiState
+import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
+import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen
+import com.goskar.boardgame.ui.screens.collection.components.AddGridItem
+import com.goskar.boardgame.ui.screens.collection.components.CollectionGridItem
+import com.goskar.boardgame.ui.screens.collection.components.SortMenu
+import com.goskar.boardgame.ui.screens.gameDetails.GameDetailsNewScreen
+import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
+import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
 import com.goskar.boardgame.ui.theme.*
 import com.goskar.boardgame.utils.SortList
 import org.koin.androidx.compose.koinViewModel
-import androidx.core.net.toUri
-import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.components.AppAvatar
-import com.goskar.boardgame.ui.components.AppChip
-import com.goskar.boardgame.ui.components.AppChipStyle
-import com.goskar.boardgame.ui.components.AppFab
-import com.goskar.boardgame.ui.components.AppFilterChip
-import com.goskar.boardgame.ui.components.AppPoweredByBgg
-import com.goskar.boardgame.ui.components.AppSearchBar
-import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.ui.navigation.AppScaffold
 
 class MyGamesCollectionScreen : Screen {
     @Composable
@@ -150,7 +133,7 @@ fun MyGamesCollectionView(
         floatingActionButton = {
             AppFab(
                 onClick = onAddGame,
-                icon = { Icon(Icons.Default.Add, contentDescription = "Add Game") }
+                icon = { Icon(Icons.Default.Add, contentDescription = stringResource(R.string.addgame_title)) }
             )
         }
     ) { paddingValues ->
@@ -181,15 +164,21 @@ fun MyGamesCollectionView(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            listOf("All", "Base", "Expansions").forEachIndexed { index, label ->
-                                AppFilterChip(
-                                    text = label,
+                            listOf(
+                                R.string.collection_filter_all,
+                                R.string.collection_filter_base,
+                                R.string.collection_filter_expansions,
+                            ).forEachIndexed { index, labelRes ->
+                                AppSelectChip(
+                                    text = stringResource(labelRes),
                                     selected = selectedFilter == index,
                                     onToggle = {
                                         selectedFilter = index
-                                        if (label == "Base") updateCheckboxBaseGame()
-                                        if (label == "Expansions") updateCheckboxExpansionGame()
-                                        if (label == "All") useAllGameFilter()
+                                        when (labelRes) {
+                                            R.string.collection_filter_base -> updateCheckboxBaseGame()
+                                            R.string.collection_filter_expansions -> updateCheckboxExpansionGame()
+                                            R.string.collection_filter_all -> useAllGameFilter()
+                                        }
                                     }
                                 )
                             }
@@ -242,321 +231,6 @@ fun MyGamesCollectionView(
         )
     }
 }
-
-@Composable
-private fun SortMenu(current: SortList, onSort: (SortList) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-    Box {
-        IconButton(onClick = { expanded = true }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.List,
-                contentDescription = "Sort",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            SortList.entries.forEach { sort ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            stringResource(sort.value),
-                            fontWeight = if (sort == current) FontWeight.SemiBold else FontWeight.Normal,
-                            color = if (sort == current) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
-                    },
-                    onClick = {
-                        onSort(sort)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun CollectionGridItem(
-    game: GameUiState,
-    modifier: Modifier = Modifier,
-    onInfo: (() -> Unit)? = null,
-    onAddSession: () -> Unit = {},
-    onEdit: () -> Unit = {},
-    onDelete: () -> Unit = {},
-) {
-    val hasCover = !(game.game.uriFromBgg ?: game.game.uri).isNullOrBlank()
-    // no cover -> start on the info side so the tile is never an empty box
-    var flipped by remember { mutableStateOf(!hasCover) }
-    val rotation by animateFloatAsState(if (flipped) 180f else 0f, label = "flip")
-
-    Column(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(0.8f)
-                .graphicsLayer {
-                    rotationY = rotation
-                    cameraDistance = 12f * density
-                }
-                .clip(BoardGameShapes.ExtraLarge)
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .clickable { flipped = !flipped },
-            contentAlignment = Alignment.Center
-        ) {
-            if (rotation <= 90f) {
-                GameCoverFront(game)
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer { rotationY = 180f }) {
-                    GameCoverBack(game, onInfo, onAddSession, onEdit, onDelete)
-                }
-            }
-        }
-        Spacer(Modifier.height(8.dp))
-        Text(
-            text = game.game.name,
-            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1
-        )
-
-        val category = game.game.category
-        val year = game.game.yearPublished
-        val rating = game.game.rating
-        if (!category.isNullOrBlank() || year != null || rating != null) {
-            Spacer(Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                if (!category.isNullOrBlank()) {
-                    AppChip(category, AppChipStyle.CATEGORY)
-                }
-                if (year != null) {
-                    Text(
-                        text = year.toString(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
-                }
-                if (rating != null) {
-                    Text(
-                        text = "★ " + String.format(java.util.Locale.US, "%.1f", rating),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = appExt().success,
-                        maxLines = 1
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun GameCoverFront(game: GameUiState) {
-    val gameUri = game.game.uriFromBgg ?: game.game.uri
-    if (!gameUri.isNullOrBlank()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current).data(gameUri.toUri()).build(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-                    .clip(BoardGameShapes.Small)
-                    .background(Color.Black.copy(alpha = 0.5f))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    text = "${game.game.games} plays",
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                    color = Color.White
-                )
-            }
-        }
-    } else {
-        // no cover: show basic info instead of an empty box
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Casino,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(28.dp)
-            )
-            val players = playersLabel(game)
-            if (players.isNotBlank()) {
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    players,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-            Spacer(Modifier.height(2.dp))
-            Text(
-                "${game.game.games} plays",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-private fun GameCoverBack(
-    game: GameUiState,
-    onInfo: (() -> Unit)?,
-    onAddSession: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(Modifier.weight(1f))
-        if (game.game.expansion) {
-            Text(
-                stringResource(R.string.board_expansion),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.height(6.dp))
-        }
-        InfoLine(
-            stringResource(R.string.collection_min_players),
-            game.game.minPlayer.ifBlank { "—" })
-        Spacer(Modifier.height(6.dp))
-        InfoLine(
-            stringResource(R.string.collection_max_players),
-            game.game.maxPlayer.ifBlank { "—" })
-        Spacer(Modifier.height(6.dp))
-        InfoLine(stringResource(R.string.collection_games_played), game.game.games.toString())
-        Spacer(Modifier.weight(1f))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            BackIcon(
-                Icons.Default.Add,
-                "Add session",
-                MaterialTheme.colorScheme.onSurfaceVariant,
-                onAddSession
-            )
-            BackIcon(Icons.Default.Edit, "Edit", MaterialTheme.colorScheme.onSurfaceVariant, onEdit)
-            if (onInfo != null) {
-                BackIcon(Icons.Default.Info, "Info", MaterialTheme.colorScheme.onSurfaceVariant, onInfo)
-            }
-            BackIcon(Icons.Default.Delete, "Delete", MaterialTheme.colorScheme.error, onDelete)
-        }
-    }
-}
-
-private fun playersLabel(game: GameUiState): String {
-    val min = game.game.minPlayer.trim()
-    val max = game.game.maxPlayer.trim()
-    return when {
-        min.isBlank() && max.isBlank() -> ""
-        min.isBlank() -> "$max players"
-        max.isBlank() || min == max -> "$min players"
-        else -> "$min–$max players"
-    }
-}
-
-@Composable
-private fun InfoLine(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1
-        )
-        Text(
-            value,
-            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-    }
-}
-
-@Composable
-private fun BackIcon(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    contentDescription: String,
-    tint: Color,
-    onClick: () -> Unit,
-) {
-    Icon(
-        imageVector = icon,
-        contentDescription = contentDescription,
-        tint = tint,
-        modifier = Modifier
-            .clip(CircleShape)
-            .clickable { onClick() }
-            .padding(6.dp)
-            .size(24.dp)
-    )
-}
-
-@Composable
-fun AddGridItem(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
-    val strokeColor = MaterialTheme.colorScheme.outlineVariant
-    Box(
-        modifier = modifier
-            .aspectRatio(0.8f)
-            .drawBehind {
-                drawRoundRect(
-                    color = strokeColor,
-                    style = Stroke(
-                        width = 2.dp.toPx(),
-                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-                    ),
-                    cornerRadius = CornerRadius(24.dp.toPx())
-                )
-            }
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(28.dp)
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.collection_add),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
 
 @Preview(name = "My Collection — No Covers", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable

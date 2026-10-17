@@ -61,8 +61,8 @@ object BoardGameElevation {
     val None   = 0.dp
     val Low    = 1.dp   // dark cards (tonal)
     val Level1 = 1.dp
-    val Medium = 2.dp   // light cards
-    val High   = 6.dp   // light modals, FAB
+    val Medium = 4.dp   // light cards
+    val High   = 8.dp   // light modals, FAB
 }
 
 object BoardGameDarkSpacing {

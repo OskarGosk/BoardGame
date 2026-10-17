@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -21,6 +22,7 @@ import com.goskar.boardgame.ui.screens.home.HomeScreen
 import com.goskar.boardgame.ui.login.LoginScreen
 import com.goskar.boardgame.ui.theme.BoardGameColors
 import com.goskar.boardgame.ui.theme.BoardGameShapes
+import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
 class SplashScreen : Screen {
@@ -74,3 +76,17 @@ fun SplashScreenContent() {
         }
     }
 }
+
+
+@Composable
+private fun SplashScreenPreviewContent() {
+    SplashScreenContent()
+}
+
+@Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun SplashScreenLight() = BoardGameTheme(darkTheme = false) { SplashScreenPreviewContent() }
+
+@Preview(name = "Dark", showBackground = true, backgroundColor = 0xFF131313)
+@Composable
+private fun SplashScreenDark() = BoardGameTheme(darkTheme = true) { SplashScreenPreviewContent() }

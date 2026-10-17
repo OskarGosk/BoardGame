@@ -1,6 +1,8 @@
 package com.goskar.boardgame.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,9 +21,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
     placeholder: String = "",
     label: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -29,6 +31,7 @@ fun AppTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     singleLine: Boolean = true,
+    minLines: Int = 4,
     isError: Boolean = false,
     supportingText: String? = null,
 ) {
@@ -38,7 +41,7 @@ fun AppTextField(
             Text(
                 label, style = MaterialTheme.typography.labelMedium,
                 color = cs.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 6.dp),
+                modifier = Modifier.padding(bottom = 8.dp),
             )
         }
         OutlinedTextField(
@@ -46,11 +49,12 @@ fun AppTextField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .then(if (singleLine) Modifier.height(56.dp) else Modifier.defaultMinSize(minHeight = (minLines * 52).dp)),
             placeholder = { Text(placeholder, style = MaterialTheme.typography.bodyLarge, color = cs.outline) },
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             singleLine = singleLine,
+            minLines = if (singleLine) 1 else minLines,
             keyboardOptions = keyboardOptions,
             visualTransformation = visualTransformation,
             isError = isError,
@@ -76,7 +80,10 @@ fun AppTextField(
 
 @Composable
 private fun AppTextFieldPreviewContent() {
-    AppTextField("", {}, Modifier.padding(16.dp), label = "Game Name", placeholder = "e.g. Terraforming Mars")
+    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        AppTextField(value = "", onValueChange = {}, label = "Game Name", placeholder = "e.g. Terraforming Mars")
+        AppTextField(value = "", onValueChange = {}, label = "Notes", placeholder = "Describe the session", singleLine = false, minLines = 3)
+    }
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

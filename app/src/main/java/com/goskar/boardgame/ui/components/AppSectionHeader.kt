@@ -21,8 +21,8 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppSectionHeader(
-    title: String,
     modifier: Modifier = Modifier,
+    title: String,
     subtitle: String? = null,
     badge: String? = null,
     action: String? = null,
@@ -56,7 +56,7 @@ fun AppSectionHeader(
 @Composable
 private fun AppSectionHeaderPreviewContent() {
     Column(Modifier.padding(16.dp)) {
-        AppSectionHeader("Recent Sessions", action = "View All", onAction = {})
+        AppSectionHeader(title = "Recent Sessions", action = "View All", onAction = {})
     }
 }
 

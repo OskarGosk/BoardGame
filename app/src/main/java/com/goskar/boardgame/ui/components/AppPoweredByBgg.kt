@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
@@ -38,14 +39,14 @@ fun AppPoweredByBgg(modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(R.drawable.bgg),
-            contentDescription = "Powered by BoardGameGeek",
+            contentDescription = stringResource(R.string.bgg_powered_by),
             contentScale = ContentScale.Fit,
             // light backdrop keeps the dark BGG wordmark legible on the dark theme too
             modifier = Modifier
                 .clip(BoardGameShapes.Full)
                 .background(Color.White)
                 .clickable { uriHandler.openUri(BGG_URL) }
-                .padding(horizontal = 14.dp, vertical = 6.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .height(20.dp),
         )
     }

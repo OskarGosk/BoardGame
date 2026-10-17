@@ -35,8 +35,8 @@ fun AppLoader(
                 color = Color.DarkGray,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(bottom = 90.dp)
-                    .size(35.dp),
+                    .padding(bottom = 88.dp)
+                    .size(36.dp),
             )
         }
     }

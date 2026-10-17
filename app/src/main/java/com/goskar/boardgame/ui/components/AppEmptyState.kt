@@ -25,9 +25,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppEmptyState(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     heading: String,
-    modifier: Modifier = Modifier,
     body: String? = null,
     action: String? = null,
     onAction: (() -> Unit)? = null,
@@ -54,14 +54,14 @@ fun AppEmptyState(
         }
         if (action != null && onAction != null) {
             Spacer(Modifier.height(16.dp))
-            AppSecondaryButton(action, onAction, modifier = Modifier.fillMaxWidth(0.55f))
+            AppSecondaryButton(text = action, onClick = onAction, modifier = Modifier.fillMaxWidth(0.55f))
         }
     }
 }
 
 @Composable
 private fun AppEmptyStatePreviewContent() {
-    AppEmptyState(Icons.Default.Inbox, "No older history found", body = "Your past sessions will appear here")
+    AppEmptyState(icon = Icons.Default.Inbox, heading = "No older history found", body = "Your past sessions will appear here")
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

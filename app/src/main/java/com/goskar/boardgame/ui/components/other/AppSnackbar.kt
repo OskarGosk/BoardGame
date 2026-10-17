@@ -1,6 +1,8 @@
 package com.goskar.boardgame.ui.components.other
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,8 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
+import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.SnackbarColor.onSnackbarColor
 import com.goskar.boardgame.ui.theme.SnackbarColor.snackbarErrorColor
 import com.goskar.boardgame.ui.theme.SnackbarColor.snackbarInfoColor
@@ -144,3 +148,28 @@ fun AppSnackbar(
         }
     }
 }
+
+
+private class PreviewSnackbarData(override val visuals: SnackbarVisuals) : SnackbarData {
+    override fun performAction() = Unit
+    override fun dismiss() = Unit
+}
+
+@Composable
+private fun AppSnackbarPreviewContent() {
+    Box(Modifier.padding(16.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            AppSnackBarType.entries.forEach { type ->
+                AppSnackbar(snackbarData = PreviewSnackbarData(AppSnackbarVisuals(message = "Saved", type = type)))
+            }
+        }
+    }
+}
+
+@Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun AppSnackbarLight() = BoardGameTheme(darkTheme = false) { AppSnackbarPreviewContent() }
+
+@Preview(name = "Dark", showBackground = true, backgroundColor = 0xFF131313)
+@Composable
+private fun AppSnackbarDark() = BoardGameTheme(darkTheme = true) { AppSnackbarPreviewContent() }

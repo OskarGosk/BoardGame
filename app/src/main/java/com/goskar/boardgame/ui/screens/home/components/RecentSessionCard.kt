@@ -40,7 +40,7 @@ fun RecentSessionCard(session: RecentSession) {
                         modifier = Modifier.weight(1f, fill = false),
                     )
                     Spacer(Modifier.size(8.dp))
-                    AppChip(session.date, AppChipStyle.YEAR)
+                    AppChip(text = session.date, style = AppChipStyle.YEAR)
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {

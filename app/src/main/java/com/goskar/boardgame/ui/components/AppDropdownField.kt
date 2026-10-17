@@ -18,25 +18,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppDropdownField(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    placeholder: String = "Select…",
+    placeholder: String = stringResource(R.string.dropdown_select),
 ) {
     Column(modifier = modifier) {
         Text(
             label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = 6.dp),
+            modifier = Modifier.padding(bottom = 8.dp),
         )
         Row(
             modifier = Modifier
@@ -62,7 +64,7 @@ fun AppDropdownField(
 
 @Composable
 private fun AppDropdownFieldPreviewContent() {
-    AppDropdownField("Select Game", "", {}, Modifier.padding(16.dp))
+    AppDropdownField(label = "Select Game", value = "", onClick = {}, modifier = Modifier.padding(16.dp))
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)

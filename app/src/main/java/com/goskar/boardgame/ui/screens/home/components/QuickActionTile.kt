@@ -24,9 +24,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun QuickActionTile(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     label: String,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {
     Column(

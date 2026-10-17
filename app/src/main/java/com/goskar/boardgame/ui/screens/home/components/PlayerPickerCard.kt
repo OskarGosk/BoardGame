@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppCardHeading
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.screens.profile.viewmodel.PlayerPick
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -33,7 +33,7 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 @Composable
 fun PlayerPickerCard(availablePlayers: List<PlayerPick>, onSelectPlayer: (String) -> Unit) {
     AppListCard {
-        CardHeading(stringResource(R.string.picker_heading))
+        AppCardHeading(text = stringResource(R.string.picker_heading))
         Spacer(Modifier.height(4.dp))
         Text(
             stringResource(R.string.picker_description),
@@ -57,12 +57,17 @@ fun PlayerPickerCard(availablePlayers: List<PlayerPick>, onSelectPlayer: (String
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f),
                 )
-                Chevron()
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.size(20.dp),
+                )
             }
             if (index < availablePlayers.lastIndex) {
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.outlineVariant,
-                    thickness = 0.5.dp
+                    thickness = 1.dp
                 )
             }
         }
@@ -75,27 +80,6 @@ fun PlayerPickerCard(availablePlayers: List<PlayerPick>, onSelectPlayer: (String
             )
         }
     }
-}
-
-@Composable
-private fun CardHeading(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.headlineMedium,
-        color = MaterialTheme.colorScheme.onSurface
-    )
-    Spacer(Modifier.height(8.dp))
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 0.5.dp)
-}
-
-@Composable
-private fun Chevron() {
-    Icon(
-        Icons.AutoMirrored.Filled.KeyboardArrowRight,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.outline,
-        modifier = Modifier.size(20.dp)
-    )
 }
 
 @Preview(name = "Light", showBackground = true)

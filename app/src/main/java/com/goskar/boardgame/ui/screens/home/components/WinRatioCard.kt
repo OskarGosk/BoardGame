@@ -13,14 +13,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppListCard
-import com.goskar.boardgame.ui.components.AppProgressBar
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun WinRatioCard(
+    modifier: Modifier = Modifier,
     value: String,
     progress: Float,
-    modifier: Modifier = Modifier,
 ) {
     AppListCard(modifier = modifier) {
         Text(
@@ -30,7 +29,7 @@ fun WinRatioCard(
         )
         Spacer(Modifier.height(4.dp))
         Text(value, style = MaterialTheme.typography.displayMedium, color = MaterialTheme.colorScheme.primary)
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(12.dp))
         AppProgressBar(progress = progress)
     }
 }

@@ -153,11 +153,11 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 **Code cleanup**
 - [ ] Remove **legacy ViewModels** that no screen uses any more (`AddEditGameViewModel`, `GamePlayViewModel`, `GameDetailsBGGViewModel`, `GameSearchViewModel`) together with their Koin registrations and tests.
 - [ ] Delete **commented-out code** (`AddPlayerNewScreen`, `Typography`, `CooperatePlayers`) and finish the font `TODO` in `Typography.kt`.
-- [ ] Remove **unused resources** reported by lint (≈ 86: old icons, colors, strings).
-- [ ] Move the remaining **hard-coded UI strings** (≈ 45, mostly the login screen, dialogs and navigation labels) to `strings.xml`.
+- [x] Remove **unused resources** reported by lint (86: old icons, colors, strings) – lint now reports none.
+- [ ] Move the remaining **hard-coded UI strings** to `strings.xml`. Done for composables, the login screen and navigation labels; still open: texts built in ViewModels and use cases (e.g. history group names, "Guest", sync status), which should become enums/sealed types mapped to string resources in the UI.
 - [ ] Rename the temporary `*New*` classes (`HistoryNewScreen`, `ProfileNewViewModel`, `NewBottomBarElements`, …) now that the old UI is gone.
-- [ ] Follow the component conventions everywhere: `modifier` as the first parameter (3 lint warnings), one component per file, 4 dp spacing grid.
-- [ ] Update outdated Gradle dependencies flagged by lint.
+- [x] Follow the component conventions: `modifier` as the first parameter everywhere, one component per file (screen-only components live in `ui/screens/<screen>/components/`), a `@Preview` in every component file, 4 dp spacing grid. Still open: font sizes in `Typography.kt` / `TextStyles.kt` (14, 18, 22, 26, 11 sp) are off the 4-unit grid – changing them alters the look of the whole app.
+- [x] Update outdated Gradle dependencies flagged by lint (Gradle 8.14, AGP 8.13, Kotlin 2.3, Room 2.8, Compose BoM 2026.06 and more). Still open: a migration to AGP 9 (unblocks Compose 1.12, core-ktx 1.19, lifecycle 2.11) and the major upgrades Koin 4, Retrofit 3, Voyager 2 and Firebase BoM 34+ (drops the `-ktx` modules).
 
 **UI polish**
 - [ ] **Edge-to-edge** support – in dark theme the system status / navigation bars currently stay light.

@@ -19,9 +19,9 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Composable
 fun AppSecondaryButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
     OutlinedButton(
@@ -44,7 +44,7 @@ fun AppSecondaryButton(
 
 @Composable
 private fun AppSecondaryButtonPreviewContent() {
-    AppSecondaryButton("Continue as Guest", onClick = {}, modifier = Modifier.padding(16.dp))
+    AppSecondaryButton(text = "Continue as Guest", onClick = {}, modifier = Modifier.padding(16.dp))
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
