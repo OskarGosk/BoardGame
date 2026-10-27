@@ -7,38 +7,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.goskar.boardgame.R
 
-val Smooch14 = TextStyle(
-    fontSize = 14.sp,
-    fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
-    fontWeight = FontWeight(400)
-)
-
-val Smooch14_line14 = TextStyle(
-    fontSize = 14.sp,
-    fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
-    fontWeight = FontWeight(400),
-    lineHeight = 12.sp
-)
-
 val Smooch16 = TextStyle(
     fontSize = 16.sp,
     fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
     fontWeight = FontWeight(400)
 )
 
-val Smooch18 = TextStyle(
-    fontSize = 18.sp,
-    fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
-    fontWeight = FontWeight(400)
-)
-
 val Smooch20 = TextStyle(
     fontSize = 20.sp,
-    fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
-    fontWeight = FontWeight(400)
-)
-val Smooch22 = TextStyle(
-    fontSize = 22.sp,
     fontFamily = FontFamily(Font(R.font.smooch_sans_medium)),
     fontWeight = FontWeight(400)
 )
@@ -53,23 +29,10 @@ val SmoochBold16 = TextStyle(
     fontWeight = FontWeight(400)
 )
 
-val SmoochBold18 = TextStyle(
-    fontSize = 18.sp,
-    fontFamily = FontFamily(Font(R.font.smooch_sans_bold)),
-    fontWeight = FontWeight(400)
-)
-
 val SmoochBold20 = TextStyle(
     fontSize = 20.sp,
     fontFamily = FontFamily(Font(R.font.smooch_sans_bold)),
     fontWeight = FontWeight(400)
-)
-
-val SmoochBold22 = TextStyle(
-    fontSize = 22.sp,
-    fontFamily = FontFamily(Font(R.font.smooch_sans_bold)),
-    fontWeight = FontWeight(400),
-    letterSpacing = 2.sp
 )
 
 val SmoochBold24LetterSpacing2 = TextStyle(
@@ -77,12 +40,6 @@ val SmoochBold24LetterSpacing2 = TextStyle(
     fontFamily = FontFamily(Font(R.font.smooch_sans_bold)),
     fontWeight = FontWeight(400),
     letterSpacing = 2.sp
-)
-
-val SmoochBold26 = TextStyle(
-    fontSize = 26.sp,
-    fontFamily = FontFamily(Font(R.font.smooch_sans_bold)),
-    fontWeight = FontWeight(400)
 )
 
 

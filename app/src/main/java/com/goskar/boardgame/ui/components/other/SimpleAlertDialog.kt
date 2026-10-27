@@ -15,8 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.theme.Smooch16
-import com.goskar.boardgame.ui.theme.SmoochBold18
-import com.goskar.boardgame.ui.theme.SmoochBold22
+import com.goskar.boardgame.ui.theme.SmoochBold20
+import com.goskar.boardgame.ui.theme.SmoochBold24LetterSpacing2
 
 @Composable
 fun SimpleAlertDialog(
@@ -31,7 +31,7 @@ fun SimpleAlertDialog(
         title = {
             Text(
                 text = titleText,
-                style = SmoochBold22
+                style = SmoochBold24LetterSpacing2
             )
         },
         text = {
@@ -50,7 +50,7 @@ fun SimpleAlertDialog(
             ) {
                 Text(
                     stringResource(R.string.confirm),
-                    style = SmoochBold18
+                    style = SmoochBold20
                 )
             }
         },
@@ -63,7 +63,7 @@ fun SimpleAlertDialog(
             ) {
                 Text(
                     stringResource(R.string.back_to_list),
-                    style = SmoochBold18
+                    style = SmoochBold20
                 )
             }
         }

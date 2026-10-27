@@ -23,7 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,8 +44,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.theme.Smooch14
-import com.goskar.boardgame.ui.theme.Smooch18
+import com.goskar.boardgame.ui.theme.Smooch16
 import com.goskar.boardgame.ui.theme.Smooch20
 import com.goskar.boardgame.ui.theme.SmoochBold20
 import com.goskar.boardgame.utils.SortList
@@ -80,7 +79,7 @@ fun SearchRowGlobal(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             OutlinedTextField(
-                textStyle = Smooch18,
+                textStyle = Smooch20,
                 shape = RoundedCornerShape(15),
                 value = searchTxt,
                 onValueChange = {
@@ -94,7 +93,7 @@ fun SearchRowGlobal(
                 label = {
                     Text(
                         stringResource(id = searchHelp),
-                        style = Smooch14
+                        style = Smooch16
                     )
                 },
                 singleLine = true,
@@ -138,7 +137,7 @@ fun SearchRowGlobal(
                     contentDescription = null,
                     modifier = Modifier
                         .size(36.dp)
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     )
                 ExposedDropdownMenu(
                     expanded = expanded,

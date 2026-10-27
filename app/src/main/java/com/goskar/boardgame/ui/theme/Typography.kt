@@ -65,12 +65,12 @@ object BoardGameTypography {
         lineHeight    = 36.sp,
         letterSpacing = (-0.56).sp
     )
-    val DisplayLgMobileDark = TextStyle(  // dark (26sp per spec)
+    val DisplayLgMobileDark = TextStyle(  // dark
         fontFamily    = MontserratFamily,
         fontWeight    = FontWeight.Bold,
-        fontSize      = 26.sp,
-        lineHeight    = 32.sp,
-        letterSpacing = (-0.52).sp
+        fontSize      = 28.sp,
+        lineHeight    = 36.sp,
+        letterSpacing = (-0.56).sp
     )
     val HeadlineMd = TextStyle(
         fontFamily = MontserratFamily,
@@ -96,8 +96,8 @@ object BoardGameTypography {
     val BodySm = TextStyle(
         fontFamily = InterFamily,
         fontWeight = FontWeight.Normal,
-        fontSize   = 14.sp,
-        lineHeight = 20.sp
+        fontSize   = 16.sp,
+        lineHeight = 24.sp
     )
 
     // --- Body — Montserrat (dark) ---
@@ -111,8 +111,8 @@ object BoardGameTypography {
     val BodyMdDark = TextStyle(
         fontFamily = MontserratFamily,
         fontWeight = FontWeight.Normal,
-        fontSize   = 14.sp,
-        lineHeight = 20.sp
+        fontSize   = 16.sp,
+        lineHeight = 24.sp
     )
 
     // --- Labels — Inter (light) ---
@@ -137,8 +137,8 @@ object BoardGameTypography {
     val LabelMd = TextStyle(
         fontFamily = MontserratFamily,
         fontWeight = FontWeight.Medium,
-        fontSize   = 11.sp,
-        lineHeight = 14.sp
+        fontSize   = 12.sp,
+        lineHeight = 16.sp
     )
 }
 
