@@ -42,11 +42,11 @@ import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
+import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerScreen
 import com.goskar.boardgame.ui.screens.addPlayer.EditPlayerData
 import com.goskar.boardgame.ui.screens.players.components.AppPlayerRow
 import com.goskar.boardgame.ui.screens.players.components.StatIcon
-import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.screens.profile.ProfileScreen
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -71,7 +71,7 @@ class PlayerListScreen : Screen {
                 val original = state.playerList.find { it.id == dirPlayer.id }
                 if (original != null) {
                     navigator?.push(
-                        AddPlayerNewScreen(
+                        AddPlayerScreen(
                             EditPlayerData(
                                 id = original.id,
                                 name = original.name,
@@ -85,14 +85,14 @@ class PlayerListScreen : Screen {
                     )
                 }
             },
-            onAddPlayerCLick = { navigator?.push(AddPlayerNewScreen()) },
+            onAddPlayerCLick = { navigator?.push(AddPlayerScreen()) },
             onDeletePlayer = { dirPlayer ->
                 val original = state.playerList?.find { it.id == dirPlayer.id }
                 if (original != null) {
                     viewModel.setPlayerToDelete(original)
                 }
             },
-            onProfileClick = { navigator?.push(ProfileNewScreen()) },
+            onProfileClick = { navigator?.push(ProfileScreen()) },
             )
 
         state.playerToDelete?.let { player ->

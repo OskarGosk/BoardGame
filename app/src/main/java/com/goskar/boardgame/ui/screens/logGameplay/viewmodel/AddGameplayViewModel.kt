@@ -42,7 +42,7 @@ data class GameOption(
     val name: String,
 )
 
-data class AddGameplayNewState(
+data class AddGameplayState(
     val availableGames: List<GameOption> = emptyList(),
     val selectedGameId: String? = null,
     val selectedGame: String = "",
@@ -71,14 +71,14 @@ sealed interface AddGameplayEvent {
     data class Saved(@StringRes val message: Int, val type: AppSnackBarType) : AddGameplayEvent
 }
 
-class AddGameplayNewViewModel(
+class AddGameplayViewModel(
     private val playerDbRepository: PlayerDbRepository,
     private val gameDbRepository: GameDbRepository,
     private val gamesHistoryDbRepository: GamesHistoryDbRepository,
     private val getAllGameUseCase: GetAllGameUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AddGameplayNewState())
+    private val _state = MutableStateFlow(AddGameplayState())
     val state = _state.asStateFlow()
 
     private val _events = Channel<AddGameplayEvent>(Channel.BUFFERED)
@@ -226,7 +226,7 @@ class AddGameplayNewViewModel(
     private data class WinnerResult(val name: String, val everyoneWins: Boolean)
 
     /** Resolves who won: for coop games it is Players/Computer; otherwise a participating player. */
-    private fun resolveWinner(current: AddGameplayNewState): WinnerResult? =
+    private fun resolveWinner(current: AddGameplayState): WinnerResult? =
         if (current.cooperate) {
             when (current.coopPlayersWon) {
                 true -> WinnerResult(CoopWinner.PLAYERS, everyoneWins = true)
@@ -294,7 +294,7 @@ class AddGameplayNewViewModel(
     }
 
     private fun updateSession(
-        current: AddGameplayNewState,
+        current: AddGameplayState,
         gameName: String,
         winner: WinnerResult,
         selectedPlayers: List<GameplayPlayer>,

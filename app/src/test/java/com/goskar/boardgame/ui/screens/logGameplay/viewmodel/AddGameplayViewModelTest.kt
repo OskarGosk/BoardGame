@@ -27,7 +27,7 @@ import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AddGameplayNewViewModelTest {
+class AddGameplayViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var playerDbRepository: PlayerDbRepository
@@ -47,7 +47,7 @@ class AddGameplayNewViewModelTest {
     private fun player(name: String, id: String, games: Int, winRatio: Int) =
         Player(name = name, games = games, winRatio = winRatio, description = "", selected = false, id = id)
 
-    private fun buildViewModel() = AddGameplayNewViewModel(
+    private fun buildViewModel() = AddGameplayViewModel(
         playerDbRepository, gameDbRepository, gamesHistoryDbRepository, getAllGameUseCase,
     )
 

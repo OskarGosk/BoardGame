@@ -28,14 +28,14 @@ import com.goskar.boardgame.ui.components.AppChip
 import com.goskar.boardgame.ui.components.AppChipStyle
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.screens.profile.viewmodel.*
-import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewState
+import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 
 @Composable
 fun AccountSettingsCard(
     modifier: Modifier = Modifier,
-    state: ProfileNewState,
+    state: ProfileState,
     onSetting: (String) -> Unit,
 ) {
     AppListCard(modifier = modifier) {
@@ -89,7 +89,7 @@ fun AccountSettingsCard(
 @Composable
 private fun AccountSettingsCardPreviewContent() {
     Box(Modifier.padding(16.dp)) {
-        AccountSettingsCard(state = ProfileNewState(), onSetting = {})
+        AccountSettingsCard(state = ProfileState(), onSetting = {})
     }
 }
 

@@ -47,14 +47,14 @@ import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.history.components.GroupHeader
 import com.goskar.boardgame.ui.screens.history.components.SessionCard
-import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
-import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
-import com.goskar.boardgame.ui.screens.sessionDetails.SessionDetailsNewScreen
+import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
+import com.goskar.boardgame.ui.screens.profile.ProfileScreen
+import com.goskar.boardgame.ui.screens.sessionDetails.SessionDetailsScreen
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class HistoryNewScreen : Screen {
+class HistoryScreen : Screen {
 
     @Composable
     override fun Content() {
@@ -62,19 +62,19 @@ class HistoryNewScreen : Screen {
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
 
-        HistoryNewScreenContent(
+        HistoryScreenContent(
             state = state,
             userInitials = rememberUserInitials(),
             onQueryChange = viewModel::updateSearchTxt,
-            onSessionClick = { session -> navigator?.push(SessionDetailsNewScreen(session.id)) },
-            onAddSession = { navigator?.push(AddGameplayNewScreen()) },
-            onProfileClick = { navigator?.push(ProfileNewScreen()) },
+            onSessionClick = { session -> navigator?.push(SessionDetailsScreen(session.id)) },
+            onAddSession = { navigator?.push(AddGameplayScreen()) },
+            onProfileClick = { navigator?.push(ProfileScreen()) },
         )
     }
 }
 
 @Composable
-fun HistoryNewScreenContent(
+fun HistoryScreenContent(
     state: GamesHistoryState,
     userInitials: String = "AM",
     onQueryChange: (String) -> Unit = {},
@@ -165,8 +165,8 @@ private val PreviewSession = HistorySession(
 )
 
 @Composable
-private fun HistoryNewPreviewContent() {
-    HistoryNewScreenContent(
+private fun HistoryPreviewContent() {
+    HistoryScreenContent(
         state = GamesHistoryState(
             loading = false,
             showingCount = 1,
@@ -177,8 +177,8 @@ private fun HistoryNewPreviewContent() {
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun HistoryNewLight() = BoardGameTheme(darkTheme = false) { HistoryNewPreviewContent() }
+private fun HistoryLight() = BoardGameTheme(darkTheme = false) { HistoryPreviewContent() }
 
 @Preview(name = "Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun HistoryNewDark() = BoardGameTheme(darkTheme = true) { HistoryNewPreviewContent() }
+private fun HistoryDark() = BoardGameTheme(darkTheme = true) { HistoryPreviewContent() }

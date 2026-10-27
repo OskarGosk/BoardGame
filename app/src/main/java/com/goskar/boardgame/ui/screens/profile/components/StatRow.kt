@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppStatCard
 import com.goskar.boardgame.ui.screens.profile.viewmodel.*
-import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewState
+import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.appExt
 
@@ -26,7 +26,7 @@ import com.goskar.boardgame.ui.theme.appExt
 @Composable
 fun StatRow(
     modifier: Modifier = Modifier,
-    state: ProfileNewState,
+    state: ProfileState,
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         AppStatCard(
@@ -64,7 +64,7 @@ fun StatRow(
 @Composable
 private fun StatRowPreviewContent() {
     Box(Modifier.padding(16.dp)) {
-        StatRow(state = ProfileNewState(gamesLogged = "42", winRate = "58%"))
+        StatRow(state = ProfileState(gamesLogged = "42", winRate = "58%"))
     }
 }
 

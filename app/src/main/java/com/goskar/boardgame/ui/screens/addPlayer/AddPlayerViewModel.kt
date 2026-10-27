@@ -28,7 +28,7 @@ data class EditPlayerData(
     val selected: Boolean = false,
 )
 
-data class AddPlayerNewState(
+data class AddPlayerState(
     val avatars: List<String> = listOf("KN", "RG", "MG"),
     val selectedAvatar: Int = 0,
     val nickname: String = "",
@@ -46,11 +46,11 @@ sealed interface PlayerEvent {
     data class SuccessAddEditPlayer(@StringRes val message: Int, val type: AppSnackBarType) : PlayerEvent
 }
 
-class AddPlayerNewViewModel(
+class AddPlayerViewModel(
     private val playerDbRepository: PlayerDbRepository,
     ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AddPlayerNewState())
+    private val _state = MutableStateFlow(AddPlayerState())
     val state = _state.asStateFlow()
 
     private val _events = Channel<PlayerEvent>(Channel.BUFFERED)

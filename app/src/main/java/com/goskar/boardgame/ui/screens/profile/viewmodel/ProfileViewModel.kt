@@ -37,7 +37,7 @@ data class PlayerPick(
 
 enum class SignOutPrompt { None, UnsyncedData, SyncFailed }
 
-data class ProfileNewState(
+data class ProfileState(
     val isLoading: Boolean = false,
     val isGuest: Boolean = false,
     val name: UserName = UserName.Named(""),
@@ -59,7 +59,7 @@ sealed interface ProfileEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : ProfileEvent
 }
 
-class ProfileNewViewModel(
+class ProfileViewModel(
     private val userSession: UserRepository,
     private val playerDbRepository: PlayerDbRepository,
     private val historyRepository: GamesHistoryDbRepository,
@@ -71,7 +71,7 @@ class ProfileNewViewModel(
     private val syncState: SyncStateRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ProfileNewState())
+    private val _state = MutableStateFlow(ProfileState())
     val state = _state.asStateFlow()
 
     private val _events = Channel<ProfileEvent>(Channel.BUFFERED)

@@ -21,7 +21,7 @@ import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.user.UserName
 import com.goskar.boardgame.ui.components.user.text
 import com.goskar.boardgame.ui.screens.profile.viewmodel.*
-import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewState
+import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 
@@ -29,7 +29,7 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 @Composable
 fun ProfileHeaderCard(
     modifier: Modifier = Modifier,
-    state: ProfileNewState,
+    state: ProfileState,
 ) {
     AppListCard(modifier = modifier) {
         Column(
@@ -58,7 +58,7 @@ fun ProfileHeaderCard(
 @Composable
 private fun ProfileHeaderCardPreviewContent() {
     Box(Modifier.padding(16.dp)) {
-        ProfileHeaderCard(state = ProfileNewState(name = UserName.Named("Alex M."), subtitle = "Board game enthusiast", initials = "AM"))
+        ProfileHeaderCard(state = ProfileState(name = UserName.Named("Alex M."), subtitle = "Board game enthusiast", initials = "AM"))
     }
 }
 

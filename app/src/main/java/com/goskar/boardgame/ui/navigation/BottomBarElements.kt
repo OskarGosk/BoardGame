@@ -9,7 +9,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import cafe.adriel.voyager.core.screen.Screen
 import com.goskar.boardgame.R
-import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
+import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
 import com.goskar.boardgame.ui.screens.collection.MyGamesCollectionScreen
 import com.goskar.boardgame.ui.screens.home.HomeScreen
 import com.goskar.boardgame.ui.screens.players.PlayerListScreen
@@ -24,7 +24,7 @@ data class BgNavItem(
 val appNavItems = listOf(
     BgNavItem(R.string.nav_home, Icons.Default.Home, navigationScreen = HomeScreen()),
     BgNavItem(R.string.nav_collection, Icons.AutoMirrored.Filled.List, navigationScreen = MyGamesCollectionScreen()),
-    BgNavItem(R.string.nav_add_session, Icons.Default.AddCircle, navigationScreen = AddGameplayNewScreen()),
+    BgNavItem(R.string.nav_add_session, Icons.Default.AddCircle, navigationScreen = AddGameplayScreen()),
     BgNavItem(R.string.nav_players, Icons.Default.Person, navigationScreen = PlayerListScreen()),
 )
 

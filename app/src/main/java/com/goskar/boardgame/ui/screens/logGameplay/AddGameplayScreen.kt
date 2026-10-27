@@ -55,27 +55,27 @@ import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewScreen
+import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerScreen
 import com.goskar.boardgame.ui.screens.logGameplay.components.AddPlayerButton
 import com.goskar.boardgame.ui.screens.logGameplay.components.CoopResultTile
 import com.goskar.boardgame.ui.screens.logGameplay.components.DatePlayedField
 import com.goskar.boardgame.ui.screens.logGameplay.components.PlayerToggle
 import com.goskar.boardgame.ui.screens.logGameplay.components.WinnerTile
 import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.*
-import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.screens.profile.ProfileScreen
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import java.time.LocalDate
 import org.koin.androidx.compose.koinViewModel
 
-class AddGameplayNewScreen(
+class AddGameplayScreen(
     private val editSessionId: String? = null,
     private val preselectedGameId: String? = null,
 ) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: AddGameplayNewViewModel = koinViewModel()
+        val viewModel: AddGameplayViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
@@ -97,13 +97,13 @@ class AddGameplayNewScreen(
             }
         }
 
-        AddGameplayNewScreenContent(
+        AddGameplayScreenContent(
             state = state,
             userInitials = rememberUserInitials(),
             onSelectGame = viewModel::selectGame,
             onDateSelected = viewModel::updatePlayDate,
             onCancel = { navigator?.pop() },
-            onAddPlayer = { navigator?.push(AddPlayerNewScreen()) },
+            onAddPlayer = { navigator?.push(AddPlayerScreen()) },
             onTogglePlayer = viewModel::togglePlayer,
             onToggleVariant = viewModel::toggleVariant,
             onSelectWinner = viewModel::selectWinner,
@@ -112,15 +112,15 @@ class AddGameplayNewScreen(
             onDurationChange = viewModel::updateDuration,
             onScoreChange = viewModel::updatePlayerScore,
             onLogSession = viewModel::logSession,
-            onProfileClick = { navigator?.push(ProfileNewScreen()) },
+            onProfileClick = { navigator?.push(ProfileScreen()) },
         )
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun AddGameplayNewScreenContent(
-    state: AddGameplayNewState,
+fun AddGameplayScreenContent(
+    state: AddGameplayState,
     userInitials: String = "AM",
     onSelectGame: (String) -> Unit = {},
     onDateSelected: (LocalDate) -> Unit = {},
@@ -358,12 +358,12 @@ fun AddGameplayNewScreenContent(
 
 @Preview(name = "Log Gameplay — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun AddGameplayNewLightPreview() {
-    BoardGameTheme(darkTheme = false) { AddGameplayNewScreenContent(state = AddGameplayNewState()) }
+private fun AddGameplayLightPreview() {
+    BoardGameTheme(darkTheme = false) { AddGameplayScreenContent(state = AddGameplayState()) }
 }
 
 @Preview(name = "Log Gameplay — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun AddGameplayNewDarkPreview() {
-    BoardGameTheme(darkTheme = true) { AddGameplayNewScreenContent(state = AddGameplayNewState()) }
+private fun AddGameplayDarkPreview() {
+    BoardGameTheme(darkTheme = true) { AddGameplayScreenContent(state = AddGameplayState()) }
 }

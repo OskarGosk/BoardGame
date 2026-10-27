@@ -25,7 +25,7 @@ data class SessionPlayerResult(
     val isWinner: Boolean = false,
 )
 
-data class SessionDetailsNewState(
+data class SessionDetailsState(
     val sessionId: String? = null,
     val gameName: String = "",
     val coverUri: String = "",
@@ -44,12 +44,12 @@ sealed interface SessionDetailsEvent {
     data object Deleted : SessionDetailsEvent
 }
 
-class SessionDetailsNewViewModel(
+class SessionDetailsViewModel(
     private val gamesHistoryDbRepository: GamesHistoryDbRepository,
     private val getAllGameUseCase: GetAllGameUseCase,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(SessionDetailsNewState())
+    private val _state = MutableStateFlow(SessionDetailsState())
     val state = _state.asStateFlow()
 
     private val _events = Channel<SessionDetailsEvent>(Channel.BUFFERED)
