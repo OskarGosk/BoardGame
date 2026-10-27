@@ -37,13 +37,13 @@ import com.goskar.boardgame.ui.screens.collection.viewmodel.GameListViewModel
 import com.goskar.boardgame.ui.screens.collection.viewmodel.GameUiState
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen
+import com.goskar.boardgame.ui.screens.addGame.AddGameScreen
 import com.goskar.boardgame.ui.screens.collection.components.AddGridItem
 import com.goskar.boardgame.ui.screens.collection.components.CollectionGridItem
 import com.goskar.boardgame.ui.screens.collection.components.SortMenu
-import com.goskar.boardgame.ui.screens.gameDetails.GameDetailsNewScreen
-import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
-import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.screens.gameDetails.GameDetailsScreen
+import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
+import com.goskar.boardgame.ui.screens.profile.ProfileScreen
 import com.goskar.boardgame.ui.theme.*
 import com.goskar.boardgame.utils.SortList
 import org.koin.androidx.compose.koinViewModel
@@ -70,12 +70,12 @@ class MyGamesCollectionScreen : Screen {
             updateCheckboxBaseGame = viewModel::updateCheckboxBaseGame,
             useAllGameFilter = viewModel::useAllGameFilter,
             onSort = viewModel::updateSortOption,
-            onProfileClick = { navigator?.push(ProfileNewScreen()) },
-            onAddGame = { navigator?.push(AddGameNewScreen()) },
+            onProfileClick = { navigator?.push(ProfileScreen()) },
+            onAddGame = { navigator?.push(AddGameScreen()) },
             onOpenGame = { game ->
                 game.game.bggId?.let { id ->
                     navigator?.push(
-                        GameDetailsNewScreen(
+                        GameDetailsScreen(
                             id,
                             game.game.name
                         )
@@ -83,9 +83,9 @@ class MyGamesCollectionScreen : Screen {
                 }
             },
             onAddSession = { game ->
-                navigator?.push(AddGameplayNewScreen(preselectedGameId = game.game.id))
+                navigator?.push(AddGameplayScreen(preselectedGameId = game.game.id))
             },
-            onEditGame = { game -> navigator?.push(AddGameNewScreen(editGameId = game.game.id)) },
+            onEditGame = { game -> navigator?.push(AddGameScreen(editGameId = game.game.id)) },
             onDeleteGame = { game -> viewModel.validateDeleteGame(game.game) }
         )
     }

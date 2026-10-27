@@ -40,11 +40,11 @@ import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class ProfileNewScreen : Screen {
+class ProfileScreen : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: ProfileNewViewModel = koinViewModel()
+        val viewModel: ProfileViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
@@ -65,7 +65,7 @@ class ProfileNewScreen : Screen {
             }
         }
 
-        ProfileNewScreenContent(
+        ProfileScreenContent(
             state = state,
             onSignOut = viewModel::requestSignOut,
             onForceSync = viewModel::forceSync,
@@ -78,8 +78,8 @@ class ProfileNewScreen : Screen {
 }
 
 @Composable
-fun ProfileNewScreenContent(
-    state: ProfileNewState,
+fun ProfileScreenContent(
+    state: ProfileState,
     onSetting: (String) -> Unit = {},
     onSignOut: () -> Unit = {},
     onForceSync: () -> Unit = {},
@@ -127,12 +127,12 @@ fun ProfileNewScreenContent(
 
 @Preview(name = "Profile — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun ProfileNewLightPreview() {
-    BoardGameTheme(darkTheme = false) { ProfileNewScreenContent(state = ProfileNewState()) }
+private fun ProfileLightPreview() {
+    BoardGameTheme(darkTheme = false) { ProfileScreenContent(state = ProfileState()) }
 }
 
 @Preview(name = "Profile — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun ProfileNewDarkPreview() {
-    BoardGameTheme(darkTheme = true) { ProfileNewScreenContent(state = ProfileNewState()) }
+private fun ProfileDarkPreview() {
+    BoardGameTheme(darkTheme = true) { ProfileScreenContent(state = ProfileState()) }
 }

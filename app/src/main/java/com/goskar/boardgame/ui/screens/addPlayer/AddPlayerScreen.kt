@@ -29,18 +29,18 @@ import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.screens.addPlayer.components.AddPlayerNewCard
-import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.screens.addPlayer.components.AddPlayerCard
+import com.goskar.boardgame.ui.screens.profile.ProfileScreen
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
-class AddPlayerNewScreen(
+class AddPlayerScreen(
     private val editData: EditPlayerData? = null,
 ) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: AddPlayerNewViewModel = org.koin.androidx.compose.koinViewModel()
+        val viewModel: AddPlayerViewModel = org.koin.androidx.compose.koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
@@ -50,7 +50,7 @@ class AddPlayerNewScreen(
             if (editData != null && !state.isEditMode) viewModel.loadForEdit(editData)
         }
 
-        AddPlayerNewScreenContent(
+        AddPlayerScreenContent(
             state = state,
             userInitials = rememberUserInitials(),
             onBack = { navigator?.pop() },
@@ -59,7 +59,7 @@ class AddPlayerNewScreen(
             onSelectSkill = viewModel::selectSkill,
             onSave = viewModel::validateAddEditPLayer,
             onDiscard = { navigator?.pop() },
-            onProfileClick = { navigator?.push(ProfileNewScreen()) },
+            onProfileClick = { navigator?.push(ProfileScreen()) },
         )
 
         LaunchedEffect(Unit) {
@@ -86,8 +86,8 @@ class AddPlayerNewScreen(
 }
 
 @Composable
-fun AddPlayerNewScreenContent(
-    state: AddPlayerNewState,
+fun AddPlayerScreenContent(
+    state: AddPlayerState,
     userInitials: String = "AM",
     onBack: () -> Unit = {},
     onSelectAvatar: (Int) -> Unit = {},
@@ -120,7 +120,7 @@ fun AddPlayerNewScreenContent(
                 .verticalScroll(rememberScrollState())
                 .padding(BoardGameSpacing.MarginMobile),
         ) {
-            AddPlayerNewCard(
+            AddPlayerCard(
                 state = state,
                 onSelectAvatar = onSelectAvatar,
                 onNicknameChange = onNicknameChange,
@@ -134,12 +134,12 @@ fun AddPlayerNewScreenContent(
 
 @Preview(name = "Add Player — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun AddPlayerNewScreenLightPreview() {
-    BoardGameTheme(darkTheme = false) { AddPlayerNewScreenContent(state = AddPlayerNewState()) }
+private fun AddPlayerScreenLightPreview() {
+    BoardGameTheme(darkTheme = false) { AddPlayerScreenContent(state = AddPlayerState()) }
 }
 
 @Preview(name = "Add Player — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun AddPlayerNewScreenDarkPreview() {
-    BoardGameTheme(darkTheme = true) { AddPlayerNewScreenContent(state = AddPlayerNewState()) }
+private fun AddPlayerScreenDarkPreview() {
+    BoardGameTheme(darkTheme = true) { AddPlayerScreenContent(state = AddPlayerState()) }
 }

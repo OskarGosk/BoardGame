@@ -25,14 +25,14 @@ import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.components.AppSectionHeader
 import com.goskar.boardgame.ui.components.AppTextField
-import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewState
+import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 
 @Composable
-fun AddPlayerNewCard(
+fun AddPlayerCard(
     modifier: Modifier = Modifier,
-    state: AddPlayerNewState,
+    state: AddPlayerState,
     onSelectAvatar: (Int) -> Unit,
     onNicknameChange: (String) -> Unit,
     onSelectSkill: (Int) -> Unit,
@@ -84,19 +84,19 @@ fun AddPlayerNewCard(
 
 
 @Composable
-private fun AddPlayerNewCardPreviewContent() {
+private fun AddPlayerCardPreviewContent() {
     Box(Modifier.padding(16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            AddPlayerNewCard(
-                state = AddPlayerNewState(nickname = "Alex"),
+            AddPlayerCard(
+                state = AddPlayerState(nickname = "Alex"),
                 onSelectAvatar = {},
                 onNicknameChange = {},
                 onSelectSkill = {},
                 onSave = {},
                 onDiscard = {},
             )
-            AddPlayerNewCard(
-                state = AddPlayerNewState(nickname = "Alex", isEditMode = true, selectedSkill = 1),
+            AddPlayerCard(
+                state = AddPlayerState(nickname = "Alex", isEditMode = true, selectedSkill = 1),
                 onSelectAvatar = {},
                 onNicknameChange = {},
                 onSelectSkill = {},
@@ -109,8 +109,8 @@ private fun AddPlayerNewCardPreviewContent() {
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun AddPlayerNewCardLight() = BoardGameTheme(darkTheme = false) { AddPlayerNewCardPreviewContent() }
+private fun AddPlayerCardLight() = BoardGameTheme(darkTheme = false) { AddPlayerCardPreviewContent() }
 
 @Preview(name = "Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun AddPlayerNewCardDark() = BoardGameTheme(darkTheme = true) { AddPlayerNewCardPreviewContent() }
+private fun AddPlayerCardDark() = BoardGameTheme(darkTheme = true) { AddPlayerCardPreviewContent() }

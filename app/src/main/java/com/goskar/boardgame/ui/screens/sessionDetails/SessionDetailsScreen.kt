@@ -43,7 +43,7 @@ import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.components.AppSectionHeader
 import com.goskar.boardgame.ui.components.AppStatCell
 import com.goskar.boardgame.ui.navigation.AppScaffold
-import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
+import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
 import com.goskar.boardgame.ui.screens.sessionDetails.components.PlayerResultRow
 import com.goskar.boardgame.ui.screens.sessionDetails.viewmodel.*
 import com.goskar.boardgame.ui.screens.sessionDetails.viewmodel.SessionPlayerResult
@@ -51,18 +51,18 @@ import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class SessionDetailsNewScreen(
+class SessionDetailsScreen(
     private val historyGameId: String? = null,
 ) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: SessionDetailsNewViewModel = koinViewModel()
+        val viewModel: SessionDetailsViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
 
         LaunchedEffect(navigator?.lastItem) {
-            if (historyGameId != null && navigator?.lastItem == this@SessionDetailsNewScreen) {
+            if (historyGameId != null && navigator?.lastItem == this@SessionDetailsScreen) {
                 viewModel.load(historyGameId)
             }
         }
@@ -76,11 +76,11 @@ class SessionDetailsNewScreen(
             }
         }
 
-        SessionDetailsNewScreenContent(
+        SessionDetailsScreenContent(
             state = state,
             onBack = { navigator?.pop() },
             onEdit = {
-                state.sessionId?.let { id -> navigator?.push(AddGameplayNewScreen(editSessionId = id)) }
+                state.sessionId?.let { id -> navigator?.push(AddGameplayScreen(editSessionId = id)) }
             },
             onDelete = viewModel::delete,
         )
@@ -89,8 +89,8 @@ class SessionDetailsNewScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SessionDetailsNewScreenContent(
-    state: SessionDetailsNewState,
+fun SessionDetailsScreenContent(
+    state: SessionDetailsState,
     onBack: () -> Unit = {},
     onEdit: () -> Unit = {},
     onDelete: () -> Unit = {},
@@ -199,7 +199,7 @@ fun SessionDetailsNewScreenContent(
     }
 }
 
-private val PreviewSessionDetails = SessionDetailsNewState(
+private val PreviewSessionDetails = SessionDetailsState(
     sessionId = "1", gameName = "Dune: Imperium", category = "Strategy", dateLabel = "Oct 27, 2023",
     durationMin = 95, playerCount = "3",
     players = listOf(
@@ -213,12 +213,12 @@ private val PreviewSessionDetails = SessionDetailsNewState(
 
 @Preview(name = "Session Details — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun SessionDetailsNewLightPreview() {
-    BoardGameTheme(darkTheme = false) { SessionDetailsNewScreenContent(state = PreviewSessionDetails) }
+private fun SessionDetailsLightPreview() {
+    BoardGameTheme(darkTheme = false) { SessionDetailsScreenContent(state = PreviewSessionDetails) }
 }
 
 @Preview(name = "Session Details — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun SessionDetailsNewDarkPreview() {
-    BoardGameTheme(darkTheme = true) { SessionDetailsNewScreenContent(state = PreviewSessionDetails) }
+private fun SessionDetailsDarkPreview() {
+    BoardGameTheme(darkTheme = true) { SessionDetailsScreenContent(state = PreviewSessionDetails) }
 }

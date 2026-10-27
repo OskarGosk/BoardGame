@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppStatCell
-import com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsNewState
+import com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.appExt
 
@@ -25,7 +25,7 @@ import com.goskar.boardgame.ui.theme.appExt
 @Composable
 fun StatsCard(
     modifier: Modifier = Modifier,
-    state: GameDetailsNewState,
+    state: GameDetailsState,
 ) {
     AppListCard(modifier = modifier) {
         Row(
@@ -58,7 +58,7 @@ fun StatsCard(
 }
 
 
-private val PreviewDetails = GameDetailsNewState(
+private val PreviewDetails = GameDetailsState(
     name = "Dune: Imperium",
     year = "2020",
     players = "1–4",

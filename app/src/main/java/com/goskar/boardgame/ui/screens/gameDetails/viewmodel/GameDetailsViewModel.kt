@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.UUID
 
-data class GameDetailsNewState(
+data class GameDetailsState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
     val name: String = "",
@@ -40,20 +40,20 @@ data class GameDetailsNewState(
     val alreadyInCollection: Boolean = false,
 )
 
-sealed interface GameDetailsNewEvent {
-    data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GameDetailsNewEvent
-    data class Added(@StringRes val message: Int, val type: AppSnackBarType) : GameDetailsNewEvent
+sealed interface GameDetailsEvent {
+    data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GameDetailsEvent
+    data class Added(@StringRes val message: Int, val type: AppSnackBarType) : GameDetailsEvent
 }
 
-class GameDetailsNewViewModel(
+class GameDetailsViewModel(
     private val boardGameApiRepository: BoardGameApiRepository,
     private val gameDbRepository: GameDbRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(GameDetailsNewState())
+    private val _state = MutableStateFlow(GameDetailsState())
     val state = _state.asStateFlow()
 
-    private val _events = Channel<GameDetailsNewEvent>(Channel.BUFFERED)
+    private val _events = Channel<GameDetailsEvent>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
     private var details: BoardGameBGG? = null
@@ -99,15 +99,15 @@ class GameDetailsNewViewModel(
             )
             when (gameDbRepository.insertGame(game)) {
                 is RequestResult.Success ->
-                    _events.send(GameDetailsNewEvent.Added(R.string.success_global, AppSnackBarType.SUCCESS))
+                    _events.send(GameDetailsEvent.Added(R.string.success_global, AppSnackBarType.SUCCESS))
 
                 is RequestResult.Error ->
-                    _events.send(GameDetailsNewEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
+                    _events.send(GameDetailsEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
             }
         }
     }
 
-    private fun BoardGameBGG.toState(name: String) = GameDetailsNewState(
+    private fun BoardGameBGG.toState(name: String) = GameDetailsState(
         isLoading = false,
         isError = false,
         name = name,

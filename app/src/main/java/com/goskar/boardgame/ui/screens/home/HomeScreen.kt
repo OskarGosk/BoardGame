@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.components.user.text
-import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
-import com.goskar.boardgame.ui.screens.history.HistoryNewScreen
-import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen
+import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
+import com.goskar.boardgame.ui.screens.history.HistoryScreen
+import com.goskar.boardgame.ui.screens.addGame.AddGameScreen
 import com.goskar.boardgame.ui.navigation.appNavItems
-import com.goskar.boardgame.ui.screens.profile.ProfileNewScreen
+import com.goskar.boardgame.ui.screens.profile.ProfileScreen
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppFab
@@ -73,11 +73,11 @@ class HomeScreen(
         HomeScreenContent(
             state = state,
             userInitials = rememberUserInitials(),
-            onSettingsClick = { navigator?.push(ProfileNewScreen()) },
-            onFabClick = { navigator?.push(AddGameplayNewScreen()) },
-            onViewAllSessions = { navigator?.push(HistoryNewScreen()) },
-            onAddGameplay = { navigator?.push(AddGameplayNewScreen()) },
-            onScanBgg = { navigator?.push(AddGameNewScreen()) },
+            onSettingsClick = { navigator?.push(ProfileScreen()) },
+            onFabClick = { navigator?.push(AddGameplayScreen()) },
+            onViewAllSessions = { navigator?.push(HistoryScreen()) },
+            onAddGameplay = { navigator?.push(AddGameplayScreen()) },
+            onScanBgg = { navigator?.push(AddGameScreen()) },
             onSelectPlayer = viewModel::selectPlayer,
             onRestoreGuestBackup = viewModel::restoreGuestBackup,
             onDeclineGuestRestore = viewModel::declineGuestRestore,
@@ -213,7 +213,7 @@ fun HomeScreenContent(
 }
 
 
-@Preview(name = "Home New — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Preview(name = "Home — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
 private fun HomeScreenLightPreview() {
     BoardGameTheme(darkTheme = false) {
@@ -221,7 +221,7 @@ private fun HomeScreenLightPreview() {
     }
 }
 
-@Preview(name = "Home New — Dark", showBackground = true, backgroundColor = 0xFF131313)
+@Preview(name = "Home — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
 private fun HomeScreenDarkPreview() {
     BoardGameTheme(darkTheme = true) {
