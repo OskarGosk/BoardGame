@@ -44,8 +44,6 @@
     //HISTORY AND GAMEPLAY
     <string name="history_comp">Computer</string>
     <string name="history_players">Players</string>
-    <string name="history_coop">Cooperate</string>
-    <string name="history_normal">Normal</string>
     <string name="history_max_player_selected">Max players selected</string>
 
 

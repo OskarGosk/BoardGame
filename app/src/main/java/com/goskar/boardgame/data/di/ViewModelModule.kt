@@ -1,10 +1,7 @@
 package com.goskar.boardgame.data.di
 
-import com.goskar.boardgame.ui.gameDetailsBGG.GameDetailsBGGViewModel
 import com.goskar.boardgame.ui.gameReports.GameReportsViewModel
 import com.goskar.boardgame.ui.screens.collection.viewmodel.GameListViewModel
-import com.goskar.boardgame.ui.gamesList.addEditGame.AddEditGameViewModel
-import com.goskar.boardgame.ui.gamesList.play.GamePlayViewModel
 import com.goskar.boardgame.ui.screens.addGame.viewmodel.AddGameNewViewModel
 import com.goskar.boardgame.ui.screens.history.viewmodel.GamesHistoryViewModel
 import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.AddGameplayNewViewModel
@@ -15,7 +12,6 @@ import com.goskar.boardgame.ui.screens.home.HomeViewModel
 import com.goskar.boardgame.ui.screens.players.PlayerListViewModel
 import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerNewViewModel
 import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewViewModel
-import com.goskar.boardgame.ui.gameSearchBGG.GameSearchViewModel
 import com.goskar.boardgame.ui.screens.login.LoginViewModel
 import com.goskar.boardgame.ui.screens.splash.SplashViewModel
 import org.koin.core.module.dsl.viewModel
@@ -25,8 +21,6 @@ import org.koin.dsl.module
 fun KoinApplication.viewModelModule() = module {
     viewModel { PlayerListViewModel(get()) }
     viewModel { GameListViewModel(get()) }
-    viewModel { AddEditGameViewModel(get(), get()) }
-    viewModel { GamePlayViewModel(get(), get(), get(), get()) }
     viewModel { GamesHistoryViewModel(get(), get(), get()) }
     viewModel { HomeViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { AddPlayerNewViewModel(get()) }
@@ -36,8 +30,6 @@ fun KoinApplication.viewModelModule() = module {
     viewModel { SessionDetailsNewViewModel(get(), get()) }
     viewModel { GameDetailsNewViewModel(get(), get()) }
     viewModel { CurrentUserViewModel(get(), get(), get()) }
-    viewModel { GameSearchViewModel(get()) }
-    viewModel { GameDetailsBGGViewModel(get(), get(), get()) }
     viewModel { GameReportsViewModel(get(), get()) }
     viewModel { LoginViewModel(get(), get(), get(), get()) }
     viewModel { SplashViewModel(get()) }
