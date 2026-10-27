@@ -160,7 +160,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [x] Update outdated Gradle dependencies: Gradle 9.3, AGP 9.1 with built-in Kotlin, compileSdk 37, Compose BoM 2026.09 (Compose 1.12), core-ktx 1.19, lifecycle 2.11, and the major upgrades Koin 4, Retrofit 3, Voyager 2 and Firebase BoM 35 (non-`-ktx` modules). AGP stays on 9.1 – the newest version supported by Android Studio Panda 2.
 
 **UI polish**
-- [ ] **Edge-to-edge** support – in dark theme the system status / navigation bars currently stay light.
+- [x] **Edge-to-edge** support – `enableEdgeToEdge()` with system bars following the theme; the top bar, bottom nav, login and splash draw behind the system bars, and a night window theme keeps the launch screen dark.
 - [ ] Visual fixes on the **My Collection** screen.
 - [ ] Visual fixes on the **session** screens (log session / session details).
 - [ ] (Optional) Redesign the splash screen.
