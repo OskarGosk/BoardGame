@@ -18,11 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.ui.components.AppChip
-import com.goskar.boardgame.ui.components.AppChipStyle
 import com.goskar.boardgame.ui.screens.collection.viewmodel.GameUiState
 import com.goskar.boardgame.ui.theme.*
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -72,39 +71,9 @@ fun CollectionGridItem(
             text = game.game.name,
             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
             color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
-
-        val category = game.game.category
-        val year = game.game.yearPublished
-        val rating = game.game.rating
-        if (!category.isNullOrBlank() || year != null || rating != null) {
-            Spacer(Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (!category.isNullOrBlank()) {
-                    AppChip(text = category, style = AppChipStyle.CATEGORY)
-                }
-                if (year != null) {
-                    Text(
-                        text = year.toString(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
-                    )
-                }
-                if (rating != null) {
-                    Text(
-                        text = "★ " + String.format(java.util.Locale.US, "%.1f", rating),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = appExt().success,
-                        maxLines = 1
-                    )
-                }
-            }
-        }
     }
 }
 

@@ -18,9 +18,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.ui.components.AppChip
+import com.goskar.boardgame.ui.components.AppChipStyle
 import com.goskar.boardgame.ui.screens.collection.viewmodel.GameUiState
 import com.goskar.boardgame.ui.theme.*
 import com.goskar.boardgame.ui.theme.BoardGameTheme
+import java.util.Locale
 
 
 @Composable
@@ -39,7 +42,6 @@ fun GameCoverBack(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Spacer(Modifier.weight(1f))
         if (game.game.expansion) {
             Text(
                 stringResource(R.string.board_expansion),
@@ -48,6 +50,8 @@ fun GameCoverBack(
             )
             Spacer(Modifier.height(8.dp))
         }
+        GameMeta(game = game)
+        Spacer(Modifier.weight(1f))
         InfoLine(
             label = stringResource(R.string.collection_min_players),
             value = game.game.minPlayer.ifBlank { "—" })
@@ -58,22 +62,71 @@ fun GameCoverBack(
         Spacer(Modifier.height(8.dp))
         InfoLine(label = stringResource(R.string.collection_games_played), value = game.game.games.toString())
         Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(12.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             BackIcon(
                 icon = Icons.Default.Add,
                 contentDescription = stringResource(R.string.cd_add_session),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                onClick = onAddSession
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                onClick = onAddSession,
+                modifier = Modifier.weight(1f),
             )
-            BackIcon(icon = Icons.Default.Edit, contentDescription = stringResource(R.string.cd_edit), tint = MaterialTheme.colorScheme.onSurfaceVariant, onClick = onEdit)
+            BackIcon(
+                icon = Icons.Default.Edit,
+                contentDescription = stringResource(R.string.cd_edit),
+                onClick = onEdit,
+                modifier = Modifier.weight(1f),
+            )
             if (onInfo != null) {
-                BackIcon(icon = Icons.Default.Info, contentDescription = stringResource(R.string.cd_info), tint = MaterialTheme.colorScheme.onSurfaceVariant, onClick = onInfo)
+                BackIcon(
+                    icon = Icons.Default.Info,
+                    contentDescription = stringResource(R.string.cd_info),
+                    onClick = onInfo,
+                    modifier = Modifier.weight(1f),
+                )
             }
-            BackIcon(icon = Icons.Default.Delete, contentDescription = stringResource(R.string.cd_delete), tint = MaterialTheme.colorScheme.error, onClick = onDelete)
+            BackIcon(
+                icon = Icons.Default.Delete,
+                contentDescription = stringResource(R.string.cd_delete),
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                onClick = onDelete,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun GameMeta(game: GameUiState) {
+    val category = game.game.category
+    val year = game.game.yearPublished
+    val rating = game.game.rating
+    if (category.isNullOrBlank() && year == null && rating == null) return
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (!category.isNullOrBlank()) {
+            AppChip(text = category, style = AppChipStyle.CATEGORY)
+        }
+        if (year != null) {
+            AppChip(text = year.toString(), style = AppChipStyle.YEAR)
+        }
+        if (rating != null) {
+            Text(
+                text = "★ " + String.format(Locale.US, "%.1f", rating),
+                style = MaterialTheme.typography.labelSmall,
+                color = appExt().success,
+                maxLines = 1
+            )
         }
     }
 }
@@ -88,6 +141,9 @@ private val PreviewGame = GameUiState(
         minPlayer = "1",
         maxPlayer = "4",
         games = 12,
+        category = "Strategy",
+        yearPublished = 2020,
+        rating = 8.4,
     ),
 )
 
