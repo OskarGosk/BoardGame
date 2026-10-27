@@ -84,6 +84,15 @@ class GetThreeRecentSessionUseCaseTest {
         assertEquals(listOf("AM", "B"), session.playersInitials)
     }
 
+    @Test
+    fun session_carriesHistoryId_soTheCardCanOpenSessionDetails() = runTest {
+        val newest = history("Root", day = 2)
+        coEvery { getAllGame() } returns emptyList()
+        coEvery { getAllHistory() } returns listOf(history("Root", day = 1), newest)
+
+        assertEquals(newest.id, useCase().first().id)
+    }
+
     @Ignore("TODO: sprawdz, ze session.winner to samo imie zwyciezcy ('Alex M.') bez prefiksu 'Winner: ' (prefiks dodaje UI przez zasob tekstowy)")
     @Test
     fun session_winnerIsPlainName() {

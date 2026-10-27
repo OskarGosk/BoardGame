@@ -27,8 +27,12 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 
 @Composable
-fun RecentSessionCard(session: RecentSession) {
-    AppListCard {
+fun RecentSessionCard(
+    modifier: Modifier = Modifier,
+    session: RecentSession,
+    onClick: () -> Unit = {},
+) {
+    AppListCard(modifier = modifier, onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AppGameCover(uri = session.uri, size = 56.dp)
 
@@ -74,6 +78,7 @@ private fun RecentSessionCardLightPreview() {
         Box(Modifier.padding(16.dp)) {
             RecentSessionCard(
                 session = RecentSession(
+                    id = "1",
                     gameName = "Everdell",
                     date = "2023",
                     playersInitials = listOf("JD", "AS", "BK"),
@@ -92,6 +97,7 @@ private fun RecentSessionCardDarkPreview() {
         Box(Modifier.padding(16.dp)) {
             RecentSessionCard(
                 session = RecentSession(
+                    id = "2",
                     gameName = "Terraforming Mars",
                     date = "2024",
                     playersInitials = listOf("MK", "PL"),
