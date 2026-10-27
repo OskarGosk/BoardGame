@@ -18,7 +18,7 @@ import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewViewModel
 import com.goskar.boardgame.ui.gameSearchBGG.GameSearchViewModel
 import com.goskar.boardgame.ui.screens.login.LoginViewModel
 import com.goskar.boardgame.ui.screens.splash.SplashViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 

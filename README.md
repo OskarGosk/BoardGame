@@ -157,7 +157,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [x] Move the **hard-coded UI strings** to `strings.xml`, including texts that were built in ViewModels and use cases (history groups and filters, "Guest" / "Player", recent-session winner, game duration and player range): ViewModels now expose enums, sealed types or plain values, and the UI maps them to string resources.
 - [ ] Rename the temporary `*New*` classes (`HistoryNewScreen`, `ProfileNewViewModel`, `NewBottomBarElements`, …) now that the old UI is gone.
 - [x] Follow the component conventions: `modifier` as the first parameter everywhere, one component per file (screen-only components live in `ui/screens/<screen>/components/`), a `@Preview` in every component file, 4 dp spacing grid. Still open: font sizes in `Typography.kt` / `TextStyles.kt` (14, 18, 22, 26, 11 sp) are off the 4-unit grid – changing them alters the look of the whole app.
-- [x] Update outdated Gradle dependencies flagged by lint (Gradle 8.14, AGP 8.13, Kotlin 2.3, Room 2.8, Compose BoM 2026.06 and more). Still open: a migration to AGP 9 (unblocks Compose 1.12, core-ktx 1.19, lifecycle 2.11) and the major upgrades Koin 4, Retrofit 3, Voyager 2 and Firebase BoM 34+ (drops the `-ktx` modules).
+- [x] Update outdated Gradle dependencies: Gradle 9.3, AGP 9.1 with built-in Kotlin, compileSdk 37, Compose BoM 2026.09 (Compose 1.12), core-ktx 1.19, lifecycle 2.11, and the major upgrades Koin 4, Retrofit 3, Voyager 2 and Firebase BoM 35 (non-`-ktx` modules). AGP stays on 9.1 – the newest version supported by Android Studio Panda 2.
 
 **UI polish**
 - [ ] **Edge-to-edge** support – in dark theme the system status / navigation bars currently stay light.
