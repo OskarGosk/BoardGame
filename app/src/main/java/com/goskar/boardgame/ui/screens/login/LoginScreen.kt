@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.login
+package com.goskar.boardgame.ui.screens.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,7 +53,7 @@ import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.AppTextField
-import com.goskar.boardgame.ui.login.components.LocalDataDialog
+import com.goskar.boardgame.ui.screens.login.components.LocalDataDialog
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme

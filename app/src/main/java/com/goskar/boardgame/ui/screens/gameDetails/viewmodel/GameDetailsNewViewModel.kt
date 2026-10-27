@@ -132,9 +132,9 @@ class GameDetailsNewViewModel(
         val max = maxPlayers
         return when {
             min == null && max == null -> ""
-            min == max -> "$min players"
-            min != null && max != null -> "$min–$max players"
-            else -> "${min ?: max} players"
+            min == max -> "$min"
+            min != null && max != null -> "$min–$max"
+            else -> "${min ?: max}"
         }
     }
 
@@ -143,9 +143,9 @@ class GameDetailsNewViewModel(
         val max = maxPlayTime
         val single = playingTime
         return when {
-            min != null && max != null && min != max -> "$min–$max min"
-            single != null && single > 0 -> "$single min"
-            max != null && max > 0 -> "$max min"
+            min != null && max != null && min != max -> "$min–$max"
+            single != null && single > 0 -> "$single"
+            max != null && max > 0 -> "$max"
             else -> ""
         }
     }

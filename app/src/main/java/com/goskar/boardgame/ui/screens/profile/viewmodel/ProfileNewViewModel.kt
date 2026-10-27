@@ -16,6 +16,7 @@ import com.goskar.boardgame.data.useCase.ClearDbUseCase
 import com.goskar.boardgame.data.useCase.GetSyncStatusUseCase
 import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import com.goskar.boardgame.ui.components.user.UserName
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,13 +40,13 @@ enum class SignOutPrompt { None, UnsyncedData, SyncFailed }
 data class ProfileNewState(
     val isLoading: Boolean = false,
     val isGuest: Boolean = false,
-    val name: String = "",
+    val name: UserName = UserName.Named(""),
     val subtitle: String = "",
+    val isGuestSession: Boolean = false,
     val initials: String = "",
     val gamesLogged: String = "0",
     val winRate: String = "—",
     val notificationsActive: Boolean = true,
-    val lastSynced: String = "",
     val syncing: Boolean = false,
     val lastSyncedAt: Long? = null,
     val hasUnsyncedChanges: Boolean = false,
@@ -103,8 +104,9 @@ class ProfileNewViewModel(
             _state.update {
                 it.copy(
                     isGuest = false,
-                    name = me.name,
+                    name = UserName.Named(me.name),
                     subtitle = email.orEmpty(),
+                    isGuestSession = false,
                     initials = initialsOf(me.name),
                     gamesLogged = me.games.toString(),
                     winRate = winRate,
@@ -120,8 +122,9 @@ class ProfileNewViewModel(
         _state.update {
             it.copy(
                 isGuest = isGuestAccount,
-                name = "Guest",
-                subtitle = "Guest session",
+                name = UserName.Guest,
+                subtitle = "",
+                isGuestSession = true,
                 initials = "G",
                 gamesLogged = sessions.toString(),
                 winRate = "—",
@@ -135,12 +138,7 @@ class ProfileNewViewModel(
         viewModelScope.launch {
             _state.update { it.copy(syncing = true) }
             val ok = runSync()
-            _state.update {
-                it.copy(
-                    syncing = false,
-                    lastSynced = if (ok) "Synced just now" else it.lastSynced,
-                )
-            }
+            _state.update { it.copy(syncing = false) }
             if (ok) refreshSyncStatus()
             _events.send(
                 if (ok) ProfileEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS)

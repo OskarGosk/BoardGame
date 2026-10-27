@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.splash
+package com.goskar.boardgame.ui.screens.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

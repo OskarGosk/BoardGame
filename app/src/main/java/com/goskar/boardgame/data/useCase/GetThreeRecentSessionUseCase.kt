@@ -21,7 +21,7 @@ class GetThreeRecentSessionUseCase(
                 gameName = historyGame.gameName,
                 date = historyGame.gameData.year.toString(),
                 playersInitials = historyGame.listOfPlayer.map { initialsOf(it) },
-                winner = "Winner: ${historyGame.winner}",
+                winner = historyGame.winner,
                 uri = game?.coverUri() ?: ""
             )
         }

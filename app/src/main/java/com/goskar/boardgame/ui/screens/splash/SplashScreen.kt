@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.splash
+package com.goskar.boardgame.ui.screens.splash
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.screens.home.HomeScreen
-import com.goskar.boardgame.ui.login.LoginScreen
+import com.goskar.boardgame.ui.screens.login.LoginScreen
 import com.goskar.boardgame.ui.theme.BoardGameColors
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameTheme

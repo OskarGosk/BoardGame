@@ -46,6 +46,7 @@ import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
 import com.goskar.boardgame.ui.screens.sessionDetails.components.PlayerResultRow
 import com.goskar.boardgame.ui.screens.sessionDetails.viewmodel.*
+import com.goskar.boardgame.ui.screens.sessionDetails.viewmodel.SessionPlayerResult
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
@@ -145,7 +146,7 @@ fun SessionDetailsNewScreenContent(
                 ) {
                     AppStatCell(label = stringResource(R.string.session_stat_date), value = state.dateLabel, modifier = Modifier.weight(1f))
                     VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
-                    AppStatCell(label = stringResource(R.string.session_stat_duration), value = state.duration, modifier = Modifier.weight(1f))
+                    AppStatCell(label = stringResource(R.string.session_stat_duration), value = state.durationMin?.let { stringResource(R.string.duration_short, it) } ?: "—", modifier = Modifier.weight(1f))
                     VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
                     AppStatCell(label = stringResource(R.string.session_stat_players), value = state.playerCount, modifier = Modifier.weight(1f))
                 }
@@ -198,14 +199,26 @@ fun SessionDetailsNewScreenContent(
     }
 }
 
+private val PreviewSessionDetails = SessionDetailsNewState(
+    sessionId = "1", gameName = "Dune: Imperium", category = "Strategy", dateLabel = "Oct 27, 2023",
+    durationMin = 95, playerCount = "3",
+    players = listOf(
+        SessionPlayerResult("Sarah K.", "SK", "81", isWinner = true),
+        SessionPlayerResult("Alex M.", "AM", "78"),
+        SessionPlayerResult("Jordan T.", "JT", "64"),
+    ),
+    variants = listOf("Rise of Ix", "Tournament Rules"),
+    notes = "Close game, decided in the final conflict.",
+)
+
 @Preview(name = "Session Details — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
 private fun SessionDetailsNewLightPreview() {
-    BoardGameTheme(darkTheme = false) { SessionDetailsNewScreenContent(state = SessionDetailsNewState()) }
+    BoardGameTheme(darkTheme = false) { SessionDetailsNewScreenContent(state = PreviewSessionDetails) }
 }
 
 @Preview(name = "Session Details — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
 private fun SessionDetailsNewDarkPreview() {
-    BoardGameTheme(darkTheme = true) { SessionDetailsNewScreenContent(state = SessionDetailsNewState()) }
+    BoardGameTheme(darkTheme = true) { SessionDetailsNewScreenContent(state = PreviewSessionDetails) }
 }

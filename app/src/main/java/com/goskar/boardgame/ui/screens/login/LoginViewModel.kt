@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.login
+package com.goskar.boardgame.ui.screens.login
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue

@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gamesList.lists
+package com.goskar.boardgame.ui.screens.collection.viewmodel
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel

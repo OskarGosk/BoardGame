@@ -18,6 +18,7 @@ import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
+import com.goskar.boardgame.ui.components.user.UserName
 import com.goskar.boardgame.ui.screens.profile.viewmodel.PlayerPick
 import com.goskar.boardgame.utils.convertHistoryGameListToDto
 import com.goskar.boardgame.utils.timeGreeting
@@ -36,7 +37,7 @@ data class GuestRestoreOffer(
 
 data class HomeState(
     val isLoading: Boolean = false,
-    val userName: String = "",
+    val userName: UserName? = null,
     val greeting: Int = R.string.home_greeting_morning,
     val totalGames: String = "0",
     val mostPlayed: String = "—",
@@ -139,9 +140,9 @@ class HomeViewModel(
         } else null
 
         val name = when {
-            me != null -> me.name
-            uid == "guest" -> "Guest"
-            else -> "Player"
+            me != null -> UserName.Named(me.name)
+            uid == "guest" -> UserName.Guest
+            else -> UserName.Player
         }
 
         val mostPlayed = games.maxByOrNull { it.games }?.name ?: "—"

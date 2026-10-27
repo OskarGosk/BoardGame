@@ -13,8 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.R
 import com.goskar.boardgame.data.useCase.RecentSession
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppChip
@@ -55,7 +57,7 @@ fun RecentSessionCard(session: RecentSession) {
                     }
                     Spacer(Modifier.size(8.dp))
                     Text(
-                        session.winner,
+                        stringResource(R.string.home_recent_winner, session.winner),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -75,7 +77,7 @@ private fun RecentSessionCardLightPreview() {
                     gameName = "Everdell",
                     date = "2023",
                     playersInitials = listOf("JD", "AS", "BK"),
-                    winner = "Winner: JD",
+                    winner = "JD",
                     uri = ""
                 )
             )
@@ -93,7 +95,7 @@ private fun RecentSessionCardDarkPreview() {
                     gameName = "Terraforming Mars",
                     date = "2024",
                     playersInitials = listOf("MK", "PL"),
-                    winner = "Winner: MK",
+                    winner = "MK",
                     uri = ""
                 )
             )

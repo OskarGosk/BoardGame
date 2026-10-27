@@ -27,21 +27,16 @@ data class SessionPlayerResult(
 
 data class SessionDetailsNewState(
     val sessionId: String? = null,
-    val gameName: String = "Dune: Imperium",
+    val gameName: String = "",
     val coverUri: String = "",
-    val category: String = "Strategy",
+    val category: String = "",
     val categoryStyle: AppChipStyle = AppChipStyle.CATEGORY,
-    val dateLabel: String = "Oct 27, 2023",
-    val duration: String = "—",
-    val playerCount: String = "4",
-    val players: List<SessionPlayerResult> = listOf(
-        SessionPlayerResult("M. Kane", "MK", "", isWinner = true),
-        SessionPlayerResult("Alex M.", "AM", ""),
-        SessionPlayerResult("Sarah K.", "SK", ""),
-        SessionPlayerResult("Jordan T.", "JT", ""),
-    ),
-    val variants: List<String> = listOf("Rise of Ix Expansion", "Tournament Rules"),
-    val notes: String = "Tight game that came down to the final round — M. Kane secured the win with a last-turn Imperium play.",
+    val dateLabel: String = "",
+    val durationMin: Int? = null,
+    val playerCount: String = "0",
+    val players: List<SessionPlayerResult> = emptyList(),
+    val variants: List<String> = emptyList(),
+    val notes: String = "",
 )
 
 sealed interface SessionDetailsEvent {
@@ -78,13 +73,13 @@ class SessionDetailsNewViewModel(
                     coverUri = game?.coverUri() ?: "",
                     category = game?.category ?: "",
                     dateLabel = history.gameData.format(DateTimeFormatter.ofPattern("MMM d, yyyy")),
-                    duration = history.durationMin?.let { "${it}m" } ?: "—",
+                    durationMin = history.durationMin,
                     playerCount = history.listOfPlayer.size.toString(),
                     players = history.listOfPlayer.map { name ->
                         SessionPlayerResult(
                             name = name,
                             initials = initialsOf(name),
-                            score = history.playerScores?.get(name)?.let { "$it pts" } ?: "",
+                            score = history.playerScores?.get(name)?.toString() ?: "",
                             isWinner = name.equals(history.winner, ignoreCase = true),
                         )
                     },

@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.login
+package com.goskar.boardgame.ui.screens.login
 
 import app.cash.turbine.test
 import com.goskar.boardgame.data.models.User

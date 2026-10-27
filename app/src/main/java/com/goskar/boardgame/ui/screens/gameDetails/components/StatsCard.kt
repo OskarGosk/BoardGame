@@ -32,9 +32,9 @@ fun StatsCard(
             modifier = Modifier.height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AppStatCell(label = stringResource(R.string.gd_players), value = state.players.substringBefore(" ").ifBlank { "—" }, modifier = Modifier.weight(1f))
+            AppStatCell(label = stringResource(R.string.gd_players), value = state.players.ifBlank { "—" }, modifier = Modifier.weight(1f))
             VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
-            AppStatCell(label = stringResource(R.string.gd_time), value = state.playtime.ifBlank { "—" }, modifier = Modifier.weight(1f))
+            AppStatCell(label = stringResource(R.string.gd_time), value = if (state.playtime.isBlank()) "—" else stringResource(R.string.gd_minutes_value, state.playtime), modifier = Modifier.weight(1f))
             VerticalDivider(modifier = Modifier.height(32.dp), color = MaterialTheme.colorScheme.outlineVariant)
             AppStatCell(label = stringResource(R.string.gd_age), value = state.age.ifBlank { "—" }, modifier = Modifier.weight(1f))
         }
@@ -63,7 +63,7 @@ private val PreviewDetails = GameDetailsNewState(
     year = "2020",
     players = "1–4",
     bestPlayers = "3",
-    playtime = "60–120 min",
+    playtime = "60–120",
     age = "14+",
     rating = "8.4",
     weight = "3.0",

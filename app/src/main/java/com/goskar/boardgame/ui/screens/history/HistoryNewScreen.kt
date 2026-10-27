@@ -38,10 +38,11 @@ import com.goskar.boardgame.ui.components.AppFab
 import com.goskar.boardgame.ui.components.AppSearchBar
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
-import com.goskar.boardgame.ui.gamesHistory.GamesHistoryState
-import com.goskar.boardgame.ui.gamesHistory.GamesHistoryViewModel
-import com.goskar.boardgame.ui.gamesHistory.HistoryGroup
-import com.goskar.boardgame.ui.gamesHistory.HistorySession
+import com.goskar.boardgame.ui.screens.history.viewmodel.GamesHistoryState
+import com.goskar.boardgame.ui.screens.history.viewmodel.GamesHistoryViewModel
+import com.goskar.boardgame.ui.screens.history.viewmodel.HistoryBucket
+import com.goskar.boardgame.ui.screens.history.viewmodel.HistoryGroup
+import com.goskar.boardgame.ui.screens.history.viewmodel.HistorySession
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.history.components.GroupHeader
@@ -123,7 +124,7 @@ fun HistoryNewScreenContent(
             state.groups.forEach { group ->
                 Spacer(Modifier.height(4.dp))
                 GroupHeader(
-                    title = group.title,
+                    title = stringResource(group.bucket.label),
                     count = pluralStringResource(R.plurals.history_sessions_count, group.sessions.size, group.sessions.size),
                 )
                 group.sessions.forEach { session ->
@@ -133,7 +134,7 @@ fun HistoryNewScreenContent(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                state.showingLabel,
+                pluralStringResource(R.plurals.history_showing_sessions, state.showingCount, state.showingCount),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -168,8 +169,8 @@ private fun HistoryNewPreviewContent() {
     HistoryNewScreenContent(
         state = GamesHistoryState(
             loading = false,
-            showingLabel = "Showing 1 session",
-            groups = listOf(HistoryGroup(title = "This Week", sessions = listOf(PreviewSession))),
+            showingCount = 1,
+            groups = listOf(HistoryGroup(bucket = HistoryBucket.THIS_WEEK, sessions = listOf(PreviewSession))),
         ),
     )
 }

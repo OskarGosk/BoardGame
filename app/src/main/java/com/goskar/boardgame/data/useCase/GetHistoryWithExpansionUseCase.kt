@@ -27,7 +27,7 @@ class GetHistoryWithExpansionUseCase(
                     }
                 )
             }
-            else -> RequestResult.Error(Throwable("Coś poszło nie tak..."))
+            else -> RequestResult.Error(Throwable("Unexpected response"))
         }
     }
 }
