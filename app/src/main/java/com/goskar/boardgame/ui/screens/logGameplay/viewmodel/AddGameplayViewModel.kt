@@ -4,9 +4,13 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.CoopWinner
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.GameMode
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.HistoryGameExpansion
+import com.goskar.boardgame.data.models.playMode
+import com.goskar.boardgame.data.models.playModes
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
@@ -29,6 +33,7 @@ data class GameplayPlayer(
     val initials: String,
     val selected: Boolean = false,
     val score: String = "",
+    val team: Int? = null,
 )
 
 data class SessionVariant(
@@ -53,18 +58,22 @@ data class AddGameplayState(
     val winnerIndex: Int = -1,
     val notes: String = "",
     val durationMin: String = "",
-    val cooperate: Boolean = false,
+    val availableModes: List<GameMode> = listOf(GameMode.COMPETITIVE),
+    val mode: GameMode = GameMode.COMPETITIVE,
     val maxPlayers: Int? = null,
     val coopPlayersWon: Boolean? = null,
+    val teamCount: Int = MIN_TEAMS,
+    val winningTeam: Int? = null,
     val isEditMode: Boolean = false,
     val editSessionId: String? = null,
-)
+) {
+    val cooperate: Boolean get() = mode == GameMode.COOPERATIVE
 
-/** Winner label stored for cooperative games (players win together, or lose to the game). */
-object CoopWinner {
-    const val PLAYERS = "Players"
-    const val COMPUTER = "Computer"
+    /** Teams that have at least one selected player, in ascending order. */
+    val activeTeams: List<Int> get() = players.filter { it.selected }.mapNotNull { it.team }.distinct().sorted()
 }
+
+const val MIN_TEAMS = 2
 
 sealed interface AddGameplayEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : AddGameplayEvent
@@ -85,10 +94,12 @@ class AddGameplayViewModel(
     val events = _events.receiveAsFlow()
 
     private var allGames: List<Game> = emptyList()
+    private var allHistory: List<HistoryGame> = emptyList()
 
     fun load(editSessionId: String? = null, preselectedGameId: String? = null) {
         viewModelScope.launch {
             allGames = getAllGameUseCase()
+            allHistory = (gamesHistoryDbRepository.getAllHistoryGame() as? RequestResult.Success)?.data.orEmpty()
             val baseGames = allGames.filter { !it.expansion }
 
             val players = when (val response = playerDbRepository.getAllPlayer()) {
@@ -118,8 +129,7 @@ class AddGameplayViewModel(
     }
 
     private suspend fun applyEditData(editSessionId: String) {
-        val history = (gamesHistoryDbRepository.getAllHistoryGame() as? RequestResult.Success)
-            ?.data?.firstOrNull { it.id == editSessionId } ?: return
+        val history = allHistory.firstOrNull { it.id == editSessionId } ?: return
         val sessionExpansionIds = (gamesHistoryDbRepository.getAllHistoryGameExpansion() as? RequestResult.Success)
             ?.data?.filter { it.historyGameId == editSessionId }?.map { it.expansionId }?.toSet() ?: emptySet()
 
@@ -129,14 +139,18 @@ class AddGameplayViewModel(
                 .map { SessionVariant(id = it.id, name = it.name, selected = it.id in sessionExpansionIds) }
         } ?: emptyList()
 
+        val mode = history.playMode()
+        // an old session may use a mode the game no longer offers; keep it selectable so the edit stays valid
+        val modes = (game?.playModes().orEmpty() + mode).distinct()
         _state.update { s ->
             val markedPlayers = s.players.map { p ->
+                val selected = history.listOfPlayer.contains(p.name)
                 p.copy(
-                    selected = history.listOfPlayer.contains(p.name),
+                    selected = selected,
                     score = history.playerScores?.get(p.name)?.toString() ?: "",
+                    team = if (selected) history.teams?.get(p.name) else null,
                 )
             }
-            val coop = game?.cooperate == true
             s.copy(
                 isEditMode = true,
                 editSessionId = editSessionId,
@@ -144,10 +158,13 @@ class AddGameplayViewModel(
                 selectedGame = history.gameName,
                 variants = variants,
                 players = markedPlayers,
-                cooperate = coop,
+                availableModes = modes,
+                mode = mode,
                 maxPlayers = game?.maxPlayer?.toIntOrNull(),
-                winnerIndex = if (coop) -1 else markedPlayers.indexOfFirst { it.name == history.winner },
-                coopPlayersWon = if (coop) history.winner == CoopWinner.PLAYERS else null,
+                winnerIndex = if (mode == GameMode.COMPETITIVE) markedPlayers.indexOfFirst { it.name == history.winner } else -1,
+                coopPlayersWon = if (mode == GameMode.COOPERATIVE) history.winner == CoopWinner.PLAYERS else null,
+                teamCount = maxOf(MIN_TEAMS, history.teams?.values?.maxOrNull() ?: 0),
+                winningTeam = if (mode == GameMode.TEAM) history.winningTeam else null,
                 notes = history.description,
                 durationMin = history.durationMin?.toString() ?: "",
                 playDate = history.gameData,
@@ -161,18 +178,53 @@ class AddGameplayViewModel(
         val variants = allGames
             .filter { it.expansion && it.baseGameId == gameId }
             .map { SessionVariant(id = it.id, name = it.name) }
+        val modes = game.playModes()
+        val lastMode = allHistory.filter { it.gameName == game.name }.maxByOrNull { it.gameData }?.playMode()
         _state.update {
             it.copy(
                 selectedGameId = gameId,
                 selectedGame = game.name,
                 variants = variants,
-                cooperate = game.cooperate,
+                availableModes = modes,
                 maxPlayers = game.maxPlayer.toIntOrNull(),
-                // reset winner selection - it may no longer be valid for the new game
-                winnerIndex = -1,
-                coopPlayersWon = null,
-            )
+            ).withMode(lastMode?.takeIf { m -> m in modes } ?: modes.first())
         }
+    }
+
+    fun selectMode(mode: GameMode) = _state.update { s ->
+        if (mode in s.availableModes && mode != s.mode) s.withMode(mode) else s
+    }
+
+    /** Switches the result section to [mode]; any earlier result no longer applies, so it is cleared. */
+    private fun AddGameplayState.withMode(mode: GameMode): AddGameplayState {
+        val withTeams = if (mode == GameMode.TEAM) {
+            players.fold(this.copy(players = players.map { it.copy(team = null) }, teamCount = MIN_TEAMS)) { acc, p ->
+                if (p.selected) acc.assignToSmallestTeam(acc.players.indexOfFirst { it.id == p.id }) else acc
+            }
+        } else {
+            copy(players = players.map { it.copy(team = null) })
+        }
+        return withTeams.copy(mode = mode, winnerIndex = -1, coopPlayersWon = null, winningTeam = null)
+    }
+
+    private fun AddGameplayState.assignToSmallestTeam(index: Int): AddGameplayState {
+        val sizes = (1..teamCount).associateWith { team -> players.count { it.selected && it.team == team } }
+        val team = sizes.minBy { it.value }.key
+        return copy(players = players.mapIndexed { i, p -> if (i == index) p.copy(team = team) else p })
+    }
+
+    fun assignTeam(index: Int, team: Int) = _state.update { s ->
+        if (team !in 1..s.teamCount) return@update s
+        val updated = s.copy(players = s.players.mapIndexed { i, p -> if (i == index) p.copy(team = team) else p })
+        updated.copy(winningTeam = updated.winningTeam?.takeIf { it in updated.activeTeams })
+    }
+
+    fun addTeam() = _state.update { s ->
+        if (s.teamCount < s.players.count { it.selected }) s.copy(teamCount = s.teamCount + 1) else s
+    }
+
+    fun selectWinningTeam(team: Int) = _state.update { s ->
+        if (team in s.activeTeams) s.copy(winningTeam = team) else s
     }
 
     fun selectCoopWin(playersWon: Boolean) = _state.update { it.copy(coopPlayersWon = playersWon) }
@@ -196,11 +248,19 @@ class AddGameplayViewModel(
 
         _state.update { st ->
             val newPlayers = st.players.mapIndexed { i, p ->
-                if (i == index) p.copy(selected = !p.selected) else p
+                if (i == index) p.copy(selected = !p.selected, team = null) else p
             }
             // if the winner is being deselected, clear the winner
             val newWinner = if (st.winnerIndex == index && player.selected) -1 else st.winnerIndex
-            st.copy(players = newPlayers, winnerIndex = newWinner)
+            val toggled = st.copy(players = newPlayers, winnerIndex = newWinner)
+            when {
+                st.mode != GameMode.TEAM -> toggled
+                player.selected -> toggled.copy(
+                    winningTeam = toggled.winningTeam?.takeIf { it in toggled.activeTeams },
+                    teamCount = maxOf(MIN_TEAMS, minOf(toggled.teamCount, newPlayers.count { it.selected })),
+                )
+                else -> toggled.assignToSmallestTeam(index)
+            }
         }
     }
 
@@ -223,21 +283,24 @@ class AddGameplayViewModel(
         })
     }
 
-    private data class WinnerResult(val name: String, val everyoneWins: Boolean)
+    /** [name] is what the session shows as its winner; [winners] are the players credited with a win. */
+    private data class WinnerResult(val name: String, val winners: Set<String>)
 
-    /** Resolves who won: for coop games it is Players/Computer; otherwise a participating player. */
-    private fun resolveWinner(current: AddGameplayState): WinnerResult? =
-        if (current.cooperate) {
-            when (current.coopPlayersWon) {
-                true -> WinnerResult(CoopWinner.PLAYERS, everyoneWins = true)
-                false -> WinnerResult(CoopWinner.COMPUTER, everyoneWins = false)
-                null -> null
-            }
-        } else {
-            current.players.getOrNull(current.winnerIndex)
-                ?.takeIf { it.selected }
-                ?.let { WinnerResult(it.name, everyoneWins = false) }
+    private fun resolveWinner(current: AddGameplayState): WinnerResult? = when (current.mode) {
+        GameMode.COOPERATIVE -> when (current.coopPlayersWon) {
+            true -> WinnerResult(CoopWinner.PLAYERS, current.players.filter { it.selected }.map { it.name }.toSet())
+            false -> WinnerResult(CoopWinner.COMPUTER, emptySet())
+            null -> null
         }
+        GameMode.TEAM -> current.players
+            .filter { it.selected && it.team != null && it.team == current.winningTeam }
+            .map { it.name }
+            .takeIf { it.isNotEmpty() }
+            ?.let { WinnerResult(it.joinToString(", "), it.toSet()) }
+        GameMode.COMPETITIVE -> current.players.getOrNull(current.winnerIndex)
+            ?.takeIf { it.selected }
+            ?.let { WinnerResult(it.name, setOf(it.name)) }
+    }
 
     fun logSession() {
         val current = state.value
@@ -246,6 +309,11 @@ class AddGameplayViewModel(
 
         if (gameName.isBlank() || selectedPlayers.isEmpty()) {
             emit(R.string.error_global)
+            return
+        }
+
+        if (current.mode == GameMode.TEAM && current.activeTeams.size < MIN_TEAMS) {
+            emit(R.string.log_pick_teams)
             return
         }
 
@@ -279,13 +347,16 @@ class AddGameplayViewModel(
                 playerScores = scoresOf(selectedPlayers),
                 id = historyId,
                 baseGameId = game.baseGameId,
+                mode = current.mode,
+                teams = teamsOf(current, selectedPlayers),
+                winningTeam = current.winningTeam.takeIf { current.mode == GameMode.TEAM },
             )
 
             val saved = insertHistory(historyGame) &&
                 insertExpansions(historyId, current.variants.filter { it.selected }) &&
                 incrementGame(game) &&
                 incrementExpansions(current.variants.filter { it.selected }) &&
-                incrementPlayers(selectedPlayers, winner.name, winner.everyoneWins)
+                incrementPlayers(selectedPlayers, winner.winners)
 
             if (saved) {
                 _events.send(AddGameplayEvent.Saved(R.string.success_global, AppSnackBarType.SUCCESS))
@@ -310,6 +381,9 @@ class AddGameplayViewModel(
                 durationMin = current.durationMin.toIntOrNull(),
                 playerScores = scoresOf(selectedPlayers),
                 id = id,
+                mode = current.mode,
+                teams = teamsOf(current, selectedPlayers),
+                winningTeam = current.winningTeam.takeIf { current.mode == GameMode.TEAM },
             )
             val saved = handle(gamesHistoryDbRepository.editHistoryGame(historyGame)) &&
                 handle(gamesHistoryDbRepository.deleteHistoryGameExpansionByHistoryId(id)) &&
@@ -350,15 +424,11 @@ class AddGameplayViewModel(
         return true
     }
 
-    private suspend fun incrementPlayers(
-        players: List<GameplayPlayer>,
-        winnerName: String,
-        everyoneWins: Boolean,
-    ): Boolean {
+    private suspend fun incrementPlayers(players: List<GameplayPlayer>, winners: Set<String>): Boolean {
         val allPlayers = (playerDbRepository.getAllPlayer() as? RequestResult.Success)?.data ?: return false
         for (player in players) {
             val original = allPlayers.firstOrNull { it.id == player.id } ?: continue
-            val won = everyoneWins || original.name == winnerName
+            val won = original.name in winners
             val updated = original.copy(
                 games = original.games + 1,
                 winRatio = if (won) original.winRatio + 1 else original.winRatio,
@@ -376,6 +446,10 @@ class AddGameplayViewModel(
             false
         }
     }
+
+    private fun teamsOf(current: AddGameplayState, players: List<GameplayPlayer>): Map<String, Int>? =
+        if (current.mode != GameMode.TEAM) null
+        else players.mapNotNull { p -> p.team?.let { p.name to it } }.toMap()
 
     private fun scoresOf(players: List<GameplayPlayer>): Map<String, Int>? =
         players.filter { it.score.isNotBlank() }

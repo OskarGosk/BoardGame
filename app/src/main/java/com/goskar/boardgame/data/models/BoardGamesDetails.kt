@@ -75,6 +75,9 @@ data class BoardGameBGG(
     fun isCooperative(): Boolean =
         mechanics?.any { it.value?.trim().equals("Cooperative Game", ignoreCase = true) } == true
 
+    fun isTeamBased(): Boolean =
+        mechanics?.any { it.value?.trim().equals("Team-Based Game", ignoreCase = true) } == true
+
     /** Average rating (0–10) when the detail was fetched with stats=1, else null. */
     fun averageRating(): Double? = statistics?.ratings?.average
 

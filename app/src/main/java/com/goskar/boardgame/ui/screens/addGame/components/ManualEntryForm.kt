@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Extension
-import androidx.compose.material.icons.filled.Groups
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.data.models.GameMode
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.components.AppSelectField
@@ -33,7 +33,7 @@ fun ManualEntryForm(
     onNameChange: (String) -> Unit,
     onMinChange: (String) -> Unit,
     onMaxChange: (String) -> Unit,
-    onToggleCooperate: (Boolean) -> Unit,
+    onToggleMode: (GameMode) -> Unit,
     onToggleExpansion: (Boolean) -> Unit,
     onSelectBaseGame: (String) -> Unit,
     onCategoryChange: (String) -> Unit,
@@ -88,12 +88,9 @@ fun ManualEntryForm(
             )
         }
 
-        AppToggleRow(
-            icon = Icons.Default.Groups,
-            title = stringResource(R.string.addgame_coop_title),
-            description = stringResource(R.string.addgame_coop_desc),
-            checked = state.cooperate,
-            onToggle = onToggleCooperate,
+        GameModesField(
+            selected = state.modes,
+            onToggle = onToggleMode,
         )
         AppToggleRow(
             icon = Icons.Default.Extension,
@@ -141,7 +138,7 @@ private fun ManualEntryFormPreviewContent() {
             onNameChange = {},
             onMinChange = {},
             onMaxChange = {},
-            onToggleCooperate = {},
+            onToggleMode = {},
             onToggleExpansion = {},
             onSelectBaseGame = {},
             onCategoryChange = {},

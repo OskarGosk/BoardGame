@@ -143,7 +143,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 **Features**
 - [ ] **Reports screen** – the *Quick Report* tile on Home is not wired up yet and the charts screen has not been redesigned (`GameReportsViewModel` is waiting for it).
 - [ ] **Settings** – the settings rows on the Profile screen (account information, notifications, privacy, appearance) are not functional yet.
-- [ ] **Games with several modes** – a game should offer multiple play modes, and you should pick per session whether it is co-op or player vs player (today it is a single co-op flag on the game).
+- [x] **Games with several modes** – a game offers one or more of *Competitive*, *Co-op* and *Teams*; Log Session shows a mode switch only for games with more than one mode (defaulting to the mode of the last session), team sessions split players into teams and credit the whole winning team. Older games and sessions keep working (their mode is derived from the co-op flag / winner).
 - [ ] **Forgot password** – the login screen link does nothing yet.
 - [ ] **Create an account** – instead of a sign-up form it should show a message asking to contact me for an account.
 - [ ] **History filters** – the filter chips (*Wins Only*, *Strategy*, *Co-op*) are in the state but do not filter the list yet.
@@ -166,7 +166,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] (Optional) Redesign the splash screen.
 
 **Tests**
-- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (169 tests) and runs in CI on every pull request.
+- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (186 tests) and runs in CI on every pull request.
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes

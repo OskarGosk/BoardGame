@@ -45,6 +45,13 @@ fun PlayerResultRow(
                 ),
                 color = if (player.isWinner) winColor else MaterialTheme.colorScheme.onSurface,
             )
+            player.team?.let { team ->
+                Text(
+                    stringResource(R.string.log_team_number, team),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             if (player.isWinner) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.EmojiEvents, contentDescription = null, tint = winColor, modifier = Modifier.size(16.dp))
@@ -70,6 +77,7 @@ private fun PlayerResultRowPreviewContent() {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             PlayerResultRow(player = SessionPlayerResult(name = "Alex M.", initials = "AM", score = "42", isWinner = true))
             PlayerResultRow(player = SessionPlayerResult(name = "Sarah K.", initials = "SK", score = "37"))
+            PlayerResultRow(player = SessionPlayerResult(name = "Kamila", initials = "K", score = "", isWinner = true, team = 1))
         }
     }
 }

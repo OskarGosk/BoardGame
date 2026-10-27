@@ -3,6 +3,9 @@ package com.goskar.boardgame.ui.screens.sessionDetails.viewmodel
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.goskar.boardgame.data.models.GameMode
+import com.goskar.boardgame.data.models.isWinner
+import com.goskar.boardgame.data.models.playMode
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
@@ -23,6 +26,7 @@ data class SessionPlayerResult(
     val initials: String,
     val score: String,
     val isWinner: Boolean = false,
+    val team: Int? = null,
 )
 
 data class SessionDetailsState(
@@ -32,6 +36,7 @@ data class SessionDetailsState(
     val category: String = "",
     val categoryStyle: AppChipStyle = AppChipStyle.CATEGORY,
     val dateLabel: String = "",
+    val mode: GameMode? = null,
     val durationMin: Int? = null,
     val playerCount: String = "0",
     val players: List<SessionPlayerResult> = emptyList(),
@@ -73,6 +78,7 @@ class SessionDetailsViewModel(
                     coverUri = game?.coverUri() ?: "",
                     category = game?.category ?: "",
                     dateLabel = history.gameData.format(DateTimeFormatter.ofPattern("MMM d, yyyy")),
+                    mode = history.playMode(),
                     durationMin = history.durationMin,
                     playerCount = history.listOfPlayer.size.toString(),
                     players = history.listOfPlayer.map { name ->
@@ -80,7 +86,8 @@ class SessionDetailsViewModel(
                             name = name,
                             initials = initialsOf(name),
                             score = history.playerScores?.get(name)?.toString() ?: "",
-                            isWinner = name.equals(history.winner, ignoreCase = true),
+                            isWinner = history.isWinner(name),
+                            team = history.teams?.get(name),
                         )
                     },
                     variants = expansions.map { exp -> exp.expansionName },

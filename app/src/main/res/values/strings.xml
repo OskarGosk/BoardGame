@@ -119,6 +119,14 @@
     <string name="log_coop_players_won">Players won</string>
     <string name="log_coop_computer_won">Game won</string>
     <string name="log_select_players_first">Select players to pick a winner.</string>
+    <string name="log_mode_title">Game Mode</string>
+    <string name="log_teams_title">Teams</string>
+    <string name="log_team_number">Team %1$d</string>
+    <string name="log_add_team">+ Add Team</string>
+    <string name="log_winning_team">Winning Team</string>
+    <string name="log_pick_teams">Split players into at least two teams</string>
+    <string name="log_select_players_for_teams">Select players to split them into teams.</string>
+    <string name="cd_assign_team">Assign %1$s to team %2$d</string>
 
     <!-- NEW UI — Gaming History -->
     <string name="history_search_hint">Search sessions…</string>
@@ -145,8 +153,11 @@
     <string name="addgame_name_hint">e.g. Terraforming Mars</string>
     <string name="addgame_min_players">Min Players</string>
     <string name="addgame_max_players">Max Players</string>
-    <string name="addgame_coop_title">Cooperate Game?</string>
-    <string name="addgame_coop_desc">Players win or lose together</string>
+    <string name="addgame_modes_title">Game Modes</string>
+    <string name="addgame_modes_desc">Pick every way this game can be played</string>
+    <string name="mode_competitive">Competitive</string>
+    <string name="mode_cooperative">Co-op</string>
+    <string name="mode_team">Teams</string>
     <string name="addgame_exp_title">Is Expansion?</string>
     <string name="addgame_exp_desc">Requires a base game to play</string>
     <string name="addgame_base_hint">Select base game</string>

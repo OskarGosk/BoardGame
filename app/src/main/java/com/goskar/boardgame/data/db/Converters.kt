@@ -3,6 +3,7 @@ package com.goskar.boardgame.data.db
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.goskar.boardgame.data.models.GameMode
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
 
@@ -45,4 +46,11 @@ class Converters {
     fun fromScoresMap(map: Map<String, Int>?): String? {
         return map?.let { Gson().toJson(it) }
     }
+
+    @TypeConverter
+    fun fromModesString(value: String?): List<GameMode>? =
+        value?.split(",")?.mapNotNull { name -> GameMode.entries.firstOrNull { it.name == name.trim() } }
+
+    @TypeConverter
+    fun fromModesList(modes: List<GameMode>?): String? = modes?.joinToString(",") { it.name }
 }

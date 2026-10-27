@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.data.models.GameMode
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppPoweredByBgg
 import com.goskar.boardgame.ui.components.AppSearchBar
@@ -84,7 +85,7 @@ class AddGameScreen(
             onNameChange = viewModel::updateName,
             onMinChange = viewModel::updateMinPlayers,
             onMaxChange = viewModel::updateMaxPlayers,
-            onToggleCooperate = viewModel::toggleCooperate,
+            onToggleMode = viewModel::toggleMode,
             onToggleExpansion = viewModel::toggleExpansion,
             onSelectBaseGame = viewModel::selectBaseGame,
             onCategoryChange = viewModel::updateCategory,
@@ -108,7 +109,7 @@ fun AddGameScreenContent(
     onNameChange: (String) -> Unit = {},
     onMinChange: (String) -> Unit = {},
     onMaxChange: (String) -> Unit = {},
-    onToggleCooperate: (Boolean) -> Unit = {},
+    onToggleMode: (GameMode) -> Unit = {},
     onToggleExpansion: (Boolean) -> Unit = {},
     onSelectBaseGame: (String) -> Unit = {},
     onCategoryChange: (String) -> Unit = {},
@@ -171,7 +172,7 @@ fun AddGameScreenContent(
                     onNameChange = onNameChange,
                     onMinChange = onMinChange,
                     onMaxChange = onMaxChange,
-                    onToggleCooperate = onToggleCooperate,
+                    onToggleMode = onToggleMode,
                     onToggleExpansion = onToggleExpansion,
                     onSelectBaseGame = onSelectBaseGame,
                     onCategoryChange = onCategoryChange,
