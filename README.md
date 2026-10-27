@@ -152,7 +152,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 
 **Code cleanup**
 - [x] Remove **legacy ViewModels** that no screen uses any more (`AddEditGameViewModel`, `GamePlayViewModel`, `GameDetailsBGGViewModel`, `GameSearchViewModel`) together with their Koin registrations, tests and the strings only they used.
-- [ ] Delete **commented-out code** (`AddPlayerNewScreen`, `Typography`, `CooperatePlayers`) and finish the font `TODO` in `Typography.kt`.
+- [x] Delete **commented-out code** (`AddPlayerNewScreen`, `Typography`, `CooperatePlayers`) and close the font `TODO` in `Typography.kt`: the app stays on the system font, the Montserrat / Inter placeholders are gone.
 - [x] Remove **unused resources** reported by lint (86: old icons, colors, strings) – lint now reports none.
 - [x] Move the **hard-coded UI strings** to `strings.xml`, including texts that were built in ViewModels and use cases (history groups and filters, "Guest" / "Player", recent-session winner, game duration and player range): ViewModels now expose enums, sealed types or plain values, and the UI maps them to string resources.
 - [ ] Rename the temporary `*New*` classes (`HistoryNewScreen`, `ProfileNewViewModel`, `NewBottomBarElements`, …) now that the old UI is gone.
