@@ -5,21 +5,21 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.goskar.boardgame.data.repository.user.UserRepository
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed class SplashEvent {
-    object NavigateToHome : SplashEvent()
-    object NavigateToLogin : SplashEvent()
-}
+enum class SplashDestination { Home, Login }
 
 class SplashViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _events = MutableSharedFlow<SplashEvent>()
-    val events = _events.asSharedFlow()
+    // State, not a one-shot event: the ViewModel outlives a configuration change, so a recreated
+    // splash must still be able to read where to go after the decision was already made.
+    private val _destination = MutableStateFlow<SplashDestination?>(null)
+    val destination: StateFlow<SplashDestination?> = _destination.asStateFlow()
 
     init {
         checkLoginStatus()
@@ -29,14 +29,14 @@ class SplashViewModel(
         viewModelScope.launch {
             // Optional delay to show the splash icon for a moment
             delay(1000)
-            
+
             val firebaseUser = FirebaseAuth.getInstance().currentUser?.takeUnless { it.isAnonymous }
             val isLogged = userRepository.isLoggedIn()
-            
-            if (firebaseUser != null || isLogged) {
-                _events.emit(SplashEvent.NavigateToHome)
+
+            _destination.value = if (firebaseUser != null || isLogged) {
+                SplashDestination.Home
             } else {
-                _events.emit(SplashEvent.NavigateToLogin)
+                SplashDestination.Login
             }
         }
     }
