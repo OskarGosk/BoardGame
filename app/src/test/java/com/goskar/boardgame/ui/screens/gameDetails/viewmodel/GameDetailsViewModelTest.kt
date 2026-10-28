@@ -33,7 +33,7 @@ import org.junit.Ignore
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class GameDetailsNewViewModelTest {
+class GameDetailsViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var api: BoardGameApiRepository
@@ -64,7 +64,7 @@ class GameDetailsNewViewModelTest {
         statistics = BggStatistics(ratings = BggRatings(average = 7.5, averageWeight = 1.8)),
     )
 
-    private fun buildViewModel() = GameDetailsNewViewModel(api, gameDbRepository)
+    private fun buildViewModel() = GameDetailsViewModel(api, gameDbRepository)
 
     @Before
     fun setUp() {

@@ -18,14 +18,14 @@ import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.screens.profile.viewmodel.*
 import com.goskar.boardgame.ui.screens.profile.viewmodel.MedalItem
-import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewState
+import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 
 @Composable
 fun RecentMedalsCard(
     modifier: Modifier = Modifier,
-    state: ProfileNewState,
+    state: ProfileState,
     onViewAchievements: () -> Unit,
 ) {
     AppListCard(modifier = modifier) {
@@ -53,7 +53,7 @@ fun RecentMedalsCard(
 private fun RecentMedalsCardPreviewContent() {
     Box(Modifier.padding(16.dp)) {
         RecentMedalsCard(
-            state = ProfileNewState(medals = listOf(MedalItem(title = "First win", description = "Win your first game"))),
+            state = ProfileState(medals = listOf(MedalItem(title = "First win", description = "Win your first game"))),
             onViewAchievements = {},
         )
     }

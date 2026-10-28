@@ -43,7 +43,7 @@ import org.junit.Test
 import java.time.LocalDate
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ProfileNewViewModelTest {
+class ProfileViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var userSession: UserRepository
@@ -68,7 +68,7 @@ class ProfileNewViewModelTest {
     private fun history(id: String) =
         HistoryGame(gameName = "g", winner = "w", gameData = LocalDate.now(), listOfPlayer = emptyList(), description = "", id = id)
 
-    private fun buildViewModel() = ProfileNewViewModel(
+    private fun buildViewModel() = ProfileViewModel(
         userSession, playerDbRepository, historyRepository, mePlayerRepository, clearDbUseCase, uploadToCloud,
         backupGuest, getSyncStatus, syncState,
     )

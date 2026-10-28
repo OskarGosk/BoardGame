@@ -38,18 +38,18 @@ import com.goskar.boardgame.ui.screens.addGame.components.AppSegmentedControl
 import com.goskar.boardgame.ui.screens.addGame.components.ManualEntryForm
 import com.goskar.boardgame.ui.screens.addGame.components.PopularMatchCard
 import com.goskar.boardgame.ui.screens.addGame.viewmodel.*
-import com.goskar.boardgame.ui.screens.gameDetails.GameDetailsNewScreen
+import com.goskar.boardgame.ui.screens.gameDetails.GameDetailsScreen
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class AddGameNewScreen(
+class AddGameScreen(
     private val editGameId: String? = null,
 ) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: AddGameNewViewModel = koinViewModel()
+        val viewModel: AddGameViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
@@ -73,14 +73,14 @@ class AddGameNewScreen(
             }
         }
 
-        AddGameNewScreenContent(
+        AddGameScreenContent(
             state = state,
             onBack = { navigator?.pop() },
             onQueryChange = viewModel::updateQuery,
             onSearch = viewModel::search,
             onSelectTab = viewModel::selectTab,
             onAddGame = viewModel::addFromBgg,
-            onOpenDetails = { match -> navigator?.push(GameDetailsNewScreen(match.id, match.name)) },
+            onOpenDetails = { match -> navigator?.push(GameDetailsScreen(match.id, match.name)) },
             onNameChange = viewModel::updateName,
             onMinChange = viewModel::updateMinPlayers,
             onMaxChange = viewModel::updateMaxPlayers,
@@ -96,8 +96,8 @@ class AddGameNewScreen(
 }
 
 @Composable
-fun AddGameNewScreenContent(
-    state: AddGameNewState,
+fun AddGameScreenContent(
+    state: AddGameState,
     onBack: () -> Unit = {},
     onHelp: () -> Unit = {},
     onQueryChange: (String) -> Unit = {},
@@ -186,12 +186,12 @@ fun AddGameNewScreenContent(
 
 @Preview(name = "Add Game — Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun AddGameNewLightPreview() {
-    BoardGameTheme(darkTheme = false) { AddGameNewScreenContent(state = AddGameNewState()) }
+private fun AddGameLightPreview() {
+    BoardGameTheme(darkTheme = false) { AddGameScreenContent(state = AddGameState()) }
 }
 
 @Preview(name = "Add Game — Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun AddGameNewDarkPreview() {
-    BoardGameTheme(darkTheme = true) { AddGameNewScreenContent(state = AddGameNewState()) }
+private fun AddGameDarkPreview() {
+    BoardGameTheme(darkTheme = true) { AddGameScreenContent(state = AddGameState()) }
 }

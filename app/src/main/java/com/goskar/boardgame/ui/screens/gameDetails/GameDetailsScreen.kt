@@ -37,20 +37,20 @@ import com.goskar.boardgame.ui.screens.gameDetails.components.ChipFlow
 import com.goskar.boardgame.ui.screens.gameDetails.components.CoverImage
 import com.goskar.boardgame.ui.screens.gameDetails.components.CreditRow
 import com.goskar.boardgame.ui.screens.gameDetails.components.StatsCard
-import com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsNewEvent
-import com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsNewState
+import com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsEvent
+import com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsState
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import org.koin.androidx.compose.koinViewModel
 
-class GameDetailsNewScreen(
+class GameDetailsScreen(
     private val bggId: String,
     private val name: String,
 ) : Screen {
 
     @Composable
     override fun Content() {
-        val viewModel: com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsNewViewModel = koinViewModel()
+        val viewModel: com.goskar.boardgame.ui.screens.gameDetails.viewmodel.GameDetailsViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
@@ -61,18 +61,18 @@ class GameDetailsNewScreen(
         LaunchedEffect(Unit) {
             viewModel.events.collect { event ->
                 when (event) {
-                    is GameDetailsNewEvent.Added -> {
+                    is GameDetailsEvent.Added -> {
                         snackbarHostState.show(resources.getString(event.message), event.type)
                         navigator?.pop()
                     }
 
-                    is GameDetailsNewEvent.ShowMessage ->
+                    is GameDetailsEvent.ShowMessage ->
                         snackbarHostState.show(resources.getString(event.message), event.type)
                 }
             }
         }
 
-        GameDetailsNewContent(
+        GameDetailsContent(
             state = state,
             onBack = { navigator?.pop() },
             onAdd = viewModel::addToCollection,
@@ -82,8 +82,8 @@ class GameDetailsNewScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GameDetailsNewContent(
-    state: GameDetailsNewState,
+fun GameDetailsContent(
+    state: GameDetailsState,
     onBack: () -> Unit = {},
     onAdd: () -> Unit = {},
 ) {
@@ -183,7 +183,7 @@ fun GameDetailsNewContent(
 }
 
 
-private val PreviewDetails = GameDetailsNewState(
+private val PreviewDetails = GameDetailsState(
     name = "Dune: Imperium",
     year = "2020",
     players = "1–4",
@@ -200,14 +200,14 @@ private val PreviewDetails = GameDetailsNewState(
 )
 
 @Composable
-private fun GameDetailsNewPreviewContent() {
-    GameDetailsNewContent(state = PreviewDetails)
+private fun GameDetailsPreviewContent() {
+    GameDetailsContent(state = PreviewDetails)
 }
 
 @Preview(name = "Light", showBackground = true, backgroundColor = 0xFFF7F9FF)
 @Composable
-private fun GameDetailsNewLight() = BoardGameTheme(darkTheme = false) { GameDetailsNewPreviewContent() }
+private fun GameDetailsLight() = BoardGameTheme(darkTheme = false) { GameDetailsPreviewContent() }
 
 @Preview(name = "Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
-private fun GameDetailsNewDark() = BoardGameTheme(darkTheme = true) { GameDetailsNewPreviewContent() }
+private fun GameDetailsDark() = BoardGameTheme(darkTheme = true) { GameDetailsPreviewContent() }

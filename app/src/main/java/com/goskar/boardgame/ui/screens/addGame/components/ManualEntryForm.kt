@@ -29,7 +29,7 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 @Composable
 fun ManualEntryForm(
     modifier: Modifier = Modifier,
-    state: AddGameNewState,
+    state: AddGameState,
     onNameChange: (String) -> Unit,
     onMinChange: (String) -> Unit,
     onMaxChange: (String) -> Unit,
@@ -128,7 +128,7 @@ fun ManualEntryForm(
 private fun ManualEntryFormPreviewContent() {
     Box(Modifier.padding(16.dp)) {
         ManualEntryForm(
-            state = AddGameNewState(
+            state = AddGameState(
                 name = "Terraforming Mars",
                 minPlayers = "1",
                 maxPlayers = "5",

@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.screens.profile.viewmodel.*
-import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewState
+import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileState
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 import com.goskar.boardgame.ui.theme.appExt
@@ -36,7 +36,7 @@ import com.goskar.boardgame.utils.toLocalizedDateTime
 @Composable
 fun CloudSyncCard(
     modifier: Modifier = Modifier,
-    state: ProfileNewState,
+    state: ProfileState,
     onForceSync: () -> Unit,
 ) {
     Row(
@@ -97,7 +97,7 @@ fun CloudSyncCard(
 }
 
 @Composable
-private fun syncStatusText(state: ProfileNewState): String = when {
+private fun syncStatusText(state: ProfileState): String = when {
     state.hasUnsyncedChanges -> stringResource(R.string.profile_unsynced_changes)
     state.lastSyncedAt != null -> stringResource(R.string.profile_last_synced, state.lastSyncedAt.toLocalizedDateTime())
     else -> stringResource(R.string.profile_not_synced)
@@ -108,8 +108,8 @@ private fun syncStatusText(state: ProfileNewState): String = when {
 private fun CloudSyncCardPreviewContent() {
     Box(Modifier.padding(16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            CloudSyncCard(state = ProfileNewState(lastSyncedAt = 1_760_000_000_000L), onForceSync = {})
-            CloudSyncCard(state = ProfileNewState(syncing = true), onForceSync = {})
+            CloudSyncCard(state = ProfileState(lastSyncedAt = 1_760_000_000_000L), onForceSync = {})
+            CloudSyncCard(state = ProfileState(syncing = true), onForceSync = {})
         }
     }
 }

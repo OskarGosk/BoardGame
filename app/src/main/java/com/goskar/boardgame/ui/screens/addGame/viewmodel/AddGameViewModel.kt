@@ -26,7 +26,7 @@ data class PopularMatch(
     val year: String,
 )
 
-data class AddGameNewState(
+data class AddGameState(
     val query: String = "",
     val selectedTab: Int = 0,
     val isSearching: Boolean = false,
@@ -51,13 +51,13 @@ sealed interface AddGameEvent {
     data class Saved(@StringRes val message: Int, val type: AppSnackBarType) : AddGameEvent
 }
 
-class AddGameNewViewModel(
+class AddGameViewModel(
     private val gameDbRepository: GameDbRepository,
     private val getAllGameUseCase: GetAllGameUseCase,
     private val boardGameApiRepository: BoardGameApiRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AddGameNewState())
+    private val _state = MutableStateFlow(AddGameState())
     val state = _state.asStateFlow()
 
     private val _events = Channel<AddGameEvent>(Channel.BUFFERED)
