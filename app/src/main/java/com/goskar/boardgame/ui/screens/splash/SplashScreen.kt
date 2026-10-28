@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.screens.home.HomeScreen
@@ -32,13 +34,13 @@ class SplashScreen : Screen {
     override fun Content() {
         val viewModel: SplashViewModel = koinViewModel()
         val navigator = LocalNavigator.current
+        val destination by viewModel.destination.collectAsStateWithLifecycle()
 
-        LaunchedEffect(Unit) {
-            viewModel.events.collect { event ->
-                when (event) {
-                    SplashEvent.NavigateToHome -> navigator?.replace(HomeScreen())
-                    SplashEvent.NavigateToLogin -> navigator?.replace(LoginScreen())
-                }
+        LaunchedEffect(destination) {
+            when (destination) {
+                SplashDestination.Home -> navigator?.replace(HomeScreen())
+                SplashDestination.Login -> navigator?.replace(LoginScreen())
+                null -> Unit
             }
         }
 
