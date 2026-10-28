@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import com.goskar.boardgame.ui.components.user.text
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayNewScreen
 import com.goskar.boardgame.ui.screens.history.HistoryNewScreen
 import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen
@@ -145,7 +146,7 @@ fun HomeScreenContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    state.userName,
+                    state.userName?.text().orEmpty(),
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )

@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gamesList.lists
+package com.goskar.boardgame.ui.screens.collection.viewmodel
 
 import app.cash.turbine.test
 import com.goskar.boardgame.R

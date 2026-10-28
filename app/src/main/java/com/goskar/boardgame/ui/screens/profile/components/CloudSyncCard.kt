@@ -100,7 +100,7 @@ fun CloudSyncCard(
 private fun syncStatusText(state: ProfileNewState): String = when {
     state.hasUnsyncedChanges -> stringResource(R.string.profile_unsynced_changes)
     state.lastSyncedAt != null -> stringResource(R.string.profile_last_synced, state.lastSyncedAt.toLocalizedDateTime())
-    else -> state.lastSynced.ifBlank { stringResource(R.string.profile_not_synced) }
+    else -> stringResource(R.string.profile_not_synced)
 }
 
 
@@ -108,7 +108,7 @@ private fun syncStatusText(state: ProfileNewState): String = when {
 private fun CloudSyncCardPreviewContent() {
     Box(Modifier.padding(16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            CloudSyncCard(state = ProfileNewState(lastSynced = "Synced just now"), onForceSync = {})
+            CloudSyncCard(state = ProfileNewState(lastSyncedAt = 1_760_000_000_000L), onForceSync = {})
             CloudSyncCard(state = ProfileNewState(syncing = true), onForceSync = {})
         }
     }

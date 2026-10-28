@@ -55,7 +55,7 @@ fun PlayerResultRow(
         }
         if (player.score.isNotBlank()) {
             Text(
-                player.score,
+                stringResource(R.string.session_score_pts, player.score),
                 style = MaterialTheme.typography.titleLarge,
                 color = if (player.isWinner) winColor else MaterialTheme.colorScheme.onSurface,
             )
@@ -68,8 +68,8 @@ fun PlayerResultRow(
 private fun PlayerResultRowPreviewContent() {
     Box(Modifier.padding(16.dp)) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            PlayerResultRow(player = SessionPlayerResult(name = "Alex M.", initials = "AM", score = "42 pts", isWinner = true))
-            PlayerResultRow(player = SessionPlayerResult(name = "Sarah K.", initials = "SK", score = "37 pts"))
+            PlayerResultRow(player = SessionPlayerResult(name = "Alex M.", initials = "AM", score = "42", isWinner = true))
+            PlayerResultRow(player = SessionPlayerResult(name = "Sarah K.", initials = "SK", score = "37"))
         }
     }
 }

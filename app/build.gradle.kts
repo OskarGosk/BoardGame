@@ -3,7 +3,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.firebase)
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.compose.compiler)
@@ -13,7 +12,7 @@ plugins {
 
 android {
     namespace = "com.goskar.boardgame"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.goskar.boardgame"

@@ -29,7 +29,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.ui.gamesList.lists.GameUiState
+import com.goskar.boardgame.ui.screens.collection.viewmodel.GameUiState
 import com.goskar.boardgame.ui.theme.*
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 

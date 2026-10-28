@@ -1,4 +1,4 @@
-package com.goskar.boardgame.ui.gamesHistory
+package com.goskar.boardgame.ui.screens.history.viewmodel
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
@@ -37,7 +37,23 @@ data class HistorySession(
     val uri: String
 )
 
-data class HistoryGroup(val title: String, val sessions: List<HistorySession>)
+/** Filtry listy sesji; etykieta jest zasobem tekstowym. */
+enum class HistoryFilter(@StringRes val label: Int) {
+    ALL(R.string.history_filter_all),
+    WINS_ONLY(R.string.history_filter_wins),
+    STRATEGY(R.string.history_filter_strategy),
+    COOP(R.string.history_filter_coop),
+}
+
+/** Przedział czasu, w który grupowane są sesje. */
+enum class HistoryBucket(@StringRes val label: Int) {
+    TODAY(R.string.history_bucket_today),
+    YESTERDAY(R.string.history_bucket_yesterday),
+    THIS_WEEK(R.string.history_bucket_this_week),
+    EARLIER(R.string.history_bucket_earlier),
+}
+
+data class HistoryGroup(val bucket: HistoryBucket, val sessions: List<HistorySession>)
 
 data class GamesHistoryState(
     // Raw data
@@ -49,9 +65,9 @@ data class GamesHistoryState(
     val loading: Boolean = true,
     
     // UI derived data
-    val filters: List<String> = listOf("All Games", "Wins Only", "Strategy", "Co-op"),
+    val filters: List<HistoryFilter> = HistoryFilter.entries,
     val selectedFilter: Int = 0,
-    val showingLabel: String = "",
+    val showingCount: Int = 0,
     val groups: List<HistoryGroup> = emptyList(),
 )
 
@@ -145,22 +161,22 @@ class GamesHistoryViewModel(
         val uriByName = games.associate { it.name to (it.uri ?: it.uriFromBgg) }
         val today = LocalDate.now()
         
-        val byBucket = sorted.groupBy { bucketLabel(it.gameData, today) }
-        val groups = listOf("Today", "Yesterday", "This Week", "Earlier").mapNotNull { label ->
-            byBucket[label]?.let { HistoryGroup(label, it.map { g -> g.toSession(categoryByName[g.gameName], uriByName[g.gameName]) }) }
+        val byBucket = sorted.groupBy { bucketOf(it.gameData, today) }
+        val groups = HistoryBucket.entries.mapNotNull { bucket ->
+            byBucket[bucket]?.let { HistoryGroup(bucket, it.map { g -> g.toSession(categoryByName[g.gameName], uriByName[g.gameName]) }) }
         }
 
         return this.copy(
-            showingLabel = "Showing ${filtered.size} session${if (filtered.size != 1) "s" else ""}",
+            showingCount = filtered.size,
             groups = groups
         )
     }
 
-    private fun bucketLabel(date: LocalDate, today: LocalDate): String = when {
-        date == today -> "Today"
-        date == today.minusDays(1) -> "Yesterday"
-        date.isAfter(today.minusDays(7)) -> "This Week"
-        else -> "Earlier"
+    private fun bucketOf(date: LocalDate, today: LocalDate): HistoryBucket = when {
+        date == today -> HistoryBucket.TODAY
+        date == today.minusDays(1) -> HistoryBucket.YESTERDAY
+        date.isAfter(today.minusDays(7)) -> HistoryBucket.THIS_WEEK
+        else -> HistoryBucket.EARLIER
     }
 
     private fun HistoryGame.toSession(category: String?, gameUri: String?): HistorySession = HistorySession(

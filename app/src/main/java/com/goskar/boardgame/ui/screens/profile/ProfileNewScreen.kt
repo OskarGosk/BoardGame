@@ -24,7 +24,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.login.LoginScreen
+import com.goskar.boardgame.ui.screens.login.LoginScreen
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.profile.components.AccountSettingsCard

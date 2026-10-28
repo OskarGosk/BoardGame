@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.ui.components.AppChip
 import com.goskar.boardgame.ui.components.AppChipStyle
-import com.goskar.boardgame.ui.gamesList.lists.GameUiState
+import com.goskar.boardgame.ui.screens.collection.viewmodel.GameUiState
 import com.goskar.boardgame.ui.theme.*
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 

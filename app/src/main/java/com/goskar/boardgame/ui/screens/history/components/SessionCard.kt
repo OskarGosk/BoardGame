@@ -38,7 +38,7 @@ import coil.request.ImageRequest
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppListCard
-import com.goskar.boardgame.ui.gamesHistory.HistorySession
+import com.goskar.boardgame.ui.screens.history.viewmodel.HistorySession
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
@@ -99,7 +99,7 @@ fun SessionCard(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "${session.durationMin}m",
+                            stringResource(R.string.duration_short, session.durationMin),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

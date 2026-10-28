@@ -1,11 +1,11 @@
-package com.goskar.boardgame.ui.login.components
+package com.goskar.boardgame.ui.screens.login.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppActionDialog
-import com.goskar.boardgame.ui.login.LocalDataSummary
+import com.goskar.boardgame.ui.screens.login.LocalDataSummary
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 /** Asks what to do with the data found on the device when signing in to an account. */

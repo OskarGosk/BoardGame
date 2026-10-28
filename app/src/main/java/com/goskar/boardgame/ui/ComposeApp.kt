@@ -17,8 +17,7 @@ import cafe.adriel.voyager.navigator.Navigator
 import com.goskar.boardgame.ui.components.other.AppSnackbar
 import com.goskar.boardgame.ui.components.other.AppSnackbarController
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
-import com.goskar.boardgame.ui.login.LoginScreen
-import com.goskar.boardgame.ui.splash.SplashScreen
+import com.goskar.boardgame.ui.screens.splash.SplashScreen
 import com.goskar.boardgame.ui.theme.BoardGameTheme
 
 @Preview(

@@ -281,4 +281,24 @@
     <string name="cd_add_player">Add player</string>
     <string name="cd_add_match">Add %1$s</string>
 
+    <!-- Texts previously built in ViewModels -->
+    <string name="history_filter_all">All Games</string>
+    <string name="history_filter_wins">Wins Only</string>
+    <string name="history_filter_strategy">Strategy</string>
+    <string name="history_filter_coop">Co-op</string>
+    <string name="history_bucket_today">Today</string>
+    <string name="history_bucket_yesterday">Yesterday</string>
+    <string name="history_bucket_this_week">This Week</string>
+    <string name="history_bucket_earlier">Earlier</string>
+    <plurals name="history_showing_sessions">
+        <item quantity="one">Showing %d session</item>
+        <item quantity="other">Showing %d sessions</item>
+    </plurals>
+    <string name="user_name_guest">Guest</string>
+    <string name="user_name_player">Player</string>
+    <string name="profile_guest_session">Guest session</string>
+    <string name="home_recent_winner">Winner: %1$s</string>
+    <string name="gd_minutes_value">%1$s min</string>
+    <string name="duration_short">%1$dm</string>
+    <string name="session_score_pts">%1$s pts</string>
 </resources>

@@ -32,9 +32,9 @@ import com.goskar.boardgame.ui.components.AppSelectChip
 import com.goskar.boardgame.ui.components.other.LocalSnackbarHost
 import com.goskar.boardgame.ui.components.other.SimpleAlertDialog
 import com.goskar.boardgame.ui.components.user.rememberUserInitials
-import com.goskar.boardgame.ui.gamesList.lists.GameListState
-import com.goskar.boardgame.ui.gamesList.lists.GameListViewModel
-import com.goskar.boardgame.ui.gamesList.lists.GameUiState
+import com.goskar.boardgame.ui.screens.collection.viewmodel.GameListState
+import com.goskar.boardgame.ui.screens.collection.viewmodel.GameListViewModel
+import com.goskar.boardgame.ui.screens.collection.viewmodel.GameUiState
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.addGame.AddGameNewScreen

@@ -12,10 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppListCard
+import com.goskar.boardgame.ui.components.user.UserName
+import com.goskar.boardgame.ui.components.user.text
 import com.goskar.boardgame.ui.screens.profile.viewmodel.*
 import com.goskar.boardgame.ui.screens.profile.viewmodel.ProfileNewState
 import com.goskar.boardgame.ui.theme.BoardGameTheme
@@ -36,12 +40,12 @@ fun ProfileHeaderCard(
             AppAvatar(initials = state.initials, size = 80.dp, selected = true)
             Spacer(Modifier.height(12.dp))
             Text(
-                state.name,
+                state.name.text(),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                state.subtitle,
+                if (state.isGuestSession) stringResource(R.string.profile_guest_session) else state.subtitle,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -54,7 +58,7 @@ fun ProfileHeaderCard(
 @Composable
 private fun ProfileHeaderCardPreviewContent() {
     Box(Modifier.padding(16.dp)) {
-        ProfileHeaderCard(state = ProfileNewState(name = "Alex M.", subtitle = "Board game enthusiast", initials = "AM"))
+        ProfileHeaderCard(state = ProfileNewState(name = UserName.Named("Alex M."), subtitle = "Board game enthusiast", initials = "AM"))
     }
 }
 
