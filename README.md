@@ -161,7 +161,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 
 **UI polish**
 - [x] **Edge-to-edge** support – `enableEdgeToEdge()` with system bars following the theme; the top bar, bottom nav, login and splash draw behind the system bars, and a night window theme keeps the launch screen dark.
-- [ ] Visual fixes on the **My Collection** screen.
+- [x] Visual fixes on the **My Collection** screen – the tile actions are tonal buttons spread over the full width, and category / year / rating moved to the back of the card so they no longer get cut off under the cover.
 - [ ] Visual fixes on the **session** screens (log session / session details).
 - [ ] (Optional) Redesign the splash screen.
 

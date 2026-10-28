@@ -1,19 +1,18 @@
 package com.goskar.boardgame.ui.screens.collection.components
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,36 +25,42 @@ fun BackIcon(
     modifier: Modifier = Modifier,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     contentDescription: String,
-    tint: Color,
+    containerColor: Color = MaterialTheme.colorScheme.surface,
+    contentColor: Color = MaterialTheme.colorScheme.primary,
     onClick: () -> Unit,
 ) {
-    Icon(
-        imageVector = icon,
-        contentDescription = contentDescription,
-        tint = tint,
-        modifier = modifier
-            .clip(CircleShape)
-            .clickable { onClick() }
-            .padding(8.dp)
-            .size(24.dp)
-    )
+    FilledTonalIconButton(
+        onClick = onClick,
+        modifier = modifier.height(40.dp),
+        shape = BoardGameShapes.Medium,
+        colors = IconButtonDefaults.filledTonalIconButtonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+        ),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            modifier = Modifier.size(20.dp),
+        )
+    }
 }
 
 
 @Composable
 private fun BackIconPreviewContent() {
     Box(Modifier.padding(16.dp)) {
-        Row {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             BackIcon(
                 icon = Icons.Default.Edit,
                 contentDescription = "Edit",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 onClick = {},
             )
             BackIcon(
                 icon = Icons.Default.Delete,
                 contentDescription = "Delete",
-                tint = MaterialTheme.colorScheme.error,
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
                 onClick = {},
             )
         }
