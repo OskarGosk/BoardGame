@@ -36,6 +36,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppChip
 import com.goskar.boardgame.ui.components.AppChipStyle
+import com.goskar.boardgame.ui.components.labelRes
 import com.goskar.boardgame.ui.components.AppGameCover
 import com.goskar.boardgame.ui.components.AppGhostButton
 import com.goskar.boardgame.ui.components.AppListCard
@@ -124,10 +125,16 @@ fun SessionDetailsScreenContent(
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Spacer(Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            itemVerticalAlignment = Alignment.CenterVertically,
+                        ) {
                             if (state.category.isNotBlank()) {
                                 AppChip(text = state.category, style = state.categoryStyle)
-                                Spacer(Modifier.width(8.dp))
+                            }
+                            state.mode?.let { mode ->
+                                AppChip(text = stringResource(mode.labelRes), style = AppChipStyle.STATUS_PLACE)
                             }
                             Text(
                                 state.dateLabel,

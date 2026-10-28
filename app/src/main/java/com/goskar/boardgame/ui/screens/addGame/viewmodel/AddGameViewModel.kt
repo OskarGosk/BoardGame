@@ -4,7 +4,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.BoardGameBGG
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.GameMode
+import com.goskar.boardgame.data.models.playModes
 import com.goskar.boardgame.data.repository.bgg.BoardGameApiRepository
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.rest.RequestResult
@@ -34,7 +37,7 @@ data class AddGameState(
     val name: String = "",
     val minPlayers: String = "",
     val maxPlayers: String = "",
-    val cooperate: Boolean = false,
+    val modes: Set<GameMode> = setOf(GameMode.COMPETITIVE),
     val expansion: Boolean = false,
     val baseGame: String = "",
     val baseGameOptions: List<String> = emptyList(),
@@ -89,7 +92,7 @@ class AddGameViewModel(
                     name = game.name,
                     minPlayers = game.minPlayer,
                     maxPlayers = game.maxPlayer,
-                    cooperate = game.cooperate,
+                    modes = game.playModes().toSet(),
                     expansion = game.expansion,
                     baseGame = game.baseGame,
                     category = game.category.orEmpty(),
@@ -127,7 +130,14 @@ class AddGameViewModel(
     fun updateMaxPlayers(value: String) =
         _state.update { it.copy(maxPlayers = value.filter { c -> c.isDigit() }) }
 
-    fun toggleCooperate(value: Boolean) = _state.update { it.copy(cooperate = value) }
+    /** A game always keeps at least one mode, so the last selected one cannot be switched off. */
+    fun toggleMode(mode: GameMode) = _state.update { s ->
+        when {
+            mode !in s.modes -> s.copy(modes = s.modes + mode)
+            s.modes.size > 1 -> s.copy(modes = s.modes - mode)
+            else -> s
+        }
+    }
 
     fun toggleExpansion(value: Boolean) = _state.update {
         it.copy(expansion = value, baseGame = if (value) it.baseGame else "")
@@ -173,6 +183,7 @@ class AddGameViewModel(
                 name = match.name,
                 expansion = false,
                 cooperate = details?.isCooperative() == true,
+                modes = bggModes(details),
                 baseGame = "",
                 minPlayer = details?.minPlayers?.toString() ?: "",
                 maxPlayer = details?.maxPlayers?.toString() ?: "",
@@ -196,7 +207,8 @@ class AddGameViewModel(
         val game = Game(
             name = current.name,
             expansion = current.expansion && current.baseGame.isNotBlank(),
-            cooperate = current.cooperate,
+            cooperate = GameMode.COOPERATIVE in current.modes,
+            modes = GameMode.entries.filter { it in current.modes },
             baseGame = current.baseGame,
             baseGameId = baseGameId,
             minPlayer = current.minPlayers,
@@ -213,6 +225,13 @@ class AddGameViewModel(
             id = existing?.id ?: UUID.randomUUID().toString(),
         )
         viewModelScope.launch { save(game, isEdit = current.isEditMode) }
+    }
+
+    // Co-op games are often played competitively too, so BGG co-op games get both modes.
+    private fun bggModes(details: BoardGameBGG?): List<GameMode> = buildList {
+        add(GameMode.COMPETITIVE)
+        if (details?.isCooperative() == true) add(GameMode.COOPERATIVE)
+        if (details?.isTeamBased() == true) add(GameMode.TEAM)
     }
 
     private suspend fun save(game: Game, isEdit: Boolean = false) {

@@ -41,7 +41,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.GameMode
 import com.goskar.boardgame.ui.components.AppAvatar
+import com.goskar.boardgame.ui.components.AppGhostButton
 import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.components.AppSecondaryButton
@@ -59,7 +61,9 @@ import com.goskar.boardgame.ui.screens.addPlayer.AddPlayerScreen
 import com.goskar.boardgame.ui.screens.logGameplay.components.AddPlayerButton
 import com.goskar.boardgame.ui.screens.logGameplay.components.CoopResultTile
 import com.goskar.boardgame.ui.screens.logGameplay.components.DatePlayedField
+import com.goskar.boardgame.ui.screens.logGameplay.components.GameModeSelector
 import com.goskar.boardgame.ui.screens.logGameplay.components.PlayerToggle
+import com.goskar.boardgame.ui.screens.logGameplay.components.TeamAssignmentRow
 import com.goskar.boardgame.ui.screens.logGameplay.components.WinnerTile
 import com.goskar.boardgame.ui.screens.logGameplay.viewmodel.*
 import com.goskar.boardgame.ui.screens.profile.ProfileScreen
@@ -108,6 +112,10 @@ class AddGameplayScreen(
             onToggleVariant = viewModel::toggleVariant,
             onSelectWinner = viewModel::selectWinner,
             onSelectCoopWin = viewModel::selectCoopWin,
+            onSelectMode = viewModel::selectMode,
+            onAssignTeam = viewModel::assignTeam,
+            onAddTeam = viewModel::addTeam,
+            onSelectWinningTeam = viewModel::selectWinningTeam,
             onNotesChange = viewModel::updateNotes,
             onDurationChange = viewModel::updateDuration,
             onScoreChange = viewModel::updatePlayerScore,
@@ -129,6 +137,10 @@ fun AddGameplayScreenContent(
     onToggleVariant: (Int) -> Unit = {},
     onSelectWinner: (Int) -> Unit = {},
     onSelectCoopWin: (Boolean) -> Unit = {},
+    onSelectMode: (GameMode) -> Unit = {},
+    onAssignTeam: (Int, Int) -> Unit = { _, _ -> },
+    onAddTeam: () -> Unit = {},
+    onSelectWinningTeam: (Int) -> Unit = {},
     onNotesChange: (String) -> Unit = {},
     onDurationChange: (String) -> Unit = {},
     onScoreChange: (Int, String) -> Unit = { _, _ -> },
@@ -235,12 +247,68 @@ fun AddGameplayScreenContent(
             }
 
             AppListCard {
+                if (state.availableModes.size > 1) {
+                    AppSectionHeader(title = stringResource(R.string.log_mode_title))
+                    Spacer(Modifier.height(12.dp))
+                    GameModeSelector(
+                        modes = state.availableModes,
+                        selected = state.mode,
+                        onSelect = onSelectMode,
+                    )
+                    Spacer(Modifier.height(20.dp))
+                }
                 AppSectionHeader(
-                    title = if (state.cooperate) stringResource(R.string.log_coop_result)
-                    else stringResource(R.string.log_select_winner)
+                    title = when (state.mode) {
+                        GameMode.COOPERATIVE -> stringResource(R.string.log_coop_result)
+                        GameMode.TEAM -> stringResource(R.string.log_teams_title)
+                        GameMode.COMPETITIVE -> stringResource(R.string.log_select_winner)
+                    }
                 )
                 Spacer(Modifier.height(16.dp))
-                if (state.cooperate) {
+                if (state.mode == GameMode.TEAM) {
+                    val teamPlayers = state.players.withIndex().filter { it.value.selected }
+                    if (teamPlayers.isEmpty()) {
+                        Text(
+                            stringResource(R.string.log_select_players_for_teams),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            teamPlayers.forEach { (index, player) ->
+                                TeamAssignmentRow(
+                                    name = player.name,
+                                    initials = player.initials,
+                                    team = player.team,
+                                    teamCount = state.teamCount,
+                                    onAssign = { team -> onAssignTeam(index, team) },
+                                )
+                            }
+                        }
+                        if (state.teamCount < teamPlayers.size) {
+                            AppGhostButton(
+                                text = stringResource(R.string.log_add_team),
+                                onClick = onAddTeam,
+                            )
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        AppSectionHeader(title = stringResource(R.string.log_winning_team))
+                        Spacer(Modifier.height(12.dp))
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            state.activeTeams.forEach { team ->
+                                AppSelectChip(
+                                    style = AppSelectChipStyle.FILLED,
+                                    text = stringResource(R.string.log_team_number, team),
+                                    selected = state.winningTeam == team,
+                                    onToggle = { onSelectWinningTeam(team) },
+                                )
+                            }
+                        }
+                    }
+                } else if (state.cooperate) {
                     Row(
                         modifier = Modifier.height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -366,4 +434,28 @@ private fun AddGameplayLightPreview() {
 @Composable
 private fun AddGameplayDarkPreview() {
     BoardGameTheme(darkTheme = true) { AddGameplayScreenContent(state = AddGameplayState()) }
+}
+
+private val TeamModePreviewState = AddGameplayState(
+    selectedGame = "Codenames",
+    players = listOf(
+        GameplayPlayer(id = "1", name = "Oskar", initials = "O", selected = true, team = 1),
+        GameplayPlayer(id = "2", name = "Kamila", initials = "K", selected = true, team = 2),
+        GameplayPlayer(id = "3", name = "Maksymilian", initials = "M", selected = true, team = 1),
+    ),
+    availableModes = GameMode.entries,
+    mode = GameMode.TEAM,
+    winningTeam = 1,
+)
+
+@Preview(name = "Log Gameplay — Teams Light", showBackground = true, backgroundColor = 0xFFF7F9FF, heightDp = 1800)
+@Composable
+private fun AddGameplayTeamsLightPreview() {
+    BoardGameTheme(darkTheme = false) { AddGameplayScreenContent(state = TeamModePreviewState) }
+}
+
+@Preview(name = "Log Gameplay — Teams Dark", showBackground = true, backgroundColor = 0xFF131313, heightDp = 1800)
+@Composable
+private fun AddGameplayTeamsDarkPreview() {
+    BoardGameTheme(darkTheme = true) { AddGameplayScreenContent(state = TeamModePreviewState) }
 }

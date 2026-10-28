@@ -54,7 +54,10 @@ fun convertHistoryGameListToDto(oldList :List<HistoryGameFirebase>): List<Histor
             durationMin = historyGame.durationMin,
             playerScores = historyGame.playerScores,
             id = historyGame.id,
-            baseGameId = historyGame.baseGameId
+            baseGameId = historyGame.baseGameId,
+            mode = historyGame.mode,
+            teams = historyGame.teams,
+            winningTeam = historyGame.winningTeam,
         )
     }
 }
@@ -70,7 +73,10 @@ fun convertHistoryGameListToFirebase(oldList: List<HistoryGame>): List<HistoryGa
             durationMin = historyGame.durationMin,
             playerScores = historyGame.playerScores,
             id = historyGame.id,
-            baseGameId = historyGame.baseGameId
+            baseGameId = historyGame.baseGameId,
+            mode = historyGame.mode,
+            teams = historyGame.teams,
+            winningTeam = historyGame.winningTeam,
         )
     }
 }
