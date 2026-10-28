@@ -151,7 +151,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] **Richer data model (Room migrations)** – game category / year / rating, per-player scores, session duration, player avatar and level, "active this week" and achievements are placeholders or hidden in the UI for now.
 
 **Code cleanup**
-- [ ] Remove **legacy ViewModels** that no screen uses any more (`AddEditGameViewModel`, `GamePlayViewModel`, `GameDetailsBGGViewModel`, `GameSearchViewModel`) together with their Koin registrations and tests.
+- [x] Remove **legacy ViewModels** that no screen uses any more (`AddEditGameViewModel`, `GamePlayViewModel`, `GameDetailsBGGViewModel`, `GameSearchViewModel`) together with their Koin registrations, tests and the strings only they used.
 - [ ] Delete **commented-out code** (`AddPlayerNewScreen`, `Typography`, `CooperatePlayers`) and finish the font `TODO` in `Typography.kt`.
 - [x] Remove **unused resources** reported by lint (86: old icons, colors, strings) – lint now reports none.
 - [x] Move the **hard-coded UI strings** to `strings.xml`, including texts that were built in ViewModels and use cases (history groups and filters, "Guest" / "Player", recent-session winner, game duration and player range): ViewModels now expose enums, sealed types or plain values, and the UI maps them to string resources.
@@ -166,7 +166,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] (Optional) Redesign the splash screen.
 
 **Tests**
-- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (187 tests) and runs in CI on every pull request.
+- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (163 tests) and runs in CI on every pull request.
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes
