@@ -18,6 +18,7 @@ class GetThreeRecentSessionUseCase(
             val game = allGames.firstOrNull { it.name == historyGame.gameName }
 
             RecentSession(
+                id = historyGame.id,
                 gameName = historyGame.gameName,
                 date = historyGame.gameData.year.toString(),
                 playersInitials = historyGame.listOfPlayer.map { initialsOf(it) },
@@ -31,6 +32,7 @@ class GetThreeRecentSessionUseCase(
 }
 
 data class RecentSession(
+    val id: String,
     val gameName: String,
     val date: String,
     val playersInitials: List<String>,

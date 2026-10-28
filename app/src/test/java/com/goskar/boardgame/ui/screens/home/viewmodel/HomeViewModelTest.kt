@@ -117,8 +117,8 @@ class HomeViewModelTest {
             game("Root", plays = 2, id = "g2"),
         )
         coEvery { getThreeRecentSession() } returns listOf(
-            RecentSession("Wingspan", "2024", listOf("AM", "B"), "Winner: Alex M."),
-            RecentSession("Root", "2024", listOf("AM", "B"), "Winner: Bob"),
+            RecentSession("s1", "Wingspan", "2024", listOf("AM", "B"), "Winner: Alex M."),
+            RecentSession("s2", "Root", "2024", listOf("AM", "B"), "Winner: Bob"),
         )
         coEvery { userSession.getCurrentSession() } returns
             User(email = "alex@example.com", token = "t", userUID = "uid1")

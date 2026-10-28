@@ -166,7 +166,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] (Optional) Redesign the splash screen.
 
 **Tests**
-- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (163 tests) and runs in CI on every pull request.
+- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (164 tests) and runs in CI on every pull request.
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes

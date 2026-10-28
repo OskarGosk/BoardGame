@@ -1,5 +1,6 @@
 package com.goskar.boardgame.ui.screens.home
 import com.goskar.boardgame.R
+import com.goskar.boardgame.data.useCase.RecentSession
 import androidx.compose.ui.res.stringResource
 
 import androidx.compose.foundation.clickable
@@ -41,6 +42,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.ui.components.user.text
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
 import com.goskar.boardgame.ui.screens.history.HistoryScreen
+import com.goskar.boardgame.ui.screens.sessionDetails.SessionDetailsScreen
 import com.goskar.boardgame.ui.screens.addGame.AddGameScreen
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.profile.ProfileScreen
@@ -76,6 +78,7 @@ class HomeScreen(
             onSettingsClick = { navigator?.push(ProfileScreen()) },
             onFabClick = { navigator?.push(AddGameplayScreen()) },
             onViewAllSessions = { navigator?.push(HistoryScreen()) },
+            onSessionClick = { session -> navigator?.push(SessionDetailsScreen(session.id)) },
             onAddGameplay = { navigator?.push(AddGameplayScreen()) },
             onScanBgg = { navigator?.push(AddGameScreen()) },
             onSelectPlayer = viewModel::selectPlayer,
@@ -93,6 +96,7 @@ fun HomeScreenContent(
     onSettingsClick: () -> Unit = {},
     onFabClick: () -> Unit = {},
     onViewAllSessions: () -> Unit = {},
+    onSessionClick: (RecentSession) -> Unit = {},
     onAddGameplay: () -> Unit = {},
     onScanBgg: () -> Unit = {},
     onQuickReport: () -> Unit = {},
@@ -204,7 +208,7 @@ fun HomeScreenContent(
                 onAction = onViewAllSessions,
             )
             state.recentSessions.forEach { session ->
-                RecentSessionCard(session)
+                RecentSessionCard(session = session, onClick = { onSessionClick(session) })
             }
 
             Spacer(Modifier.height(80.dp))
