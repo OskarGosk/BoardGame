@@ -30,6 +30,11 @@ sealed interface LoginEvent {
         val mergeLocalData: Boolean = false,
     ) : LoginEvent
     data class ShowErrorMessage(val message: String?) : LoginEvent
+    data class ShowNotice(
+        @StringRes val message: Int,
+        val type: AppSnackBarType,
+        val formatArg: String? = null,
+    ) : LoginEvent
     object LoggedInOrGuest : LoginEvent
 }
 
@@ -50,6 +55,8 @@ data class LoginState(
     val isLoading: Boolean = false,
     val isSuccessDownloadData: Boolean = false,
     val pendingLocalData: LocalDataSummary? = null,
+    val isSendingPasswordReset: Boolean = false,
+    val showCreateAccountInfo: Boolean = false,
 )
 
 class LoginViewModel(
@@ -173,6 +180,34 @@ class LoginViewModel(
                     )
                 }
             }
+    }
+
+    fun resetPassword() {
+        val email = _state.value.login.trim()
+        if (email.isBlank()) {
+            _state.update { it.copy(loginError = true) }
+            return
+        }
+        if (_state.value.isSendingPasswordReset) return
+        _state.update { it.copy(isSendingPasswordReset = true) }
+        viewModelScope.launch {
+            val event = try {
+                auth.sendPasswordResetEmail(email).await()
+                LoginEvent.ShowNotice(R.string.login_reset_sent, AppSnackBarType.SUCCESS, email)
+            } catch (e: Exception) {
+                LoginEvent.ShowNotice(R.string.login_reset_failed, AppSnackBarType.ERROR)
+            }
+            _state.update { it.copy(isSendingPasswordReset = false) }
+            _events.send(event)
+        }
+    }
+
+    fun openCreateAccountInfo() {
+        _state.update { it.copy(showCreateAccountInfo = true) }
+    }
+
+    fun dismissCreateAccountInfo() {
+        _state.update { it.copy(showCreateAccountInfo = false) }
     }
 
     internal fun continueAfterSignIn() {

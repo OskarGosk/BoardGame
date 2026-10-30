@@ -251,6 +251,14 @@
     <string name="login_continue_as_guest">Continue as Guest</string>
     <string name="login_new_collector">"New collector? "</string>
     <string name="login_create_account">Create an account</string>
+    <string name="login_reset_sent">If an account exists for %1$s, a password reset link is on its way.</string>
+    <string name="login_reset_failed">Couldn\'t send the reset link. Check the email address and your connection, then try again.</string>
+    <string name="login_create_account_title">Accounts on request</string>
+    <string name="login_create_account_message">Accounts are set up by hand for now. Write to me at %1$s and I\'ll create one for you. In the meantime you can try the app as a guest.</string>
+    <string name="login_create_account_write_email">Write an email</string>
+    <string name="login_create_account_email_subject">BoardGame Tracker account</string>
+    <string name="login_no_email_app">No email app found. Write to %1$s.</string>
+    <string name="contact_email" translatable="false">gosk60@gmail.com</string>
 
     <!-- Shared components -->
     <string name="search_hint">Search…</string>

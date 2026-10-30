@@ -1,5 +1,7 @@
 package com.goskar.boardgame.ui.screens.login
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import cafe.adriel.voyager.core.lifecycle.ScreenLifecycleStore
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -54,6 +58,7 @@ import com.goskar.boardgame.ui.components.AppListCard
 import com.goskar.boardgame.ui.components.AppPrimaryButton
 import com.goskar.boardgame.ui.components.AppSecondaryButton
 import com.goskar.boardgame.ui.components.AppTextField
+import com.goskar.boardgame.ui.screens.login.components.CreateAccountDialog
 import com.goskar.boardgame.ui.screens.login.components.LocalDataDialog
 import com.goskar.boardgame.ui.theme.BoardGameShapes
 import com.goskar.boardgame.ui.theme.BoardGameSpacing
@@ -69,9 +74,12 @@ class LoginScreen : Screen {
         val navigator = LocalNavigator.current
         val snackbarHostState = LocalSnackbarHost.current
         val resources = LocalResources.current
+        val context = LocalContext.current
+        val contactEmail = stringResource(R.string.contact_email)
 
         LoginScreenContent(
             state = state,
+            contactEmail = contactEmail,
             updateLogin = viewModel::updateLogin,
             updatePassword = viewModel::updatePassword,
             questLogIn = viewModel::questAccount,
@@ -79,6 +87,23 @@ class LoginScreen : Screen {
             onMergeLocalData = viewModel::mergeLocalDataIntoAccount,
             onDiscardLocalData = viewModel::discardLocalData,
             onCancelLocalData = viewModel::cancelSignIn,
+            onForgotPassword = viewModel::resetPassword,
+            onCreateAccount = viewModel::openCreateAccountInfo,
+            onDismissCreateAccount = viewModel::dismissCreateAccountInfo,
+            onWriteEmail = {
+                val intent = Intent(Intent.ACTION_SENDTO, "mailto:$contactEmail".toUri()).apply {
+                    putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.login_create_account_email_subject))
+                }
+                try {
+                    context.startActivity(intent)
+                    viewModel.dismissCreateAccountInfo()
+                } catch (e: ActivityNotFoundException) {
+                    snackbarHostState.show(
+                        message = resources.getString(R.string.login_no_email_app, contactEmail),
+                        type = AppSnackBarType.INFO
+                    )
+                }
+            },
         )
 
         LaunchedEffect(Unit) {
@@ -104,6 +129,14 @@ class LoginScreen : Screen {
                             type = AppSnackBarType.ERROR
                         )
                     }
+
+                    is LoginEvent.ShowNotice -> {
+                        snackbarHostState.show(
+                            message = event.formatArg?.let { resources.getString(event.message, it) }
+                                ?: resources.getString(event.message),
+                            type = event.type
+                        )
+                    }
                 }
             }
         }
@@ -113,6 +146,7 @@ class LoginScreen : Screen {
 @Composable
 fun LoginScreenContent(
     state: LoginState,
+    contactEmail: String = "",
     updateLogin: (String) -> Unit = {},
     updatePassword: (String) -> Unit = {},
     questLogIn: () -> Unit = {},
@@ -120,8 +154,20 @@ fun LoginScreenContent(
     onMergeLocalData: () -> Unit = {},
     onDiscardLocalData: () -> Unit = {},
     onCancelLocalData: () -> Unit = {},
+    onForgotPassword: () -> Unit = {},
+    onCreateAccount: () -> Unit = {},
+    onDismissCreateAccount: () -> Unit = {},
+    onWriteEmail: () -> Unit = {},
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
+
+    if (state.showCreateAccountInfo) {
+        CreateAccountDialog(
+            contactEmail = contactEmail,
+            onWriteEmail = onWriteEmail,
+            onDismiss = onDismissCreateAccount,
+        )
+    }
 
     state.pendingLocalData?.let { summary ->
         LocalDataDialog(
@@ -229,7 +275,7 @@ fun LoginScreenContent(
                             ),
                             modifier = Modifier
                                 .padding(bottom = 8.dp)
-                                .clickable { /* Handle forgot password */ }
+                                .clickable(enabled = !state.isSendingPasswordReset, onClick = onForgotPassword)
                         )
                     }
                     AppTextField(
@@ -312,7 +358,7 @@ fun LoginScreenContent(
                 text = stringResource(R.string.login_create_account),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { /* Handle sign up */ }
+                modifier = Modifier.clickable(onClick = onCreateAccount)
             )
         }
 

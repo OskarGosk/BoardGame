@@ -18,6 +18,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
+import io.mockk.verify
+import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
@@ -206,5 +208,71 @@ class LoginViewModelTest {
         assertNull(viewModel.state.value.pendingLocalData)
         coVerify(exactly = 0) { userSession.logIn(any()) }
         coVerify(exactly = 0) { clearDb() }
+    }
+
+    private fun completedTask(error: Exception? = null): Task<Void> = mockk {
+        every { isComplete } returns true
+        every { exception } returns error
+        every { isCanceled } returns false
+        every { result } returns null
+    }
+
+    @Test
+    fun resetPassword_blankEmail_flagsEmailFieldWithoutCallingFirebase() = runTest(testDispatcher) {
+        viewModel.updateLogin("   ")
+
+        viewModel.resetPassword()
+
+        assertEquals(true, viewModel.state.value.loginError)
+        verify(exactly = 0) { auth.sendPasswordResetEmail(any()) }
+    }
+
+    @Test
+    fun resetPassword_success_emitsSentNoticeWithTrimmedEmail() = runTest(testDispatcher) {
+        every { auth.sendPasswordResetEmail("alex@example.com") } returns completedTask()
+        viewModel.updateLogin("  alex@example.com ")
+
+        viewModel.events.test {
+            viewModel.resetPassword()
+            assertEquals(
+                LoginEvent.ShowNotice(R.string.login_reset_sent, AppSnackBarType.SUCCESS, "alex@example.com"),
+                awaitItem()
+            )
+        }
+        assertEquals(false, viewModel.state.value.isSendingPasswordReset)
+    }
+
+    @Test
+    fun resetPassword_firebaseFails_emitsFailedNoticeAndAllowsRetry() = runTest(testDispatcher) {
+        every { auth.sendPasswordResetEmail(any()) } returns completedTask(Exception("badly formatted"))
+        viewModel.updateLogin("not-an-email")
+
+        viewModel.events.test {
+            viewModel.resetPassword()
+            assertEquals(LoginEvent.ShowNotice(R.string.login_reset_failed, AppSnackBarType.ERROR), awaitItem())
+        }
+        assertEquals(false, viewModel.state.value.isSendingPasswordReset)
+    }
+
+    @Test
+    fun resetPassword_doubleTapWhileSending_sendsOnlyOnce() = runTest(testDispatcher) {
+        val pending = mockk<Task<Void>>(relaxed = true) { every { isComplete } returns false }
+        every { auth.sendPasswordResetEmail(any()) } returns pending
+        viewModel.updateLogin("alex@example.com")
+
+        viewModel.resetPassword()
+        viewModel.resetPassword()
+
+        assertEquals(true, viewModel.state.value.isSendingPasswordReset)
+        verify(exactly = 1) { auth.sendPasswordResetEmail(any()) }
+    }
+
+    @Test
+    fun createAccountInfo_opensAndDismisses() {
+        viewModel.openCreateAccountInfo()
+        assertEquals(true, viewModel.state.value.showCreateAccountInfo)
+
+        viewModel.dismissCreateAccountInfo()
+        assertEquals(false, viewModel.state.value.showCreateAccountInfo)
     }
 }
