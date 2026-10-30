@@ -293,8 +293,8 @@
     <!-- Texts previously built in ViewModels -->
     <string name="history_filter_all">All Games</string>
     <string name="history_filter_wins">Wins Only</string>
-    <string name="history_filter_strategy">Strategy</string>
     <string name="history_filter_coop">Co-op</string>
+    <string name="history_filter_teams">Teams</string>
     <string name="history_bucket_today">Today</string>
     <string name="history_bucket_yesterday">Yesterday</string>
     <string name="history_bucket_this_week">This Week</string>

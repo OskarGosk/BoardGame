@@ -41,11 +41,13 @@ import com.goskar.boardgame.ui.components.user.rememberUserInitials
 import com.goskar.boardgame.ui.screens.history.viewmodel.GamesHistoryState
 import com.goskar.boardgame.ui.screens.history.viewmodel.GamesHistoryViewModel
 import com.goskar.boardgame.ui.screens.history.viewmodel.HistoryBucket
+import com.goskar.boardgame.ui.screens.history.viewmodel.HistoryFilter
 import com.goskar.boardgame.ui.screens.history.viewmodel.HistoryGroup
 import com.goskar.boardgame.ui.screens.history.viewmodel.HistorySession
 import com.goskar.boardgame.ui.navigation.AppScaffold
 import com.goskar.boardgame.ui.navigation.appNavItems
 import com.goskar.boardgame.ui.screens.history.components.GroupHeader
+import com.goskar.boardgame.ui.screens.history.components.HistoryFilterChips
 import com.goskar.boardgame.ui.screens.history.components.SessionCard
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
 import com.goskar.boardgame.ui.screens.profile.ProfileScreen
@@ -66,6 +68,7 @@ class HistoryScreen : Screen {
             state = state,
             userInitials = rememberUserInitials(),
             onQueryChange = viewModel::updateSearchTxt,
+            onSelectFilter = viewModel::updateSelectedFilter,
             onSessionClick = { session -> navigator?.push(SessionDetailsScreen(session.id)) },
             onAddSession = { navigator?.push(AddGameplayScreen()) },
             onProfileClick = { navigator?.push(ProfileScreen()) },
@@ -78,7 +81,7 @@ fun HistoryScreenContent(
     state: GamesHistoryState,
     userInitials: String = "AM",
     onQueryChange: (String) -> Unit = {},
-    onSelectFilter: (Int) -> Unit = {},
+    onSelectFilter: (HistoryFilter) -> Unit = {},
     onSessionClick: (HistorySession) -> Unit = {},
     onLoadMore: () -> Unit = {},
     onAddSession: () -> Unit = {},
@@ -119,6 +122,11 @@ fun HistoryScreenContent(
                 value = state.query,
                 onValueChange = onQueryChange,
                 placeholder = stringResource(R.string.history_search_hint),
+            )
+            HistoryFilterChips(
+                filters = state.filters,
+                selected = state.selectedFilter,
+                onSelect = onSelectFilter,
             )
 
             state.groups.forEach { group ->

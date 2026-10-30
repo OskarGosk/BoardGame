@@ -146,7 +146,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [x] **Games with several modes** – a game offers one or more of *Competitive*, *Co-op* and *Teams*; Log Session shows a mode switch only for games with more than one mode (defaulting to the mode of the last session), team sessions split players into teams and credit the whole winning team. Older games and sessions keep working (their mode is derived from the co-op flag / winner).
 - [ ] **Forgot password** – the login screen link does nothing yet.
 - [ ] **Create an account** – instead of a sign-up form it should show a message asking to contact me for an account.
-- [ ] **History filters** – the filter chips (*Wins Only*, *Strategy*, *Co-op*) are in the state but do not filter the list yet.
+- [x] **History filters** – chips *All Games · Wins Only · Co-op · Teams* above the session list, combined with search. *Wins Only* uses the player picked in "Who are you?" (team and co-op wins count too) and is hidden for guests and accounts without a linked player; *Strategy* was replaced by *Teams*, since a game's single BGG category can't tell strategy games apart.
 - [ ] **Game details from the collection** – only available for games imported from BGG; manually added games have no details screen.
 - [ ] **Richer data model (Room migrations)** – game category / year / rating, per-player scores, session duration, player avatar and level, "active this week" and achievements are placeholders or hidden in the UI for now.
 
@@ -166,7 +166,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] (Optional) Redesign the splash screen.
 
 **Tests**
-- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (186 tests) and runs in CI on every pull request.
+- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (196 tests) and runs in CI on every pull request.
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes

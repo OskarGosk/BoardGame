@@ -5,8 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.data.models.GameMode
 import com.goskar.boardgame.data.models.HistoryGame
+import com.goskar.boardgame.data.models.isWinner
+import com.goskar.boardgame.data.models.playMode
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
+import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
+import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
+import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GetHistoryWithExpansionUseCase
@@ -41,8 +47,8 @@ data class HistorySession(
 enum class HistoryFilter(@StringRes val label: Int) {
     ALL(R.string.history_filter_all),
     WINS_ONLY(R.string.history_filter_wins),
-    STRATEGY(R.string.history_filter_strategy),
     COOP(R.string.history_filter_coop),
+    TEAMS(R.string.history_filter_teams),
 }
 
 /** Przedział czasu, w który grupowane są sesje. */
@@ -63,10 +69,11 @@ data class GamesHistoryState(
     val query: String = "",
     val sortOption: Int = R.string.default_sort,
     val loading: Boolean = true,
-    
+    val mePlayerName: String? = null,
+    val selectedFilter: HistoryFilter = HistoryFilter.ALL,
+
     // UI derived data
     val filters: List<HistoryFilter> = HistoryFilter.entries,
-    val selectedFilter: Int = 0,
     val showingCount: Int = 0,
     val groups: List<HistoryGroup> = emptyList(),
 )
@@ -74,7 +81,10 @@ data class GamesHistoryState(
 class GamesHistoryViewModel(
     private val gamesHistoryDbRepository: GamesHistoryDbRepository,
     private val getHistoryWithExpansionUseCase: GetHistoryWithExpansionUseCase,
-    private val getAllGameUseCase: GetAllGameUseCase
+    private val getAllGameUseCase: GetAllGameUseCase,
+    private val userSession: UserRepository,
+    private val playerDbRepository: PlayerDbRepository,
+    private val mePlayerRepository: MePlayerRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(GamesHistoryState())
@@ -90,11 +100,23 @@ class GamesHistoryViewModel(
         getAllHistoryGame()
         validateGetHistoryGameWithExpansion()
         loadGames()
+        loadMePlayer()
     }
 
     private fun loadGames() {
         viewModelScope.launch {
             _state.update { it.copy(games = getAllGameUseCase()) }
+        }
+    }
+
+    private fun loadMePlayer() {
+        viewModelScope.launch {
+            val uid = userSession.getCurrentSession()?.userUID
+            if (uid == null || uid == "guest") return@launch
+            val linkedId = mePlayerRepository.getLinkedPlayerId(uid) ?: return@launch
+            val me = (playerDbRepository.getAllPlayer() as? RequestResult.Success)
+                ?.data?.firstOrNull { it.id == linkedId }
+            _state.update { it.copy(mePlayerName = me?.name) }
         }
     }
 
@@ -106,8 +128,8 @@ class GamesHistoryViewModel(
         _state.update { it.copy(sortOption = value) }
     }
 
-    fun updateSelectedFilter(index: Int) {
-        _state.update { it.copy(selectedFilter = index) }
+    fun updateSelectedFilter(filter: HistoryFilter) {
+        _state.update { it.copy(selectedFilter = filter) }
     }
 
     fun getAllHistoryGame() {
@@ -152,10 +174,23 @@ class GamesHistoryViewModel(
     }
 
     private fun GamesHistoryState.calculateDerivedFields(): GamesHistoryState {
+        val me = mePlayerName
+        val availableFilters = HistoryFilter.entries.filter { it != HistoryFilter.WINS_ONLY || me != null }
+        val activeFilter = selectedFilter.takeIf { it in availableFilters } ?: HistoryFilter.ALL
         val q = query.trim()
-        val filtered = if (q.isBlank()) historyList
-        else historyList.filter { it.gameName.contains(q, true) || it.winner.contains(q, true) }
-        
+        val filtered = historyList
+            .filter { if (q.isBlank()) true else it.gameName.contains(q, true) || it.winner.contains(q, true) }
+            .filter { session ->
+                when (activeFilter) {
+                    HistoryFilter.ALL -> true
+                    // A co-op win counts for everyone in the session, so participation has to be checked too.
+                    HistoryFilter.WINS_ONLY -> me != null &&
+                        session.listOfPlayer.any { it.equals(me, ignoreCase = true) } && session.isWinner(me)
+                    HistoryFilter.COOP -> session.playMode() == GameMode.COOPERATIVE
+                    HistoryFilter.TEAMS -> session.playMode() == GameMode.TEAM
+                }
+            }
+
         val sorted = filtered.sortedByDescending { it.gameData }
         val categoryByName = games.associate { it.name to it.category }
         val uriByName = games.associate { it.name to (it.uri ?: it.uriFromBgg) }
@@ -167,6 +202,8 @@ class GamesHistoryViewModel(
         }
 
         return this.copy(
+            filters = availableFilters,
+            selectedFilter = activeFilter,
             showingCount = filtered.size,
             groups = groups
         )
