@@ -24,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.ScreenKey
+import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.ui.components.AppChipStyle
@@ -46,7 +48,12 @@ import org.koin.androidx.compose.koinViewModel
 class GameDetailsScreen(
     private val bggId: String,
     private val name: String,
+    private val linkGameId: String? = null,
 ) : Screen {
+
+    // Voyager keys screens by class by default; after linking, the preview is replaced by another
+    // GameDetailsScreen, which would otherwise inherit the preview's composition and ViewModel.
+    override val key: ScreenKey = uniqueScreenKey
 
     @Composable
     override fun Content() {
@@ -56,7 +63,7 @@ class GameDetailsScreen(
         val snackbarHostState = LocalSnackbarHost.current
         val resources = LocalResources.current
 
-        LaunchedEffect(Unit) { viewModel.load(bggId, name) }
+        LaunchedEffect(Unit) { viewModel.load(bggId, name, linkGameId) }
 
         LaunchedEffect(Unit) {
             viewModel.events.collect { event ->
@@ -68,6 +75,13 @@ class GameDetailsScreen(
 
                     is GameDetailsEvent.ShowMessage ->
                         snackbarHostState.show(resources.getString(event.message), event.type)
+
+                    // Drop this preview and the BGG search under it, so Back leads straight to the collection.
+                    is GameDetailsEvent.Linked -> {
+                        snackbarHostState.show(resources.getString(event.message), event.type)
+                        navigator?.pop()
+                        navigator?.replace(GameDetailsScreen(event.bggId, event.gameName))
+                    }
                 }
             }
         }
@@ -76,6 +90,7 @@ class GameDetailsScreen(
             state = state,
             onBack = { navigator?.pop() },
             onAdd = viewModel::addToCollection,
+            onLink = viewModel::linkToGame,
         )
     }
 }
@@ -86,6 +101,7 @@ fun GameDetailsContent(
     state: GameDetailsState,
     onBack: () -> Unit = {},
     onAdd: () -> Unit = {},
+    onLink: () -> Unit = {},
 ) {
     AppScaffold(
         title = stringResource(R.string.game_details_title),
@@ -172,7 +188,19 @@ fun GameDetailsContent(
                     }
                 }
 
-                if (!state.alreadyInCollection) {
+                if (state.linkGameName != null) {
+                    Text(
+                        stringResource(R.string.gd_link_question, state.linkGameName),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    AppPrimaryButton(
+                        text = stringResource(R.string.gd_link),
+                        onClick = onLink,
+                        loading = state.isLinking,
+                        enabled = !state.isLinking,
+                    )
+                } else if (!state.alreadyInCollection) {
                     AppPrimaryButton(text = stringResource(R.string.gd_add), onClick = onAdd)
                 }
                 AppPoweredByBgg()
@@ -211,3 +239,9 @@ private fun GameDetailsLight() = BoardGameTheme(darkTheme = false) { GameDetails
 @Preview(name = "Dark", showBackground = true, backgroundColor = 0xFF131313)
 @Composable
 private fun GameDetailsDark() = BoardGameTheme(darkTheme = true) { GameDetailsPreviewContent() }
+
+@Preview(name = "Link mode", showBackground = true, backgroundColor = 0xFFF7F9FF)
+@Composable
+private fun GameDetailsLinkMode() = BoardGameTheme(darkTheme = false) {
+    GameDetailsContent(state = PreviewDetails.copy(linkGameName = "Diuna: Imperium"))
+}

@@ -24,6 +24,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.Game
+import com.goskar.boardgame.ui.components.AppActionDialog
 import com.goskar.boardgame.ui.components.AppAvatar
 import com.goskar.boardgame.ui.components.AppFab
 import com.goskar.boardgame.ui.components.AppPoweredByBgg
@@ -42,6 +43,7 @@ import com.goskar.boardgame.ui.screens.collection.components.AddGridItem
 import com.goskar.boardgame.ui.screens.collection.components.CollectionGridItem
 import com.goskar.boardgame.ui.screens.collection.components.SortMenu
 import com.goskar.boardgame.ui.screens.gameDetails.GameDetailsScreen
+import com.goskar.boardgame.ui.screens.linkBgg.LinkBggScreen
 import com.goskar.boardgame.ui.screens.logGameplay.AddGameplayScreen
 import com.goskar.boardgame.ui.screens.profile.ProfileScreen
 import com.goskar.boardgame.ui.theme.*
@@ -82,6 +84,7 @@ class MyGamesCollectionScreen : Screen {
                     )
                 }
             },
+            onLinkGame = { game -> navigator?.push(LinkBggScreen(game.game.id, game.game.name)) },
             onAddSession = { game ->
                 navigator?.push(AddGameplayScreen(preselectedGameId = game.game.id))
             },
@@ -104,6 +107,7 @@ fun MyGamesCollectionView(
     onProfileClick: () -> Unit = {},
     onAddGame: () -> Unit = {},
     onOpenGame: (GameUiState) -> Unit = {},
+    onLinkGame: (GameUiState) -> Unit = {},
     onAddSession: (GameUiState) -> Unit = {},
     onEditGame: (GameUiState) -> Unit = {},
     onDeleteGame: (GameUiState) -> Unit = {}
@@ -111,6 +115,7 @@ fun MyGamesCollectionView(
     var selectedFilter by remember { mutableStateOf(0) }
     var selectedTab by remember { mutableStateOf(1) }
     var gameToDelete by remember { mutableStateOf<GameUiState?>(null) }
+    var gameToLink by remember { mutableStateOf<GameUiState?>(null) }
 
     AppScaffold(
         title = stringResource(R.string.collection_title),
@@ -200,7 +205,9 @@ fun MyGamesCollectionView(
                                 CollectionGridItem(
                                     game = game,
                                     modifier = Modifier.weight(1f),
-                                    onInfo = if (game.game.bggId != null) ({ onOpenGame(game) }) else null,
+                                    onInfo = {
+                                        if (game.game.bggId != null) onOpenGame(game) else gameToLink = game
+                                    },
                                     onAddSession = { onAddSession(game) },
                                     onEdit = { onEditGame(game) },
                                     onDelete = { gameToDelete = game },
@@ -228,6 +235,19 @@ fun MyGamesCollectionView(
                 onDeleteGame(target)
                 gameToDelete = null
             }
+        )
+    }
+
+    gameToLink?.let { target ->
+        AppActionDialog(
+            title = stringResource(R.string.collection_link_bgg_title),
+            message = stringResource(R.string.collection_link_bgg_message, target.game.name),
+            primaryText = stringResource(R.string.collection_link_bgg_search),
+            onPrimary = {
+                gameToLink = null
+                onLinkGame(target)
+            },
+            onDismiss = { gameToLink = null },
         )
     }
 }

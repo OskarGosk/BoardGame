@@ -38,11 +38,19 @@ data class GameDetailsState(
     val designers: List<String> = emptyList(),
     val publishers: List<String> = emptyList(),
     val alreadyInCollection: Boolean = false,
+    val linkGameName: String? = null,
+    val isLinking: Boolean = false,
 )
 
 sealed interface GameDetailsEvent {
     data class ShowMessage(@StringRes val message: Int, val type: AppSnackBarType) : GameDetailsEvent
     data class Added(@StringRes val message: Int, val type: AppSnackBarType) : GameDetailsEvent
+    data class Linked(
+        @StringRes val message: Int,
+        val type: AppSnackBarType,
+        val bggId: String,
+        val gameName: String,
+    ) : GameDetailsEvent
 }
 
 class GameDetailsViewModel(
@@ -59,10 +67,13 @@ class GameDetailsViewModel(
     private var details: BoardGameBGG? = null
     private var gameName: String = ""
     private var loadedBggId: String = ""
+    private var linkGameId: String? = null
 
-    fun load(bggId: String, name: String) {
+    /** With [linkGameId] the screen previews a BGG entry for linking to that collection game instead of adding it. */
+    fun load(bggId: String, name: String, linkGameId: String? = null) {
         gameName = name
         loadedBggId = bggId
+        this.linkGameId = linkGameId
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, isError = false, name = name) }
             val data = (boardGameApiRepository.getGame(bggId) as? RequestResult.Success)
@@ -72,11 +83,45 @@ class GameDetailsViewModel(
                 return@launch
             }
             details = data
-            val owned = (gameDbRepository.getAllGame() as? RequestResult.Success)
-                ?.data?.any { it.bggId == bggId } == true
-            _state.update { data.toState(name).copy(alreadyInCollection = owned) }
+            val games = (gameDbRepository.getAllGame() as? RequestResult.Success)?.data.orEmpty()
+            _state.update {
+                data.toState(name).copy(
+                    alreadyInCollection = games.any { game -> game.bggId == bggId },
+                    linkGameName = linkGameId?.let { id -> games.firstOrNull { game -> game.id == id }?.name },
+                )
+            }
         }
     }
+
+    fun linkToGame() {
+        val data = details ?: return
+        val gameId = linkGameId ?: return
+        if (_state.value.isLinking) return
+        _state.update { it.copy(isLinking = true) }
+        viewModelScope.launch {
+            val game = (gameDbRepository.getAllGame() as? RequestResult.Success)
+                ?.data?.firstOrNull { it.id == gameId }
+            val result = game?.let { gameDbRepository.editGame(it.linkedTo(loadedBggId, data)) }
+            _state.update { it.copy(isLinking = false) }
+            if (game != null && result is RequestResult.Success) {
+                _events.send(GameDetailsEvent.Linked(R.string.gd_linked, AppSnackBarType.SUCCESS, loadedBggId, game.name))
+            } else {
+                _events.send(GameDetailsEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR))
+            }
+        }
+    }
+
+    // Only empty fields are filled, so the user's name, own cover, modes and play count stay untouched.
+    private fun Game.linkedTo(bggId: String, data: BoardGameBGG) = copy(
+        bggId = bggId,
+        minPlayer = minPlayer.ifBlank { data.minPlayers?.toString().orEmpty() },
+        maxPlayer = maxPlayer.ifBlank { data.maxPlayers?.toString().orEmpty() },
+        category = category?.takeIf { it.isNotBlank() } ?: data.categories?.firstOrNull()?.value,
+        yearPublished = yearPublished ?: data.yearPublished,
+        playTime = playTime ?: data.playingTime ?: data.maxPlayTime,
+        rating = rating ?: data.averageRating(),
+        uriFromBgg = if (uri.isNullOrBlank() && uriFromBgg.isNullOrBlank()) data.image ?: data.thumbnail else uriFromBgg,
+    )
 
     fun addToCollection() {
         val data = details ?: return

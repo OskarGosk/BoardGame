@@ -169,6 +169,15 @@
     <!-- NEW UI — Game Details (BGG) -->
     <string name="game_details_title">Game Details</string>
     <string name="gd_add">Add to My Games</string>
+    <string name="gd_link">This is my game</string>
+    <string name="gd_link_question">Is this \"%1$s\" from your collection?</string>
+    <string name="gd_linked">Linked with BoardGameGeek</string>
+    <string name="collection_link_bgg_title">No BGG link yet</string>
+    <string name="collection_link_bgg_message">\"%1$s\" isn\'t linked to BoardGameGeek, so there are no details to show. Search BGG by name and pick the matching game?</string>
+    <string name="collection_link_bgg_search">Search BGG</string>
+    <string name="link_bgg_title">Link with BGG</string>
+    <string name="link_bgg_intro">Pick the BGG entry that matches \"%1$s\". Tap a result to check it before linking.</string>
+    <string name="link_bgg_no_results">No matches on BGG. Try a different name, for example the original English title.</string>
     <string name="gd_categories">Categories</string>
     <string name="gd_mechanics">Mechanics</string>
     <string name="gd_designers">Designers</string>

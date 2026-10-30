@@ -1,5 +1,12 @@
 package com.goskar.boardgame.ui.screens.gameDetails.viewmodel
 
+import app.cash.turbine.test
+import com.goskar.boardgame.R
+import com.goskar.boardgame.data.models.GameMode
+import com.goskar.boardgame.ui.components.other.AppSnackBarType
+import io.mockk.CapturingSlot
+import kotlinx.coroutines.CompletableDeferred
+import org.junit.Assert.assertNull
 import com.goskar.boardgame.data.models.BggCategory
 import com.goskar.boardgame.data.models.BggDesigner
 import com.goskar.boardgame.data.models.BggMechanic
@@ -131,6 +138,157 @@ class GameDetailsViewModelTest {
         assertEquals(7.5, game.rating!!, 0.0001)
         assertEquals("1", game.minPlayer)
         assertEquals("4", game.maxPlayer)
+    }
+
+    private val oldImport = Game(
+        name = "Marvel United PL",
+        expansion = false,
+        cooperate = true,
+        baseGame = "",
+        minPlayer = "1",
+        maxPlayer = "",
+        uriFromBgg = "old-cover.jpg",
+        games = 12,
+        category = "Kooperacja",
+        modes = listOf(GameMode.COOPERATIVE),
+        id = "local-1",
+    )
+
+    private fun linkSetup(game: Game): CapturingSlot<Game> {
+        coEvery { api.getGame("298047") } returns RequestResult.Success(BoardGamesDetails(listOf(marvelUnited)))
+        coEvery { gameDbRepository.getAllGame() } returns RequestResult.Success(listOf(game))
+        val saved = slot<Game>()
+        coEvery { gameDbRepository.editGame(capture(saved)) } returns RequestResult.Success(true)
+        return saved
+    }
+
+    @Test
+    fun load_linkMode_exposesCollectionGameName() = runTest(testDispatcher) {
+        linkSetup(oldImport)
+
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United", linkGameId = "local-1")
+
+        assertEquals("Marvel United PL", viewModel.state.value.linkGameName)
+    }
+
+    @Test
+    fun load_withoutLinkGame_isNotLinkMode() = runTest(testDispatcher) {
+        coEvery { api.getGame("298047") } returns RequestResult.Success(BoardGamesDetails(listOf(marvelUnited)))
+
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United")
+
+        assertNull(viewModel.state.value.linkGameName)
+    }
+
+    @Test
+    fun linkToGame_setsBggIdAndFillsOnlyEmptyFields() = runTest(testDispatcher) {
+        val saved = linkSetup(oldImport)
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United", linkGameId = "local-1")
+
+        viewModel.events.test {
+            viewModel.linkToGame()
+            assertEquals(
+                GameDetailsEvent.Linked(R.string.gd_linked, AppSnackBarType.SUCCESS, "298047", "Marvel United PL"),
+                awaitItem()
+            )
+        }
+
+        val game = saved.captured
+        assertEquals("298047", game.bggId)
+        assertEquals("local-1", game.id)
+        assertEquals("Marvel United PL", game.name)
+        assertEquals("old-cover.jpg", game.uriFromBgg)
+        assertEquals(12, game.games)
+        assertEquals(listOf(GameMode.COOPERATIVE), game.modes)
+        assertEquals("Kooperacja", game.category)
+        assertEquals("1", game.minPlayer)
+        assertEquals("4", game.maxPlayer)
+        assertEquals(2020, game.yearPublished)
+        assertEquals(40, game.playTime)
+        assertEquals(7.5, game.rating!!, 0.0001)
+    }
+
+    @Test
+    fun linkToGame_manualGameWithoutCover_getsBggCover() = runTest(testDispatcher) {
+        val saved = linkSetup(oldImport.copy(uriFromBgg = null, uri = null))
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United", linkGameId = "local-1")
+
+        viewModel.linkToGame()
+
+        assertEquals("image.jpg", saved.captured.uriFromBgg)
+    }
+
+    @Test
+    fun linkToGame_manualGameWithOwnPhoto_keepsItWithoutBggCover() = runTest(testDispatcher) {
+        val saved = linkSetup(oldImport.copy(uriFromBgg = null, uri = "content://photo"))
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United", linkGameId = "local-1")
+
+        viewModel.linkToGame()
+
+        assertEquals("content://photo", saved.captured.uri)
+        assertNull(saved.captured.uriFromBgg)
+    }
+
+    @Test
+    fun linkToGame_saveFails_showsErrorAndAllowsRetry() = runTest(testDispatcher) {
+        linkSetup(oldImport)
+        coEvery { gameDbRepository.editGame(any()) } returns RequestResult.Error(Throwable("db"))
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United", linkGameId = "local-1")
+
+        viewModel.events.test {
+            viewModel.linkToGame()
+            assertEquals(GameDetailsEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR), awaitItem())
+        }
+        assertEquals(false, viewModel.state.value.isLinking)
+    }
+
+    @Test
+    fun linkToGame_gameDeletedMeanwhile_showsErrorWithoutSaving() = runTest(testDispatcher) {
+        linkSetup(oldImport)
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United", linkGameId = "local-1")
+        coEvery { gameDbRepository.getAllGame() } returns RequestResult.Success(emptyList())
+
+        viewModel.events.test {
+            viewModel.linkToGame()
+            assertEquals(GameDetailsEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR), awaitItem())
+        }
+        coVerify(exactly = 0) { gameDbRepository.editGame(any()) }
+    }
+
+    @Test
+    fun linkToGame_doubleTap_savesOnce() = runTest(testDispatcher) {
+        linkSetup(oldImport)
+        val release = CompletableDeferred<Unit>()
+        coEvery { gameDbRepository.editGame(any()) } coAnswers {
+            release.await()
+            RequestResult.Success(true)
+        }
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United", linkGameId = "local-1")
+
+        viewModel.linkToGame()
+        viewModel.linkToGame()
+        release.complete(Unit)
+
+        coVerify(exactly = 1) { gameDbRepository.editGame(any()) }
+    }
+
+    @Test
+    fun linkToGame_notInLinkMode_doesNothing() = runTest(testDispatcher) {
+        linkSetup(oldImport)
+        val viewModel = buildViewModel()
+        viewModel.load("298047", "Marvel United")
+
+        viewModel.linkToGame()
+
+        coVerify(exactly = 0) { gameDbRepository.editGame(any()) }
     }
 
     @Ignore("TODO: sprawdz, ze state.players to '1–4', a state.playtime to '40' (same liczby, jednostke 'min' dodaje UI przez zasob gd_minutes_value)")

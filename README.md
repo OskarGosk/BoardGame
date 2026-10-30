@@ -147,7 +147,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [x] **Forgot password** – *Forgot?* sends a Firebase password reset link to the address typed in the email field (an empty field is flagged instead).
 - [x] **Create an account** – shows a dialog explaining that accounts are created on request, with a *Write an email* button that opens the mail app.
 - [x] **History filters** – chips *All Games · Wins Only · Co-op · Teams* above the session list, combined with search. *Wins Only* uses the player picked in "Who are you?" (team and co-op wins count too) and is hidden for guests and accounts without a linked player; *Strategy* was replaced by *Teams*, since a game's single BGG category can't tell strategy games apart.
-- [ ] **Game details from the collection** – only available for games imported from BGG; manually added games have no details screen.
+- [x] **Game details from the collection** – games without a BGG link (manual ones and BGG imports from before the `bggId` field) offer a BGG search by name; after previewing and confirming the right entry, the game is linked and its empty fields are filled from BGG.
 - [ ] **Richer data model (Room migrations)** – game category / year / rating, per-player scores, session duration, player avatar and level, "active this week" and achievements are placeholders or hidden in the UI for now.
 
 **Code cleanup**
@@ -166,7 +166,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] (Optional) Redesign the splash screen.
 
 **Tests**
-- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (201 tests) and runs in CI on every pull request.
+- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (215 tests) and runs in CI on every pull request.
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes

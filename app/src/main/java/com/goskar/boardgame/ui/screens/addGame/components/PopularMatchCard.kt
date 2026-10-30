@@ -35,7 +35,7 @@ import com.goskar.boardgame.ui.theme.BoardGameTheme
 fun PopularMatchCard(
     modifier: Modifier = Modifier,
     match: PopularMatch,
-    onAdd: () -> Unit,
+    onAdd: (() -> Unit)?,
     onOpen: () -> Unit = {},
 ) {
     AppListCard(modifier = modifier, onClick = onOpen) {
@@ -55,13 +55,15 @@ fun PopularMatchCard(
                     AppChip(text = match.year, style = AppChipStyle.YEAR)
                 }
             }
-            IconButton(onClick = onAdd) {
-                Icon(
-                    Icons.Default.AddCircleOutline,
-                    contentDescription = stringResource(R.string.cd_add_match, match.name),
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp),
-                )
+            if (onAdd != null) {
+                IconButton(onClick = onAdd) {
+                    Icon(
+                        Icons.Default.AddCircleOutline,
+                        contentDescription = stringResource(R.string.cd_add_match, match.name),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp),
+                    )
+                }
             }
         }
     }

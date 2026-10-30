@@ -7,6 +7,7 @@ import com.goskar.boardgame.R
 import com.goskar.boardgame.data.models.BoardGameBGG
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.GameMode
+import com.goskar.boardgame.data.models.SearchBGGList
 import com.goskar.boardgame.data.models.playModes
 import com.goskar.boardgame.data.repository.bgg.BoardGameApiRepository
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
@@ -28,6 +29,15 @@ data class PopularMatch(
     val category: String,
     val year: String,
 )
+
+fun SearchBGGList.toPopularMatches(): List<PopularMatch> = boardGames.orEmpty().map { element ->
+    PopularMatch(
+        id = element.id,
+        name = element.name ?: "",
+        category = "BGG",
+        year = element.yearPublished?.toString() ?: "—",
+    )
+}
 
 data class AddGameState(
     val query: String = "",
@@ -157,15 +167,7 @@ class AddGameViewModel(
         _state.update { it.copy(isSearching = true) }
         when (val response = boardGameApiRepository.searchGame(name)) {
             is RequestResult.Success -> {
-                val matches = response.data.boardGames.orEmpty().map { element ->
-                    PopularMatch(
-                        id = element.id,
-                        name = element.name ?: "",
-                        category = "BGG",
-                        year = element.yearPublished?.toString() ?: "—",
-                    )
-                }
-                _state.update { it.copy(popularMatches = matches, isSearching = false) }
+                _state.update { it.copy(popularMatches = response.data.toPopularMatches(), isSearching = false) }
             }
 
             is RequestResult.Error -> {
