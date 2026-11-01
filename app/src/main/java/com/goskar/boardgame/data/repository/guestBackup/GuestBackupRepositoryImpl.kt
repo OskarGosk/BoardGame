@@ -16,6 +16,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import timber.log.Timber
 
 /**
@@ -33,7 +34,7 @@ class GuestBackupRepositoryImpl(
 
     override suspend fun getBackupInfo(): RequestResult<GuestBackupInfo> =
         request("get backup info") { hash, token ->
-            val meta = api.getMeta(hash, token)
+            val meta = api.getMeta(hash, token).bodyOrNull()
             if (meta == null) GuestBackupInfo.None else GuestBackupInfo.Available(meta)
         }
 
@@ -57,7 +58,7 @@ class GuestBackupRepositoryImpl(
 
     override suspend fun download(): RequestResult<LocalSnapshot> =
         request("download backup") { hash, token ->
-            val backup = checkNotNull(api.download(hash, token)) { "No backup for this device" }
+            val backup = checkNotNull(api.download(hash, token).bodyOrNull()) { "No backup for this device" }
             LocalSnapshot(
                 games = backup.game.orEmpty().map { (id, game) -> game.copy(id = id) },
                 players = backup.player.orEmpty().map { (id, player) -> player.copy(id = id) },
@@ -68,6 +69,11 @@ class GuestBackupRepositoryImpl(
                     .map { (id, expansion) -> expansion.copy(id = id) },
             )
         }
+
+    private fun <T> Response<T>.bodyOrNull(): T? {
+        check(isSuccessful) { "HTTP ${code()}" }
+        return body()
+    }
 
     private suspend fun <T : Any> request(
         action: String,
