@@ -11,6 +11,7 @@ import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_7_8
 import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_8_11
 import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_11_12
 import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_12_13
+import com.goskar.boardgame.data.db.Db.Companion.MIGRATION_13_14
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
@@ -27,6 +28,7 @@ fun KoinApplication.databaseModule() = module {
             .addMigrations(MIGRATION_8_11)
             .addMigrations(MIGRATION_11_12)
             .addMigrations(MIGRATION_12_13)
+            .addMigrations(MIGRATION_13_14)
             .build()
     }
     single { get<Db>().playerDao() }
@@ -34,5 +36,6 @@ fun KoinApplication.databaseModule() = module {
     single { get<Db>().historyGameDao() }
     single { get<Db>().userSessionDao() }
     single { get<Db>().historyGameExpansionDao() }
+    single { get<Db>().syncDao() }
 
 }

@@ -18,7 +18,7 @@ import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.BackupGuestUseCase
 import com.goskar.boardgame.data.useCase.GetSyncStatusUseCase
 import com.goskar.boardgame.data.useCase.SyncStatus
-import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
+import com.goskar.boardgame.data.useCase.SyncWithCloudUseCase
 import com.google.firebase.auth.FirebaseAuth
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -52,7 +52,7 @@ class ProfileViewModelTest {
     private lateinit var getAllGameUseCase: GetAllGameUseCase
     private lateinit var mePlayerRepository: MePlayerRepository
     private lateinit var clearDbUseCase: ClearDbUseCase
-    private lateinit var uploadToCloud: UploadToCloudUseCase
+    private lateinit var syncWithCloud: SyncWithCloudUseCase
     private lateinit var backupGuest: BackupGuestUseCase
     private lateinit var getSyncStatus: GetSyncStatusUseCase
     private lateinit var syncState: SyncStateRepository
@@ -69,7 +69,7 @@ class ProfileViewModelTest {
         HistoryGame(gameName = "g", winner = "w", gameData = LocalDate.now(), listOfPlayer = emptyList(), description = "", id = id)
 
     private fun buildViewModel() = ProfileViewModel(
-        userSession, playerDbRepository, historyRepository, mePlayerRepository, clearDbUseCase, uploadToCloud,
+        userSession, playerDbRepository, historyRepository, mePlayerRepository, clearDbUseCase, syncWithCloud,
         backupGuest, getSyncStatus, syncState,
     )
 
@@ -83,7 +83,7 @@ class ProfileViewModelTest {
         getAllGameUseCase = mockk()
         mePlayerRepository = mockk(relaxed = true)
         clearDbUseCase = mockk(relaxed = true)
-        uploadToCloud = mockk(relaxed = true)
+        syncWithCloud = mockk(relaxed = true)
         backupGuest = mockk(relaxed = true)
         syncState = mockk(relaxed = true)
         getSyncStatus = mockk()
@@ -156,7 +156,8 @@ class ProfileViewModelTest {
         coEvery { userSession.getCurrentSession() } returns
             User(email = "a@b.com", token = "t", userUID = "uid1")
         coEvery { playerDbRepository.getAllPlayer() } returns RequestResult.Success(emptyList())
-        coEvery { uploadToCloud() } returns true
+        coEvery { historyRepository.getAllHistoryGame() } returns RequestResult.Success(emptyList())
+        coEvery { syncWithCloud() } returns true
 
         val viewModel = buildViewModel()
         viewModel.events.test {
@@ -174,7 +175,7 @@ class ProfileViewModelTest {
         coEvery { userSession.getCurrentSession() } returns
             User(email = "a@b.com", token = "t", userUID = "uid1")
         coEvery { playerDbRepository.getAllPlayer() } returns RequestResult.Success(emptyList())
-        coEvery { uploadToCloud() } returns false
+        coEvery { syncWithCloud() } returns false
 
         val viewModel = buildViewModel()
         viewModel.events.test {
@@ -208,7 +209,7 @@ class ProfileViewModelTest {
         viewModel.forceSync()
 
         coVerify(exactly = 1) { backupGuest() }
-        coVerify(exactly = 0) { uploadToCloud() }
+        coVerify(exactly = 0) { syncWithCloud() }
     }
 
     @Test
@@ -253,7 +254,7 @@ class ProfileViewModelTest {
     fun syncAndSignOut_syncSucceeds_signsOut() = runTest(testDispatcher) {
         mockFirebaseAuth()
         stubAccountSession()
-        coEvery { uploadToCloud() } returns true
+        coEvery { syncWithCloud() } returns true
 
         val viewModel = buildViewModel()
         viewModel.load()
@@ -266,7 +267,7 @@ class ProfileViewModelTest {
     @Test
     fun syncAndSignOut_syncFails_staysSignedInAndWarns() = runTest(testDispatcher) {
         stubAccountSession()
-        coEvery { uploadToCloud() } returns false
+        coEvery { syncWithCloud() } returns false
 
         val viewModel = buildViewModel()
         viewModel.load()

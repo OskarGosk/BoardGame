@@ -58,6 +58,7 @@ fun convertHistoryGameListToDto(oldList :List<HistoryGameFirebase>): List<Histor
             mode = historyGame.mode,
             teams = historyGame.teams,
             winningTeam = historyGame.winningTeam,
+            updatedAt = historyGame.updatedAt,
         )
     }
 }
@@ -77,6 +78,7 @@ fun convertHistoryGameListToFirebase(oldList: List<HistoryGame>): List<HistoryGa
             mode = historyGame.mode,
             teams = historyGame.teams,
             winningTeam = historyGame.winningTeam,
+            updatedAt = historyGame.updatedAt,
         )
     }
 }

@@ -131,7 +131,7 @@ class LoginViewModelTest {
         viewModel.events.test {
             viewModel.continueAfterSignIn()
             assertEquals(
-                LoginEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS, mergeLocalData = false),
+                LoginEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS),
                 awaitItem(),
             )
         }
@@ -150,7 +150,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun mergeLocalDataIntoAccount_savesSessionAndFlagsMerge() = runTest(testDispatcher) {
+    fun mergeLocalDataIntoAccount_keepsLocalDataAndSavesSession() = runTest(testDispatcher) {
         coEvery { getSnapshot() } returns guestSnapshot
         coEvery { userSession.logIn(any()) } returns RequestResult.Success(true)
         viewModel.continueAfterSignIn()
@@ -158,7 +158,7 @@ class LoginViewModelTest {
         viewModel.events.test {
             viewModel.mergeLocalDataIntoAccount()
             assertEquals(
-                LoginEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS, mergeLocalData = true),
+                LoginEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS),
                 awaitItem(),
             )
         }
@@ -177,7 +177,7 @@ class LoginViewModelTest {
         viewModel.events.test {
             viewModel.discardLocalData()
             assertEquals(
-                LoginEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS, mergeLocalData = false),
+                LoginEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS),
                 awaitItem(),
             )
         }

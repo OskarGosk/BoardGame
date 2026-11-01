@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.goskar.boardgame.data.models.DeletedRecord
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.HistoryGameExpansion
@@ -13,8 +14,11 @@ import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.models.User
 
 @Database(
-    entities = [Player::class, Game::class, HistoryGame::class, User::class, HistoryGameExpansion::class],
-    version = 13,
+    entities = [
+        Player::class, Game::class, HistoryGame::class, User::class, HistoryGameExpansion::class,
+        DeletedRecord::class,
+    ],
+    version = 14,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 6, to = 7),
@@ -28,8 +32,21 @@ abstract class Db : RoomDatabase() {
     abstract fun historyGameDao(): HistoryGameDao
     abstract fun userSessionDao(): UserSessionDao
     abstract fun historyGameExpansionDao(): HistoryGameExpansionDao
+    abstract fun syncDao(): SyncDao
 
     companion object {
+
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                for (table in listOf("Game", "Player", "HistoryGame")) {
+                    db.execSQL("ALTER TABLE $table ADD COLUMN updatedAt INTEGER NOT NULL DEFAULT 0")
+                }
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS DeletedRecord (" +
+                        "id TEXT NOT NULL, collection TEXT NOT NULL, deletedAt INTEGER NOT NULL, PRIMARY KEY(id))"
+                )
+            }
+        }
 
         val MIGRATION_12_13 = object : Migration(12, 13) {
             override fun migrate(db: SupportSQLiteDatabase) {

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +40,8 @@ fun CloudSyncCard(
     state: ProfileState,
     onForceSync: () -> Unit,
 ) {
+    val upToDate = !state.hasUnsyncedChanges && state.lastSyncedAt != null
+    val accent = if (upToDate) appExt().success else MaterialTheme.colorScheme.primary
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -50,7 +53,7 @@ fun CloudSyncCard(
             modifier = Modifier
                 .width(4.dp)
                 .fillMaxHeight()
-                .background(appExt().success),
+                .background(accent),
         )
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -63,7 +66,11 @@ fun CloudSyncCard(
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Icon(Icons.Default.CloudDone, contentDescription = null, tint = appExt().success)
+                Icon(
+                    if (upToDate) Icons.Default.CloudDone else Icons.Default.CloudUpload,
+                    contentDescription = null,
+                    tint = accent,
+                )
             }
             Spacer(Modifier.height(8.dp))
             Text(
@@ -100,7 +107,8 @@ fun CloudSyncCard(
 private fun syncStatusText(state: ProfileState): String = when {
     state.hasUnsyncedChanges -> stringResource(R.string.profile_unsynced_changes)
     state.lastSyncedAt != null -> stringResource(R.string.profile_last_synced, state.lastSyncedAt.toLocalizedDateTime())
-    else -> stringResource(R.string.profile_not_synced)
+    state.isGuest -> stringResource(R.string.profile_not_synced)
+    else -> stringResource(R.string.profile_cloud_not_synced)
 }
 
 
@@ -110,6 +118,7 @@ private fun CloudSyncCardPreviewContent() {
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             CloudSyncCard(state = ProfileState(lastSyncedAt = 1_760_000_000_000L), onForceSync = {})
             CloudSyncCard(state = ProfileState(syncing = true), onForceSync = {})
+            CloudSyncCard(state = ProfileState(hasUnsyncedChanges = true, lastSyncedAt = 1_760_000_000_000L), onForceSync = {})
         }
     }
 }

@@ -2,14 +2,11 @@ package com.goskar.boardgame.data.repository.firebase
 
 import com.goskar.boardgame.data.db.UserSessionDao
 import com.goskar.boardgame.data.models.CloudUserData
-import com.goskar.boardgame.data.models.Game
-import com.goskar.boardgame.data.models.HistoryGameExpansion
-import com.goskar.boardgame.data.models.HistoryGameFirebase
-import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.rest.ApiFirebaseData
 import com.goskar.boardgame.data.rest.RequestResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import timber.log.Timber
 
 class BoardGameFirebaseDataRepositoryImpl(
@@ -17,26 +14,8 @@ class BoardGameFirebaseDataRepositoryImpl(
     private val userSession: UserSessionDao,
 ) : BoardGameFirebaseDataRepository {
 
-    override suspend fun getAllGame(): RequestResult<List<Game>> =
-        request("get all games") { uid ->
-            apiFirebaseData.getAllGame(uid).orEmpty().map { (id, game) -> game.copy(id = id) }
-        }
-
-    override suspend fun getAllPlayer(): RequestResult<List<Player>> =
-        request("get all players") { uid ->
-            apiFirebaseData.getAllPlayer(uid).orEmpty().map { (id, player) -> player.copy(id = id) }
-        }
-
-    override suspend fun getAllHistoryGame(): RequestResult<List<HistoryGameFirebase>> =
-        request("get all history games") { uid ->
-            apiFirebaseData.getAllHistoryGame(uid).orEmpty().map { (id, history) -> history.copy(id = id) }
-        }
-
-    override suspend fun getAllHistoryGameExpansion(): RequestResult<List<HistoryGameExpansion>> =
-        request("get all history game expansions") { uid ->
-            apiFirebaseData.getAllHistoryGameExpansion(uid).orEmpty()
-                .map { (id, expansion) -> expansion.copy(id = id) }
-        }
+    override suspend fun getUserData(): RequestResult<CloudUserData> =
+        request("get user data") { uid -> apiFirebaseData.getUserData(uid).bodyOrNull() ?: CloudUserData() }
 
     override suspend fun uploadAll(data: CloudUserData): RequestResult<Boolean> =
         request("upload user data") { uid ->
@@ -45,17 +24,22 @@ class BoardGameFirebaseDataRepositoryImpl(
         }
 
     override suspend fun hasUserData(): RequestResult<Boolean> =
-        request("check user data") { uid -> !apiFirebaseData.getUserDataKeys(uid).isNullOrEmpty() }
+        request("check user data") { uid -> !apiFirebaseData.getUserDataKeys(uid).bodyOrNull().isNullOrEmpty() }
 
     override suspend fun getLegacyData(): RequestResult<CloudUserData> =
         request("get legacy data") { uid ->
             CloudUserData(
-                game = apiFirebaseData.getLegacyGames(uid),
-                player = apiFirebaseData.getLegacyPlayers(uid),
-                historyGame = apiFirebaseData.getLegacyHistoryGames(uid),
-                historyGameExpansion = apiFirebaseData.getLegacyHistoryGameExpansions(uid),
+                game = apiFirebaseData.getLegacyGames(uid).bodyOrNull(),
+                player = apiFirebaseData.getLegacyPlayers(uid).bodyOrNull(),
+                historyGame = apiFirebaseData.getLegacyHistoryGames(uid).bodyOrNull(),
+                historyGameExpansion = apiFirebaseData.getLegacyHistoryGameExpansions(uid).bodyOrNull(),
             )
         }
+
+    private fun <T> Response<T>.bodyOrNull(): T? {
+        check(isSuccessful) { "HTTP ${code()}" }
+        return body()
+    }
 
     private suspend fun <T : Any> request(
         action: String,

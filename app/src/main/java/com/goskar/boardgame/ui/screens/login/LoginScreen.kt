@@ -114,7 +114,7 @@ class LoginScreen : Screen {
                             message = resources.getString(event.message),
                             type = event.type
                         )
-                        navigator?.replaceAll(HomeScreen(firstLogin = true, mergeLocalData = event.mergeLocalData))
+                        navigator?.replaceAll(HomeScreen(firstLogin = true))
                         ScreenLifecycleStore.remove(this@LoginScreen)
                     }
 

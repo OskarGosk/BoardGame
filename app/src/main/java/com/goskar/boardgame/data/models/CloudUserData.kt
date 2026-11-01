@@ -6,8 +6,9 @@ data class CloudUserData(
     val player: Map<String, Player>? = null,
     val historyGame: Map<String, HistoryGameFirebase>? = null,
     val historyGameExpansion: Map<String, HistoryGameExpansion>? = null,
+    val deleted: Map<String, DeletedRecord>? = null,
 ) {
     val isEmpty: Boolean
         get() = game.isNullOrEmpty() && player.isNullOrEmpty() &&
-            historyGame.isNullOrEmpty() && historyGameExpansion.isNullOrEmpty()
+            historyGame.isNullOrEmpty() && historyGameExpansion.isNullOrEmpty() && deleted.isNullOrEmpty()
 }

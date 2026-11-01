@@ -27,7 +27,6 @@ sealed interface LoginEvent {
     data class ShowMessage(
         @StringRes val message: Int,
         val type: AppSnackBarType,
-        val mergeLocalData: Boolean = false,
     ) : LoginEvent
     data class ShowErrorMessage(val message: String?) : LoginEvent
     data class ShowNotice(
@@ -214,7 +213,7 @@ class LoginViewModel(
         viewModelScope.launch {
             val local = getSnapshot()
             if (local.isEmpty) {
-                finishSignIn(mergeLocalData = false)
+                finishSignIn()
             } else {
                 _state.update {
                     it.copy(
@@ -230,7 +229,7 @@ class LoginViewModel(
     }
 
     fun mergeLocalDataIntoAccount() {
-        viewModelScope.launch { finishSignIn(mergeLocalData = true) }
+        viewModelScope.launch { finishSignIn() }
     }
 
     fun discardLocalData() {
@@ -239,7 +238,7 @@ class LoginViewModel(
                 _events.send(LoginEvent.ShowErrorMessage(null))
                 return@launch
             }
-            finishSignIn(mergeLocalData = false)
+            finishSignIn()
         }
     }
 
@@ -249,10 +248,10 @@ class LoginViewModel(
         _state.update { it.copy(pendingLocalData = null, keyValue = null, userUID = null) }
     }
 
-    private suspend fun finishSignIn(mergeLocalData: Boolean) {
+    private suspend fun finishSignIn() {
         _state.update { it.copy(pendingLocalData = null) }
         syncState.clear()
-        saveSessionAndNotify(signIn = true, mergeLocalData = mergeLocalData)
+        saveSessionAndNotify(signIn = true)
     }
 
     fun signOut() {
@@ -276,10 +275,10 @@ class LoginViewModel(
     }
 
     private fun getCurrentToken(signIn: Boolean = false) {
-        viewModelScope.launch { saveSessionAndNotify(signIn = signIn, mergeLocalData = false) }
+        viewModelScope.launch { saveSessionAndNotify(signIn = signIn) }
     }
 
-    private suspend fun saveSessionAndNotify(signIn: Boolean, mergeLocalData: Boolean) {
+    private suspend fun saveSessionAndNotify(signIn: Boolean) {
         userSession.logIn(
             User(
                 email = _state.value.login,
@@ -292,7 +291,6 @@ class LoginViewModel(
                 LoginEvent.ShowMessage(
                     R.string.success_global,
                     AppSnackBarType.SUCCESS,
-                    mergeLocalData,
                 )
             )
             return

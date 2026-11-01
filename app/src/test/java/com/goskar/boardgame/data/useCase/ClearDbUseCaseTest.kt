@@ -1,5 +1,6 @@
 package com.goskar.boardgame.data.useCase
 
+import com.goskar.boardgame.data.db.SyncDao
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
@@ -26,6 +27,7 @@ class ClearDbUseCaseTest {
     private lateinit var gameRepo: GameDbRepository
     private lateinit var playerRepo: PlayerDbRepository
     private lateinit var historyRepo: GamesHistoryDbRepository
+    private lateinit var syncDao: SyncDao
     private lateinit var useCase: ClearDbUseCase
 
     private val success = RequestResult.Success(true)
@@ -38,7 +40,8 @@ class ClearDbUseCaseTest {
         gameRepo = mockk()
         playerRepo = mockk()
         historyRepo = mockk()
-        useCase = ClearDbUseCase(gameRepo, playerRepo, historyRepo)
+        syncDao = mockk(relaxed = true)
+        useCase = ClearDbUseCase(gameRepo, playerRepo, historyRepo, syncDao)
 
         // Default: everything succeeds. Individual tests override one step to fail.
         coEvery { gameRepo.deleteAllGame() } returns success
@@ -61,6 +64,7 @@ class ClearDbUseCaseTest {
         coVerify(exactly = 1) { playerRepo.deleteAllPlayer() }
         coVerify(exactly = 1) { historyRepo.deleteAllHistory() }
         coVerify(exactly = 1) { historyRepo.deleteAllHistoryExpansion() }
+        coVerify(exactly = 1) { syncDao.deleteAllDeleted() }
     }
 
     @Test
@@ -107,5 +111,21 @@ class ClearDbUseCaseTest {
         assertEquals(false, result)
         coVerify(exactly = 1) { historyRepo.deleteAllHistory() }
         coVerify(exactly = 1) { historyRepo.deleteAllHistoryExpansion() }
+    }
+
+    @Test
+    fun invoke_clearingDeletedRecordsFails_returnsFalse() = runTest {
+        coEvery { syncDao.deleteAllDeleted() } throws IllegalStateException("db error")
+
+        assertEquals(false, useCase.invoke())
+    }
+
+    @Test
+    fun invoke_dataStepFails_keepsDeletedRecords() = runTest {
+        coEvery { historyRepo.deleteAllHistory() } returns error
+
+        useCase.invoke()
+
+        coVerify(exactly = 0) { syncDao.deleteAllDeleted() }
     }
 }

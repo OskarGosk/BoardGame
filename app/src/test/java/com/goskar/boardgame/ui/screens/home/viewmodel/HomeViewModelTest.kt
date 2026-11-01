@@ -5,7 +5,6 @@ import com.goskar.boardgame.data.models.GuestBackupMeta
 import com.goskar.boardgame.data.models.Player
 import com.goskar.boardgame.data.models.User
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
-import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
@@ -13,13 +12,7 @@ import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
 import com.goskar.boardgame.data.useCase.RecentSession
 import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
-import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
-import com.goskar.boardgame.data.useCase.MigrateLegacyCloudDataUseCase
-import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
+import com.goskar.boardgame.data.useCase.SyncWithCloudUseCase
 import com.goskar.boardgame.ui.screens.home.HomeViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -50,15 +43,8 @@ class HomeViewModelTest {
     private lateinit var userSession: UserRepository
     private lateinit var playerDbRepository: PlayerDbRepository
     private lateinit var mePlayerRepository: MePlayerRepository
-    private lateinit var api: BoardGameFirebaseDataRepository
-    private lateinit var addAllGameToDb: UpsertAllGameUseCase
-    private lateinit var addAllPlayerToDb: UpsertAllPlayerUseCase
-    private lateinit var addAllHistoryToDb: UpsertAllHistoryGameUseCase
-    private lateinit var addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase
     private lateinit var guestRestore: GuestRestoreUseCase
-    private lateinit var markLocalDataSynced: MarkLocalDataSyncedUseCase
-    private lateinit var uploadToCloud: UploadToCloudUseCase
-    private lateinit var migrateLegacyCloudData: MigrateLegacyCloudDataUseCase
+    private lateinit var syncWithCloud: SyncWithCloudUseCase
     private lateinit var getThreeRecentSession: GetThreeRecentSessionUseCase
 
     private fun game(name: String, plays: Int, id: String) = Game(
@@ -74,15 +60,8 @@ class HomeViewModelTest {
         userSession,
         playerDbRepository,
         mePlayerRepository,
-        api,
-        addAllGameToDb,
-        addAllPlayerToDb,
-        addAllHistoryToDb,
-        addAllHistoryGameExpansionToDb,
         guestRestore,
-        markLocalDataSynced,
-        uploadToCloud,
-        migrateLegacyCloudData,
+        syncWithCloud,
         getThreeRecentSession,
     )
 
@@ -94,17 +73,11 @@ class HomeViewModelTest {
         userSession = mockk()
         playerDbRepository = mockk()
         mePlayerRepository = mockk(relaxed = true)
-        api = mockk(relaxed = true)
         coEvery { playerDbRepository.getAllPlayer() } returns RequestResult.Success(emptyList())
-        addAllGameToDb = mockk(relaxed = true)
-        addAllPlayerToDb = mockk(relaxed = true)
-        addAllHistoryToDb = mockk(relaxed = true)
-        addAllHistoryGameExpansionToDb = mockk(relaxed = true)
         guestRestore = mockk(relaxed = true)
-        markLocalDataSynced = mockk(relaxed = true)
-        uploadToCloud = mockk(relaxed = true)
-        migrateLegacyCloudData = mockk()
-        coEvery { migrateLegacyCloudData() } returns true
+        syncWithCloud = mockk()
+        coEvery { syncWithCloud() } returns true
+        coEvery { syncWithCloud.syncOnStartup() } returns false
         getThreeRecentSession = mockk()
         coEvery { getThreeRecentSession() } returns emptyList()
         coEvery { guestRestore.findOffer() } returns null
@@ -171,29 +144,6 @@ class HomeViewModelTest {
         assertEquals("—", viewModel.state.value.mostPlayed)
     }
 
-
-    @Test
-    fun load_firstLogin_syncsFromCloud() = runTest(testDispatcher) {
-        coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        coEvery { userSession.getCurrentSession() } returns null
-        coEvery { api.getAllGame() } returns RequestResult.Error(Throwable("offline"))
-
-        val viewModel = buildViewModel()
-        viewModel.load(firstLogin = true)
-
-        coVerify(exactly = 1) { api.getAllGame() }
-    }
-
-    @Test
-    fun load_notFirstLogin_doesNotSyncFromCloud() = runTest(testDispatcher) {
-        coEvery { getAllGameUseCase.invoke() } returns emptyList()
-        coEvery { userSession.getCurrentSession() } returns null
-
-        val viewModel = buildViewModel()
-        viewModel.load(firstLogin = false)
-
-        coVerify(exactly = 0) { api.getAllGame() }
-    }
 
     private fun stubEmptyLibraryFor(uid: String?) {
         coEvery { getAllGameUseCase.invoke() } returns emptyList()
@@ -271,74 +221,80 @@ class HomeViewModelTest {
         coVerify(exactly = 1) { guestRestore.decline() }
     }
 
-    private fun stubSuccessfulCloudDownload() {
-        coEvery { api.getAllGame() } returns RequestResult.Success(emptyList())
-        coEvery { api.getAllPlayer() } returns RequestResult.Success(emptyList())
-        coEvery { api.getAllHistoryGame() } returns RequestResult.Success(emptyList())
-        coEvery { api.getAllHistoryGameExpansion() } returns RequestResult.Success(emptyList())
-        coEvery { addAllGameToDb.invoke(any()) } returns true
-        coEvery { addAllPlayerToDb.invoke(any()) } returns true
-        coEvery { addAllHistoryToDb.invoke(any()) } returns true
-        coEvery { addAllHistoryGameExpansionToDb.invoke(any()) } returns true
-    }
-
     @Test
-    fun load_firstLogin_downloadSucceeds_marksDataSynced() = runTest(testDispatcher) {
-        stubEmptyLibraryFor(null)
-        stubSuccessfulCloudDownload()
-
-        buildViewModel().load(firstLogin = true)
-
-        coVerify(exactly = 1) { markLocalDataSynced() }
-        coVerify(exactly = 0) { uploadToCloud() }
-    }
-
-    @Test
-    fun load_firstLoginWithMergedLocalData_uploadsMergedDataAfterDownload() = runTest(testDispatcher) {
-        stubEmptyLibraryFor(null)
-        stubSuccessfulCloudDownload()
-
-        buildViewModel().load(firstLogin = true, mergeLocalData = true)
-
-        coVerify(exactly = 1) { uploadToCloud() }
-        coVerify(exactly = 0) { markLocalDataSynced() }
-    }
-
-    @Test
-    fun load_firstLoginWithMergedLocalData_downloadFails_neverOverwritesCloud() = runTest(testDispatcher) {
-        stubEmptyLibraryFor(null)
-        coEvery { api.getAllGame() } returns RequestResult.Error(Throwable("offline"))
-
-        buildViewModel().load(firstLogin = true, mergeLocalData = true)
-
-        coVerify(exactly = 0) { uploadToCloud() }
-        coVerify(exactly = 0) { markLocalDataSynced() }
-    }
-
-    @Test
-    fun load_firstLogin_migratesLegacyDataBeforeDownload() = runTest(testDispatcher) {
-        stubEmptyLibraryFor(null)
-        stubSuccessfulCloudDownload()
+    fun load_firstLoginWithAccount_syncsBeforeComputingStats() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("uid1")
+        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
 
         buildViewModel().load(firstLogin = true)
 
         coVerifyOrder {
-            migrateLegacyCloudData()
-            api.getAllGame()
+            syncWithCloud()
+            getAllGameUseCase()
         }
+        coVerify(exactly = 0) { syncWithCloud.syncOnStartup() }
     }
 
     @Test
-    fun load_firstLoginWithMergedLocalData_migrationFails_skipsDownloadAndUpload() = runTest(testDispatcher) {
+    fun load_firstLoginSyncFails_stillShowsLocalLibrary() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("uid1")
+        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
+        coEvery { syncWithCloud() } returns false
+
+        val viewModel = buildViewModel()
+        viewModel.load(firstLogin = true)
+
+        assertFalse(viewModel.state.value.isLoading)
+        assertEquals("0", viewModel.state.value.totalGames)
+    }
+
+    @Test
+    fun load_guest_neverSyncs() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("guest")
+
+        buildViewModel().load(firstLogin = true)
+        buildViewModel().load(firstLogin = false)
+
+        coVerify(exactly = 0) { syncWithCloud() }
+        coVerify(exactly = 0) { syncWithCloud.syncOnStartup() }
+    }
+
+    @Test
+    fun load_withoutSession_neverSyncs() = runTest(testDispatcher) {
         stubEmptyLibraryFor(null)
-        stubSuccessfulCloudDownload()
-        coEvery { migrateLegacyCloudData() } returns false
 
-        buildViewModel().load(firstLogin = true, mergeLocalData = true)
+        buildViewModel().load(firstLogin = false)
 
-        coVerify(exactly = 0) { api.getAllGame() }
-        coVerify(exactly = 0) { uploadToCloud() }
-        coVerify(exactly = 0) { markLocalDataSynced() }
+        coVerify(exactly = 0) { syncWithCloud.syncOnStartup() }
+    }
+
+    @Test
+    fun load_appStart_showsLocalStatsThenRefreshesAfterSync() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("uid1")
+        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
+        coEvery { getAllGameUseCase.invoke() } returnsMany listOf(
+            emptyList(),
+            listOf(game("Root", plays = 1, id = "g1")),
+        )
+        coEvery { syncWithCloud.syncOnStartup() } returns true
+
+        val viewModel = buildViewModel()
+        viewModel.load(firstLogin = false)
+
+        assertEquals("1", viewModel.state.value.totalGames)
+        coVerify(exactly = 2) { getAllGameUseCase() }
+        coVerify(exactly = 0) { syncWithCloud() }
+    }
+
+    @Test
+    fun load_startupSyncAlreadyDone_computesStatsOnce() = runTest(testDispatcher) {
+        stubEmptyLibraryFor("uid1")
+        coEvery { mePlayerRepository.getLinkedPlayerId("uid1") } returns null
+
+        buildViewModel().load(firstLogin = false)
+
+        coVerify(exactly = 1) { syncWithCloud.syncOnStartup() }
+        coVerify(exactly = 1) { getAllGameUseCase() }
     }
 
     @Ignore("TODO: sprawdz, ze dla polaczonego gracza state.userName to UserName.Named('Alex M.')")

@@ -63,7 +63,6 @@ import org.koin.androidx.compose.koinViewModel
 
 class HomeScreen(
     private val firstLogin: Boolean = false,
-    private val mergeLocalData: Boolean = false,
 ) : Screen {
 
     @Composable
@@ -71,7 +70,7 @@ class HomeScreen(
         val viewModel: HomeViewModel = koinViewModel()
         val state by viewModel.state.collectAsStateWithLifecycle()
         val navigator = LocalNavigator.current
-        LaunchedEffect(firstLogin) { viewModel.load(firstLogin, mergeLocalData) }
+        LaunchedEffect(firstLogin) { viewModel.load(firstLogin) }
         HomeScreenContent(
             state = state,
             userInitials = rememberUserInitials(),

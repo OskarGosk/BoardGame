@@ -2,6 +2,8 @@ package com.goskar.boardgame.data.repository.dbRepository
 
 import com.goskar.boardgame.data.db.HistoryGameDao
 import com.goskar.boardgame.data.db.HistoryGameExpansionDao
+import com.goskar.boardgame.data.db.SyncDao
+import com.goskar.boardgame.data.models.DeletedRecord
 import com.goskar.boardgame.data.models.HistoryGame
 import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.rest.RequestResult
@@ -14,7 +16,9 @@ import kotlinx.coroutines.withContext
 class GamesHistoryDbRepositoryImpl(
     private val historyGameDao: HistoryGameDao,
     private val historyGameExpansionDao: HistoryGameExpansionDao,
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val syncDao: SyncDao,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val clock: () -> Long = System::currentTimeMillis,
 ) : GamesHistoryDbRepository {
     companion object {
         const val TAG = "GAMES_HISTORY"
@@ -22,7 +26,7 @@ class GamesHistoryDbRepositoryImpl(
 
     override suspend fun insertHistoryGame(historyGame: HistoryGame): RequestResult<Boolean> = withContext(defaultDispatcher) {
         safeCall(TAG, "Can't add game history") {
-            historyGameDao.insert(historyGame)
+            historyGameDao.insert(historyGame.copy(updatedAt = clock()))
             true
         }
     }
@@ -43,13 +47,14 @@ class GamesHistoryDbRepositoryImpl(
     override suspend fun deleteHistoryGame(historyGame: HistoryGame): RequestResult<Boolean> = withContext(defaultDispatcher) {
         safeCall(TAG, "Can't delete game history") {
             historyGameDao.delete(historyGame)
+            syncDao.insertDeleted(DeletedRecord(historyGame.id, DeletedRecord.HISTORY_GAME, clock()))
             true
         }
     }
 
     override suspend fun editHistoryGame(historyGame: HistoryGame): RequestResult<Boolean> = withContext(defaultDispatcher) {
         safeCall(TAG, "Can't edit game history") {
-            historyGameDao.edit(historyGame)
+            historyGameDao.edit(historyGame.copy(updatedAt = clock()))
             true
         }
     }

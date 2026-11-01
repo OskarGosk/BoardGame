@@ -14,7 +14,7 @@ import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.BackupGuestUseCase
 import com.goskar.boardgame.data.useCase.ClearDbUseCase
 import com.goskar.boardgame.data.useCase.GetSyncStatusUseCase
-import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
+import com.goskar.boardgame.data.useCase.SyncWithCloudUseCase
 import com.goskar.boardgame.ui.components.other.AppSnackBarType
 import com.goskar.boardgame.ui.components.user.UserName
 import kotlinx.coroutines.channels.Channel
@@ -65,7 +65,7 @@ class ProfileViewModel(
     private val historyRepository: GamesHistoryDbRepository,
     private val mePlayerRepository: MePlayerRepository,
     private val clearDbUseCase: ClearDbUseCase,
-    private val uploadToCloud: UploadToCloudUseCase,
+    private val syncWithCloud: SyncWithCloudUseCase,
     private val backupGuest: BackupGuestUseCase,
     private val getSyncStatus: GetSyncStatusUseCase,
     private val syncState: SyncStateRepository,
@@ -139,7 +139,7 @@ class ProfileViewModel(
             _state.update { it.copy(syncing = true) }
             val ok = runSync()
             _state.update { it.copy(syncing = false) }
-            if (ok) refreshSyncStatus()
+            if (ok) load()
             _events.send(
                 if (ok) ProfileEvent.ShowMessage(R.string.success_global, AppSnackBarType.SUCCESS)
                 else ProfileEvent.ShowMessage(R.string.error_global, AppSnackBarType.ERROR)
@@ -185,7 +185,7 @@ class ProfileViewModel(
     }
 
     private suspend fun runSync(): Boolean =
-        if (state.value.isGuest) backupGuest() else uploadToCloud()
+        if (state.value.isGuest) backupGuest() else syncWithCloud()
 
     private suspend fun refreshSyncStatus() {
         val status = getSyncStatus()

@@ -23,9 +23,9 @@ import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
 fun KoinApplication.repositoryModule() = module {
-    single<PlayerDbRepository> { PlayerDbRepositoryImpl(get()) }
-    single<GameDbRepository> { GameDbRepositoryImpl(get()) }
-    single<GamesHistoryDbRepository> { GamesHistoryDbRepositoryImpl(get(), get()) }
+    single<PlayerDbRepository> { PlayerDbRepositoryImpl(get(), get()) }
+    single<GameDbRepository> { GameDbRepositoryImpl(get(), get()) }
+    single<GamesHistoryDbRepository> { GamesHistoryDbRepositoryImpl(get(), get(), get()) }
     single<BoardGameApiRepository> { BoardGameApiRepositoryImpl(get()) }
     single<BoardGameFirebaseDataRepository> { BoardGameFirebaseDataRepositoryImpl(get(), get()) }
     single<UserRepository> {UserRepositoryImpl(get())}

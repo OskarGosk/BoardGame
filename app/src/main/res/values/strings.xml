@@ -205,10 +205,11 @@
     <string name="profile_active">Active</string>
     <string name="profile_sign_out">Sign Out of Session</string>
     <string name="profile_cloud_sync">Cloud Sync</string>
-    <string name="profile_cloud_sync_desc">All session data is currently synchronized across your devices.</string>
+    <string name="profile_cloud_sync_desc">Games, players and sessions are merged with your other devices when the app starts and when you sync.</string>
     <string name="profile_force_sync">Force Sync</string>
     <string name="profile_syncing">Syncing…</string>
     <string name="profile_not_synced">Not backed up yet</string>
+    <string name="profile_cloud_not_synced">Not synced yet</string>
     <string name="profile_recent_medals">Recent Medals</string>
     <string name="profile_view_achievements">View All Achievements</string>
 

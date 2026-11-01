@@ -4,24 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.goskar.boardgame.R
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
-import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.mePlayer.MePlayerRepository
 import com.goskar.boardgame.data.repository.user.UserRepository
 import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
-import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
-import com.goskar.boardgame.data.useCase.MigrateLegacyCloudDataUseCase
-import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
 import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
 import com.goskar.boardgame.data.useCase.RecentSession
-import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameUseCase
-import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
+import com.goskar.boardgame.data.useCase.SyncWithCloudUseCase
 import com.goskar.boardgame.ui.components.user.UserName
 import com.goskar.boardgame.ui.screens.profile.viewmodel.PlayerPick
-import com.goskar.boardgame.utils.convertHistoryGameListToDto
 import com.goskar.boardgame.utils.timeGreeting
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,35 +47,31 @@ class HomeViewModel(
     private val userSession: UserRepository,
     private val playerDbRepository: PlayerDbRepository,
     private val mePlayerRepository: MePlayerRepository,
-    private val api: BoardGameFirebaseDataRepository,
-    private val addAllGameToDb: UpsertAllGameUseCase,
-    private val addAllPlayerToDb: UpsertAllPlayerUseCase,
-    private val addAllHistoryToDb: UpsertAllHistoryGameUseCase,
-    private val addAllHistoryGameExpansionToDb: UpsertAllHistoryGameExpansionUseCase,
     private val guestRestore: GuestRestoreUseCase,
-    private val markLocalDataSynced: MarkLocalDataSyncedUseCase,
-    private val uploadToCloud: UploadToCloudUseCase,
-    private val migrateLegacyCloudData: MigrateLegacyCloudDataUseCase,
+    private val syncWithCloud: SyncWithCloudUseCase,
     private val getThreeRecentSessionUseCase: GetThreeRecentSessionUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
-    fun load(firstLogin: Boolean, mergeLocalData: Boolean = false) {
+    fun load(firstLogin: Boolean) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             if (firstLogin) {
-                if (downloadFromCloud()) {
-                    if (mergeLocalData) uploadToCloud() else markLocalDataSynced()
-                }
+                if (hasAccount()) syncWithCloud()
                 selectUser()
             }
             computeStats()
             _state.update { it.copy(isLoading = false) }
             offerGuestRestore()
+            // The local library is shown first; changes from other devices appear once the sync is done.
+            if (!firstLogin && hasAccount() && syncWithCloud.syncOnStartup()) computeStats()
         }
     }
+
+    private suspend fun hasAccount(): Boolean =
+        userSession.getCurrentSession()?.userUID.let { it != null && it != "guest" }
 
     fun restoreGuestBackup() {
         val offer = _state.value.guestRestoreOffer ?: return
@@ -201,19 +189,4 @@ class HomeViewModel(
             .ifBlank { name.take(2) }
             .uppercase()
 
-
-    private suspend fun downloadFromCloud(): Boolean {
-        if (!migrateLegacyCloudData()) return false
-
-        val games = api.getAllGame() as? RequestResult.Success
-        val players = api.getAllPlayer() as? RequestResult.Success
-        val history = api.getAllHistoryGame() as? RequestResult.Success
-        val expansions = api.getAllHistoryGameExpansion() as? RequestResult.Success
-
-        val savedGames = games?.let { addAllGameToDb.invoke(it.data) } ?: false
-        val savedPlayers = players?.let { addAllPlayerToDb.invoke(it.data) } ?: false
-        val savedHistory = history?.let { addAllHistoryToDb.invoke(convertHistoryGameListToDto(it.data)) } ?: false
-        val savedExpansions = expansions?.let { addAllHistoryGameExpansionToDb.invoke(it.data) } ?: false
-        return savedGames && savedPlayers && savedHistory && savedExpansions
-    }
 }

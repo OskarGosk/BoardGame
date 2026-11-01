@@ -25,5 +25,6 @@ data class Game(
     val rating: Double? = null,
     val bggId: String? = null,
     val modes: List<GameMode>? = null,
+    val updatedAt: Long = 0L,
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
 ) : Serializable

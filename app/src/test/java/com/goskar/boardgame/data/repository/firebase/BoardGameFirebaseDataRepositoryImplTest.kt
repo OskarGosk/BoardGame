@@ -37,30 +37,27 @@ class BoardGameFirebaseDataRepositoryImplTest {
     }
 
     @Test
-    fun getAllGame_readsUserNodeAndTakesIdsFromKeys() = runTest {
-        coEvery { api.getAllGame("uid1") } returns mapOf("g1" to game(id = "stale"))
+    fun getUserData_readsTheSignedInUsersNode() = runTest {
+        val data = CloudUserData(game = mapOf("g1" to game(id = "g1")))
+        coEvery { api.getUserData("uid1") } returns Response.success(data)
 
-        val result = repository.getAllGame()
-
-        assertEquals(RequestResult.Success(listOf(game(id = "g1"))), result)
+        assertEquals(RequestResult.Success(data), repository.getUserData())
     }
 
     @Test
-    fun missingCollections_areEmptyListsNotErrors() = runTest {
-        coEvery { api.getAllGame("uid1") } returns null
-        coEvery { api.getAllHistoryGameExpansion("uid1") } returns null
+    fun getUserData_missingNode_isEmptyDataNotAnError() = runTest {
+        coEvery { api.getUserData("uid1") } returns Response.success(null)
 
-        assertEquals(RequestResult.Success(emptyList<Game>()), repository.getAllGame())
-        assertEquals(RequestResult.Success(emptyList<Any>()), repository.getAllHistoryGameExpansion())
+        assertEquals(RequestResult.Success(CloudUserData()), repository.getUserData())
     }
 
     @Test
     fun guestSession_failsWithoutCallingFirebase() = runTest {
         every { userSession.getUserUID() } returns "guest"
 
-        assertTrue(repository.getAllGame() is RequestResult.Error)
+        assertTrue(repository.getUserData() is RequestResult.Error)
         assertTrue(repository.uploadAll(CloudUserData()) is RequestResult.Error)
-        coVerify(exactly = 0) { api.getAllGame(any()) }
+        coVerify(exactly = 0) { api.getUserData(any()) }
         coVerify(exactly = 0) { api.updateUserData(any(), any()) }
     }
 
@@ -91,7 +88,8 @@ class BoardGameFirebaseDataRepositoryImplTest {
 
     @Test
     fun hasUserData_dependsOnKeysUnderUserNode() = runTest {
-        coEvery { api.getUserDataKeys("uid1") } returnsMany listOf(null, emptyMap(), mapOf("game" to true))
+        coEvery { api.getUserDataKeys("uid1") } returnsMany
+            listOf(Response.success(null), Response.success(emptyMap()), Response.success(mapOf("game" to true)))
 
         assertEquals(RequestResult.Success(false), repository.hasUserData())
         assertEquals(RequestResult.Success(false), repository.hasUserData())
@@ -101,11 +99,20 @@ class BoardGameFirebaseDataRepositoryImplTest {
     @Test
     fun getLegacyData_readsOldPathsAsTheyAre() = runTest {
         val games = mapOf("g1" to game(id = "g1"))
-        coEvery { api.getLegacyGames("uid1") } returns games
-        coEvery { api.getLegacyPlayers("uid1") } returns null
-        coEvery { api.getLegacyHistoryGames("uid1") } returns null
-        coEvery { api.getLegacyHistoryGameExpansions("uid1") } returns null
+        coEvery { api.getLegacyGames("uid1") } returns Response.success(games)
+        coEvery { api.getLegacyPlayers("uid1") } returns Response.success(null)
+        coEvery { api.getLegacyHistoryGames("uid1") } returns Response.success(null)
+        coEvery { api.getLegacyHistoryGameExpansions("uid1") } returns Response.success(null)
 
         assertEquals(RequestResult.Success(CloudUserData(game = games)), repository.getLegacyData())
+    }
+
+    @Test
+    fun readRejectedByFirebase_isAnErrorNotEmptyData() = runTest {
+        coEvery { api.getUserData("uid1") } returns Response.error(401, "Permission denied".toResponseBody())
+        coEvery { api.getUserDataKeys("uid1") } returns Response.error(401, "Permission denied".toResponseBody())
+
+        assertTrue(repository.getUserData() is RequestResult.Error)
+        assertTrue(repository.hasUserData() is RequestResult.Error)
     }
 }

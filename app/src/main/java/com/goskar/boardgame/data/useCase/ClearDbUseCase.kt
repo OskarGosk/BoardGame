@@ -1,5 +1,6 @@
 package com.goskar.boardgame.data.useCase
 
+import com.goskar.boardgame.data.db.SyncDao
 import com.goskar.boardgame.data.repository.dbRepository.GameDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.GamesHistoryDbRepository
 import com.goskar.boardgame.data.repository.dbRepository.PlayerDbRepository
@@ -9,6 +10,7 @@ class ClearDbUseCase(
     private val gameDbRepository: GameDbRepository,
     private val playerDbRepository: PlayerDbRepository,
     private val historyDbRepository: GamesHistoryDbRepository,
+    private val syncDao: SyncDao,
 ) {
     suspend operator fun invoke(): Boolean {
         return attemptToDeleteAllData(
@@ -16,7 +18,7 @@ class ClearDbUseCase(
             playerDbRepository::deleteAllPlayer,
             historyDbRepository::deleteAllHistory,
             historyDbRepository::deleteAllHistoryExpansion
-        )
+        ) && runCatching { syncDao.deleteAllDeleted() }.isSuccess
     }
 
     private suspend fun attemptToDeleteAllData(
