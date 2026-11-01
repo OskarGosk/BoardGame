@@ -8,7 +8,6 @@ import com.goskar.boardgame.data.rest.ApiFirebaseData
 import com.goskar.boardgame.data.rest.ApiGuestBackup
 import com.goskar.boardgame.data.rest.AuthInterceptor
 import com.goskar.boardgame.data.rest.FirebaseAuthenticator
-import com.goskar.boardgame.data.rest.UIDInterceptor
 import okhttp3.OkHttpClient
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
@@ -18,7 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 fun KoinApplication.restModuleFirebase() = module {
     single(FIREBASE_CLIENT) {
         OkHttpClient.Builder()
-            .addInterceptor(UIDInterceptor(get()))
             .addInterceptor(AuthInterceptor(get()))
             .authenticator(FirebaseAuthenticator(get()))
             .build()

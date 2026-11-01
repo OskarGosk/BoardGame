@@ -14,6 +14,7 @@ import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
 import com.goskar.boardgame.data.useCase.RecentSession
 import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
 import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
+import com.goskar.boardgame.data.useCase.MigrateLegacyCloudDataUseCase
 import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllGameUseCase
 import com.goskar.boardgame.data.useCase.UpsertAllHistoryGameExpansionUseCase
@@ -22,6 +23,7 @@ import com.goskar.boardgame.data.useCase.UpsertAllPlayerUseCase
 import com.goskar.boardgame.ui.screens.home.HomeViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,6 +58,7 @@ class HomeViewModelTest {
     private lateinit var guestRestore: GuestRestoreUseCase
     private lateinit var markLocalDataSynced: MarkLocalDataSyncedUseCase
     private lateinit var uploadToCloud: UploadToCloudUseCase
+    private lateinit var migrateLegacyCloudData: MigrateLegacyCloudDataUseCase
     private lateinit var getThreeRecentSession: GetThreeRecentSessionUseCase
 
     private fun game(name: String, plays: Int, id: String) = Game(
@@ -79,6 +82,7 @@ class HomeViewModelTest {
         guestRestore,
         markLocalDataSynced,
         uploadToCloud,
+        migrateLegacyCloudData,
         getThreeRecentSession,
     )
 
@@ -99,6 +103,8 @@ class HomeViewModelTest {
         guestRestore = mockk(relaxed = true)
         markLocalDataSynced = mockk(relaxed = true)
         uploadToCloud = mockk(relaxed = true)
+        migrateLegacyCloudData = mockk()
+        coEvery { migrateLegacyCloudData() } returns true
         getThreeRecentSession = mockk()
         coEvery { getThreeRecentSession() } returns emptyList()
         coEvery { guestRestore.findOffer() } returns null
@@ -305,6 +311,32 @@ class HomeViewModelTest {
 
         buildViewModel().load(firstLogin = true, mergeLocalData = true)
 
+        coVerify(exactly = 0) { uploadToCloud() }
+        coVerify(exactly = 0) { markLocalDataSynced() }
+    }
+
+    @Test
+    fun load_firstLogin_migratesLegacyDataBeforeDownload() = runTest(testDispatcher) {
+        stubEmptyLibraryFor(null)
+        stubSuccessfulCloudDownload()
+
+        buildViewModel().load(firstLogin = true)
+
+        coVerifyOrder {
+            migrateLegacyCloudData()
+            api.getAllGame()
+        }
+    }
+
+    @Test
+    fun load_firstLoginWithMergedLocalData_migrationFails_skipsDownloadAndUpload() = runTest(testDispatcher) {
+        stubEmptyLibraryFor(null)
+        stubSuccessfulCloudDownload()
+        coEvery { migrateLegacyCloudData() } returns false
+
+        buildViewModel().load(firstLogin = true, mergeLocalData = true)
+
+        coVerify(exactly = 0) { api.getAllGame() }
         coVerify(exactly = 0) { uploadToCloud() }
         coVerify(exactly = 0) { markLocalDataSynced() }
     }

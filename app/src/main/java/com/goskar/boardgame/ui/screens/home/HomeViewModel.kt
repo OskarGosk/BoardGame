@@ -11,6 +11,7 @@ import com.goskar.boardgame.data.rest.RequestResult
 import com.goskar.boardgame.data.useCase.GetAllGameUseCase
 import com.goskar.boardgame.data.useCase.GuestRestoreUseCase
 import com.goskar.boardgame.data.useCase.MarkLocalDataSyncedUseCase
+import com.goskar.boardgame.data.useCase.MigrateLegacyCloudDataUseCase
 import com.goskar.boardgame.data.useCase.UploadToCloudUseCase
 import com.goskar.boardgame.data.useCase.GetThreeRecentSessionUseCase
 import com.goskar.boardgame.data.useCase.RecentSession
@@ -62,6 +63,7 @@ class HomeViewModel(
     private val guestRestore: GuestRestoreUseCase,
     private val markLocalDataSynced: MarkLocalDataSyncedUseCase,
     private val uploadToCloud: UploadToCloudUseCase,
+    private val migrateLegacyCloudData: MigrateLegacyCloudDataUseCase,
     private val getThreeRecentSessionUseCase: GetThreeRecentSessionUseCase,
 ) : ViewModel() {
 
@@ -201,6 +203,8 @@ class HomeViewModel(
 
 
     private suspend fun downloadFromCloud(): Boolean {
+        if (!migrateLegacyCloudData()) return false
+
         val games = api.getAllGame() as? RequestResult.Success
         val players = api.getAllPlayer() as? RequestResult.Success
         val history = api.getAllHistoryGame() as? RequestResult.Success

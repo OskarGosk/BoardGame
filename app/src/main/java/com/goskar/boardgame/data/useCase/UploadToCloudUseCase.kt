@@ -1,5 +1,6 @@
 package com.goskar.boardgame.data.useCase
 
+import com.goskar.boardgame.data.models.CloudUserData
 import com.goskar.boardgame.data.repository.firebase.BoardGameFirebaseDataRepository
 import com.goskar.boardgame.data.repository.syncState.SyncStateRepository
 import com.goskar.boardgame.data.rest.RequestResult
@@ -13,14 +14,13 @@ class UploadToCloudUseCase(
     suspend operator fun invoke(): Boolean {
         val snapshot = getSnapshot()
 
-        if (api.addAllGame(snapshot.games.associateBy { it.id }) !is RequestResult.Success) return false
-        if (api.addPlayer(snapshot.players.associateBy { it.id }) !is RequestResult.Success) return false
-
-        val history = convertHistoryGameListToFirebase(snapshot.history).associateBy { it.id }
-        if (api.addHistoryGame(history) !is RequestResult.Success) return false
-
-        val expansions = snapshot.historyExpansions.associateBy { it.id }
-        if (api.addHistoryGameExpansion(expansions) !is RequestResult.Success) return false
+        val data = CloudUserData(
+            game = snapshot.games.associateBy { it.id },
+            player = snapshot.players.associateBy { it.id },
+            historyGame = convertHistoryGameListToFirebase(snapshot.history).associateBy { it.id },
+            historyGameExpansion = snapshot.historyExpansions.associateBy { it.id },
+        )
+        if (api.uploadAll(data) !is RequestResult.Success) return false
 
         syncState.markSynced(snapshot.fingerprint())
         return true

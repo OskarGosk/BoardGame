@@ -158,6 +158,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [x] Rename the temporary `*New*` classes (`HistoryNewScreen`, `ProfileNewViewModel`, `NewBottomBarElements`, …) now that the old UI is gone: screens, ViewModels, states, components, tests and files dropped the `New` infix (`HistoryScreen`, `ProfileViewModel`, `BottomBarElements.kt`, …).
 - [x] Follow the component conventions: `modifier` as the first parameter everywhere, one component per file (screen-only components live in `ui/screens/<screen>/components/`), a `@Preview` in every component file, 4-unit grid for dp and sp (off-grid font sizes in `Typography.kt` / `TextStyles.kt` were rounded up: 11→12, 14→16, 18→20, 22→24, 26→28 sp).
 - [x] Update outdated Gradle dependencies: Gradle 9.3, AGP 9.1 with built-in Kotlin, compileSdk 37, targetSdk 36 (Android 16), Compose BoM 2026.09 (Compose 1.12), core-ktx 1.19, lifecycle 2.11, and the major upgrades Koin 4, Retrofit 3, Voyager 2 and Firebase BoM 35 (non-`-ktx` modules). AGP stays on 9.1 – the newest version supported by Android Studio Panda 2.
+- [x] **Cloud data grouped per user** – Firebase keeps everything under `users/{uid}/` (`game`, `player`, `historyGame`, `historyGameExpansion`) instead of one top-level node per collection. Sync uploads all collections in a single `PATCH`, the UID is a Retrofit path parameter (no request is sent without a signed-in account), and accounts synced with 2.0.2 or older are copied to the new layout on their first login.
 
 **UI polish**
 - [x] **Edge-to-edge** support – `enableEdgeToEdge()` with system bars following the theme; the top bar, bottom nav, login and splash draw behind the system bars, and a night window theme keeps the launch screen dark.
@@ -166,7 +167,7 @@ The redesign itself is done; this is what I still plan to finish (roughly in pri
 - [ ] (Optional) Redesign the splash screen.
 
 **Tests**
-- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (215 tests) and runs in CI on every pull request.
+- [ ] More unit tests for the new ViewModels (sign-out, saving a game / session, mappings). The suite currently passes (234 tests) and runs in CI on every pull request.
 
 <br/><br/>
 ## 🏗 Architecture & engineering notes

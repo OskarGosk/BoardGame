@@ -27,7 +27,7 @@ fun KoinApplication.repositoryModule() = module {
     single<GameDbRepository> { GameDbRepositoryImpl(get()) }
     single<GamesHistoryDbRepository> { GamesHistoryDbRepositoryImpl(get(), get()) }
     single<BoardGameApiRepository> { BoardGameApiRepositoryImpl(get()) }
-    single<BoardGameFirebaseDataRepository> { BoardGameFirebaseDataRepositoryImpl(get()) }
+    single<BoardGameFirebaseDataRepository> { BoardGameFirebaseDataRepositoryImpl(get(), get()) }
     single<UserRepository> {UserRepositoryImpl(get())}
     single<MePlayerRepository> { MePlayerRepositoryImpl(androidContext()) }
     single<SyncStateRepository> { SyncStateRepositoryImpl(androidContext()) }

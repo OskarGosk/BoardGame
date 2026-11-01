@@ -1,5 +1,7 @@
 package com.goskar.boardgame.data.repository.firebase
 
+import com.goskar.boardgame.data.db.UserSessionDao
+import com.goskar.boardgame.data.models.CloudUserData
 import com.goskar.boardgame.data.models.Game
 import com.goskar.boardgame.data.models.HistoryGameExpansion
 import com.goskar.boardgame.data.models.HistoryGameFirebase
@@ -11,124 +13,67 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class BoardGameFirebaseDataRepositoryImpl(
-    private val apiFirebaseData: ApiFirebaseData
+    private val apiFirebaseData: ApiFirebaseData,
+    private val userSession: UserSessionDao,
 ) : BoardGameFirebaseDataRepository {
 
-    override suspend fun getAllGame(): RequestResult<List<Game>> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                apiFirebaseData.getAllGame().map { element ->
-                    element.value.copy(id = element.key)
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't get All game\n  ${it.stackTraceToString()}")
-            }
-        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
+    override suspend fun getAllGame(): RequestResult<List<Game>> =
+        request("get all games") { uid ->
+            apiFirebaseData.getAllGame(uid).orEmpty().map { (id, game) -> game.copy(id = id) }
+        }
+
+    override suspend fun getAllPlayer(): RequestResult<List<Player>> =
+        request("get all players") { uid ->
+            apiFirebaseData.getAllPlayer(uid).orEmpty().map { (id, player) -> player.copy(id = id) }
+        }
+
+    override suspend fun getAllHistoryGame(): RequestResult<List<HistoryGameFirebase>> =
+        request("get all history games") { uid ->
+            apiFirebaseData.getAllHistoryGame(uid).orEmpty().map { (id, history) -> history.copy(id = id) }
+        }
+
+    override suspend fun getAllHistoryGameExpansion(): RequestResult<List<HistoryGameExpansion>> =
+        request("get all history game expansions") { uid ->
+            apiFirebaseData.getAllHistoryGameExpansion(uid).orEmpty()
+                .map { (id, expansion) -> expansion.copy(id = id) }
+        }
+
+    override suspend fun uploadAll(data: CloudUserData): RequestResult<Boolean> =
+        request("upload user data") { uid ->
+            check(apiFirebaseData.updateUserData(uid, data).isSuccessful) { "Upload rejected" }
+            true
+        }
+
+    override suspend fun hasUserData(): RequestResult<Boolean> =
+        request("check user data") { uid -> !apiFirebaseData.getUserDataKeys(uid).isNullOrEmpty() }
+
+    override suspend fun getLegacyData(): RequestResult<CloudUserData> =
+        request("get legacy data") { uid ->
+            CloudUserData(
+                game = apiFirebaseData.getLegacyGames(uid),
+                player = apiFirebaseData.getLegacyPlayers(uid),
+                historyGame = apiFirebaseData.getLegacyHistoryGames(uid),
+                historyGameExpansion = apiFirebaseData.getLegacyHistoryGameExpansions(uid),
+            )
+        }
+
+    private suspend fun <T : Any> request(
+        action: String,
+        block: suspend (uid: String) -> T,
+    ): RequestResult<T> = withContext(Dispatchers.IO) {
+        runCatching { block(currentUid()) }
+            .onFailure { Timber.tag(TAG).e("Can't $action\n  ${it.stackTraceToString()}") }
+            .fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
     }
 
-    override suspend fun addAllGame(game: Map<String, Game>): RequestResult<Boolean> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                val response = apiFirebaseData.addAllGame(game)
-                when {
-                    response.isSuccessful -> {
-                        RequestResult.Success(true)
-                    }
+    // Without a real UID the path would collapse to users/.json and touch every account's data.
+    private fun currentUid(): String =
+        checkNotNull(userSession.getUserUID()?.takeIf { it.isNotBlank() && it != GUEST_UID }) {
+            "No signed-in account"
+        }
 
-                    else -> throw IllegalStateException()
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't add game\n  ${it.stackTraceToString()}")
-            }
-        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
-    }
-
-    override suspend fun getAllPlayer(): RequestResult<List<Player>> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                apiFirebaseData.getAllPlayer()?.map { element ->
-                    element.value.copy(id = element.key)
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't get All player\n  ${it.stackTraceToString()}")
-            }
-        }.fold(
-            onSuccess = { RequestResult.Success(it ?: emptyList()) },
-            onFailure = { RequestResult.Error(it) })
-    }
-
-    override suspend fun addPlayer(player: Map<String, Player>): RequestResult<Boolean> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                val response = apiFirebaseData.addPlayer(player)
-                when {
-                    response.isSuccessful -> {
-                        RequestResult.Success(true)
-                    }
-
-                    else -> throw IllegalStateException()
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't add player\n  ${it.stackTraceToString()}")
-            }
-        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
-    }
-
-    override suspend fun getAllHistoryGame(): RequestResult<List<HistoryGameFirebase>> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                apiFirebaseData.getAllHistoryGame().map { element ->
-                    element.value.copy(id = element.key)
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't get All History Game\n  ${it.stackTraceToString()}")
-            }
-        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
-    }
-
-    override suspend fun addHistoryGame(historyGame: Map<String, HistoryGameFirebase>): RequestResult<Boolean> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                val response = apiFirebaseData.addHistory(historyGame)
-                when {
-                    response.isSuccessful -> {
-                        RequestResult.Success(true)
-                    }
-
-                    else -> throw IllegalStateException()
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't add History Game\n  ${it.stackTraceToString()}")
-            }
-        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
-    }
-
-    override suspend fun getAllHistoryGameExpansion(): RequestResult<List<HistoryGameExpansion>> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                apiFirebaseData.getAllHistoryGameExpansion().map { element ->
-                    element.value.copy(id = element.key)
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't get All History Game\n  ${it.stackTraceToString()}")
-            }
-        }.fold(onSuccess = { RequestResult.Success(it) }, onFailure = { RequestResult.Error(it) })
-    }
-
-    override suspend fun addHistoryGameExpansion(historyGameExpansion: Map<String, HistoryGameExpansion>): RequestResult<Boolean> {
-        return withContext(Dispatchers.IO) {
-            runCatching {
-                val response = apiFirebaseData.addHistoryExpansion(historyGameExpansion)
-                when {
-                    response.isSuccessful -> {
-                        RequestResult.Success(true)
-                    }
-
-                    else -> throw IllegalStateException()
-                }
-            }.onFailure {
-                Timber.tag("Firebase DB").e("Can't add History Game\n  ${it.stackTraceToString()}")
-            }
-        }.fold(onSuccess = { it }, onFailure = { RequestResult.Error(it) })
+    private companion object {
+        const val TAG = "Firebase DB"
+        const val GUEST_UID = "guest"
     }
 }
